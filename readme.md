@@ -1085,6 +1085,16 @@ One short example per subcommand listed in the OS table above. Add `--dry-run` t
 .\run.ps1 os power                                    # os power           : never-sleep powercfg timeouts (AC + DC)
 .\run.ps1 os update                                   # os update          : Windows Update scan + download + install
 
+# --- Taskbar / Start menu alignment (Windows 11) ---
+# Left-align the Start menu + taskbar icons (Windows 10 classic look).
+# One-liner (copy/paste into any elevated or normal PowerShell):
+New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value 0 -PropertyType DWord -Force; Stop-Process -Name explorer -Force
+# Or use the bundled helper:
+.\scripts\taskbar-align-left.ps1                       # taskbar-align-left : Start menu + icons -> LEFT
+.\scripts\taskbar-align-left.ps1 -Center               # taskbar-align-left : restore CENTER alignment
+
+
+
 # --- Local users & groups ---
 .\run.ps1 os add-user alice MyP@ss123                 # os add-user        : create a local user
 .\run.ps1 os edit-user alice --password NewP@ss1      # os edit-user       : change password / groups / flags
