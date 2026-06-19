@@ -10,7 +10,7 @@ All notable changes to this project are documented in this file.
   - Linux/macOS: `scripts-linux/chrome-profile-copy/profile-copy.sh` wired into `scripts-linux/run.sh` (`chrome-profile-{list,copy,export,import}`).
   - Spec: `spec/58-install-chrome/profile-copy.md`.
 - **`taskbar-align-left.ps1`** -- one-shot Windows 11 Start-menu/taskbar left-alignment helper (`TaskbarAl=0` + explorer restart). Sample command pinned in root `readme.md`.
-- **Smoke tests** -- `scripts-linux/_shared/tests/chrome-profile-copy.test.sh` (19 assertions) and `scripts-linux/_shared/tests/chrome-fix-ai.test.sh`.
+- **Smoke tests** -- `scripts-linux/_shared/tests/chrome-profile-copy.test.sh` (19 assertions), `scripts-linux/_shared/tests/chrome-fix-ai.test.sh`, and Windows Pester `scripts/58-install-chrome/tests/profile-copy.test.ps1` (sandboxed `$env:LOCALAPPDATA`: copy/account-strip/Local-State-register/dry-run + export+import round-trip).
 
 ### Changed
 - **Root `readme.md`** -- Version badge pinned to `v1.2.4`; Linux/macOS `chrome-profile-copy` examples cross-linked to `scripts-linux/chrome-profile-copy/readme.md`.

@@ -18,5 +18,7 @@ Pinned in:
 - Smoke tests added under `scripts-linux/_shared/tests/`.
 
 ## Still pending after this release
-- Windows smoke tests for `profile-copy.ps1` (Task K).
 - E2E verifications requiring real shells (`-Version` flag, auto-discovery redirect, 4-filter chain, Speed column alignment).
+
+## Done post-release (in v1.2.4 line)
+- Task K — Windows Pester smoke tests at `scripts/58-install-chrome/tests/profile-copy.test.ps1` (sandboxed `$env:LOCALAPPDATA`, covers copy/strip-account/Local-State-register/dry-run/export+import round-trip).
