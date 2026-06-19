@@ -1,5 +1,5 @@
 # Memory: index.md
-Updated: today (1.5.28 — standalone models-download)
+Updated: 2026-06-19 (release v1.2.4 — chrome-profile-copy suite + taskbar-align-left)
 
 # Project Memory
 
@@ -34,6 +34,7 @@ STRICTLY-PROHIBITED (SP-1..SP-6): NEVER write or suggest date/time/timestamp con
 - [Script 68 SSH key rollback](mem://features/17-script-68-ssh-key-rollback) — manifest-based per-run SSH key rollback
 - [Script 68 macOS perms](mem://features/18-script-68-macos-perms) — createhomedir + numeric-gid chown for macOS user creation
 - [Change-port + DNS toolkit](mem://features/19-change-port-and-dns) — root-level change-port.sh / install-dns.sh dispatchers (v0.175.0)
+- [Release v1.2.4](mem://features/release-v1.2.4) — Pinned 2026-06-19: chrome-profile-copy suite (Win+Linux), taskbar-align-left, smoke tests
 
 - [Script 68 shared schema validator](mem://features/script-68-shared-schema) — helpers/_schema.sh deduplicates strict JSON validation across all four *-from-json.sh leaves
 - [Windows user-mgmt shared helpers](mem://features/windows-user-mgmt-shared-helpers) — Invoke-UserModify/Delete/PurgeHome in scripts/os/helpers/_common.ps1; used by edit-user, remove-user, edit-user-from-json, remove-user-from-json
