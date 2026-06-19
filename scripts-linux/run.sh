@@ -33,6 +33,23 @@ while [ $# -gt 0 ]; do
     --json)        JSON_OUT=1; shift ;;
     --only-drift)  ONLY_DRIFT=1; shift ;;
     -h|--help)     VERB="help"; shift ;;
+    -V|-Version|--version|-version|version)
+        # Print toolkit version (from scripts/version.json or version.json) and exit.
+        ver="unknown"
+        for vf in "$ROOT/../scripts/version.json" "$ROOT/../version.json"; do
+          if [ -f "$vf" ]; then
+            v=$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$vf" | head -n1)
+            if [ -n "$v" ]; then ver="$v"; break; fi
+          fi
+        done
+        sha="no-git"
+        if command -v git >/dev/null 2>&1; then
+          sha=$(cd "$ROOT/.." 2>/dev/null && git rev-parse --short HEAD 2>/dev/null || echo "no-git")
+          [ -z "$sha" ] && sha="no-git"
+        fi
+        printf '\n  scripts-fixer v%s  (%s)\n  https://github.com/alimtvnetwork/scripts-fixer-v19\n\n' "$ver" "$sha"
+        exit 0
+        ;;
     # ---- top-level shortcuts to script 64 (cross-OS startup-add) ----
     startup-list|startup-ls)
         VERB="startup-passthrough"; STARTUP_SUB="list"; shift ;;
