@@ -150,6 +150,22 @@ Chrome installs go through Chocolatey (`googlechrome`) with the official standal
 .\run.ps1 uninstall chrome               # Remove Chrome + clean shortcuts/registry/AppData
 ```
 
+### Profiles -- copy, export, import (offline by default)
+
+Clone a Chrome profile to a brand-new **offline** profile (no Google sign-in required). The new profile inherits bookmarks, extensions, preferences, and themes. Sign in later from `chrome://settings` if you want. Every operation is logged to a local SQLite ledger (`%LOCALAPPDATA%\dev-server\chrome-profiles.sqlite`).
+
+```powershell
+.\run.ps1 chrome profile-list                                # List discovered profiles + display names
+.\run.ps1 chrome-profile-copy Default to Work                # Clone "Default" -> new offline "Work" profile
+.\run.ps1 chrome-profile-copy "Profile 1" "Profile 2" -DryRun # Preview without touching disk
+.\run.ps1 chrome profile-export Default                      # Export JSON + CSV to .\chrome-profiles\Default\
+.\run.ps1 chrome profile-to-json "Profile 1" C:\backups      # JSON only
+.\run.ps1 chrome profile-to-csv  "Profile 1" C:\backups      # CSV only
+.\run.ps1 chrome-profile-import C:\backups\profile.json to Restored   # Recreate an offline profile from JSON
+```
+
+Close all Chrome windows first (or pass `-Yes` to override the guard). Full spec: [`spec/58-install-chrome/profile-copy.md`](spec/58-install-chrome/profile-copy.md).
+
 ### Extensions from the bundled catalog
 
 The catalog lives in `scripts/58-install-chrome/config.json` (`extensions.list`). Edit it to add your own.

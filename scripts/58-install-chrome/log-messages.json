@@ -44,22 +44,34 @@
       "with-ext": "Install Chrome AND all configured extensions in one shot",
       "ext": "Show the extension catalog (no args) or install specific ones: ext vpn,tabcopy",
       "ext <name>": "Install one or more extensions by name (vpn, tabcopy, tabextend, adblocker)",
-      "ext-all": "Install ALL configured extensions"
+      "ext-all": "Install ALL configured extensions",
+      "fix-ai": "Disable Gemini Nano / on-device AI model and reclaim disk (-Verify, -Restore, -DryRun)",
+      "profile-list": "List all Chrome profiles with their display names",
+      "profile-copy <from> to <to>": "Clone profile <from> to a NEW offline profile <to> (bookmarks, extensions, prefs, themes)",
+      "profile-export <name> [<dir>]": "Export profile to JSON + CSV (defaults to ./chrome-profiles/<name>/)",
+      "profile-to-json <name> [<dir>]": "Export profile to JSON only",
+      "profile-to-csv <name> [<dir>]": "Export profile to CSV only",
+      "profile-import <json> to <name>": "Recreate an offline profile from a JSON export"
     },
     "parameters": {
       "-Method": "Extension install method: auto (default) | registry (silent, needs admin) | webstore (open Web Store pages)",
-      "-WithExt": "When installing Chrome, also install all extensions afterwards"
+      "-WithExt": "When installing Chrome, also install all extensions afterwards",
+      "-DryRun": "profile-copy / profile-import: print actions without touching disk",
+      "-Yes": "profile-copy / profile-import: bypass the 'Chrome is running' guard"
     },
     "examples": [
       ".\\run.ps1 install chrome",
-      ".\\run.ps1 install google-chrome",
-      ".\\run.ps1 -I 58",
-      ".\\run.ps1 -I 58 -- -Help",
       ".\\run.ps1 -I 58 uninstall",
       ".\\run.ps1 install chrome with-ext              # Chrome + all 4 extensions",
-      ".\\run.ps1 install chrome ext                   # show catalog",
       ".\\run.ps1 install chrome ext vpn,adblocker     # install two extensions",
-      ".\\run.ps1 install chrome ext-all -Method registry   # silent (admin) force-install"
+      ".\\run.ps1 install chrome ext-all -Method registry   # silent (admin) force-install",
+      ".\\run.ps1 chrome fix-ai -Verify",
+      ".\\run.ps1 chrome profile-list",
+      ".\\run.ps1 chrome-profile-copy Default to Work",
+      ".\\run.ps1 chrome-profile-copy \"Profile 1\" \"Profile 2\" -DryRun",
+      ".\\run.ps1 chrome profile-export Default",
+      ".\\run.ps1 chrome profile-to-json \"Profile 1\" C:\\backups\\p1.json",
+      ".\\run.ps1 chrome-profile-import C:\\backups\\p1.json to Restored"
     ]
   }
 }

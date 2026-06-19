@@ -3265,7 +3265,7 @@ if ($_isEarlyHelp) {
     }
 
     $_completionPool = @(
-        'chrome','chrome-fix-ai','fix-ai','ext','ext-url','ext-all','vscode','vscode-folder','conemu',
+        'chrome','chrome-fix-ai','fix-ai','chrome-profile-copy','chrome-profile-export','chrome-profile-import','ext','ext-url','ext-all','vscode','vscode-folder','conemu',
         'menu','context-menu','profile','install','uninstall','update',
         'self-update','settings','export','os','doctor','logs','report','reset',
         'path','models','models-download','download','url','git','git-tools','gsa','mysql','postgresql',
@@ -3734,6 +3734,9 @@ if ($hasCommand) {
     $isBareVscodeContextMenuCommand = $normalizedCommand -in @("vscode-context-menu", "vscode-contextmenu", "vscodecontextmenu", "vscode-menu", "vscodemenu")
     $isBareChromeCommand = $normalizedCommand -in @("chrome","google-chrome","googlechrome")
     $isBareChromeFixAiCommand = $normalizedCommand -in @("chrome-fix-ai","chromefixai","chrome-fixai","chrome-no-ai","chrome-disable-ai")
+    $isBareChromeProfileCopyCommand   = $normalizedCommand -in @("chrome-profile-copy","chromeprofilecopy","chrome-clone-profile","clone-chrome-profile")
+    $isBareChromeProfileExportCommand = $normalizedCommand -in @("chrome-profile-export","chrome-export-profile","chrome-profile-to-json","chrome-profile-to-csv")
+    $isBareChromeProfileImportCommand = $normalizedCommand -in @("chrome-profile-import","chrome-import-profile")
     $isBareProfileCommand = $normalizedCommand -eq "profile" -or $normalizedCommand -eq "profiles"
     $isBareGitToolsCommand = $normalizedCommand -eq "git-tools" -or $normalizedCommand -eq "gittools"
     $isBareGsaCommand     = $normalizedCommand -eq "gsa" -or $normalizedCommand -eq "git-safe-all" -or $normalizedCommand -eq "gitsafeall"
@@ -3762,7 +3765,7 @@ if ($hasCommand) {
     #   - any of $Install contains --no-pull / -no-pull / --offline
     #   - command is read-only (status/path/scan/export/doctor)
     $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand
-    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand
+    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand
     $isNoPullEnv = $env:SCRIPTS_FIXER_NO_PULL -eq "1"
     $isNoPullFlag = $false
     if ($null -ne $Install) {
@@ -4063,6 +4066,38 @@ if ($hasCommand) {
         & $chromeScript @chromeArgs
         exit $LASTEXITCODE
     }
+
+    if ($isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand) {
+        Show-VersionHeader
+        $chromeScript = Join-Path $RootDir "scripts\58-install-chrome\run.ps1"
+        if (-not (Test-Path $chromeScript)) {
+            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "Chrome dispatcher missing at: $chromeScript"
+            Write-Host "          Reason: expected scripts\58-install-chrome\run.ps1 to exist relative to repo root: $RootDir" -ForegroundColor DarkGray
+            exit 1
+        }
+        $sub = if ($isBareChromeProfileCopyCommand)   { 'profile-copy' }
+               elseif ($isBareChromeProfileImportCommand) { 'profile-import' }
+               else {
+                   switch ($normalizedCommand) {
+                       'chrome-profile-to-json' { 'profile-to-json' }
+                       'chrome-profile-to-csv'  { 'profile-to-csv'  }
+                       default                  { 'profile-export'  }
+                   }
+               }
+        $chromeArgs = @($sub)
+        if ($null -ne $Install) { $chromeArgs += @($Install) }
+        if ($Y -and -not ($chromeArgs | Where-Object { "$_".Trim().ToLower() -in @('-y','--yes','-yes') })) {
+            $chromeArgs += '-Yes'
+        }
+        Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
+        Write-Host "Routing '$normalizedCommand $($Install -join ' ')' to: " -NoNewline
+        Write-Host "$chromeScript $sub" -ForegroundColor White
+        & $chromeScript @chromeArgs
+        exit $LASTEXITCODE
+    }
+
+
 
 
 

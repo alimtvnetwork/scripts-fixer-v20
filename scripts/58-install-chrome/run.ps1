@@ -36,6 +36,7 @@ $sharedDir  = Join-Path (Split-Path -Parent $scriptDir) "shared"
 . (Join-Path $scriptDir "helpers\chrome.ps1")
 . (Join-Path $scriptDir "helpers\extensions.ps1")
 . (Join-Path $scriptDir "helpers\fix-ai.ps1")
+. (Join-Path $scriptDir "helpers\profile-copy.ps1")
 
 $config      = Import-JsonConfig (Join-Path $scriptDir "config.json")
 $logMessages = Import-JsonConfig (Join-Path $scriptDir "log-messages.json")
@@ -167,6 +168,59 @@ try {
         if ($ok) { Write-Log "Chrome fix-ai complete" -Level "success" }
         return
     }
+
+    # ── Profile copy / export / import ───────────────────────────────────
+    if ($cmd -in @("profile-list","profiles","list-profiles")) {
+        $list = Get-ChromeProfileList
+        if (-not $list -or $list.Count -eq 0) { Write-Log "No Chrome profiles found." -Level "warn"; return }
+        Write-Host ""
+        Write-Host "  Chrome profiles:" -ForegroundColor Cyan
+        $list | ForEach-Object { Write-Host ("    {0,-18} -> {1}" -f $_.Dir, $_.DisplayName) -ForegroundColor White }
+        Write-Host ""
+        return
+    }
+
+    if ($cmd -in @("profile-copy","profilecopy","copy-profile","clone-profile")) {
+        # Accept:  profile-copy <from> to <to>      |  profile-copy <from> <to>
+        $args = @($Rest | Where-Object { $_ })
+        $args = @($args | Where-Object { $_.ToLower() -ne 'to' })
+        if ($args.Count -lt 2) {
+            Write-Log "Usage: profile-copy <from> [to] <to-name>   (e.g. profile-copy Default to Work)" -Level "error"
+            return
+        }
+        $from = $args[0]; $to = $args[1]
+        $okCopy = Copy-ChromeProfile -From $from -To $to -DryRun:$DryRun -Force:$Yes
+        if ($okCopy) { Write-Log "profile-copy complete: $from -> $to" -Level "success" }
+        return
+    }
+
+    if ($cmd -in @("profile-export","export-profile","profile-to-json","profile-to-csv")) {
+        if (-not $Rest -or $Rest.Count -lt 1) {
+            Write-Log "Usage: profile-export <name> [<out-dir>]" -Level "error"
+            return
+        }
+        $name = $Rest[0]
+        $outDir = if ($Rest.Count -ge 2) { $Rest[1] } else { $null }
+        $fmt = switch ($cmd) {
+            'profile-to-json' { 'json' }
+            'profile-to-csv'  { 'csv'  }
+            default           { 'both' }
+        }
+        Export-ChromeProfile -Name $name -OutDir $outDir -Format $fmt | Out-Null
+        return
+    }
+
+    if ($cmd -in @("profile-import","import-profile")) {
+        $args = @($Rest | Where-Object { $_ })
+        $args = @($args | Where-Object { $_.ToLower() -ne 'to' })
+        if ($args.Count -lt 2) {
+            Write-Log "Usage: profile-import <json-path> [to] <new-profile-name>" -Level "error"
+            return
+        }
+        Import-ChromeProfile -JsonPath $args[0] -To $args[1] -DryRun:$DryRun -Force:$Yes | Out-Null
+        return
+    }
+
 
     # ── Uninstall ────────────────────────────────────────────────────────
     if ($cmd -eq "uninstall") {
