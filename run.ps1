@@ -4067,6 +4067,38 @@ if ($hasCommand) {
         exit $LASTEXITCODE
     }
 
+    if ($isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand) {
+        Show-VersionHeader
+        $chromeScript = Join-Path $RootDir "scripts\58-install-chrome\run.ps1"
+        if (-not (Test-Path $chromeScript)) {
+            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "Chrome dispatcher missing at: $chromeScript"
+            Write-Host "          Reason: expected scripts\58-install-chrome\run.ps1 to exist relative to repo root: $RootDir" -ForegroundColor DarkGray
+            exit 1
+        }
+        $sub = if ($isBareChromeProfileCopyCommand)   { 'profile-copy' }
+               elseif ($isBareChromeProfileImportCommand) { 'profile-import' }
+               else {
+                   switch ($normalizedCommand) {
+                       'chrome-profile-to-json' { 'profile-to-json' }
+                       'chrome-profile-to-csv'  { 'profile-to-csv'  }
+                       default                  { 'profile-export'  }
+                   }
+               }
+        $chromeArgs = @($sub)
+        if ($null -ne $Install) { $chromeArgs += @($Install) }
+        if ($Y -and -not ($chromeArgs | Where-Object { "$_".Trim().ToLower() -in @('-y','--yes','-yes') })) {
+            $chromeArgs += '-Yes'
+        }
+        Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
+        Write-Host "Routing '$normalizedCommand $($Install -join ' ')' to: " -NoNewline
+        Write-Host "$chromeScript $sub" -ForegroundColor White
+        & $chromeScript @chromeArgs
+        exit $LASTEXITCODE
+    }
+
+
+
 
 
     if ($isBareVscodeContextMenuCommand) {
