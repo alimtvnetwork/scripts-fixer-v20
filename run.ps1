@@ -3713,7 +3713,91 @@ if ($hasCommand) {
         }
     }
 
+    # ── Auto-discovery redirect ────────────────────────────────────────
+    # Renamed / legacy / typo'd top-level verbs are rewritten to their
+    # canonical form here so every downstream `isBareXxxCommand` check
+    # keeps working. Two layers:
+    #   1) Explicit alias table for known renames.
+    #   2) Did-You-Mean fuzzy match against the canonical verb list
+    #      (only when the command would otherwise fall through to the
+    #      generic install/keyword path).
+    $commandAliasMap = @{
+        # legacy / renamed verbs
+        'choco-upgrade'        = 'update'
+        'chocoupdate'          = 'update'
+        'upgrade-all'          = 'update'
+        'list'                 = 'status'
+        'ls'                   = 'status'
+        'list-installed'       = 'status'
+        'show'                 = 'status'
+        'health'               = 'doctor'
+        'check'                = 'doctor'
+        'diagnose'             = 'doctor'
+        'refresh'              = 'self-update'
+        'update-self'          = 'self-update'
+        'git-pull'             = 'self-update'
+        # chrome family renames
+        'chrome-ai-fix'        = 'chrome-fix-ai'
+        'chrome-no-google-ai'  = 'chrome-fix-ai'
+        'chrome-copy-profile'  = 'chrome-profile-copy'
+        'chrome-export'        = 'chrome-profile-export'
+        'chrome-import'        = 'chrome-profile-import'
+        # ssh family
+        'sshkeygen'            = 'ssh'
+        'ssh-gen'              = 'ssh'
+        # menu / os
+        'contextmenus'         = 'menu'
+        'os-clean'             = 'os'
+        # misc
+        'taskbar-left'         = 'startup-add'   # documented sample lives under startup-add helpers
+    }
+    if ($commandAliasMap.ContainsKey($normalizedCommand)) {
+        $redirectTo = $commandAliasMap[$normalizedCommand]
+        Write-Host "  [REDIRECT] '" -ForegroundColor Cyan -NoNewline
+        Write-Host "$normalizedCommand" -ForegroundColor Yellow -NoNewline
+        Write-Host "' -> '" -ForegroundColor Cyan -NoNewline
+        Write-Host "$redirectTo" -ForegroundColor Green -NoNewline
+        Write-Host "' (auto-discovery alias)" -ForegroundColor Cyan
+        $normalizedCommand = $redirectTo
+        $Command           = $redirectTo
+    }
+
+    # Canonical verbs used by the Did-You-Mean fuzzy match below.
+    $canonicalVerbs = @(
+        'install','update','uninstall','reinstall','self-update','path','scan',
+        'export','status','doctor','report','models','models-download','menu',
+        'os','ssh','vscode-folder','vscode-context-menu','chrome','chrome-fix-ai',
+        'chrome-profile-copy','chrome-profile-export','chrome-profile-import',
+        'profile','git-tools','gsa','reset','help','version'
+    )
+    $isFuzzyEligible = $normalizedCommand -and `
+        ($normalizedCommand -notin $canonicalVerbs) -and `
+        ($normalizedCommand -notmatch '^\d+$') -and `
+        (-not $commandAliasMap.ContainsKey($normalizedCommand)) -and `
+        ($null -eq $keywordMap.$normalizedCommand)
+    if ($isFuzzyEligible) {
+        $guess = Get-DidYouMean -Token $normalizedCommand -Candidates $canonicalVerbs -Top 1
+        if ($guess -and $guess.Count -gt 0) {
+            $best = $guess[0]
+            # Only auto-redirect on a tight match (prefix or <=2 edits); otherwise
+            # just hint and let the normal install-keyword path try.
+            $isTightMatch = ($best.StartsWith($normalizedCommand)) -or `
+                            ($normalizedCommand.StartsWith($best)) -or `
+                            ([Math]::Abs($best.Length - $normalizedCommand.Length) -le 2)
+            if ($isTightMatch) {
+                Write-Host "  [REDIRECT] '" -ForegroundColor Cyan -NoNewline
+                Write-Host "$normalizedCommand" -ForegroundColor Yellow -NoNewline
+                Write-Host "' -> '" -ForegroundColor Cyan -NoNewline
+                Write-Host "$best" -ForegroundColor Green -NoNewline
+                Write-Host "' (auto-discovery fuzzy match)" -ForegroundColor Cyan
+                $normalizedCommand = $best
+                $Command           = $best
+            }
+        }
+    }
+
     $isBareInstallCommand = $normalizedCommand -eq "install"
+
     $isBareUpdateCommand  = $normalizedCommand -eq "update" -or $normalizedCommand -eq "choco-update" -or $normalizedCommand -eq "upgrade"
     $isBareUninstallCommand  = $normalizedCommand -in @("uninstall","remove","rm")
     $isBareReinstallCommand  = $normalizedCommand -in @("reinstall","re-install")
