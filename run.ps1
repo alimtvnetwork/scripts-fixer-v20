@@ -3265,7 +3265,7 @@ if ($_isEarlyHelp) {
     }
 
     $_completionPool = @(
-        'chrome','chrome-fix-ai','fix-ai','ext','ext-url','ext-all','vscode','vscode-folder','conemu',
+        'chrome','chrome-fix-ai','fix-ai','chrome-profile-copy','chrome-profile-export','chrome-profile-import','ext','ext-url','ext-all','vscode','vscode-folder','conemu',
         'menu','context-menu','profile','install','uninstall','update',
         'self-update','settings','export','os','doctor','logs','report','reset',
         'path','models','models-download','download','url','git','git-tools','gsa','mysql','postgresql',
