@@ -611,6 +611,15 @@ case "${VERB:-help}" in
     bash "$CFA_SCRIPT" "${CFA_REST[@]:-}"
     exit $?
     ;;
+  chrome-profile)
+    CPC_SCRIPT="$ROOT/chrome-profile-copy/profile-copy.sh"
+    if [ ! -f "$CPC_SCRIPT" ]; then
+      log_file_error "$CPC_SCRIPT" "chrome-profile-copy script missing"
+      exit 1
+    fi
+    bash "$CPC_SCRIPT" "${CPC_SUB:-list}" "${CPC_REST[@]:-}"
+    exit $?
+    ;;
   fast-download)
     # Parse: <url> [<dir>] [-s|--splits N] [-p|--piece-size SIZE]
     fd_url=""; fd_dir="$PWD"; fd_splits=16; fd_piece="1M"
