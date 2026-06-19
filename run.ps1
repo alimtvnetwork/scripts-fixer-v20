@@ -3734,6 +3734,9 @@ if ($hasCommand) {
     $isBareVscodeContextMenuCommand = $normalizedCommand -in @("vscode-context-menu", "vscode-contextmenu", "vscodecontextmenu", "vscode-menu", "vscodemenu")
     $isBareChromeCommand = $normalizedCommand -in @("chrome","google-chrome","googlechrome")
     $isBareChromeFixAiCommand = $normalizedCommand -in @("chrome-fix-ai","chromefixai","chrome-fixai","chrome-no-ai","chrome-disable-ai")
+    $isBareChromeProfileCopyCommand   = $normalizedCommand -in @("chrome-profile-copy","chromeprofilecopy","chrome-clone-profile","clone-chrome-profile")
+    $isBareChromeProfileExportCommand = $normalizedCommand -in @("chrome-profile-export","chrome-export-profile","chrome-profile-to-json","chrome-profile-to-csv")
+    $isBareChromeProfileImportCommand = $normalizedCommand -in @("chrome-profile-import","chrome-import-profile")
     $isBareProfileCommand = $normalizedCommand -eq "profile" -or $normalizedCommand -eq "profiles"
     $isBareGitToolsCommand = $normalizedCommand -eq "git-tools" -or $normalizedCommand -eq "gittools"
     $isBareGsaCommand     = $normalizedCommand -eq "gsa" -or $normalizedCommand -eq "git-safe-all" -or $normalizedCommand -eq "gitsafeall"
