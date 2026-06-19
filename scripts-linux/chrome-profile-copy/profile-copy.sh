@@ -120,32 +120,99 @@ user_data_dir() {
   return 1
 }
 
-# resolve a profile name (display name or dir) into an absolute path
+# Print "<dir>\t<display>" lines for every discovered profile under $1.
+list_profiles() {
+  local ud="$1"
+  local ls="$ud/Local State"
+  python3 - "$ud" "$ls" <<'PY' 2>/dev/null || true
+import json,os,sys
+ud, ls_path = sys.argv[1], sys.argv[2]
+ic = {}
+try:
+    with open(ls_path,'r',encoding='utf-8') as f:
+        ic = ((json.load(f).get('profile') or {}).get('info_cache') or {})
+except Exception: pass
+seen=set()
+try:
+    for d in sorted(os.listdir(ud)):
+        full=os.path.join(ud,d)
+        if not os.path.isdir(full): continue
+        if d=='Default' or d.startswith('Profile ') or os.path.exists(os.path.join(full,'Preferences')):
+            info = ic.get(d) or {}
+            name = info.get('name') or info.get('shortcut_name') or info.get('gaia_name') or d
+            print(f"{d}\t{name}")
+            seen.add(d)
+except Exception: pass
+PY
+}
+
+# Render an available-profiles help block when resolution fails.
+profile_not_found_help() {
+  local ud="$1" want="$2"
+  err "source profile '$want' not found under $ud (case-insensitive dir / display-name / substring all failed)"
+  local rows; rows="$(list_profiles "$ud")"
+  if [ -z "$rows" ]; then
+    warn "no Chrome profiles discovered. Is the browser installed and launched at least once?"
+    return
+  fi
+  info "available profiles (use either column):"
+  info "  DIR             DISPLAY NAME"
+  printf '%s\n' "$rows" | awk -F'\t' '{printf "  %-14s  %s\n",$1,$2}' | while IFS= read -r line; do info "$line"; done
+}
+
+# resolve a profile name (dir name OR display/shortcut/gaia name OR unique substring, all case-insensitive)
 resolve_profile_dir() {
   local ud="$1" name="$2"
   [ -z "$name" ] && { file_err "<empty>" "profile name is empty"; return 1; }
-  # direct dir match
-  if [ -d "$ud/$name" ]; then printf '%s\n' "$ud/$name"; return 0; fi
-  # display-name lookup via Local State
-  local ls="$ud/Local State"
-  if [ -f "$ls" ] && command -v python3 >/dev/null 2>&1; then
-    local hit
-    hit="$(python3 - "$ls" "$name" <<'PY'
-import json,sys
-ls_path, want = sys.argv[1], sys.argv[2]
+  local want_lc="${name,,}"
+  # 1. case-insensitive directory match
+  local d
+  while IFS= read -r d; do
+    [ -z "$d" ] && continue
+    if [ "${d,,}" = "$want_lc" ] && [ -d "$ud/$d" ]; then
+      printf '%s\n' "$ud/$d"; return 0
+    fi
+  done < <(ls -1 "$ud" 2>/dev/null)
+
+  # 2/3/4. Local State lookup: exact display/shortcut/gaia (ci) then unique substring
+  local ls="$ud/Local State" hit
+  if command -v python3 >/dev/null 2>&1; then
+    hit="$(python3 - "$ud" "$ls" "$name" <<'PY'
+import json,os,sys
+ud, ls_path, want = sys.argv[1], sys.argv[2], sys.argv[3]
+want_lc = want.lower()
+ic = {}
 try:
-    with open(ls_path,'r',encoding='utf-8') as f: data=json.load(f)
-except Exception as e:
-    sys.exit(0)
-ic = (data.get('profile') or {}).get('info_cache') or {}
+    with open(ls_path,'r',encoding='utf-8') as f:
+        ic = ((json.load(f).get('profile') or {}).get('info_cache') or {})
+except Exception: pass
+# scan dirs too so substring fallback covers raw dir names
+dirs=[]
+try:
+    dirs=[d for d in os.listdir(ud) if os.path.isdir(os.path.join(ud,d))]
+except Exception: pass
+# exact name fields (ci)
 for d,info in ic.items():
-    if (info.get('name') or '') == want:
-        print(d); break
+    for k in ('name','shortcut_name','gaia_name','gaia_given_name','user_name'):
+        v = (info.get(k) or '')
+        if v and v.lower() == want_lc and os.path.isdir(os.path.join(ud,d)):
+            print(d); sys.exit(0)
+# unique substring against display name OR dir
+cands=set()
+for d,info in ic.items():
+    nm=(info.get('name') or '').lower()
+    if nm and want_lc in nm and os.path.isdir(os.path.join(ud,d)):
+        cands.add(d)
+for d in dirs:
+    if want_lc in d.lower(): cands.add(d)
+if len(cands)==1:
+    print(next(iter(cands)))
 PY
 )"
     if [ -n "$hit" ] && [ -d "$ud/$hit" ]; then printf '%s\n' "$ud/$hit"; return 0; fi
   fi
-  file_err "$ud/$name" "profile not found (no dir, no Local State display-name match)"
+
+  profile_not_found_help "$ud" "$name"
   return 1
 }
 
