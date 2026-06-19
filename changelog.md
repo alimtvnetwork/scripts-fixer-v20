@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.2.4] -- 2026-06-19
+
+### Added
+- **`chrome-profile-copy` suite (Windows + Linux/macOS)** -- clone, export (JSON/CSV), import, and list Chrome/Chromium/Brave profiles offline-first. Strips GAIA IDs and sync/account bindings on copy/import. SQLite ledger at `%LOCALAPPDATA%\dev-server\chrome-profiles.sqlite` (Windows) / `~/.local/share/dev-server/chrome-profiles.sqlite` (Linux/macOS).
+  - Windows: `scripts/58-install-chrome/helpers/profile-copy.ps1` + top-level aliases (`chrome-profile-copy`, `chrome-profile-export`, `chrome-profile-import`).
+  - Linux/macOS: `scripts-linux/chrome-profile-copy/profile-copy.sh` wired into `scripts-linux/run.sh` (`chrome-profile-{list,copy,export,import}`).
+  - Spec: `spec/58-install-chrome/profile-copy.md`.
+- **`taskbar-align-left.ps1`** -- one-shot Windows 11 Start-menu/taskbar left-alignment helper (`TaskbarAl=0` + explorer restart). Sample command pinned in root `readme.md`.
+- **Smoke tests** -- `scripts-linux/_shared/tests/chrome-profile-copy.test.sh` (19 assertions) and `scripts-linux/_shared/tests/chrome-fix-ai.test.sh`.
+
+### Changed
+- **Root `readme.md`** -- Version badge pinned to `v1.2.4`; Linux/macOS `chrome-profile-copy` examples cross-linked to `scripts-linux/chrome-profile-copy/readme.md`.
+
+
+
 ## [v1.2.1] -- 2026-05-16
 
 ### Changed
