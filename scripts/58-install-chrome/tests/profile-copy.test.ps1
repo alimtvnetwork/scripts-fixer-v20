@@ -19,7 +19,6 @@ BeforeAll {
     $script:SharedDir = Join-Path $script:RepoRoot 'scripts\shared'
 
     . (Join-Path $script:SharedDir 'logging.ps1')
-    . (Join-Path $script:SharedDir 'file-error.ps1') -ErrorAction SilentlyContinue
     . (Join-Path $script:ScriptDir 'helpers\profile-copy.ps1')
 
     Initialize-Logging -ScriptName 'profile-copy-test'
