@@ -304,8 +304,8 @@ function Export-ChromeProfile {
     $userData = Get-ChromeUserDataDir
     if (-not $userData) { return $false }
     $srcDir = Resolve-ChromeProfileDir -NameOrDir $Name -UserDataDir $userData
-    if (-not (Test-Path $srcDir)) {
-        Write-Log "Source profile not found at $srcDir. Reason: no directory matches '$Name' under $userData." -Level "error"
+    if (-not $srcDir -or -not (Test-Path $srcDir)) {
+        Write-ChromeProfileNotFound -NameOrDir $Name -UserDataDir $userData
         return $false
     }
     if (-not $OutDir) { $OutDir = Join-Path (Get-Location) ("chrome-profiles\" + ($Name -replace '[\\/:*?"<>|]','_')) }
