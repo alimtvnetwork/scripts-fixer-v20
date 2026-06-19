@@ -76,16 +76,68 @@ function Get-ChromeProfileList {
 }
 
 function Resolve-ChromeProfileDir {
+    # Resolve a user-supplied token to an on-disk profile directory.
+    # Match order (all case-insensitive):
+    #   1. Exact directory name (e.g. "Profile 3", "Default")
+    #   2. Exact display name from Local State info_cache (e.g. "Lovable")
+    #   3. Exact shortcut/gaia name from info_cache
+    #   4. Unique substring match against display name OR directory
+    # On failure returns $null so the caller can render available-profiles help
+    # instead of a fake path. The gitmap bug was "passed display name was treated
+    # as a directory name and we returned a bogus path" -- this guards against it.
     param([string]$NameOrDir, [string]$UserDataDir)
     if (-not $UserDataDir) { $UserDataDir = Get-ChromeUserDataDir }
     if (-not $UserDataDir) { return $null }
-    $direct = Join-Path $UserDataDir $NameOrDir
-    if (Test-Path $direct) { return $direct }
+    if ([string]::IsNullOrWhiteSpace($NameOrDir)) { return $null }
+
     $list = Get-ChromeProfileList
-    $match = $list | Where-Object { $_.DisplayName -eq $NameOrDir -or $_.Dir -ieq $NameOrDir } | Select-Object -First 1
-    if ($match) { return $match.Path }
-    return $direct  # may not exist yet; caller decides
+    # 1. exact dir
+    $byDir = $list | Where-Object { $_.Dir -ieq $NameOrDir } | Select-Object -First 1
+    if ($byDir) { return $byDir.Path }
+    # 2. exact display name
+    $byName = $list | Where-Object { $_.DisplayName -ieq $NameOrDir } | Select-Object -First 1
+    if ($byName) { return $byName.Path }
+    # 3. shortcut_name / gaia_name fallback (rebuild from Local State)
+    $localState = Join-Path $UserDataDir 'Local State'
+    if (Test-Path $localState) {
+        try {
+            $ls = Get-Content -Raw -LiteralPath $localState | ConvertFrom-Json
+            if ($ls.profile -and $ls.profile.info_cache) {
+                foreach ($p in $ls.profile.info_cache.PSObject.Properties) {
+                    $v = $p.Value
+                    $names = @($v.name, $v.shortcut_name, $v.gaia_name, $v.gaia_given_name, $v.user_name) | Where-Object { $_ }
+                    if ($names | Where-Object { "$_" -ieq $NameOrDir }) {
+                        return (Join-Path $UserDataDir $p.Name)
+                    }
+                }
+            }
+        } catch {}
+    }
+    # 4. unique substring match
+    $contains = @($list | Where-Object {
+        ("$($_.DisplayName)".ToLower().Contains($NameOrDir.ToLower())) -or
+        ("$($_.Dir)".ToLower().Contains($NameOrDir.ToLower()))
+    })
+    if ($contains.Count -eq 1) { return $contains[0].Path }
+    return $null
 }
+
+function Write-ChromeProfileNotFound {
+    param([string]$NameOrDir, [string]$UserDataDir)
+    if (-not $UserDataDir) { $UserDataDir = Get-ChromeUserDataDir }
+    Write-Log "Source profile '$NameOrDir' not found under $UserDataDir. Reason: no directory or display name matches (case-insensitive, substring)." -Level "error"
+    $list = Get-ChromeProfileList
+    if ($list.Count -eq 0) {
+        Write-Log "No Chrome profiles discovered. Is Chrome installed and launched at least once?" -Level "warn"
+        return
+    }
+    Write-Log "Available profiles (use either column with --from/--name):" -Level "info"
+    Write-Log ("  {0,-14}  {1}" -f 'DIR', 'DISPLAY NAME') -Level "info"
+    foreach ($p in ($list | Sort-Object Dir)) {
+        Write-Log ("  {0,-14}  {1}" -f $p.Dir, $p.DisplayName) -Level "info"
+    }
+}
+
 
 function Test-ChromeRunning {
     return $null -ne (Get-Process -Name 'chrome' -ErrorAction SilentlyContinue)
@@ -104,8 +156,8 @@ function Copy-ChromeProfile {
     if (-not $userData) { return $false }
 
     $srcDir = Resolve-ChromeProfileDir -NameOrDir $From -UserDataDir $userData
-    if (-not (Test-Path $srcDir)) {
-        Write-Log "Source profile not found at $srcDir. Reason: no directory matches '$From' under $userData." -Level "error"
+    if (-not $srcDir -or -not (Test-Path $srcDir)) {
+        Write-ChromeProfileNotFound -NameOrDir $From -UserDataDir $userData
         return $false
     }
     $dstDir = Join-Path $userData $To
@@ -252,8 +304,8 @@ function Export-ChromeProfile {
     $userData = Get-ChromeUserDataDir
     if (-not $userData) { return $false }
     $srcDir = Resolve-ChromeProfileDir -NameOrDir $Name -UserDataDir $userData
-    if (-not (Test-Path $srcDir)) {
-        Write-Log "Source profile not found at $srcDir. Reason: no directory matches '$Name' under $userData." -Level "error"
+    if (-not $srcDir -or -not (Test-Path $srcDir)) {
+        Write-ChromeProfileNotFound -NameOrDir $Name -UserDataDir $userData
         return $false
     }
     if (-not $OutDir) { $OutDir = Join-Path (Get-Location) ("chrome-profiles\" + ($Name -replace '[\\/:*?"<>|]','_')) }
