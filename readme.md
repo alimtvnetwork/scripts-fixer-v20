@@ -166,6 +166,20 @@ Clone a Chrome profile to a brand-new **offline** profile (no Google sign-in req
 
 Close all Chrome windows first (or pass `-Yes` to override the guard). Full spec: [`spec/58-install-chrome/profile-copy.md`](spec/58-install-chrome/profile-copy.md).
 
+On **Linux / macOS** the same commands ship as top-level verbs on `scripts-linux/run.sh` (ledger lives at `~/.local/share/dev-server/chrome-profiles.sqlite`):
+
+```bash
+./scripts-linux/run.sh chrome-profile-list                                  # List discovered profiles
+./scripts-linux/run.sh chrome-profile-copy Default to Work                  # Clone "Default" -> offline "Work"
+./scripts-linux/run.sh chrome-profile-copy "Profile 1" "Profile 2" --dry-run # Preview, no disk writes
+./scripts-linux/run.sh chrome-profile-export Default                        # JSON + CSV under ./chrome-profiles/Default/
+./scripts-linux/run.sh chrome-profile-export Default ~/backups --json       # JSON only
+./scripts-linux/run.sh chrome-profile-import ~/backups/Default/profile.json to Restored
+./scripts-linux/run.sh chrome-profile-copy Default to Work --browser brave  # Brave / Chromium also supported
+```
+
+Linux/macOS details + flag reference: [`scripts-linux/chrome-profile-copy/readme.md`](scripts-linux/chrome-profile-copy/readme.md).
+
 ### Extensions from the bundled catalog
 
 The catalog lives in `scripts/58-install-chrome/config.json` (`extensions.list`). Edit it to add your own.

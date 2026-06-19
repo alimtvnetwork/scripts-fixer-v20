@@ -29,6 +29,34 @@ Spec: [`spec/58-install-chrome/profile-copy.md`](../../spec/58-install-chrome/pr
 ./profile-copy.sh --browser chromium copy Default to Work
 ```
 
+## Via top-level dispatcher (`scripts-linux/run.sh`)
+
+The same commands are exposed as first-class verbs on the Linux/macOS runner,
+so you don't have to `cd` into this folder:
+
+```bash
+# List profiles
+./scripts-linux/run.sh chrome-profile-list
+./scripts-linux/run.sh chrome-profile-list --browser brave
+
+# Clone "Default" into a brand-new offline "Work" profile
+./scripts-linux/run.sh chrome-profile-copy Default to Work
+./scripts-linux/run.sh chrome-profile-copy "Profile 1" "Profile 2" --dry-run
+./scripts-linux/run.sh chrome-profile-copy Default to Work --browser chromium --force
+
+# Export to JSON + CSV (default under ./chrome-profiles/<name>/)
+./scripts-linux/run.sh chrome-profile-export Default
+./scripts-linux/run.sh chrome-profile-export Default ~/backups --json
+./scripts-linux/run.sh chrome-profile-to-csv  "Profile 1" ~/backups
+
+# Restore a snapshot into a new offline profile
+./scripts-linux/run.sh chrome-profile-import ~/backups/Default/profile.json to Restored
+```
+
+Aliases recognised by the dispatcher: `chrome-profile-clone`,
+`chrome-profile-to-json`, `chrome-profile-to-csv`,
+`chrome-profile-restore`, `chrome-profiles`.
+
 ## Flags
 
 | Flag                | Meaning                                                          |

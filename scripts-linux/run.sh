@@ -166,6 +166,20 @@ while [ $# -gt 0 ]; do
     #                        [--dry-run] [--verify] [--restore] [--yes]
     chrome-fix-ai|fix-ai|chrome-ai|disable-chrome-ai)
         VERB="chrome-fix-ai"; shift; CFA_REST=("$@"); break ;;
+    # ---- top-level shortcut: chrome profile copy/export/import/list ------
+    # Linux/macOS port of scripts/58-install-chrome/helpers/profile-copy.ps1
+    # ./run.sh chrome-profile-copy <from> [to] <to> [--browser ...] [--dry-run]
+    # ./run.sh chrome-profile-export <name> [<outdir>] [--json|--csv]
+    # ./run.sh chrome-profile-import <jsonPath> to <name>
+    # ./run.sh chrome-profile-list [--browser chrome|chromium|brave]
+    chrome-profile-copy|chrome-profile-clone)
+        VERB="chrome-profile"; CPC_SUB="copy";   shift; CPC_REST=("$@"); break ;;
+    chrome-profile-export|chrome-profile-to-json|chrome-profile-to-csv)
+        VERB="chrome-profile"; CPC_SUB="export"; shift; CPC_REST=("$@"); break ;;
+    chrome-profile-import|chrome-profile-restore)
+        VERB="chrome-profile"; CPC_SUB="import"; shift; CPC_REST=("$@"); break ;;
+    chrome-profile-list|chrome-profiles)
+        VERB="chrome-profile"; CPC_SUB="list";   shift; CPC_REST=("$@"); break ;;
     # ---- top-level shortcut: SHA256-pinned remote installers ------------
     # ./run.sh install coding-guidelines       (alias: clean-code, cg, cc, code-guide)
     # Streams the upstream install.sh from gitub via curl, verifies the
@@ -304,6 +318,24 @@ Chrome on-device AI disabler (Linux/macOS port of script 58 fix-ai helper):
                 per-user Local State JSON patch (preserves other flags),
                 and on-disk model cache sweep with bytes-freed report.
                 Aliases: fix-ai | chrome-ai | disable-chrome-ai
+
+Chrome profile copy / export / import (Linux/macOS port of script 58 helper):
+  chrome-profile-list [--browser chrome|chromium|brave]
+                Print discovered profiles (dir + display name).
+  chrome-profile-copy <from> [to] <to> [--browser ...] [--dry-run] [--yes]
+                      [--force] [--with-logins] [--with-site-data]
+                Clone a profile into a brand-new OFFLINE profile
+                (bookmarks, extensions, preferences, themes; sync stripped).
+  chrome-profile-export <name> [<outdir>] [--json] [--csv]
+                Export bookmarks + extension list + preferences snapshot.
+                Default outdir: ./chrome-profiles/<name>/ ; default both formats.
+                Aliases: chrome-profile-to-json | chrome-profile-to-csv
+  chrome-profile-import <jsonPath> to <name> [--with-flags] [--yes]
+                Recreate an OFFLINE profile from an exported JSON snapshot.
+                Aliases: chrome-profile-restore
+  Close Chrome first (or pass --force). Spec:
+  spec/58-install-chrome/profile-copy.md ; details:
+  scripts-linux/chrome-profile-copy/readme.md
 
 
 macOS VS Code menu cleanup (script 66 shortcuts; macOS only):
@@ -577,6 +609,15 @@ case "${VERB:-help}" in
       exit 1
     fi
     bash "$CFA_SCRIPT" "${CFA_REST[@]:-}"
+    exit $?
+    ;;
+  chrome-profile)
+    CPC_SCRIPT="$ROOT/chrome-profile-copy/profile-copy.sh"
+    if [ ! -f "$CPC_SCRIPT" ]; then
+      log_file_error "$CPC_SCRIPT" "chrome-profile-copy script missing"
+      exit 1
+    fi
+    bash "$CPC_SCRIPT" "${CPC_SUB:-list}" "${CPC_REST[@]:-}"
     exit $?
     ;;
   fast-download)
