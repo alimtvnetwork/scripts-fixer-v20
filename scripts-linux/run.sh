@@ -319,6 +319,24 @@ Chrome on-device AI disabler (Linux/macOS port of script 58 fix-ai helper):
                 and on-disk model cache sweep with bytes-freed report.
                 Aliases: fix-ai | chrome-ai | disable-chrome-ai
 
+Chrome profile copy / export / import (Linux/macOS port of script 58 helper):
+  chrome-profile-list [--browser chrome|chromium|brave]
+                Print discovered profiles (dir + display name).
+  chrome-profile-copy <from> [to] <to> [--browser ...] [--dry-run] [--yes]
+                      [--force] [--with-logins] [--with-site-data]
+                Clone a profile into a brand-new OFFLINE profile
+                (bookmarks, extensions, preferences, themes; sync stripped).
+  chrome-profile-export <name> [<outdir>] [--json] [--csv]
+                Export bookmarks + extension list + preferences snapshot.
+                Default outdir: ./chrome-profiles/<name>/ ; default both formats.
+                Aliases: chrome-profile-to-json | chrome-profile-to-csv
+  chrome-profile-import <jsonPath> to <name> [--with-flags] [--yes]
+                Recreate an OFFLINE profile from an exported JSON snapshot.
+                Aliases: chrome-profile-restore
+  Close Chrome first (or pass --force). Spec:
+  spec/58-install-chrome/profile-copy.md ; details:
+  scripts-linux/chrome-profile-copy/readme.md
+
 
 macOS VS Code menu cleanup (script 66 shortcuts; macOS only):
   vscode-mac-clean             Remove Finder Services workflows, LaunchAgents/
