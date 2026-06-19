@@ -156,8 +156,8 @@ function Copy-ChromeProfile {
     if (-not $userData) { return $false }
 
     $srcDir = Resolve-ChromeProfileDir -NameOrDir $From -UserDataDir $userData
-    if (-not (Test-Path $srcDir)) {
-        Write-Log "Source profile not found at $srcDir. Reason: no directory matches '$From' under $userData." -Level "error"
+    if (-not $srcDir -or -not (Test-Path $srcDir)) {
+        Write-ChromeProfileNotFound -NameOrDir $From -UserDataDir $userData
         return $false
     }
     $dstDir = Join-Path $userData $To
