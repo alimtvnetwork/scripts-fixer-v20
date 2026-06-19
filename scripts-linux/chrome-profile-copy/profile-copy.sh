@@ -18,12 +18,10 @@ set -u
 __SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 __SHARED_DIR="$(cd "$__SELF_DIR/../_shared" && pwd 2>/dev/null || echo "$__SELF_DIR/../_shared")"
 # shellcheck disable=SC1091
-[ -f "$__SHARED_DIR/logger.sh" ] && . "$__SHARED_DIR/logger.sh" || {
-  log()   { printf '[%s] %s\n' "${2:-info}" "$1"; }
-  info()  { log "$1" info; }
-  warn()  { log "$1" warn; }
-  error() { log "$1" error; }
-}
+[ -f "$__SHARED_DIR/logger.sh" ] && . "$__SHARED_DIR/logger.sh"
+command -v info  >/dev/null 2>&1 || info()  { printf '[INFO]  %s\n' "$*"; }
+command -v warn  >/dev/null 2>&1 || warn()  { printf '[WARN]  %s\n' "$*" >&2; }
+command -v error >/dev/null 2>&1 || error() { printf '[ERROR] %s\n' "$*" >&2; }
 # shellcheck disable=SC1091
 [ -f "$__SHARED_DIR/file-error.sh" ] && . "$__SHARED_DIR/file-error.sh"
 
