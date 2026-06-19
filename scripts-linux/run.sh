@@ -166,6 +166,20 @@ while [ $# -gt 0 ]; do
     #                        [--dry-run] [--verify] [--restore] [--yes]
     chrome-fix-ai|fix-ai|chrome-ai|disable-chrome-ai)
         VERB="chrome-fix-ai"; shift; CFA_REST=("$@"); break ;;
+    # ---- top-level shortcut: chrome profile copy/export/import/list ------
+    # Linux/macOS port of scripts/58-install-chrome/helpers/profile-copy.ps1
+    # ./run.sh chrome-profile-copy <from> [to] <to> [--browser ...] [--dry-run]
+    # ./run.sh chrome-profile-export <name> [<outdir>] [--json|--csv]
+    # ./run.sh chrome-profile-import <jsonPath> to <name>
+    # ./run.sh chrome-profile-list [--browser chrome|chromium|brave]
+    chrome-profile-copy|chrome-profile-clone)
+        VERB="chrome-profile"; CPC_SUB="copy";   shift; CPC_REST=("$@"); break ;;
+    chrome-profile-export|chrome-profile-to-json|chrome-profile-to-csv)
+        VERB="chrome-profile"; CPC_SUB="export"; shift; CPC_REST=("$@"); break ;;
+    chrome-profile-import|chrome-profile-restore)
+        VERB="chrome-profile"; CPC_SUB="import"; shift; CPC_REST=("$@"); break ;;
+    chrome-profile-list|chrome-profiles)
+        VERB="chrome-profile"; CPC_SUB="list";   shift; CPC_REST=("$@"); break ;;
     # ---- top-level shortcut: SHA256-pinned remote installers ------------
     # ./run.sh install coding-guidelines       (alias: clean-code, cg, cc, code-guide)
     # Streams the upstream install.sh from gitub via curl, verifies the
