@@ -55,9 +55,11 @@ Write-Host ""
 Write-Host "  OS Clean (simple)" -ForegroundColor Cyan
 Write-Host "  =================" -ForegroundColor DarkGray
 Write-Host "    1. Windows Update download cache  (%WINDIR%\SoftwareDistribution\Download)" -ForegroundColor DarkGray
-Write-Host "    2. Temp dirs                      (%TEMP%, %LOCALAPPDATA%\Temp, C:\Windows\Temp)" -ForegroundColor DarkGray
-Write-Host "    3. Windows event logs             (wevtutil cl Application/System/...)" -ForegroundColor DarkGray
-Write-Host "    4. PSReadLine console history" -ForegroundColor DarkGray
+Write-Host "    2. Delivery Optimization cache    (%WINDIR%\SoftwareDistribution\DeliveryOptimization)" -ForegroundColor DarkGray
+Write-Host "    3. Temp dirs                      (%TEMP%, %LOCALAPPDATA%\Temp, C:\Windows\Temp)" -ForegroundColor DarkGray
+Write-Host "    4. Windows event logs             (wevtutil cl Application/System/...)" -ForegroundColor DarkGray
+Write-Host "    5. PSReadLine console history" -ForegroundColor DarkGray
+Write-Host "    6. Old Windows Update components  (DISM /StartComponentCleanup /ResetBase)  [needs --yes]" -ForegroundColor DarkGray
 Write-Host ""
 Write-Host "  For the full 59-category sweep run: " -NoNewline -ForegroundColor DarkGray
 Write-Host ".\run.ps1 os advance-clean" -ForegroundColor Yellow
