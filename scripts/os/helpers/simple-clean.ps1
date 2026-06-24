@@ -55,9 +55,11 @@ Write-Host ""
 Write-Host "  OS Clean (simple)" -ForegroundColor Cyan
 Write-Host "  =================" -ForegroundColor DarkGray
 Write-Host "    1. Windows Update download cache  (%WINDIR%\SoftwareDistribution\Download)" -ForegroundColor DarkGray
-Write-Host "    2. Temp dirs                      (%TEMP%, %LOCALAPPDATA%\Temp, C:\Windows\Temp)" -ForegroundColor DarkGray
-Write-Host "    3. Windows event logs             (wevtutil cl Application/System/...)" -ForegroundColor DarkGray
-Write-Host "    4. PSReadLine console history" -ForegroundColor DarkGray
+Write-Host "    2. Delivery Optimization cache    (%WINDIR%\SoftwareDistribution\DeliveryOptimization)" -ForegroundColor DarkGray
+Write-Host "    3. Temp dirs                      (%TEMP%, %LOCALAPPDATA%\Temp, C:\Windows\Temp)" -ForegroundColor DarkGray
+Write-Host "    4. Windows event logs             (wevtutil cl Application/System/...)" -ForegroundColor DarkGray
+Write-Host "    5. PSReadLine console history" -ForegroundColor DarkGray
+Write-Host "    6. Old Windows Update components  (DISM /StartComponentCleanup /ResetBase)  [needs --yes]" -ForegroundColor DarkGray
 Write-Host ""
 Write-Host "  For the full 59-category sweep run: " -NoNewline -ForegroundColor DarkGray
 Write-Host ".\run.ps1 os advance-clean" -ForegroundColor Yellow
@@ -104,6 +106,15 @@ Invoke-Step "Windows Update download cache" {
     if ($autoYes) { $runnerForwardArgs += "--yes" }
     & $runner -Category "wu-download" -Argv $runnerForwardArgs
 }
+
+# Step 2: Delivery Optimization cache
+Invoke-Step "Delivery Optimization cache" {
+    $runnerForwardArgs = @()
+    if ($dryRun)  { $runnerForwardArgs += "--dry-run" }
+    if ($autoYes) { $runnerForwardArgs += "--yes" }
+    & $runner -Category "delivery-opt" -Argv $runnerForwardArgs
+}
+
 
 # Step 2: Temp dirs
 Invoke-Step "Temp directories" {
@@ -164,6 +175,20 @@ Invoke-Step "PSReadLine history" {
     } else {
         Write-Host ("    (no history file at {0})" -f $histPath) -ForegroundColor DarkGray
     }
+}
+
+
+# Step 6: Old Windows Update components (DISM ResetBase) -- destructive, consent-gated.
+# Without --yes, the underlying helper auto-skips via Confirm-DestructiveCategory.
+Invoke-Step "Old Windows Update components (DISM ResetBase)" {
+    $runnerForwardArgs = @()
+    if ($dryRun)  { $runnerForwardArgs += "--dry-run" }
+    if ($autoYes) { $runnerForwardArgs += "--yes" }
+    if (-not $autoYes -and -not $dryRun) {
+        Write-Host "    (skipped -- pass --yes to run DISM /StartComponentCleanup /ResetBase; can take 10-30 min)" -ForegroundColor DarkGray
+        return
+    }
+    & $runner -Category "windows-update-old" -Argv $runnerForwardArgs
 }
 
 Write-Host ""
