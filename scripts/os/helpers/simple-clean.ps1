@@ -177,6 +177,20 @@ Invoke-Step "PSReadLine history" {
     }
 }
 
+
+# Step 6: Old Windows Update components (DISM ResetBase) -- destructive, consent-gated.
+# Without --yes, the underlying helper auto-skips via Confirm-DestructiveCategory.
+Invoke-Step "Old Windows Update components (DISM ResetBase)" {
+    $runnerForwardArgs = @()
+    if ($dryRun)  { $runnerForwardArgs += "--dry-run" }
+    if ($autoYes) { $runnerForwardArgs += "--yes" }
+    if (-not $autoYes -and -not $dryRun) {
+        Write-Host "    (skipped -- pass --yes to run DISM /StartComponentCleanup /ResetBase; can take 10-30 min)" -ForegroundColor DarkGray
+        return
+    }
+    & $runner -Category "windows-update-old" -Argv $runnerForwardArgs
+}
+
 Write-Host ""
 if ($failures -eq 0) {
     Write-Host "  [  OK  ] os clean (simple) finished cleanly." -ForegroundColor Green
