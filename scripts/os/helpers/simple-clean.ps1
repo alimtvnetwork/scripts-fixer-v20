@@ -107,6 +107,15 @@ Invoke-Step "Windows Update download cache" {
     & $runner -Category "wu-download" -Argv $runnerForwardArgs
 }
 
+# Step 2: Delivery Optimization cache
+Invoke-Step "Delivery Optimization cache" {
+    $runnerForwardArgs = @()
+    if ($dryRun)  { $runnerForwardArgs += "--dry-run" }
+    if ($autoYes) { $runnerForwardArgs += "--yes" }
+    & $runner -Category "delivery-opt" -Argv $runnerForwardArgs
+}
+
+
 # Step 2: Temp dirs
 Invoke-Step "Temp directories" {
     if ($dryRun) {
