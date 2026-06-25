@@ -114,6 +114,49 @@ Audit mode, health checks, settings sync, context-menu repair, and CI-tested ver
 
 ---
 
+## 🤖 For AI Agents & Contributors
+
+> **Start here every session:** [`.lovable/what-to-read.md`](.lovable/what-to-read.md) — the canonical onboarding guide for any AI (or human) touching this repo.
+
+### Read-first (every session)
+
+| # | Path | Purpose |
+|---|------|---------|
+| 1 | [`.lovable/what-to-read.md`](.lovable/what-to-read.md) | Folder map + workflow rules (this list, expanded) |
+| 2 | [`.lovable/overview.md`](.lovable/overview.md) | Project shape and conventions |
+| 3 | [`.lovable/memory/index.md`](.lovable/memory/index.md) | Master index of every memory file |
+| 4 | [`.lovable/plan.md`](.lovable/plan.md) | Active roadmap |
+| 5 | [`.lovable/strictly-avoid.md`](.lovable/strictly-avoid.md) | Hard prohibitions |
+| 6 | [`.lovable/suggestions.md`](.lovable/suggestions.md) | Tracker — active + implemented |
+| 7 | [`.lovable/cicd-index.md`](.lovable/cicd-index.md) | CI/CD issue index |
+| 8 | [`.lovable/prompts/index.md`](.lovable/prompts/index.md) | Reusable prompts (incl. write-memory) |
+| 9 | [`.lovable/coding-guidelines.md`](.lovable/coding-guidelines.md) | Code rules (≤8-line fns, no `any`, `is`/`has` booleans, DRY, ≤100 lines/file) |
+| 10 | [`spec/`](spec/) + [`spec/shared/`](spec/shared/) + [`spec/error-manage/`](spec/error-manage/) | Public specs per script/feature and shared helpers |
+
+### What each top-level folder is for
+
+| Folder | Contents |
+|---|---|
+| `.lovable/` | AI memory, plans, prompts, issues, suggestions — the project's brain |
+| `spec/` | Public specs per script/feature; `spec/shared/` for reusable helpers; `spec/error-manage/` for error rules |
+| `scripts/` | Windows PowerShell scripts (numeric-prefixed: `01-..` … `68-..`) |
+| `scripts-linux/` | Linux/macOS bash equivalents |
+| `scripts-orchestrator/` | Multi-host SSH playbooks and orchestration |
+| `kubernetes/` | k8s install + setup helpers |
+| `tools/` | Repo-maintenance utilities (legacy-ref scans, lint, checks) |
+| `src/` | React + Vite + TypeScript dashboard UI |
+| `assets/` | Static assets (`assets/XX-folder/XX-file.ext`) |
+
+### Common workflows (full detail in [`what-to-read.md`](.lovable/what-to-read.md))
+
+- **Add a feature** → read `spec/00-generic-install-script-behavior/` → create `spec/<NN>-<feature>/readme.md` → implement in both `scripts/<NN>-*/` and `scripts-linux/<name>/` → wire `run.ps1` + `run.sh` → update `readme.md` + `.lovable/memory/features/`.
+- **Add a unit test** → vitest under `src/test/*.test.ts`, PowerShell under `scripts/<NN>-*/tests/`, bash under `scripts-linux/<name>/tests/`; mirror an existing CI workflow in `.github/workflows/`.
+- **Fix a bug** → open `.lovable/pending-issues/<NN>-<slug>.md` → on green, move to `.lovable/solved-issues/` with `## Solution` + `## Learning` + `## What NOT to Repeat`.
+- **Write a spec** → public spec in `spec/<area>/readme.md`; verbatim user directive in `.lovable/memory/specs/<NN>-<slug>.md` (quote, never paraphrase).
+- **End a session** → run [`.lovable/prompts/01-write-memory.md`](.lovable/prompts/01-write-memory.md).
+
+---
+
 ## 🆕 Recently Added
 
 | Command | What it does | Aliases / notes |
