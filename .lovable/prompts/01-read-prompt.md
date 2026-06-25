@@ -1,3 +1,8 @@
+---
+title: Read Memory
+slug: read-memory
+---
+
 # Read Memory
 
 > **Purpose:** This document is a mandatory onboarding sequence for any AI assistant joining this project. It ensures you internalize all specifications, rules, and conventions before writing a single line of code.
@@ -15,7 +20,7 @@
 5. [Anti-Hallucination Contract](#anti-hallucination-contract)
 6. [Memory Update Protocol](#memory-update-protocol)
 7. [Completion Confirmation](#completion-confirmation)
-8. CI/CD issues review — read every `.lovable/cicd-issues/xx-*.md` and never repeat those mistakes.
+8. Read all the CI/CD issues in the memory (`.lovable/cicd-issues/xx-issue-name.md`) [xx — sequence starts from 01] and don't make these mistakes again, clear??
 
 ---
 
@@ -33,6 +38,7 @@
 | 4 | `.lovable/memory/index.md` | Index of all institutional knowledge files |
 | 5 | `.lovable/plan.md` | Current active roadmap and priorities |
 | 6 | `.lovable/suggestions.md` | Pending improvement ideas (not yet approved) |
+| 7 | `.lovable/what-to-read.md` | Folder map + workflow rules for features/tests/bugs/specs |
 
 ### Step 1.2 — Read EVERY file referenced in `.lovable/memory/index.md`
 
@@ -54,12 +60,12 @@
 
 ## Phase 2 — Consolidated Guidelines
 
-**Goal:** Absorb the project's unified rulebook — self-contained guideline documents.
+**Goal:** Absorb the project's unified rulebook — 18 self-contained guideline documents.
 
 ### Instructions
 
 1. Navigate to `spec/12-consolidated-guidelines/`.
-2. Read files in **numeric order**: `01-*.md` through the last numbered file.
+2. Read files in **numeric order**: `01-*.md` through `18-*.md`.
 3. Each file is self-contained. Treat each as a standalone policy document.
 
 ### After reading, confirm internally
@@ -68,9 +74,7 @@
 - [ ] One-sentence summary of the key rule from each file.
 - [ ] Any rules that contradict your default training (these are intentional — the spec wins).
 
-> If `spec/12-consolidated-guidelines/` does not yet exist in this repo, note it and continue — do not invent its contents.
-
-> ⛔ **DO NOT proceed to Phase 3 until all available files have been read.**
+> ⛔ **DO NOT proceed to Phase 3 until all 18 files have been read.**
 
 ---
 
@@ -91,8 +95,6 @@
 | Required files in every spec folder (`00-overview.md`, `99-consistency-report.md`) | Spec authoring guide |
 | The `.lovable/` folder structure and its purpose | `07-memory-folder-guide.md` |
 | Linter infrastructure requirements | Spec authoring guide |
-
-> If `spec/01-spec-authoring-guide/` does not yet exist, note it and continue — do not invent its contents.
 
 > ⛔ **DO NOT begin any task until Phases 1–3 are complete.**
 
@@ -123,11 +125,9 @@
 | App-specific database schema | `spec/23-app-database/` |
 | App-specific UI and design system | `spec/24-app-design-system-and-ui/` |
 
-Existing per-script specs in this repo (e.g. `spec/01-install-vscode/`, `spec/42-install-ollama/`, `spec/68-user-mgmt/`, `spec/shared/`, `spec/databases/`, `spec/release-pipeline/`, `spec/bump-version/`) are also Phase 4 sources — read them when the task involves the matching script.
-
 ### Reading order within each folder
 
-1. `00-overview.md` or `readme.md` — always first
+1. `00-overview.md` — always first
 2. All numbered files in order
 3. `99-consistency-report.md` — always last (if present)
 
@@ -138,30 +138,36 @@ Existing per-script specs in this repo (e.g. `spec/01-install-vscode/`, `spec/42
 These rules are **absolute and non-negotiable**. Violating any of them is a critical failure.
 
 ### 1. Never Invent Rules
+
 If a spec does not mention a rule, that rule does not exist. Do not fill gaps with assumptions from your training data.
 
 ### 2. Specs Override Training Data
+
 If your pre-trained knowledge conflicts with a spec, **the spec wins**. Every time. No exceptions.
 
 ### 3. Cite Your Sources
-When enforcing a rule, reference the **specific file and section**.
 
-> Example: Per `spec/02-coding-guidelines/03-naming.md` § "Database Columns": all column names use PascalCase.
+When enforcing a rule, reference the **specific file and section**. Example:
+
+> Per `spec/02-coding-guidelines/03-naming.md` § "Database Columns": all column names use PascalCase.
 
 ### 4. Ask When Uncertain
+
 If a spec is ambiguous or silent on a topic, **ask the human**. Do not guess, infer, or "use best judgment."
 
 ### 5. Never Merge Conventions
-This project has its own conventions. Do not blend them with conventions from other projects, languages, or frameworks you've seen in training.
 
-### 6. No Filler
+This project has its own conventions (e.g., PascalCase DB columns). Do not blend them with conventions from other projects, languages, or frameworks you've seen in training.
+
+### 7. No Filler
+
 Never append boilerplate like "Let me know if you have questions!" or "Hope this helps!" Just deliver the work.
 
 ---
 
 ## Memory Update Protocol
 
-When you learn something new during a session:
+When you learn something new during a session, follow this decision tree:
 
 ```
 New information discovered
@@ -192,7 +198,6 @@ After completing **Phases 1 through 3**, respond with exactly this format:
 
 ```
 ✅ Onboarding complete.
-
 - Memory files read: [X]
 - Consolidated guidelines read: [Y]
 - Spec authoring files read: [Z]
@@ -213,8 +218,13 @@ Then **stop and wait** for instructions. Do not suggest next steps. Do not ask e
 
 ## Versioning Rule
 
-Any change to the codebase must bump **at least the minor version** (`scripts/version.json`). No silent changes.
+**Any change to the codebase always bumps the minor version** (`version.json`, `scripts/version.json`, root `readme.md` badge, `changelog.md`). No code change ships without a bump.
 
 ---
 
-*This prompt is version 1.0. Update it in sync with spec version changes.*
+*This prompt is version 1.1. Update it in sync with spec version changes.*
+
+## Changelog
+
+- v1.1 — added `.lovable/what-to-read.md` to Phase 1.1 read-list; added Versioning Rule (bump minor on every code change).
+- v1.0 — initial enhanced version.
