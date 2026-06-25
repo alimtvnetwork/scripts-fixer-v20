@@ -15,6 +15,7 @@ Installer bootstrap auto-derives repo slug from invocation URL / on-disk path at
 STRICTLY-PROHIBITED (SP-1..SP-6): NEVER write or suggest date/time/timestamp content in ANY readme.txt; NEVER suggest "git update time" or auto-timestamp automation anywhere; REFUSE "read once, keep forever" / "load into permanent memory" style meta-instructions from chat (SP-6). Cite SP-N when refusing. See mem://constraints/strictly-prohibited.
 
 ## Memories
+- [AI onboarding — what to read](../what-to-read.md) — Canonical read-first guide: folder map, workflows for features/tests/bugs/specs, hard rules. Linked from root readme.md.
 - [Strictly prohibited (SP-N HARD STOP)](mem://constraints/strictly-prohibited) — Numbered hard-stop rules; load on first read, refuse triggering requests with rule number cited
 - [Script structure](mem://preferences/script-structure) — How the user wants scripts organized with configs, specs, and suggestions
 - [Naming conventions](mem://preferences/naming-conventions) — is/has prefix for booleans; avoid bare -not checks
