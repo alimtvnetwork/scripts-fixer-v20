@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.3.0] -- 2026-06-25
+
+### Added
+- **`.lovable/what-to-read.md`** -- canonical AI-agent onboarding guide (folder map, read-first list, workflows for features/tests/bugs/specs, hard rules).
+- Root `readme.md` **🤖 For AI Agents & Contributors** section linking the onboarding guide, core `.lovable/` files, and per-folder purpose.
+- `.lovable/prompts/01-read-prompt.md` v1.1 -- includes `what-to-read.md` in Phase 1.1 and codifies the "bump minor on every code change" rule.
+
+### Changed
+- `.lovable/memory/index.md` indexes the new onboarding guide.
+
+
 ## [v1.2.4] -- 2026-06-19
 
 ### Added
