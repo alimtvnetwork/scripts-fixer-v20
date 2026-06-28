@@ -4433,18 +4433,25 @@ if ($hasCommand) {
         & $scanScript @Install
         exit $LASTEXITCODE
         Show-VersionHeader
-        # Detect --self-check flag in remaining args
+        # Detect --self-check / --fix / --json flags in remaining args
         $isSelfCheck = $false
         $isSkipNetwork = $false
+        $isFix = $false
         if ($null -ne $Install -and $Install.Count -gt 0) {
             foreach ($a in $Install) {
                 $low = "$a".Trim().ToLower()
-                if ($low -in @("--self-check", "-self-check", "selfcheck", "--selfcheck", "self-check")) {
-                    $isSelfCheck = $true
-                }
-                if ($low -in @("--skip-network", "-skip-network", "skipnetwork", "--skipnetwork", "skip-network", "--offline", "-offline", "offline")) {
-                    $isSkipNetwork = $true
-                }
+                if ($low -in @("--self-check", "-self-check", "selfcheck", "--selfcheck", "self-check")) { $isSelfCheck = $true }
+                if ($low -in @("--skip-network", "-skip-network", "skipnetwork", "--skipnetwork", "skip-network", "--offline", "-offline", "offline")) { $isSkipNetwork = $true }
+                if ($low -in @("--fix", "-fix", "fix", "--repair", "-repair")) { $isFix = $true }
+                if ($low -in @("--json", "-json")) { $env:LOVABLE_JSON_OUT = "1" }
+            }
+        }
+        if ($isFix -or $env:LOVABLE_JSON_OUT -eq "1") {
+            $doctorFixModule = Join-Path $RootDir "scripts/shared/doctor-fix.ps1"
+            if (Test-Path $doctorFixModule) {
+                . $doctorFixModule
+                $failed = Invoke-DoctorFix -Fix:$isFix -RepoRoot $RootDir
+                exit ([int]$failed)
             }
         }
         if ($isSelfCheck) {
