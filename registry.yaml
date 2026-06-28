@@ -1,0 +1,778 @@
+version: 0.139.0
+description: >-
+  Single source of truth for the cross-platform script registry. Generated artefacts: scripts/registry.json (Windows), scripts-linux/registry.json (Linux+macOS). Run `node tools/registry-sync.cjs`
+  after editing.
+scripts:
+  - id: '01'
+    windows:
+      folder: 01-install-vscode
+    linux:
+      folder: 01-install-vscode
+      phase: '04'
+      title: VS Code (apt|snap)
+    macos:
+      folder: 01-install-vscode
+      phase: '04'
+      title: VS Code (apt|snap)
+  - id: '02'
+    windows:
+      folder: 02-install-package-managers
+  - id: '03'
+    windows:
+      folder: 03-install-nodejs
+    linux:
+      folder: 03-install-nodejs
+      phase: '03'
+      title: Node.js (NodeSource apt|nvm)
+    macos:
+      folder: 03-install-nodejs
+      phase: '03'
+      title: Node.js (NodeSource apt|nvm)
+  - id: '04'
+    windows:
+      folder: 04-install-pnpm
+    linux:
+      folder: 04-install-pnpm
+      phase: '05'
+      title: pnpm (curl|sh)
+    macos:
+      folder: 04-install-pnpm
+      phase: '05'
+      title: pnpm (curl|sh)
+  - id: '05'
+    windows:
+      folder: 05-install-python
+    linux:
+      folder: 05-install-python
+      phase: '03'
+      title: Python (apt)
+    macos:
+      folder: 05-install-python
+      phase: '03'
+      title: Python (apt)
+  - id: '06'
+    windows:
+      folder: 06-install-golang
+    linux:
+      folder: 06-install-golang
+      phase: '05'
+      title: Go (apt|tarball)
+    macos:
+      folder: 06-install-golang
+      phase: '05'
+      title: Go (apt|tarball)
+  - id: '07'
+    windows:
+      folder: 07-install-git
+    linux:
+      folder: 07-install-git
+      phase: '03'
+      title: Git (apt)
+    macos:
+      folder: 07-install-git
+      phase: '03'
+      title: Git (apt)
+  - id: '08'
+    windows:
+      folder: 08-install-github-desktop
+  - id: '09'
+    windows:
+      folder: 09-install-cpp
+    linux:
+      folder: 09-install-cpp
+      phase: '03'
+      title: C++ toolchain (build-essential)
+    macos:
+      folder: 09-install-cpp
+      phase: '03'
+      title: C++ toolchain (build-essential)
+  - id: '10'
+    windows:
+      folder: 10-vscode-context-menu-fix
+  - id: '11'
+    windows:
+      folder: 11-vscode-settings-sync
+    linux:
+      folder: 11-install-vscode-settings-sync
+      phase: '10'
+      title: VS Code settings sync
+    macos:
+      folder: 11-install-vscode-settings-sync
+      phase: '10'
+      title: VS Code settings sync
+  - id: '12'
+    windows:
+      folder: 12-install-all-dev-tools
+    linux:
+      folder: 12-install-all-dev-tools
+      phase: '11'
+      title: Orchestrator (profiles)
+    macos:
+      folder: 12-install-all-dev-tools
+      phase: '11'
+      title: Orchestrator (profiles)
+  - id: '13'
+    windows:
+      folder: audit
+  - id: '14'
+    windows:
+      folder: 14-install-winget
+  - id: '15'
+    windows:
+      folder: 15-windows-tweaks
+  - id: '16'
+    windows:
+      folder: 16-install-php
+    linux:
+      folder: 16-install-php
+      phase: '05'
+      title: PHP (apt)
+    macos:
+      folder: 16-install-php
+      phase: '05'
+      title: PHP (apt)
+  - id: '17'
+    windows:
+      folder: 17-install-powershell
+    linux:
+      folder: 17-install-powershell
+      phase: '03'
+      title: PowerShell (Microsoft apt)
+    macos:
+      folder: 17-install-powershell
+      phase: '03'
+      title: PowerShell (Microsoft apt)
+  - id: '18'
+    windows:
+      folder: 18-install-mysql
+    linux:
+      folder: 18-install-mysql
+      phase: '06'
+      title: MySQL (apt)
+    macos:
+      folder: 18-install-mysql
+      phase: '06'
+      title: MySQL (apt)
+  - id: '19'
+    windows:
+      folder: 19-install-mariadb
+    linux:
+      folder: 19-install-mariadb
+      phase: '06'
+      title: MariaDB (apt)
+    macos:
+      folder: 19-install-mariadb
+      phase: '06'
+      title: MariaDB (apt)
+  - id: '20'
+    windows:
+      folder: 20-install-postgresql
+    linux:
+      folder: 20-install-postgresql
+      phase: '06'
+      title: PostgreSQL (apt)
+    macos:
+      folder: 20-install-postgresql
+      phase: '06'
+      title: PostgreSQL (apt)
+  - id: '21'
+    windows:
+      folder: 21-install-sqlite
+    linux:
+      folder: 21-install-sqlite
+      phase: '06'
+      title: SQLite (apt)
+    macos:
+      folder: 21-install-sqlite
+      phase: '06'
+      title: SQLite (apt)
+  - id: '22'
+    windows:
+      folder: 22-install-mongodb
+    linux:
+      folder: 22-install-mongodb
+      phase: '07'
+      title: MongoDB (apt)
+    macos:
+      folder: 22-install-mongodb
+      phase: '07'
+      title: MongoDB (apt)
+  - id: '23'
+    windows:
+      folder: 23-install-couchdb
+    linux:
+      folder: 23-install-couchdb
+      phase: '07'
+      title: CouchDB (apt)
+    macos:
+      folder: 23-install-couchdb
+      phase: '07'
+      title: CouchDB (apt)
+  - id: '24'
+    windows:
+      folder: 24-install-redis
+    linux:
+      folder: 24-install-redis
+      phase: '07'
+      title: Redis (apt)
+    macos:
+      folder: 24-install-redis
+      phase: '07'
+      title: Redis (apt)
+  - id: '25'
+    windows:
+      folder: 25-install-cassandra
+    linux:
+      folder: 25-install-cassandra
+      phase: '07'
+      title: Cassandra (apt)
+    macos:
+      folder: 25-install-cassandra
+      phase: '07'
+      title: Cassandra (apt)
+  - id: '26'
+    windows:
+      folder: 26-install-neo4j
+    linux:
+      folder: 26-install-neo4j
+      phase: '07'
+      title: Neo4j (apt)
+    macos:
+      folder: 26-install-neo4j
+      phase: '07'
+      title: Neo4j (apt)
+  - id: '27'
+    windows:
+      folder: 27-install-elasticsearch
+    linux:
+      folder: 27-install-elasticsearch
+      phase: '07'
+      title: Elasticsearch (apt)
+    macos:
+      folder: 27-install-elasticsearch
+      phase: '07'
+      title: Elasticsearch (apt)
+  - id: '28'
+    windows:
+      folder: 28-install-duckdb
+    linux:
+      folder: 28-install-duckdb
+      phase: '06'
+      title: DuckDB (tarball)
+    macos:
+      folder: 28-install-duckdb
+      phase: '06'
+      title: DuckDB (tarball)
+  - id: '29'
+    windows:
+      folder: 29-install-litedb
+  - id: '30'
+    windows:
+      folder: databases
+  - id: '31'
+    windows:
+      folder: 31-pwsh-context-menu
+  - id: '32'
+    windows:
+      folder: 32-install-dbeaver
+    linux:
+      folder: 32-install-dbeaver
+      phase: '04'
+      title: DBeaver (apt|snap)
+    macos:
+      folder: 32-install-dbeaver
+      phase: '04'
+      title: DBeaver (apt|snap)
+  - id: '33'
+    windows:
+      folder: 33-install-notepadpp
+  - id: '34'
+    windows:
+      folder: 34-install-sticky-notes
+  - id: '35'
+    windows:
+      folder: 35-install-gitmap
+    linux:
+      folder: 35-install-gitmap
+      phase: '10'
+      title: gitmap (portable bash)
+    macos:
+      folder: 35-install-gitmap
+      phase: '10'
+      title: gitmap (portable bash)
+  - id: '36'
+    windows:
+      folder: 36-install-obs
+    linux:
+      folder: 36-install-obs
+      phase: '04'
+      title: OBS Studio (apt|snap)
+    macos:
+      folder: 36-install-obs
+      phase: '04'
+      title: OBS Studio (apt|snap)
+  - id: '37'
+    windows:
+      folder: 37-install-windows-terminal
+  - id: '38'
+    windows:
+      folder: 38-install-flutter
+    linux:
+      folder: 38-install-flutter
+      phase: '10'
+      title: Flutter (snap|tarball)
+    macos:
+      folder: 38-install-flutter
+      phase: '10'
+      title: Flutter (snap|tarball)
+  - id: '39'
+    windows:
+      folder: 39-install-dotnet
+    linux:
+      folder: 39-install-dotnet
+      phase: '05'
+      title: .NET SDK (Microsoft apt)
+    macos:
+      folder: 39-install-dotnet
+      phase: '05'
+      title: .NET SDK (Microsoft apt)
+  - id: '40'
+    windows:
+      folder: 40-install-java
+    linux:
+      folder: 40-install-java
+      phase: '05'
+      title: Java OpenJDK (apt)
+    macos:
+      folder: 40-install-java
+      phase: '05'
+      title: Java OpenJDK (apt)
+  - id: '41'
+    windows:
+      folder: 41-install-python-libs
+    linux:
+      folder: 41-install-python-libs
+      phase: '09'
+      title: Python libraries (pip)
+    macos:
+      folder: 41-install-python-libs
+      phase: '09'
+      title: Python libraries (pip)
+  - id: '42'
+    windows:
+      folder: 42-install-ollama
+    linux:
+      folder: 42-install-ollama
+      phase: '09'
+      title: Ollama (curl|sh)
+    macos:
+      folder: 42-install-ollama
+      phase: '09'
+      title: Ollama (curl|sh)
+  - id: '43'
+    windows:
+      folder: 43-install-llama-cpp
+    linux:
+      folder: 43-install-llama-cpp
+      phase: '09'
+      title: llama.cpp (build|apt)
+    macos:
+      folder: 43-install-llama-cpp
+      phase: '09'
+      title: llama.cpp (build|apt)
+  - id: '44'
+    windows:
+      folder: 44-install-rust
+    linux:
+      folder: 44-install-rust
+      phase: '05'
+      title: Rust (rustup)
+    macos:
+      folder: 44-install-rust
+      phase: '05'
+      title: Rust (rustup)
+  - id: '45'
+    windows:
+      folder: 45-install-docker
+    linux:
+      folder: 45-install-docker
+      phase: '08'
+      title: Docker (apt)
+    macos:
+      folder: 45-install-docker
+      phase: '08'
+      title: Docker (apt)
+  - id: '46'
+    windows:
+      folder: 46-install-kubernetes
+    linux:
+      folder: 46-install-kubernetes
+      phase: '08'
+      title: Kubernetes (kubectl/kubeadm apt)
+    macos:
+      folder: 46-install-kubernetes
+      phase: '08'
+      title: Kubernetes (kubectl/kubeadm apt)
+  - id: '47'
+    windows:
+      folder: 47-install-ubuntu-font
+    linux:
+      folder: 47-install-ubuntu-font
+      phase: '04'
+      title: Ubuntu font (apt)
+    macos:
+      folder: 47-install-ubuntu-font
+      phase: '04'
+      title: Ubuntu font (apt)
+  - id: '48'
+    windows:
+      folder: 48-install-conemu
+  - id: '49'
+    windows:
+      folder: 49-install-whatsapp
+  - id: '50'
+    windows:
+      folder: 50-install-onenote
+  - id: '51'
+    windows:
+      folder: 51-install-lightshot
+    linux:
+      folder: 51-install-flameshot
+      phase: '10'
+      title: Flameshot (Lightshot replacement, apt)
+    macos:
+      folder: 51-install-flameshot
+      phase: '10'
+      title: Flameshot (Lightshot replacement, apt)
+  - id: '52'
+    windows:
+      folder: 52-vscode-folder-repair
+  - id: '53'
+    windows:
+      folder: 53-script-fixer-context-menu
+  - id: '54'
+    windows:
+      folder: 54-vscode-menu-installer
+  - id: '55'
+    windows:
+      folder: 55-install-jenkins
+    linux:
+      folder: 55-install-jenkins
+      phase: '08'
+      title: Jenkins (apt)
+    macos:
+      folder: 55-install-jenkins
+      phase: '08'
+      title: Jenkins (apt)
+  - id: '56'
+    windows:
+      folder: 56-vscode-folder-reregister
+  - id: '57'
+    windows:
+      folder: 57-context-menu-bundle
+  - id: '58'
+    windows:
+      folder: 58-install-chrome
+  - id: '59'
+    windows:
+      folder: 59-conemu-context-menu
+  - id: '60'
+    windows:
+      folder: 60-install-protonvpn
+    linux:
+      folder: 60-install-zsh
+      phase: '10'
+      title: ZSH + Oh-My-Zsh (apt + curl) with curated zshrc + auto-backup
+    macos:
+      folder: 60-install-zsh
+      phase: '10'
+      title: ZSH + Oh-My-Zsh (apt + curl) with curated zshrc + auto-backup
+  - id: '61'
+    windows:
+      folder: 61-install-jumpjump-vpn
+    linux:
+      folder: 61-install-zsh-theme-switcher
+      phase: '10'
+      title: ZSH theme switcher (interactive + flag, wires zsh-theme into ~/.zshrc)
+    macos:
+      folder: 61-install-zsh-theme-switcher
+      phase: '10'
+      title: ZSH theme switcher (interactive + flag, wires zsh-theme into ~/.zshrc)
+  - id: '62'
+    windows:
+      folder: 62-pin-taskbar
+    linux:
+      folder: 62-install-zsh-clear
+      phase: '10'
+      title: ZSH safer uninstall (restore latest backup + surgical marker strip; aggressive opt-in)
+    macos:
+      folder: 62-install-zsh-clear
+      phase: '10'
+      title: ZSH safer uninstall (restore latest backup + surgical marker strip; aggressive opt-in)
+  - id: '63'
+    windows:
+      folder: 63-install-vlc
+    linux:
+      folder: 63-remote-runner
+      phase: '12'
+      title: Remote runner (multi-host SSH executor, password+key, groups, parallel)
+    macos:
+      folder: 63-remote-runner
+      phase: '12'
+      title: Remote runner (multi-host SSH executor, password+key, groups, parallel)
+  - id: '64'
+    windows:
+      folder: 64-wt-context-menu
+    linux:
+      folder: 64-startup-add
+      phase: '12'
+      title: Cross-OS startup-add (apps + env vars; autostart|systemd-user|launchagent|shell-rc)
+    macos:
+      folder: 64-startup-add
+      phase: '12'
+      title: Cross-OS startup-add (apps + env vars; autostart|systemd-user|launchagent|shell-rc)
+  - id: '65'
+    windows:
+      folder: 65-os-clean
+    linux:
+      folder: 65-os-clean
+      phase: '12'
+      title: Cross-OS cleanup (user temp+caches, trash, package caches, logs+crash dumps)
+    macos:
+      folder: 65-os-clean
+      phase: '12'
+      title: Cross-OS cleanup (user temp+caches, trash, package caches, logs+crash dumps)
+  - id: '66'
+    linux:
+      folder: 66-vscode-menu-cleanup-mac
+      phase: '12'
+      title: macOS VS Code 'context-menu' cleanup (Services workflows, LaunchAgents/Daemons, Login Items, code/code-insiders shims, vscode:// URL handlers)
+    macos:
+      folder: 66-vscode-menu-cleanup-mac
+      phase: '12'
+      title: macOS VS Code 'context-menu' cleanup (Services workflows, LaunchAgents/Daemons, Login Items, code/code-insiders shims, vscode:// URL handlers)
+  - id: '67'
+    linux:
+      folder: 67-vscode-cleanup-linux
+      phase: '12'
+      title: Linux/Ubuntu VS Code uninstaller (detects apt|snap|deb|tarball|user-config and removes only matching artifacts)
+    macos:
+      folder: 67-vscode-cleanup-linux
+      phase: '12'
+      title: Linux/Ubuntu VS Code uninstaller (detects apt|snap|deb|tarball|user-config and removes only matching artifacts)
+  - id: '68'
+    linux:
+      folder: 68-user-mgmt
+      phase: '13'
+      title: Cross-OS user/group management (Linux useradd|macOS dscl; CLI + JSON object/array auto-detect; mirrors Windows 'os add-user')
+    macos:
+      folder: 68-user-mgmt
+      phase: '13'
+      title: Cross-OS user/group management (Linux useradd|macOS dscl; CLI + JSON object/array auto-detect; mirrors Windows 'os add-user')
+  - id: '70'
+    linux:
+      folder: 70-install-wordpress-ubuntu
+      phase: '14'
+      title: Ubuntu WordPress installer (Nginx + PHP-FPM + MySQL/MariaDB + latest WordPress; modular components with --interactive prompts)
+    macos:
+      folder: 70-install-wordpress-ubuntu
+      phase: '14'
+      title: Ubuntu WordPress installer (Nginx + PHP-FPM + MySQL/MariaDB + latest WordPress; modular components with --interactive prompts)
+  - id: '80'
+    linux:
+      folder: 80-change-port-ssh
+      phase: '15'
+      title: Change OpenSSH listening port (backup+validate+prompt+ufw)
+    macos:
+      folder: 80-change-port-ssh
+      phase: '15'
+      title: Change OpenSSH listening port (backup+validate+prompt+ufw)
+  - id: '81'
+    linux:
+      folder: 81-change-port-mysql
+      phase: '15'
+      title: Change MySQL listening port (backup+prompt+ufw)
+    macos:
+      folder: 81-change-port-mysql
+      phase: '15'
+      title: Change MySQL listening port (backup+prompt+ufw)
+  - id: '82'
+    linux:
+      folder: 82-change-port-postgresql
+      phase: '15'
+      title: Change PostgreSQL listening port (backup+prompt+ufw)
+    macos:
+      folder: 82-change-port-postgresql
+      phase: '15'
+      title: Change PostgreSQL listening port (backup+prompt+ufw)
+  - id: '83'
+    linux:
+      folder: 83-change-port-ftp
+      phase: '15'
+      title: Change vsftpd FTP listening port (backup+prompt+ufw)
+    macos:
+      folder: 83-change-port-ftp
+      phase: '15'
+      title: Change vsftpd FTP listening port (backup+prompt+ufw)
+  - id: '84'
+    linux:
+      folder: 84-change-port-redis
+      phase: '15'
+      title: Change Redis listening port (backup+prompt+ufw)
+    macos:
+      folder: 84-change-port-redis
+      phase: '15'
+      title: Change Redis listening port (backup+prompt+ufw)
+  - id: '85'
+    linux:
+      folder: 85-change-port-mongodb
+      phase: '15'
+      title: Change MongoDB listening port (backup+prompt+ufw)
+    macos:
+      folder: 85-change-port-mongodb
+      phase: '15'
+      title: Change MongoDB listening port (backup+prompt+ufw)
+  - id: '86'
+    linux:
+      folder: 86-change-port-nginx
+      phase: '15'
+      title: Change nginx listen port on default vhost (nginx -t validated)
+    macos:
+      folder: 86-change-port-nginx
+      phase: '15'
+      title: Change nginx listen port on default vhost (nginx -t validated)
+  - id: '87'
+    linux:
+      folder: 87-change-port-apache
+      phase: '15'
+      title: Change Apache (apache2) Listen port (apache2ctl configtest validated)
+    macos:
+      folder: 87-change-port-apache
+      phase: '15'
+      title: Change Apache (apache2) Listen port (apache2ctl configtest validated)
+  - id: '88'
+    linux:
+      folder: 88-change-port-docker
+      phase: '15'
+      title: Change Docker daemon TCP socket port (/etc/docker/daemon.json)
+    macos:
+      folder: 88-change-port-docker
+      phase: '15'
+      title: Change Docker daemon TCP socket port (/etc/docker/daemon.json)
+  - id: '89'
+    linux:
+      folder: 89-change-port-rabbitmq
+      phase: '15'
+      title: Change RabbitMQ AMQP listener port (rabbitmq.conf)
+    macos:
+      folder: 89-change-port-rabbitmq
+      phase: '15'
+      title: Change RabbitMQ AMQP listener port (rabbitmq.conf)
+  - id: '90'
+    linux:
+      folder: 90-change-port-smtp
+      phase: '15'
+      title: Postfix SMTP port inspector (READ-ONLY; refuses to change port 25)
+    macos:
+      folder: 90-change-port-smtp
+      phase: '15'
+      title: Postfix SMTP port inspector (READ-ONLY; refuses to change port 25)
+  - id: '91'
+    linux:
+      folder: 91-change-port-menu
+      phase: '15'
+      title: Interactive change-port menu (dispatches to 80-90)
+    macos:
+      folder: 91-change-port-menu
+      phase: '15'
+      title: Interactive change-port menu (dispatches to 80-90)
+  - id: '100'
+    linux:
+      folder: 100-install-dns-bind9
+      phase: '16'
+      title: Install BIND9 DNS server (auth + recursive)
+    macos:
+      folder: 100-install-dns-bind9
+      phase: '16'
+      title: Install BIND9 DNS server (auth + recursive)
+  - id: '101'
+    linux:
+      folder: 101-install-dns-unbound
+      phase: '16'
+      title: Install Unbound recursive caching resolver
+    macos:
+      folder: 101-install-dns-unbound
+      phase: '16'
+      title: Install Unbound recursive caching resolver
+  - id: '102'
+    linux:
+      folder: 102-install-dns-powerdns-auth
+      phase: '16'
+      title: Install PowerDNS Authoritative server
+    macos:
+      folder: 102-install-dns-powerdns-auth
+      phase: '16'
+      title: Install PowerDNS Authoritative server
+  - id: '103'
+    linux:
+      folder: 103-install-dns-powerdns-recursor
+      phase: '16'
+      title: Install PowerDNS Recursor
+    macos:
+      folder: 103-install-dns-powerdns-recursor
+      phase: '16'
+      title: Install PowerDNS Recursor
+  - id: '104'
+    linux:
+      folder: 104-install-dns-dnsmasq
+      phase: '16'
+      title: Install dnsmasq (lightweight DNS + DHCP)
+    macos:
+      folder: 104-install-dns-dnsmasq
+      phase: '16'
+      title: Install dnsmasq (lightweight DNS + DHCP)
+  - id: '105'
+    linux:
+      folder: 105-install-dns-knot
+      phase: '16'
+      title: Install Knot DNS authoritative server
+    macos:
+      folder: 105-install-dns-knot
+      phase: '16'
+      title: Install Knot DNS authoritative server
+  - id: '106'
+    linux:
+      folder: 106-install-dns-knot-resolver
+      phase: '16'
+      title: Install Knot Resolver (kresd)
+    macos:
+      folder: 106-install-dns-knot-resolver
+      phase: '16'
+      title: Install Knot Resolver (kresd)
+  - id: '107'
+    linux:
+      folder: 107-install-dns-coredns
+      phase: '16'
+      title: Install CoreDNS (apt or binary fallback)
+    macos:
+      folder: 107-install-dns-coredns
+      phase: '16'
+      title: Install CoreDNS (apt or binary fallback)
+  - id: '108'
+    linux:
+      folder: 108-install-dns-nsd
+      phase: '16'
+      title: Install NSD (NLnet authoritative-only DNS)
+    macos:
+      folder: 108-install-dns-nsd
+      phase: '16'
+      title: Install NSD (NLnet authoritative-only DNS)
+  - id: '109'
+    linux:
+      folder: 109-install-dns-menu
+      phase: '16'
+      title: Interactive DNS-install menu (dispatches to 100-108)
+    macos:
+      folder: 109-install-dns-menu
+      phase: '16'
+      title: Interactive DNS-install menu (dispatches to 100-108)
