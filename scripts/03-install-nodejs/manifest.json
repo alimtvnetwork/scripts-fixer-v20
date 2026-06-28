@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "03",
+  "name": "Node.js (NodeSource apt|nvm)",
+  "summary": "Node.js (NodeSource apt|nvm)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "03-install-nodejs",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "03-install-nodejs",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "03-install-nodejs",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "03",
+  "tags": []
+}

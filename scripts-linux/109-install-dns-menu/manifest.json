@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "109",
+  "name": "Interactive DNS-install menu (dispatches to 100-108)",
+  "summary": "Interactive DNS-install menu (dispatches to 100-108)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "109-install-dns-menu",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "109-install-dns-menu",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "16",
+  "tags": []
+}

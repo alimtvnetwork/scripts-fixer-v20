@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "39",
+  "name": ".NET SDK (Microsoft apt)",
+  "summary": ".NET SDK (Microsoft apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "39-install-dotnet",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "39-install-dotnet",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "39-install-dotnet",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "05",
+  "tags": []
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "06",
+  "name": "Go (apt|tarball)",
+  "summary": "Go (apt|tarball)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "06-install-golang",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "06-install-golang",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "06-install-golang",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "05",
+  "tags": []
+}

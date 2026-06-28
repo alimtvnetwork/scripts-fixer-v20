@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "id": "15",
+  "name": "15-windows-tweaks",
+  "summary": "",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "15-windows-tweaks",
+      "entrypoint": "run.ps1"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "",
+  "tags": []
+}

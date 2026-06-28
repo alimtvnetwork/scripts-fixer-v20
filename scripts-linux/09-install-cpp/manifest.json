@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "09",
+  "name": "C++ toolchain (build-essential)",
+  "summary": "C++ toolchain (build-essential)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "09-install-cpp",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "09-install-cpp",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "09-install-cpp",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "03",
+  "tags": []
+}

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "id": "52",
+  "name": "52-vscode-folder-repair",
+  "summary": "",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "52-vscode-folder-repair",
+      "entrypoint": "run.ps1"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "",
+  "tags": []
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "41",
+  "name": "Python libraries (pip)",
+  "summary": "Python libraries (pip)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "41-install-python-libs",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "41-install-python-libs",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "41-install-python-libs",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "09",
+  "tags": []
+}

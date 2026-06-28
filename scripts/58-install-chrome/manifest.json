@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "id": "58",
+  "name": "58-install-chrome",
+  "summary": "",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "58-install-chrome",
+      "entrypoint": "run.ps1"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "",
+  "tags": []
+}

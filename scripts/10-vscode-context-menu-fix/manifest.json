@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "id": "10",
+  "name": "10-vscode-context-menu-fix",
+  "summary": "",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "10-vscode-context-menu-fix",
+      "entrypoint": "run.ps1"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "",
+  "tags": []
+}

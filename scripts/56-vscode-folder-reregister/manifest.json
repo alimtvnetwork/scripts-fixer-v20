@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "id": "56",
+  "name": "56-vscode-folder-reregister",
+  "summary": "",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "56-vscode-folder-reregister",
+      "entrypoint": "run.ps1"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "",
+  "tags": []
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "36",
+  "name": "OBS Studio (apt|snap)",
+  "summary": "OBS Studio (apt|snap)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "36-install-obs",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "36-install-obs",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "36-install-obs",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "04",
+  "tags": []
+}

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "102",
+  "name": "Install PowerDNS Authoritative server",
+  "summary": "Install PowerDNS Authoritative server",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "102-install-dns-powerdns-auth",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "102-install-dns-powerdns-auth",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "16",
+  "tags": []
+}

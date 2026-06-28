@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "40",
+  "name": "Java OpenJDK (apt)",
+  "summary": "Java OpenJDK (apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "40-install-java",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "40-install-java",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "40-install-java",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "05",
+  "tags": []
+}

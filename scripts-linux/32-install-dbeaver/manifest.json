@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "32",
+  "name": "DBeaver (apt|snap)",
+  "summary": "DBeaver (apt|snap)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "32-install-dbeaver",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "32-install-dbeaver",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "32-install-dbeaver",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "04",
+  "tags": []
+}

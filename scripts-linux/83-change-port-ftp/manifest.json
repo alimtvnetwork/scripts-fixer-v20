@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "83",
+  "name": "Change vsftpd FTP listening port (backup+prompt+ufw)",
+  "summary": "Change vsftpd FTP listening port (backup+prompt+ufw)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "83-change-port-ftp",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "83-change-port-ftp",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "15",
+  "tags": []
+}

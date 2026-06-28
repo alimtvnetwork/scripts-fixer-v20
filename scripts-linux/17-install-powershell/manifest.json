@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "17",
+  "name": "PowerShell (Microsoft apt)",
+  "summary": "PowerShell (Microsoft apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "17-install-powershell",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "17-install-powershell",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "17-install-powershell",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "03",
+  "tags": []
+}

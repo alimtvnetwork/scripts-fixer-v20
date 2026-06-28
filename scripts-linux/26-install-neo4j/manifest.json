@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "26",
+  "name": "Neo4j (apt)",
+  "summary": "Neo4j (apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "26-install-neo4j",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "26-install-neo4j",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "26-install-neo4j",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "07",
+  "tags": []
+}

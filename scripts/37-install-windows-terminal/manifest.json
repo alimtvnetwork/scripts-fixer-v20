@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "id": "37",
+  "name": "37-install-windows-terminal",
+  "summary": "",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "37-install-windows-terminal",
+      "entrypoint": "run.ps1"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "",
+  "tags": []
+}

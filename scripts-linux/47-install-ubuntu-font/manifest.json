@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "47",
+  "name": "Ubuntu font (apt)",
+  "summary": "Ubuntu font (apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "47-install-ubuntu-font",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "47-install-ubuntu-font",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "47-install-ubuntu-font",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "04",
+  "tags": []
+}

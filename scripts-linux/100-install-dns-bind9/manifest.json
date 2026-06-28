@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "100",
+  "name": "Install BIND9 DNS server (auth + recursive)",
+  "summary": "Install BIND9 DNS server (auth + recursive)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "100-install-dns-bind9",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "100-install-dns-bind9",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "16",
+  "tags": []
+}

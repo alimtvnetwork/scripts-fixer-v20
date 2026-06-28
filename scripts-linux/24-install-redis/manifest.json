@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "24",
+  "name": "Redis (apt)",
+  "summary": "Redis (apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "24-install-redis",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "24-install-redis",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "24-install-redis",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "07",
+  "tags": []
+}

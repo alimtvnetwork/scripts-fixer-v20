@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "106",
+  "name": "Install Knot Resolver (kresd)",
+  "summary": "Install Knot Resolver (kresd)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "106-install-dns-knot-resolver",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "106-install-dns-knot-resolver",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "16",
+  "tags": []
+}

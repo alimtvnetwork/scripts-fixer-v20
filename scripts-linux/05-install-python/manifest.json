@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "05",
+  "name": "Python (apt)",
+  "summary": "Python (apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "05-install-python",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "05-install-python",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "05-install-python",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "03",
+  "tags": []
+}

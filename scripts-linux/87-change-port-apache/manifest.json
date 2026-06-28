@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "87",
+  "name": "Change Apache (apache2) Listen port (apache2ctl configtest validated)",
+  "summary": "Change Apache (apache2) Listen port (apache2ctl configtest validated)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "87-change-port-apache",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "87-change-port-apache",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "15",
+  "tags": []
+}

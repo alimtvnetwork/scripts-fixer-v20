@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "104",
+  "name": "Install dnsmasq (lightweight DNS + DHCP)",
+  "summary": "Install dnsmasq (lightweight DNS + DHCP)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "104-install-dns-dnsmasq",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "104-install-dns-dnsmasq",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "16",
+  "tags": []
+}

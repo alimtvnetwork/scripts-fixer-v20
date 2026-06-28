@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "42",
+  "name": "Ollama (curl|sh)",
+  "summary": "Ollama (curl|sh)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "42-install-ollama",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "42-install-ollama",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "42-install-ollama",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "09",
+  "tags": []
+}

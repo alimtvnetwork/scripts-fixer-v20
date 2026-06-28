@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "35",
+  "name": "gitmap (portable bash)",
+  "summary": "gitmap (portable bash)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "35-install-gitmap",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "35-install-gitmap",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "35-install-gitmap",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "10",
+  "tags": []
+}

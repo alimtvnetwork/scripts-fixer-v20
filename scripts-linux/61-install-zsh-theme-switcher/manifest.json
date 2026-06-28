@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "61",
+  "name": "ZSH theme switcher (interactive + flag, wires zsh-theme into ~/.zshrc)",
+  "summary": "ZSH theme switcher (interactive + flag, wires zsh-theme into ~/.zshrc)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "61-install-jumpjump-vpn",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "61-install-zsh-theme-switcher",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "61-install-zsh-theme-switcher",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "10",
+  "tags": []
+}

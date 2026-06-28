@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "91",
+  "name": "Interactive change-port menu (dispatches to 80-90)",
+  "summary": "Interactive change-port menu (dispatches to 80-90)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "91-change-port-menu",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "91-change-port-menu",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "15",
+  "tags": []
+}

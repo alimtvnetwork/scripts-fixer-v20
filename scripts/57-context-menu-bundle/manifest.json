@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "id": "57",
+  "name": "57-context-menu-bundle",
+  "summary": "",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "57-context-menu-bundle",
+      "entrypoint": "run.ps1"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "",
+  "tags": []
+}

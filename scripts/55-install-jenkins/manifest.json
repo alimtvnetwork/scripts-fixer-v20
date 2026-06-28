@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "55",
+  "name": "Jenkins (apt)",
+  "summary": "Jenkins (apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "55-install-jenkins",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "55-install-jenkins",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "55-install-jenkins",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "08",
+  "tags": []
+}

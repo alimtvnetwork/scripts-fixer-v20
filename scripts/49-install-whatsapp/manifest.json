@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "id": "49",
+  "name": "49-install-whatsapp",
+  "summary": "",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "49-install-whatsapp",
+      "entrypoint": "run.ps1"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "",
+  "tags": []
+}

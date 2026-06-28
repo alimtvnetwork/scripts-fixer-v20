@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "22",
+  "name": "MongoDB (apt)",
+  "summary": "MongoDB (apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "22-install-mongodb",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "22-install-mongodb",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "22-install-mongodb",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "07",
+  "tags": []
+}

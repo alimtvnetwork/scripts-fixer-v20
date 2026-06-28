@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "18",
+  "name": "MySQL (apt)",
+  "summary": "MySQL (apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "18-install-mysql",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "18-install-mysql",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "18-install-mysql",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "06",
+  "tags": []
+}

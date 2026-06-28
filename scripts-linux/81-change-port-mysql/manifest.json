@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "81",
+  "name": "Change MySQL listening port (backup+prompt+ufw)",
+  "summary": "Change MySQL listening port (backup+prompt+ufw)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "81-change-port-mysql",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "81-change-port-mysql",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "15",
+  "tags": []
+}

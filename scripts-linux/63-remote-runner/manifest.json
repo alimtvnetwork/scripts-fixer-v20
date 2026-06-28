@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "63",
+  "name": "Remote runner (multi-host SSH executor, password+key, groups, parallel)",
+  "summary": "Remote runner (multi-host SSH executor, password+key, groups, parallel)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "63-install-vlc",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "63-remote-runner",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "63-remote-runner",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "12",
+  "tags": []
+}

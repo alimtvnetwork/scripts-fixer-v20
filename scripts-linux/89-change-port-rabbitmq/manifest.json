@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "89",
+  "name": "Change RabbitMQ AMQP listener port (rabbitmq.conf)",
+  "summary": "Change RabbitMQ AMQP listener port (rabbitmq.conf)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "89-change-port-rabbitmq",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "89-change-port-rabbitmq",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "15",
+  "tags": []
+}
