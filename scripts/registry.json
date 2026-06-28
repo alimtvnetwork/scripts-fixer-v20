@@ -1,15 +1,6 @@
 {
-  "_comment": "Script registry -- maps IDs to exact folder names. Used by run.ps1 to resolve -I <number>. Update this file whenever a script folder is added, removed, or renamed.",
+  "_comment": "GENERATED from registry.yaml -- DO NOT EDIT BY HAND. Run `node tools/registry-sync.cjs`.",
   "scripts": {
-    "01": "01-install-vscode",
-    "02": "02-install-package-managers",
-    "03": "03-install-nodejs",
-    "04": "04-install-pnpm",
-    "05": "05-install-python",
-    "06": "06-install-golang",
-    "07": "07-install-git",
-    "08": "08-install-github-desktop",
-    "09": "09-install-cpp",
     "10": "10-vscode-context-menu-fix",
     "11": "11-vscode-settings-sync",
     "12": "12-install-all-dev-tools",
@@ -65,6 +56,15 @@
     "62": "62-pin-taskbar",
     "63": "63-install-vlc",
     "64": "64-wt-context-menu",
-    "65": "65-os-clean"
+    "65": "65-os-clean",
+    "01": "01-install-vscode",
+    "02": "02-install-package-managers",
+    "03": "03-install-nodejs",
+    "04": "04-install-pnpm",
+    "05": "05-install-python",
+    "06": "06-install-golang",
+    "07": "07-install-git",
+    "08": "08-install-github-desktop",
+    "09": "09-install-cpp"
   }
 }

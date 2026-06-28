@@ -19,3 +19,17 @@ jobs:
 
       - name: Run legacy ref scanner (PASS = exit 0, FAIL = exit 1)
         run: bash tools/scan-legacy-fixer-refs.sh
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install js-yaml
+        run: npm i --no-save js-yaml@4
+
+      - name: Registry drift check (registry.yaml -> JSONs)
+        run: node tools/registry-sync.cjs --check
+
+      - name: Version drift check (scripts/version.json -> root version.json)
+        run: node tools/sync-version.cjs --check

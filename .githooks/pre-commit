@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# Lovable repo pre-commit hook.
+# Blocks legacy fixer refs and quoted-path violations from re-entering.
+# Install with: bash tools/install-git-hooks.sh
+set -u
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT" || exit 1
+
+fail=0
+say()  { printf "\033[36m[hook]\033[0m %s\n" "$*"; }
+err()  { printf "\033[31m[hook]\033[0m %s\n" "$*" >&2; }
+
+# ── 1. Legacy fixer refs (bash scanner -- runs everywhere) ──────────────────
+if [ -x "tools/scan-legacy-fixer-refs.sh" ] || [ -f "tools/scan-legacy-fixer-refs.sh" ]; then
+  say "scan-legacy-fixer-refs.sh"
+  if ! bash tools/scan-legacy-fixer-refs.sh; then
+    err "legacy fixer references detected. Run: bash tools/fix-and-verify-legacy-refs.sh"
+    fail=1
+  fi
+fi
+
+# ── 2. Quoted-path lint (PowerShell -- skip if pwsh unavailable) ────────────
+if command -v pwsh >/dev/null 2>&1 && [ -f "tools/lint-quoted-paths.ps1" ]; then
+  say "lint-quoted-paths.ps1"
+  if ! pwsh -NoProfile -File tools/lint-quoted-paths.ps1; then
+    err "quoted-path lint failed."
+    fail=1
+  fi
+else
+  say "[SKIP] pwsh not on PATH -- quoted-path lint will run in CI"
+fi
+
+# ── 3. Registry + version drift guard ───────────────────────────────────────
+if command -v node >/dev/null 2>&1; then
+  if [ -f "tools/registry-sync.cjs" ]; then
+    say "registry-sync --check"
+    if ! node tools/registry-sync.cjs --check; then
+      err "registry JSONs drifted. Run: node tools/registry-sync.cjs"
+      fail=1
+    fi
+  fi
+  if [ -f "tools/sync-version.cjs" ]; then
+    say "sync-version --check"
+    if ! node tools/sync-version.cjs --check; then
+      err "version files drifted. Run: node tools/sync-version.cjs"
+      fail=1
+    fi
+  fi
+fi
+
+if [ "$fail" -ne 0 ]; then
+  err "pre-commit checks failed. Fix the issues above or bypass with --no-verify."
+  exit 1
+fi
+exit 0

@@ -1,0 +1,66 @@
+name: Linux/macOS smoke (BATS)
+
+on:
+  push:
+    paths:
+      - "scripts-linux/**"
+      - ".github/workflows/test-linux-bats.yml"
+  pull_request:
+    paths:
+      - "scripts-linux/**"
+      - ".github/workflows/test-linux-bats.yml"
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    name: smoke (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-22.04, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install BATS
+        run: |
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            brew install bats-core
+          else
+            sudo apt-get update -y
+            sudo apt-get install -y bats
+          fi
+          bats --version
+
+      - name: Make scripts executable
+        run: |
+          find scripts-linux -type f \( -name "*.sh" -o -name "run.sh" \) -exec chmod +x {} \;
+
+      - name: Run shared smoke test
+        run: bash scripts-linux/_shared/tests/smoke.sh
+
+      - name: Run BATS tests (*.bats)
+        run: |
+          mapfile -t files < <(find scripts-linux -type f -name "*.bats" 2>/dev/null)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "[SKIP] no .bats files found"
+            exit 0
+          fi
+          bats "${files[@]}"
+
+      - name: Run *.test.sh suites
+        run: |
+          mapfile -t files < <(find scripts-linux/_shared/tests -maxdepth 1 -type f -name "*.test.sh" 2>/dev/null)
+          rc=0
+          for f in "${files[@]}"; do
+            echo "::group::$f"
+            bash "$f" || rc=$?
+            echo "::endgroup::"
+          done
+          exit $rc
+
+      - name: Verify run.sh --list works
+        run: bash scripts-linux/run.sh --list
+
+      - name: Verify run.sh --version works
+        run: bash scripts-linux/run.sh --version || true
