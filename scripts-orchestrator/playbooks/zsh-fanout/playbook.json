@@ -1,0 +1,20 @@
+{
+  "name": "zsh-fanout",
+  "version": "0.1.0",
+  "description": "Install zsh + Oh-My-Zsh + curated .zshrc on every host in the target group by uploading the 60/61/62 bundle and running scripts-linux/60-install-zsh/run.sh remotely. Honours TARGET_USER so root can provision for any user.",
+  "osCompatibility": ["ubuntu", "debian", "rhel", "centos", "alpine", "macos"],
+  "inputs": {
+    "ZSH_BUNDLE_B64": "Required. base64 -w0 of a tar.gz of scripts-linux/{_shared,60-install-zsh,61-install-zsh-theme-switcher,62-install-zsh-clear}.",
+    "REMOTE_TMP":     "Temp dir on each remote (default: /tmp)",
+    "REMOTE_BUNDLE_DIR": "Where the bundle is unpacked on each remote (default: /opt/zsh-fanout)",
+    "TARGET_USER":    "Optional. When set, run '60 install --user <name>' (drops privileges to that user).",
+    "THEME":          "Optional. Forwarded as '61 install --theme <name>'.",
+    "SKIP_THEME_SWITCHER": "1 = don't run 61 (default 0).",
+    "DRY_RUN":        "1 = print the remote commands without executing the installs."
+  },
+  "steps": [
+    { "file": "01-upload-bundle.sh", "roles": ["all"] },
+    { "file": "02-apply-zsh.sh",     "roles": ["all"] },
+    { "file": "03-collect-summary.sh", "roles": ["all"] }
+  ]
+}
