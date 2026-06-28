@@ -1,1 +1,0 @@
-{"ts":"2026-06-28T03:35:02Z","scriptId":"99","command":"install","platform":"linux","outcome":"ok","version":"1.2.3","method":"apt","durationMs":1500,"projectVersion":"unknown","host":"unknown","user":"root","error":null,"scriptName":"smoke-test"}
