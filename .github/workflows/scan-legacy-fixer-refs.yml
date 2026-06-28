@@ -36,3 +36,9 @@ jobs:
 
       - name: Manifest schema validation
         run: node tools/manifest-validate.cjs
+
+      - name: Auto-generated docs drift check
+        run: node tools/docs-generate.cjs --check
+
+      - name: Spec linter (Commands/Flags/Exit Codes/Verification)
+        run: node tools/spec-lint.cjs
