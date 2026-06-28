@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Generates a stub manifest.json in every NN-*/ folder, sourced from
+ * Generates a stub manifest.json in every NN-* folder, sourced from
  * registry.yaml. Existing manifests are left alone unless --force.
  *
  * Usage:
