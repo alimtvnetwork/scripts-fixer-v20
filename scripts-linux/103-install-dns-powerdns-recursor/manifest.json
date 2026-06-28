@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "103",
+  "name": "Install PowerDNS Recursor",
+  "summary": "Install PowerDNS Recursor",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "103-install-dns-powerdns-recursor",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "103-install-dns-powerdns-recursor",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "16",
+  "tags": []
+}

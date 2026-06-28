@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "86",
+  "name": "Change nginx listen port on default vhost (nginx -t validated)",
+  "summary": "Change nginx listen port on default vhost (nginx -t validated)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "86-change-port-nginx",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "86-change-port-nginx",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "15",
+  "tags": []
+}

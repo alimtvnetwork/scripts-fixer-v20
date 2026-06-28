@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "65",
+  "name": "Cross-OS cleanup (user temp+caches, trash, package caches, logs+crash dumps)",
+  "summary": "Cross-OS cleanup (user temp+caches, trash, package caches, logs+crash dumps)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "65-os-clean",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "65-os-clean",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "65-os-clean",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "12",
+  "tags": []
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "04",
+  "name": "pnpm (curl|sh)",
+  "summary": "pnpm (curl|sh)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "04-install-pnpm",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "04-install-pnpm",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "04-install-pnpm",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "05",
+  "tags": []
+}

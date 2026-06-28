@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "70",
+  "name": "Ubuntu WordPress installer (Nginx + PHP-FPM + MySQL/MariaDB + latest WordPress; modular components with --interactive prompts)",
+  "summary": "Ubuntu WordPress installer (Nginx + PHP-FPM + MySQL/MariaDB + latest WordPress; modular components with --interactive prompts)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "70-install-wordpress-ubuntu",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "70-install-wordpress-ubuntu",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "14",
+  "tags": []
+}

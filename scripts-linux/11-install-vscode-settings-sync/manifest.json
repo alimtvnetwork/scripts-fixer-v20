@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "11",
+  "name": "VS Code settings sync",
+  "summary": "VS Code settings sync",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "11-vscode-settings-sync",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "11-install-vscode-settings-sync",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "11-install-vscode-settings-sync",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "10",
+  "tags": []
+}

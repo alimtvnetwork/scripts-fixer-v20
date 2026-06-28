@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "23",
+  "name": "CouchDB (apt)",
+  "summary": "CouchDB (apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "23-install-couchdb",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "23-install-couchdb",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "23-install-couchdb",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "07",
+  "tags": []
+}

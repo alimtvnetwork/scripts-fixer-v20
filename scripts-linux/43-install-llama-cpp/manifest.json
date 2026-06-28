@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "43",
+  "name": "llama.cpp (build|apt)",
+  "summary": "llama.cpp (build|apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "43-install-llama-cpp",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "43-install-llama-cpp",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "43-install-llama-cpp",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "09",
+  "tags": []
+}

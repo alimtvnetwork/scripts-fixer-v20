@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "20",
+  "name": "PostgreSQL (apt)",
+  "summary": "PostgreSQL (apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "20-install-postgresql",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "20-install-postgresql",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "20-install-postgresql",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "06",
+  "tags": []
+}

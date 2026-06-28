@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "108",
+  "name": "Install NSD (NLnet authoritative-only DNS)",
+  "summary": "Install NSD (NLnet authoritative-only DNS)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "108-install-dns-nsd",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "108-install-dns-nsd",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "16",
+  "tags": []
+}

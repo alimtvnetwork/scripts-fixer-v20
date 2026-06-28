@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "101",
+  "name": "Install Unbound recursive caching resolver",
+  "summary": "Install Unbound recursive caching resolver",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "101-install-dns-unbound",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "101-install-dns-unbound",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "16",
+  "tags": []
+}

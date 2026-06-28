@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "28",
+  "name": "DuckDB (tarball)",
+  "summary": "DuckDB (tarball)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "28-install-duckdb",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "28-install-duckdb",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "28-install-duckdb",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "06",
+  "tags": []
+}

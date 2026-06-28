@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lovable.dev/scripts-fixer/core/contracts/manifest.schema.json",
+  "title": "Script Plugin Manifest",
+  "description": "Every NN-*/ folder declares a manifest.json. Dispatcher, registry generators, help text, and doc generators read from this single source.",
+  "type": "object",
+  "required": ["schemaVersion", "id", "name", "platforms"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "id":      { "type": "string", "pattern": "^\\d{2,3}$" },
+    "name":    { "type": "string", "minLength": 1, "description": "Short human label." },
+    "summary": { "type": "string", "description": "One-line description used by registry + help." },
+    "aliases": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "default": [],
+      "description": "Alternate names accepted by the dispatcher (e.g. 'vscode' for 01-install-vscode)."
+    },
+    "platforms": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "windows": { "$ref": "#/definitions/platformBlock" },
+        "linux":   { "$ref": "#/definitions/platformBlock" },
+        "macos":   { "$ref": "#/definitions/platformBlock" }
+      },
+      "minProperties": 1
+    },
+    "depends_on": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^\\d{2,3}$" },
+      "default": [],
+      "description": "Script IDs that must succeed before this one runs."
+    },
+    "idempotent": {
+      "type": "boolean",
+      "default": true,
+      "description": "Reruns MUST emit outcome=already-installed without side effects."
+    },
+    "destructive": {
+      "type": "boolean",
+      "default": false,
+      "description": "Triggers Confirm-DestructiveAction. true forces --yes / --non-interactive in CI."
+    },
+    "commands": {
+      "type": "array",
+      "items": { "enum": ["install", "check", "repair", "uninstall", "export", "list"] },
+      "default": ["install"]
+    },
+    "phase": { "type": "string", "description": "Orchestrator phase bucket, e.g. 06 for SQL." },
+    "tags":  { "type": "array", "items": { "type": "string" }, "default": [] }
+  },
+  "definitions": {
+    "platformBlock": {
+      "type": "object",
+      "required": ["folder", "entrypoint"],
+      "additionalProperties": false,
+      "properties": {
+        "folder":     { "type": "string" },
+        "entrypoint": { "type": "string", "description": "run.ps1 | run.sh" },
+        "methods":    { "type": "array", "items": { "type": "string" }, "default": [] }
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "id": "50",
+  "name": "50-install-onenote",
+  "summary": "",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "50-install-onenote",
+      "entrypoint": "run.ps1"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "",
+  "tags": []
+}

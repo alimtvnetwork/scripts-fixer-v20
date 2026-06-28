@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "id": "29",
+  "name": "29-install-litedb",
+  "summary": "",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "29-install-litedb",
+      "entrypoint": "run.ps1"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "",
+  "tags": []
+}

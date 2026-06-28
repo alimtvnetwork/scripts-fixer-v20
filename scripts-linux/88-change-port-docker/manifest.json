@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "88",
+  "name": "Change Docker daemon TCP socket port (/etc/docker/daemon.json)",
+  "summary": "Change Docker daemon TCP socket port (/etc/docker/daemon.json)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "88-change-port-docker",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "88-change-port-docker",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "15",
+  "tags": []
+}

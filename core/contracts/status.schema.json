@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lovable.dev/scripts-fixer/core/contracts/status.schema.json",
+  "title": "Script Status Contract",
+  "description": "Canonical end-of-run JSON emitted by every install/repair/check/uninstall script. PowerShell and Bash implementations MUST produce structurally identical output for the same tool.",
+  "type": "object",
+  "required": ["schemaVersion", "scriptId", "command", "platform", "outcome", "version", "startedAt", "finishedAt", "durationMs"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "scriptId":   { "type": "string", "pattern": "^\\d{2,3}$" },
+    "scriptName": { "type": "string" },
+    "command":    { "enum": ["install", "check", "repair", "uninstall", "export", "list", "version"] },
+    "platform":   { "enum": ["windows", "linux", "macos"] },
+    "shell":      { "enum": ["powershell", "bash", "zsh"] },
+    "outcome":    { "enum": ["installed", "already-installed", "upgraded", "repaired", "uninstalled", "skipped", "failed", "ok"] },
+    "version":    { "type": ["string", "null"], "description": "Installed tool version, parsed by tool-version-parsers." },
+    "method":     { "type": ["string", "null"], "description": "Install method actually used (choco|winget|apt|snap|tarball|...)." },
+    "paths": {
+      "type": "object",
+      "additionalProperties": { "type": ["string", "array", "null"] },
+      "description": "Triple-path emission contract: install / config / data."
+    },
+    "startedAt":  { "type": "string", "format": "date-time" },
+    "finishedAt": { "type": "string", "format": "date-time" },
+    "durationMs": { "type": "integer", "minimum": 0 },
+    "projectVersion": { "type": "string" },
+    "error": {
+      "type": ["object", "null"],
+      "properties": {
+        "code":   { "type": "string" },
+        "message":{ "type": "string" },
+        "path":   { "type": ["string", "null"], "description": "CODE RED file/path errors MUST include exact path." }
+      }
+    },
+    "extras": { "type": "object", "description": "Script-specific data, free-form." }
+  }
+}

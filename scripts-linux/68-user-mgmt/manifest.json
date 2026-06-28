@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "68",
+  "name": "Cross-OS user/group management (Linux useradd|macOS dscl; CLI + JSON object/array auto-detect; mirrors Windows 'os add-user')",
+  "summary": "Cross-OS user/group management (Linux useradd|macOS dscl; CLI + JSON object/array auto-detect; mirrors Windows 'os add-user')",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "68-user-mgmt",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "68-user-mgmt",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "13",
+  "tags": []
+}

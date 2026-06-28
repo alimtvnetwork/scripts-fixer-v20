@@ -28,3 +28,4 @@ release-assets
 /.installed
 /.resolved
 /.reports
+/.state

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "id": "31",
+  "name": "31-pwsh-context-menu",
+  "summary": "",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "31-pwsh-context-menu",
+      "entrypoint": "run.ps1"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "",
+  "tags": []
+}

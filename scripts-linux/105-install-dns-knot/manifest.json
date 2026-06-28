@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "105",
+  "name": "Install Knot DNS authoritative server",
+  "summary": "Install Knot DNS authoritative server",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "105-install-dns-knot",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "105-install-dns-knot",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "16",
+  "tags": []
+}

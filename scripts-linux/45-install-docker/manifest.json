@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "45",
+  "name": "Docker (apt)",
+  "summary": "Docker (apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "45-install-docker",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "45-install-docker",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "45-install-docker",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "08",
+  "tags": []
+}

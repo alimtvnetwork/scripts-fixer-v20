@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "id": "48",
+  "name": "48-install-conemu",
+  "summary": "",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "48-install-conemu",
+      "entrypoint": "run.ps1"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "",
+  "tags": []
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "21",
+  "name": "SQLite (apt)",
+  "summary": "SQLite (apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "21-install-sqlite",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "21-install-sqlite",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "21-install-sqlite",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "06",
+  "tags": []
+}

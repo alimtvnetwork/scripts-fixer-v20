@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "44",
+  "name": "Rust (rustup)",
+  "summary": "Rust (rustup)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "44-install-rust",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "44-install-rust",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "44-install-rust",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "05",
+  "tags": []
+}

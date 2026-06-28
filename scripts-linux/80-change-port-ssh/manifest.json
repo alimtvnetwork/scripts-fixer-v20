@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "80",
+  "name": "Change OpenSSH listening port (backup+validate+prompt+ufw)",
+  "summary": "Change OpenSSH listening port (backup+validate+prompt+ufw)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "80-change-port-ssh",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "80-change-port-ssh",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "15",
+  "tags": []
+}

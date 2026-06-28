@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "id": "54",
+  "name": "54-vscode-menu-installer",
+  "summary": "",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "54-vscode-menu-installer",
+      "entrypoint": "run.ps1"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "",
+  "tags": []
+}

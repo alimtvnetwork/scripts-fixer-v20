@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "38",
+  "name": "Flutter (snap|tarball)",
+  "summary": "Flutter (snap|tarball)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "38-install-flutter",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "38-install-flutter",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "38-install-flutter",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "10",
+  "tags": []
+}

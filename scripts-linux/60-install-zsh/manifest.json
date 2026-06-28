@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "60",
+  "name": "ZSH + Oh-My-Zsh (apt + curl) with curated zshrc + auto-backup",
+  "summary": "ZSH + Oh-My-Zsh (apt + curl) with curated zshrc + auto-backup",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "60-install-protonvpn",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "60-install-zsh",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "60-install-zsh",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "10",
+  "tags": []
+}

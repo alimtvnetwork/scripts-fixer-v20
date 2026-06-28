@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "51",
+  "name": "Flameshot (Lightshot replacement, apt)",
+  "summary": "Flameshot (Lightshot replacement, apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "51-install-lightshot",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "51-install-flameshot",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "51-install-flameshot",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "10",
+  "tags": []
+}

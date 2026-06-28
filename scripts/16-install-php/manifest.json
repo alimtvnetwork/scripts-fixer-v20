@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "16",
+  "name": "PHP (apt)",
+  "summary": "PHP (apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "16-install-php",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "16-install-php",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "16-install-php",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "05",
+  "tags": []
+}

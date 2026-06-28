@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "62",
+  "name": "ZSH safer uninstall (restore latest backup + surgical marker strip; aggressive opt-in)",
+  "summary": "ZSH safer uninstall (restore latest backup + surgical marker strip; aggressive opt-in)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "62-pin-taskbar",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "62-install-zsh-clear",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "62-install-zsh-clear",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "10",
+  "tags": []
+}

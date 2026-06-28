@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "67",
+  "name": "Linux/Ubuntu VS Code uninstaller (detects apt|snap|deb|tarball|user-config and removes only matching artifacts)",
+  "summary": "Linux/Ubuntu VS Code uninstaller (detects apt|snap|deb|tarball|user-config and removes only matching artifacts)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "67-vscode-cleanup-linux",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "67-vscode-cleanup-linux",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "12",
+  "tags": []
+}

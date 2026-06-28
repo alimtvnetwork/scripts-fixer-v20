@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "19",
+  "name": "MariaDB (apt)",
+  "summary": "MariaDB (apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "19-install-mariadb",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "19-install-mariadb",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "19-install-mariadb",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "06",
+  "tags": []
+}

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "90",
+  "name": "Postfix SMTP port inspector (READ-ONLY; refuses to change port 25)",
+  "summary": "Postfix SMTP port inspector (READ-ONLY; refuses to change port 25)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "90-change-port-smtp",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "90-change-port-smtp",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "15",
+  "tags": []
+}

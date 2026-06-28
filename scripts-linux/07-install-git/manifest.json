@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "07",
+  "name": "Git (apt)",
+  "summary": "Git (apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "07-install-git",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "07-install-git",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "07-install-git",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "03",
+  "tags": []
+}

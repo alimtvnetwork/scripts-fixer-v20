@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "64",
+  "name": "Cross-OS startup-add (apps + env vars; autostart|systemd-user|launchagent|shell-rc)",
+  "summary": "Cross-OS startup-add (apps + env vars; autostart|systemd-user|launchagent|shell-rc)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "64-wt-context-menu",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "64-startup-add",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "64-startup-add",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "12",
+  "tags": []
+}

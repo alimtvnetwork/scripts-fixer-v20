@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "01",
+  "name": "VS Code (apt|snap)",
+  "summary": "VS Code (apt|snap)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "01-install-vscode",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "01-install-vscode",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "01-install-vscode",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "04",
+  "tags": []
+}

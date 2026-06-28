@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "12",
+  "name": "Orchestrator (profiles)",
+  "summary": "Orchestrator (profiles)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "12-install-all-dev-tools",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "12-install-all-dev-tools",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "12-install-all-dev-tools",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "11",
+  "tags": []
+}

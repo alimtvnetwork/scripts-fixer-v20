@@ -47,6 +47,13 @@ if command -v node >/dev/null 2>&1; then
       fail=1
     fi
   fi
+  if [ -f "tools/manifest-validate.cjs" ]; then
+    say "manifest-validate"
+    if ! node tools/manifest-validate.cjs; then
+      err "manifest schema validation failed."
+      fail=1
+    fi
+  fi
 fi
 
 if [ "$fail" -ne 0 ]; then

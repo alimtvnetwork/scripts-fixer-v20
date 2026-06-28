@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "id": "33",
+  "name": "33-install-notepadpp",
+  "summary": "",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "33-install-notepadpp",
+      "entrypoint": "run.ps1"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "",
+  "tags": []
+}

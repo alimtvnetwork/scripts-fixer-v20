@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "27",
+  "name": "Elasticsearch (apt)",
+  "summary": "Elasticsearch (apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "27-install-elasticsearch",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "27-install-elasticsearch",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "27-install-elasticsearch",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "07",
+  "tags": []
+}

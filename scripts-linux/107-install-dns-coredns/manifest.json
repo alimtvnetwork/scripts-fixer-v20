@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "107",
+  "name": "Install CoreDNS (apt or binary fallback)",
+  "summary": "Install CoreDNS (apt or binary fallback)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "107-install-dns-coredns",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "107-install-dns-coredns",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "16",
+  "tags": []
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "25",
+  "name": "Cassandra (apt)",
+  "summary": "Cassandra (apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "25-install-cassandra",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "25-install-cassandra",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "25-install-cassandra",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "07",
+  "tags": []
+}

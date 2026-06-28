@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "id": "66",
+  "name": "macOS VS Code 'context-menu' cleanup (Services workflows, LaunchAgents/Daemons, Login Items, code/code-insiders shims, vscode:// URL handlers)",
+  "summary": "macOS VS Code 'context-menu' cleanup (Services workflows, LaunchAgents/Daemons, Login Items, code/code-insiders shims, vscode:// URL handlers)",
+  "aliases": [],
+  "platforms": {
+    "linux": {
+      "folder": "66-vscode-menu-cleanup-mac",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "66-vscode-menu-cleanup-mac",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "12",
+  "tags": []
+}
