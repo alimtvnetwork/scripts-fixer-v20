@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lovable.dev/scripts-fixer/core/contracts/event.schema.json",
+  "title": "Unified State Event",
+  "description": "Append-only JSONL event written to .state/events.jsonl by every install/repair/uninstall. Replaces ad-hoc scraping of .installed/, .resolved/, .logs/. doctor/audit/kimodo query this single stream.",
+  "type": "object",
+  "required": ["ts", "scriptId", "command", "platform", "outcome"],
+  "additionalProperties": false,
+  "properties": {
+    "ts":        { "type": "string", "format": "date-time" },
+    "scriptId":  { "type": "string", "pattern": "^\\d{2,3}$" },
+    "scriptName":{ "type": "string" },
+    "command":   { "enum": ["install", "check", "repair", "uninstall", "export", "list", "version"] },
+    "platform":  { "enum": ["windows", "linux", "macos"] },
+    "outcome":   { "enum": ["installed", "already-installed", "upgraded", "repaired", "uninstalled", "skipped", "failed", "ok"] },
+    "version":   { "type": ["string", "null"] },
+    "method":    { "type": ["string", "null"] },
+    "paths":     { "type": "object" },
+    "durationMs":{ "type": "integer", "minimum": 0 },
+    "projectVersion": { "type": "string" },
+    "host":      { "type": "string" },
+    "user":      { "type": "string" },
+    "error":     { "type": ["object", "null"] }
+  }
+}
