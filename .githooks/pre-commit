@@ -68,6 +68,27 @@ if command -v node >/dev/null 2>&1; then
       fail=1
     fi
   fi
+  if [ -f "tools/allowlist-budget.cjs" ]; then
+    say "allowlist-budget"
+    if ! node tools/allowlist-budget.cjs; then
+      err "spec-linter allowlist grew. Remove an entry instead of adding one."
+      fail=1
+    fi
+  fi
+  if [ -f "tools/gen-completions.cjs" ]; then
+    say "gen-completions --check"
+    if ! node tools/gen-completions.cjs --check; then
+      err "shell completions drifted. Run: node tools/gen-completions.cjs"
+      fail=1
+    fi
+  fi
+  if [ -f "tools/manifest-aliases.cjs" ]; then
+    say "manifest-aliases --check"
+    if ! node tools/manifest-aliases.cjs --check; then
+      err "alias files drifted. Run: node tools/manifest-aliases.cjs"
+      fail=1
+    fi
+  fi
 fi
 
 if [ "$fail" -ne 0 ]; then
