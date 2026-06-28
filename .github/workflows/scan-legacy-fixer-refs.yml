@@ -42,3 +42,12 @@ jobs:
 
       - name: Spec linter (Commands/Flags/Exit Codes/Verification)
         run: node tools/spec-lint.cjs
+
+      - name: Allowlist budget (spec-linter allowlist must not grow)
+        run: node tools/allowlist-budget.cjs
+
+      - name: Shell completions drift check
+        run: node tools/gen-completions.cjs --check
+
+      - name: Manifest-alias drift check
+        run: node tools/manifest-aliases.cjs --check
