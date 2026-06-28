@@ -34,4 +34,13 @@ alias codezsh='code ~/.zshrc && applyzsh'
 alias gezsh='code ~/.zshrc && applyzsh'
 alias apt_update='echo "sudo apt update -y" && sudo apt update -y && sudo apt-get update -y && sudo apt upgrade -y'
 
-command -v kubectl >/dev/null 2>&1 && source <(kubectl completion zsh)
+# Generalised completion wiring (each line is a no-op if the tool is absent).
+command -v kubectl  >/dev/null 2>&1 && source <(kubectl  completion zsh) 2>/dev/null
+command -v helm     >/dev/null 2>&1 && source <(helm     completion zsh) 2>/dev/null
+command -v kind     >/dev/null 2>&1 && source <(kind     completion zsh) 2>/dev/null
+command -v minikube >/dev/null 2>&1 && source <(minikube completion zsh) 2>/dev/null
+command -v docker   >/dev/null 2>&1 && source <(docker   completion zsh) 2>/dev/null
+command -v pnpm     >/dev/null 2>&1 && source <(pnpm     completion zsh) 2>/dev/null
+command -v gh       >/dev/null 2>&1 && source <(gh       completion zsh) 2>/dev/null
+# Powerlevel10k instant-prompt (no-op unless theme_preset=powerlevel10k was used).
+[ -r "$HOME/.p10k.zsh" ] && source "$HOME/.p10k.zsh"
