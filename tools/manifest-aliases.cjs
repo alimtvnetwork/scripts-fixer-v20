@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Aggregate aliases from every NN-*/manifest.json into one file per platform
+ * Aggregate aliases from every NN-* manifest.json into one file per platform
  * for run.ps1 / run.sh to source instead of hard-coding tables.
  *
  * Outputs:
