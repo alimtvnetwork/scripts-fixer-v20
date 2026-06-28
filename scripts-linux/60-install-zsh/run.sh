@@ -27,13 +27,21 @@ EXTRAS_MARKER_END="# <<< lovable zsh extras <<<"
 [ -f "$PAYLOAD_EXTRAS" ] || { log_file_error "$PAYLOAD_EXTRAS" "payload/zshrc-extras missing"; exit 1; }
 has_jq || { log_err "[60] jq required to read config"; exit 1; }
 
-APT_PKG=$(jq -r '.install.apt'             "$CONFIG")
-DEFAULT_THEME=$(jq -r '.default_theme'     "$CONFIG")
-OMZ_URL=$(jq -r '.omz_install_url'         "$CONFIG")
-DO_DEPLOY_BASE=$(jq -r '.deploy_zshrc'     "$CONFIG")
-DO_DEPLOY_EXTRAS=$(jq -r '.deploy_extras'  "$CONFIG")
-DO_BACKUP=$(jq -r '.backup_existing_zshrc' "$CONFIG")
-DO_CHSH=$(jq -r '.set_default_shell'       "$CONFIG")
+APT_PKG=$(jq -r '.install.apt'              "$CONFIG")
+BREW_PKG=$(jq -r '.install.brew // .install.apt' "$CONFIG")
+DEFAULT_THEME=$(jq -r '.default_theme'      "$CONFIG")
+THEME_PRESET=$(jq -r  '.theme_preset // ""' "$CONFIG")
+P10K_REPO=$(jq -r '.powerlevel10k_repo // "https://github.com/romkatv/powerlevel10k.git"' "$CONFIG")
+OMZ_URL=$(jq -r '.omz_install_url'          "$CONFIG")
+DO_DEPLOY_BASE=$(jq -r '.deploy_zshrc'      "$CONFIG")
+DO_DEPLOY_EXTRAS=$(jq -r '.deploy_extras'   "$CONFIG")
+DO_BACKUP=$(jq -r '.backup_existing_zshrc'  "$CONFIG")
+DO_CHSH=$(jq -r '.set_default_shell'        "$CONFIG")
+
+# theme_preset=powerlevel10k overrides default_theme.
+if [ "$THEME_PRESET" = "powerlevel10k" ]; then
+  DEFAULT_THEME="powerlevel10k/powerlevel10k"
+fi
 
 OMZ_DIR="$HOME/.oh-my-zsh"
 ZSHRC="$HOME/.zshrc"
