@@ -54,6 +54,20 @@ if command -v node >/dev/null 2>&1; then
       fail=1
     fi
   fi
+  if [ -f "tools/docs-generate.cjs" ]; then
+    say "docs-generate --check"
+    if ! node tools/docs-generate.cjs --check; then
+      err "auto-generated docs drifted. Run: node tools/docs-generate.cjs"
+      fail=1
+    fi
+  fi
+  if [ -f "tools/spec-lint.cjs" ]; then
+    say "spec-lint"
+    if ! node tools/spec-lint.cjs; then
+      err "spec linter failed. Add required H2 sections or allowlist legacy file."
+      fail=1
+    fi
+  fi
 fi
 
 if [ "$fail" -ne 0 ]; then

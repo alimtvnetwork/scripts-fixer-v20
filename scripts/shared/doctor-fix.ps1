@@ -67,6 +67,8 @@ function Invoke-DoctorFix {
     Invoke-Probe "registry-sync (yaml->json)" "node tools/registry-sync.cjs --check" "node tools/registry-sync.cjs"
     Invoke-Probe "version-sync (scripts->root)" "node tools/sync-version.cjs --check"  "node tools/sync-version.cjs"
     Invoke-Probe "manifest schema validation"  "node tools/manifest-validate.cjs"      ""
+    Invoke-Probe "auto-generated docs drift"   "node tools/docs-generate.cjs --check"  "node tools/docs-generate.cjs"
+    Invoke-Probe "spec linter (4 headings)"    "node tools/spec-lint.cjs"              ""
     Invoke-Probe "legacy fixer-ref scan"       "bash tools/scan-legacy-fixer-refs.sh"  "bash tools/fix-and-verify-legacy-refs.sh" -RequiresBash
     $reqPkg = Join-Path $RepoRoot "tools/check-required-packages.mjs"
     if (Test-Path $reqPkg) {
