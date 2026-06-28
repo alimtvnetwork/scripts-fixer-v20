@@ -33,3 +33,6 @@ jobs:
 
       - name: Version drift check (scripts/version.json -> root version.json)
         run: node tools/sync-version.cjs --check
+
+      - name: Manifest schema validation
+        run: node tools/manifest-validate.cjs
