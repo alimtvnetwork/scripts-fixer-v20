@@ -12,6 +12,9 @@ export SCRIPT_ID="62"
 . "$ROOT/_shared/pkg-detect.sh"
 . "$ROOT/_shared/file-error.sh"
 . "$ROOT/_shared/install-paths.sh"
+. "$ROOT/_shared/user-reexec.sh"
+maybe_reexec_as_user "$@"
+set -- ${REEXEC_ARGS[@]+"${REEXEC_ARGS[@]}"}
 
 CONFIG="$SCRIPT_DIR/config.json"
 INSTALLED_MARK="$ROOT/.installed/62.ok"
