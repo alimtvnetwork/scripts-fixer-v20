@@ -403,8 +403,9 @@ verb_install() {
   fi
 
   backup_existing_config || true
-  apt_install_packages   || return 1
+  install_packages       || return 1
   install_omz            || return 1
+  install_powerlevel10k  || true
   clone_custom_plugins
   deploy_base_zshrc      || return 1
   append_extras_zshrc    || return 1
