@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Spec linter: every spec/NN-*/readme.md (and major spec/<name>/readme.md)
+ * Spec linter: every spec/NN-* readme.md (and major spec/<name> readme.md)
  * must contain the canonical headings: Commands, Flags, Exit Codes,
  * Verification. Exits non-zero on any miss.
  *
