@@ -131,6 +131,25 @@ else {
     Write-Host "[ SKIP ] $generatorScript not found -- skipping registry summary regen." -ForegroundColor Yellow
 }
 
+# ── Sync root version.json + cross-platform registry JSONs ───────────────────
+# scripts/version.json is canonical; root version.json (with rich metadata) and
+# the two registry.json artefacts are generated. Keeps them from drifting.
+
+$nodeCmd2 = Get-Command node -ErrorAction SilentlyContinue
+if ($null -ne $nodeCmd2) {
+    $syncVersion = Join-Path $PSScriptRoot "tools" "sync-version.cjs"
+    if (Test-Path $syncVersion) {
+        & node $syncVersion | Out-Host
+    }
+    $registrySync = Join-Path $PSScriptRoot "tools" "registry-sync.cjs"
+    if (Test-Path $registrySync) {
+        & node $registrySync | Out-Host
+    }
+}
+else {
+    Write-Host "[ SKIP ] node not found -- run manually: node tools/sync-version.cjs && node tools/registry-sync.cjs" -ForegroundColor Yellow
+}
+
 # ── Update changelog badge in readme.md ──────────────────────────────────────
 
 $readmeFile = Join-Path $PSScriptRoot "readme.md"
