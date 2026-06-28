@@ -1,0 +1,4 @@
+{
+  "_comment": "Spec files exempted from the required-heading linter (legacy notes). New specs should NOT be added here -- add the four headings instead.",
+  "allow": []
+}
