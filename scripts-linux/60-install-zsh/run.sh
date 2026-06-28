@@ -94,6 +94,8 @@ backup_existing_config() {
   return 0
 }
 
+is_macos() { [ "$(uname -s)" = "Darwin" ]; }
+
 apt_install_packages() {
   if ! is_debian_family || ! is_apt_available; then
     log_err "[60] apt-get + Debian/Ubuntu required"; return 1
@@ -104,6 +106,38 @@ apt_install_packages() {
   fi
   log_err "[60] apt install failed for: $APT_PKG"
   return 1
+}
+
+brew_install_packages() {
+  if ! command -v brew >/dev/null 2>&1; then
+    log_err "[60] Homebrew required on macOS -- install from https://brew.sh and re-run"
+    return 1
+  fi
+  log_info "[60] Installing brew packages: $BREW_PKG"
+  if brew install $BREW_PKG; then
+    return 0
+  fi
+  log_err "[60] brew install failed for: $BREW_PKG"
+  return 1
+}
+
+install_packages() {
+  if is_macos; then brew_install_packages; else apt_install_packages; fi
+}
+
+install_powerlevel10k() {
+  [ "$THEME_PRESET" = "powerlevel10k" ] || return 0
+  local dest="$OMZ_DIR/custom/themes/powerlevel10k"
+  if [ -d "$dest" ]; then
+    log_ok "[60] powerlevel10k already cloned at $dest"
+    return 0
+  fi
+  mkdir -p "$(dirname "$dest")" || { log_file_error "$(dirname "$dest")" "cannot create p10k parent"; return 1; }
+  log_info "[60] Cloning Powerlevel10k -> $dest"
+  if ! git clone --depth=1 "$P10K_REPO" "$dest"; then
+    log_err "[60] git clone failed for powerlevel10k from $P10K_REPO"
+    return 1
+  fi
 }
 
 install_omz() {
