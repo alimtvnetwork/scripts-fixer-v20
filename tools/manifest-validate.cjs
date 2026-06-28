@@ -9,8 +9,10 @@ const path = require("path");
 const ROOT = path.resolve(__dirname, "..");
 const SCHEMA = JSON.parse(fs.readFileSync(path.join(ROOT, "core/contracts/manifest.schema.json"), "utf8"));
 
+const SKIP = new Set([".logs", ".installed", ".resolved", ".state", "node_modules", ".git", ".gitmap"]);
 function* walk(dir) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (SKIP.has(e.name)) continue;
     const p = path.join(dir, e.name);
     if (e.isDirectory()) yield* walk(p);
     else if (e.name === "manifest.json") yield p;
