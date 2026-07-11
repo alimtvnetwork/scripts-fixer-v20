@@ -457,7 +457,7 @@ verb_install() {
   backup_existing_config || true
   install_packages       || return 1
   install_omz            || return 1
-  install_powerlevel10k  || true
+  install_theme_preset   || true
   clone_custom_plugins
   deploy_base_zshrc      || return 1
   append_extras_zshrc    || return 1
