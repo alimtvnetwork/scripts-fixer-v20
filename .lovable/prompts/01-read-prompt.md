@@ -1,11 +1,12 @@
 ---
 title: Read Memory
 slug: read-memory
+version: 1.0
 ---
 
 # Read Memory
 
-> **Purpose:** This document is a mandatory onboarding sequence for any AI assistant joining this project. It ensures you internalize all specifications, rules, and conventions before writing a single line of code.
+> **Purpose:** Mandatory onboarding sequence for any AI assistant joining this project. Internalize every specification, rule, and convention before writing a single line of code.
 
 > **Rule #0:** Follow every phase sequentially. Do not skip, summarize prematurely, or assume knowledge from training data. The specs are the single source of truth.
 
@@ -20,211 +21,156 @@ slug: read-memory
 5. [Anti-Hallucination Contract](#anti-hallucination-contract)
 6. [Memory Update Protocol](#memory-update-protocol)
 7. [Completion Confirmation](#completion-confirmation)
-8. Read all the CI/CD issues in the memory (`.lovable/cicd-issues/xx-issue-name.md`) [xx — sequence starts from 01] and don't make these mistakes again, clear??
+8. Read every CI/CD issue in `.lovable/cicd-issues/NN-issue-name.md` (NN starts at `01`) and do not repeat those mistakes.
 
 ---
 
 ## Phase 1 — AI Context Layer
 
-**Goal:** Load the project's identity, hard rules, and institutional memory into your working context.
+**Goal:** Load the project's identity, hard rules, and institutional memory into working context.
 
 ### Step 1.1 — Read core files in EXACT order
 
 | Order | File | What You Learn |
 |-------|------|----------------|
 | 1 | `.lovable/overview.md` | Project summary, tech stack, navigation map |
-| 2 | `.lovable/strictly-avoid.md` | **Hard prohibitions** — violating ANY of these is a critical failure |
-| 3 | `.lovable/user-preferences` | How the human expects you to communicate and behave |
-| 4 | `.lovable/memory/index.md` | Index of all institutional knowledge files |
-| 5 | `.lovable/plan.md` | Current active roadmap and priorities |
-| 6 | `.lovable/suggestions.md` | Pending improvement ideas (not yet approved) |
-| 7 | `.lovable/what-to-read.md` | Folder map + workflow rules for features/tests/bugs/specs |
+| 2 | `.lovable/what-to-read.md` | Canonical read-first guide (folder map + workflows) |
+| 3 | `.lovable/strictly-avoid.md` | Hard prohibitions — violating ANY is a critical failure |
+| 4 | `.lovable/user-preferences.md` (if present) | How the human expects you to communicate |
+| 5 | `.lovable/memory/index.md` | Index of all institutional knowledge |
+| 6 | `.lovable/plan.md` | Current active roadmap and priorities |
+| 7 | `.lovable/suggestions.md` | Pending improvement ideas (not yet approved) |
+| 8 | `.lovable/cicd-index.md` | CI/CD issue index |
 
 ### Step 1.2 — Read EVERY file referenced in `.lovable/memory/index.md`
 
-- If the index lists 12 files, you read 12 files. No exceptions.
-- If there are subfolders, traverse them recursively.
+- Traverse subfolders (`constraints/`, `features/`, `preferences/`, `specs/`, `suggestions/`, `workflow/`) recursively.
 - If a file is missing or empty, note it — do not silently skip.
 
-### Step 1.3 — Self-check (answer these internally before continuing)
+### Step 1.3 — Self-check (answer internally before continuing)
 
 - [ ] What are the project's **CODE RED** rules?
 - [ ] What naming conventions are enforced (files, folders, DB columns, variables)?
-- [ ] What is the error handling philosophy?
+- [ ] What is the error-handling philosophy?
 - [ ] What is the current plan and what tasks are in progress?
-- [ ] What patterns/tools/approaches are **strictly forbidden**?
+- [ ] What patterns/tools/approaches are strictly forbidden?
 
-> ⛔ **DO NOT proceed to Phase 2 until every file above has been read and internalized.**
+> DO NOT proceed to Phase 2 until every file above has been read and internalized.
 
 ---
 
 ## Phase 2 — Consolidated Guidelines
 
-**Goal:** Absorb the project's unified rulebook — 18 self-contained guideline documents.
+**Goal:** Absorb the project's unified rulebook.
 
-### Instructions
+1. Navigate to `spec/12-consolidated-guidelines/` (if present in this repo).
+2. Read files in numeric order (`01-*.md` through `NN-*.md`).
+3. Each file is a self-contained policy document.
 
-1. Navigate to `spec/12-consolidated-guidelines/`.
-2. Read files in **numeric order**: `01-*.md` through `18-*.md`.
-3. Each file is self-contained. Treat each as a standalone policy document.
-
-### After reading, confirm internally
-
+Confirm internally:
 - [ ] Total number of guideline files read.
-- [ ] One-sentence summary of the key rule from each file.
-- [ ] Any rules that contradict your default training (these are intentional — the spec wins).
+- [ ] One-sentence summary of each file's key rule.
+- [ ] Any rules that contradict default training (spec wins).
 
-> ⛔ **DO NOT proceed to Phase 3 until all 18 files have been read.**
+> DO NOT proceed to Phase 3 until all consolidated guideline files have been read.
 
 ---
 
 ## Phase 3 — Spec Authoring Rules
 
-**Goal:** Understand how specifications themselves are structured, so you can read them correctly and author new ones if asked.
+**Goal:** Understand how specs are structured so you can read them correctly and author new ones.
 
-### Instructions
+1. Navigate to `spec/00-spec-writing-guide/` (canonical in this repo) or `spec/01-spec-authoring-guide/` if it exists.
+2. Read every file in numeric order.
 
-1. Navigate to `spec/01-spec-authoring-guide/`.
-2. Read all files in numeric order.
+After reading, confirm you understand:
 
-### After reading, confirm you understand
-
-| Concept | Where It's Defined |
-|---------|-------------------|
-| File and folder naming conventions | Spec authoring guide |
+| Concept | Where Defined |
+|---------|---------------|
+| File / folder naming conventions | Spec authoring guide |
 | Required files in every spec folder (`00-overview.md`, `99-consistency-report.md`) | Spec authoring guide |
-| The `.lovable/` folder structure and its purpose | `07-memory-folder-guide.md` |
+| The `.lovable/` folder structure and its purpose | Memory-folder guide |
 | Linter infrastructure requirements | Spec authoring guide |
 
-> ⛔ **DO NOT begin any task until Phases 1–3 are complete.**
+> DO NOT begin any task until Phases 1–3 are complete.
 
 ---
 
 ## Phase 4 — Deep-Dive Source Specs (Task-Driven)
 
-**Goal:** Before performing any task, read the relevant source spec(s) so your work is compliant.
+Before performing any task, read the relevant source spec(s).
 
-### Lookup Table
-
-| If your task involves... | Read this spec folder |
-|--------------------------|----------------------|
-| Writing or reviewing code | `spec/02-coding-guidelines/` |
-| Error handling | `spec/03-error-manage/` |
-| Database schema or queries | `spec/04-database-conventions/` |
-| SQLite or multi-database architecture | `spec/05-split-db-architecture/` |
+| Task involves... | Read |
+|------------------|------|
+| Writing / reviewing code | `spec/02-coding-guidelines/` (or repo equivalent) |
+| Error handling | `spec/03-error-manage/` / `spec/02-app-issues/` |
+| Database schema | `spec/04-database-conventions/` |
 | Configuration systems | `spec/06-seedable-config-architecture/` |
-| UI theming, CSS variables, design tokens | `spec/07-design-system/` |
-| Documentation viewer features | `spec/08-docs-viewer-ui/` |
-| Code block rendering | `spec/09-code-block-system/` |
-| PowerShell scripts | `spec/10-powershell-integration/` |
-| CI/CD pipelines | `spec/13-cicd-pipeline-workflows/` |
-| CLI self-update system | `spec/14-self-update-app-update/` |
-| WordPress plugins | `spec/15-wp-plugin-how-to/` |
+| PowerShell scripts | `spec/10-powershell-integration/` + `spec/NN-install-*` |
+| CI/CD pipelines | `spec/13-cicd-pipeline-workflows/` + `.lovable/cicd-issues/` |
+| Self-update / bootstrap | `spec/14-self-update-app-update/` |
 | App-specific features | `spec/21-app/` |
-| Known app bugs/issues | `spec/22-app-issues/` |
-| App-specific database schema | `spec/23-app-database/` |
-| App-specific UI and design system | `spec/24-app-design-system-and-ui/` |
+| App bugs | `spec/22-app-issues/` |
 
-### Reading order within each folder
-
-1. `00-overview.md` — always first
-2. All numbered files in order
-3. `99-consistency-report.md` — always last (if present)
+Reading order within each folder: `00-overview.md` → numbered files → `99-consistency-report.md`.
 
 ---
 
 ## Anti-Hallucination Contract
 
-These rules are **absolute and non-negotiable**. Violating any of them is a critical failure.
-
-### 1. Never Invent Rules
-
-If a spec does not mention a rule, that rule does not exist. Do not fill gaps with assumptions from your training data.
-
-### 2. Specs Override Training Data
-
-If your pre-trained knowledge conflicts with a spec, **the spec wins**. Every time. No exceptions.
-
-### 3. Cite Your Sources
-
-When enforcing a rule, reference the **specific file and section**. Example:
-
-> Per `spec/02-coding-guidelines/03-naming.md` § "Database Columns": all column names use PascalCase.
-
-### 4. Ask When Uncertain
-
-If a spec is ambiguous or silent on a topic, **ask the human**. Do not guess, infer, or "use best judgment."
-
-### 5. Never Merge Conventions
-
-This project has its own conventions (e.g., PascalCase DB columns). Do not blend them with conventions from other projects, languages, or frameworks you've seen in training.
-
-### 7. No Filler
-
-Never append boilerplate like "Let me know if you have questions!" or "Hope this helps!" Just deliver the work.
+1. **Never invent rules.** If a spec is silent, the rule does not exist.
+2. **Specs override training data.** The spec always wins.
+3. **Cite sources.** Reference the specific file + section.
+4. **Ask when uncertain.** Do not guess.
+5. **Never merge conventions** from other projects/languages.
+6. **No filler.** No "Hope this helps!" / "Let me know…" boilerplate.
 
 ---
 
 ## Memory Update Protocol
 
-When you learn something new during a session, follow this decision tree:
-
 ```
 New information discovered
-│
-├─ Is it institutional knowledge (pattern, convention, decision)?
-│  └─ YES → Write to `.lovable/memory/` and update `.lovable/memory/index.md`
-│
-├─ Is it something that must NEVER be done?
-│  └─ YES → Add to `.lovable/strictly-avoid.md`
-│
-├─ Is it a suggestion or improvement idea (not yet approved)?
-│  └─ YES → Add to `.lovable/suggestions.md`
-│
-└─ None of the above → Do not persist it
+├─ Institutional knowledge (pattern/convention/decision)?
+│  └─ YES → write to `.lovable/memory/<topic>/NN-name.md` + update `.lovable/memory/index.md`
+├─ Must NEVER be done?
+│  └─ YES → add to `.lovable/strictly-avoid.md`
+├─ Suggestion (not approved)?
+│  └─ YES → add to `.lovable/suggestions.md`
+└─ Else → do not persist
 ```
 
-### Critical Rules
-
-- The memory folder is `.lovable/memory/` — **never** `.lovable/memories/` (no trailing `s`).
-- When adding a new memory file, **always** update the index at `.lovable/memory/index.md`.
-- When modifying an existing memory, preserve all other content — do not truncate or overwrite unrelated entries.
+Critical rules:
+- The folder is `.lovable/memory/` — never `.lovable/memories/` (no trailing `s`).
+- Every new memory file must be indexed the same operation.
+- Never truncate or overwrite unrelated entries when modifying an existing file.
 
 ---
 
 ## Completion Confirmation
 
-After completing **Phases 1 through 3**, respond with exactly this format:
+After Phases 1–3, respond with exactly this format:
 
 ```
-✅ Onboarding complete.
+Onboarding complete.
 - Memory files read: [X]
 - Consolidated guidelines read: [Y]
 - Spec authoring files read: [Z]
 
 I understand:
-- CODE RED rules: [list the top 3–5]
-- Naming conventions: [brief summary]
-- Error handling approach: [one sentence]
-- Active plan: [current milestone or focus]
-- Strict avoidances: [top 3–5 forbidden patterns]
+- CODE RED rules: [top 3–5]
+- Naming conventions: [brief]
+- Error handling: [one sentence]
+- Active plan: [current milestone]
+- Strict avoidances: [top 3–5]
 
 Ready for tasks.
 ```
 
-Then **stop and wait** for instructions. Do not suggest next steps. Do not ask exploratory questions. Just wait.
+Then stop and wait. Do not suggest next steps.
 
 ---
-
-## Versioning Rule
-
-**Any change to the codebase always bumps the minor version** (`version.json`, `scripts/version.json`, root `readme.md` badge, `changelog.md`). No code change ships without a bump.
-
----
-
-*This prompt is version 1.1. Update it in sync with spec version changes.*
 
 ## Changelog
 
-- v1.1 — added `.lovable/what-to-read.md` to Phase 1.1 read-list; added Versioning Rule (bump minor on every code change).
-- v1.0 — initial enhanced version.
+- v1.0 — initial canonical read-memory prompt (aligns with `.lovable/what-to-read.md`).
