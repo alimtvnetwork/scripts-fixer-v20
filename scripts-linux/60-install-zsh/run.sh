@@ -252,6 +252,11 @@ append_extras_zshrc() {
     echo ""
     echo "$EXTRAS_MARKER_BEGIN"
     cat "$PAYLOAD_EXTRAS"
+    if [ -n "$PRESET_EXTRAS_LINE" ]; then
+      echo ""
+      echo "# theme_preset=$THEME_PRESET init"
+      echo "$PRESET_EXTRAS_LINE"
+    fi
     echo ""
     echo "$EXTRAS_MARKER_END"
   } >> "$ZSHRC"
