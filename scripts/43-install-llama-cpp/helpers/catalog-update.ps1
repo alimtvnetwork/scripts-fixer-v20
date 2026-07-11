@@ -101,7 +101,9 @@ function Get-HfFamilyResults {
     param(
         [Parameter(Mandatory)] [string] $CacheDir,
         [Parameter(Mandatory)] [string] $FamilyName,
-        [Parameter(Mandatory)] [string] $SearchTerm
+        [Parameter(Mandatory)] [string] $SearchTerm,
+        [ValidateSet('lastModified','trending','downloads','likes')]
+        [string] $Sort = 'lastModified'
     )
 
     $isCacheMissing = -not (Test-Path -LiteralPath $CacheDir)
@@ -115,7 +117,7 @@ function Get-HfFamilyResults {
     }
 
     $safeName  = ($FamilyName -replace '[^a-zA-Z0-9]+', '-').Trim('-').ToLowerInvariant()
-    $cacheFile = Join-Path $CacheDir ("hf-{0}.json" -f $safeName)
+    $cacheFile = Join-Path $CacheDir ("hf-{0}-{1}.json" -f $safeName, $Sort.ToLower())
 
     $hasCache = Test-Path -LiteralPath $cacheFile
     if ($hasCache) {
@@ -124,7 +126,7 @@ function Get-HfFamilyResults {
         if ($isFresh) {
             try {
                 $cached = Get-Content -LiteralPath $cacheFile -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
-                Write-Log "[CACHED] $FamilyName -> $cacheFile (age: $([int]$cacheAge.TotalMinutes)m)" -Level "info"
+                Write-Log "[CACHED] $FamilyName ($Sort) -> $cacheFile (age: $([int]$cacheAge.TotalMinutes)m)" -Level "info"
                 return $cached
             } catch {
                 Write-Log "Cache read failed, refetching: $cacheFile (failure: $($_.Exception.Message))" -Level "warn"
@@ -133,7 +135,14 @@ function Get-HfFamilyResults {
     }
 
     $query = [System.Uri]::EscapeDataString("$SearchTerm gguf")
-    $url   = "{0}?search={1}&sort=lastModified&limit={2}" -f $script:HfApiBase, $query, $script:MaxReposPerFamily
+    # HF API sort values: 'trendingScore' (rising models), 'downloads',
+    # 'likes', 'lastModified'. Map friendly names to what the API expects.
+    $sortParam = switch ($Sort) {
+        'trending'   { 'trendingScore' }
+        default      { $Sort }
+    }
+    $url = "{0}?search={1}&sort={2}&direction=-1&limit={3}" -f $script:HfApiBase, $query, $sortParam, $script:MaxReposPerFamily
+
 
     Write-Log "[CHECK] $FamilyName -> $url" -Level "info"
 
@@ -283,13 +292,57 @@ function Test-RepoAlreadyKnown {
 }
 
 # --------------------------------------------------------------------------
+function Get-HfTrendingGgufRepos {
+    <#
+    .SYNOPSIS
+        Query the HF trending endpoint for GGUF repos (sort=trendingScore).
+        Not scoped to any known family -- surfaces brand-new architectures.
+    #>
+    param(
+        [Parameter(Mandatory)] [string] $CacheDir,
+        [int] $Limit = 30
+    )
+    $isCacheMissing = -not (Test-Path -LiteralPath $CacheDir)
+    if ($isCacheMissing) {
+        try { New-Item -Path $CacheDir -ItemType Directory -Force | Out-Null }
+        catch { Write-Log "Failed to create cache dir: $CacheDir (failure: $($_.Exception.Message))" -Level "error"; return @() }
+    }
+    $cacheFile = Join-Path $CacheDir "hf-trending-gguf.json"
+    if (Test-Path -LiteralPath $cacheFile) {
+        $age = (Get-Date) - (Get-Item -LiteralPath $cacheFile).LastWriteTime
+        if ($age.TotalHours -lt $script:CacheTtlHours) {
+            try {
+                $cached = Get-Content -LiteralPath $cacheFile -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+                Write-Log "[CACHED] HF trending -> $cacheFile (age: $([int]$age.TotalMinutes)m)" -Level "info"
+                return $cached
+            } catch { Write-Log "Trending cache read failed: $($_.Exception.Message)" -Level "warn" }
+        }
+    }
+    # HF: sort=trendingScore + filter=gguf returns the currently rising GGUF repos.
+    $url = "{0}?filter=gguf&sort=trendingScore&direction=-1&limit={1}" -f $script:HfApiBase, $Limit
+    Write-Log "[TREND] $url" -Level "info"
+    try {
+        $resp = Invoke-RestMethod -Uri $url -Method Get -TimeoutSec 30 -ErrorAction Stop `
+            -UserAgent "gitmap-v6-catalog-update/1.0"
+    } catch {
+        Write-Log "HF trending request failed: $url (failure: $($_.Exception.Message))" -Level "error"
+        return @()
+    }
+    try { ($resp | ConvertTo-Json -Depth 8) | Set-Content -LiteralPath $cacheFile -Encoding UTF8 -ErrorAction Stop }
+    catch { Write-Log "Failed to write trending cache: $cacheFile (failure: $($_.Exception.Message))" -Level "warn" }
+    return $resp
+}
+
 function Invoke-CatalogUpdateCheck {
     param(
         [Parameter(Mandatory)] [string] $CatalogPath,
         [Parameter(Mandatory)] [string] $ScriptDir,
         [string] $FamilyFilter = "",
-        [switch] $Apply
+        [switch] $Apply,
+        [switch] $Trending,
+        [int]    $TrendingLimit = 30
     )
+
 
     Write-Log "Catalog auto-update check starting (catalog: $CatalogPath)" -Level "info"
 
@@ -364,6 +417,38 @@ function Invoke-CatalogUpdateCheck {
             }
         }
     }
+
+    # -- Trending pass ---------------------------------------------------------
+    # Adds unknown-family repos that HF is currently trending. This surfaces
+    # brand-new architectures the family list doesn't cover yet.
+    if ($Trending) {
+        $stats['trendingScanned'] = 0
+        $stats['trendingProposed'] = 0
+        $trendingRepos = @(Get-HfTrendingGgufRepos -CacheDir $cacheDir -Limit $TrendingLimit)
+        Write-Log ("Trending pass: {0} repo(s) from HF sort=trendingScore" -f $trendingRepos.Count) -Level "info"
+        foreach ($repo in $trendingRepos) {
+            $stats['trendingScanned']++
+            $isKnown = Test-RepoAlreadyKnown -Repo $repo -ExistingPagePrefixes $loaded.ExistingPagePrefixes
+            if ($isKnown) { $stats.skippedKnown++; continue }
+            $files = @(Get-RepoGgufFiles -CacheDir $cacheDir -RepoId $repo.id | Select-Object -First $script:MaxFilesPerRepo)
+            if ($files.Count -eq 0) { continue }
+            foreach ($file in $files) {
+                $stats.ggufFilesFound++
+                $proposal = New-ProposalEntry -FamilyName "trending" -Repo $repo -File $file
+                # Tag trending origin so the review file makes the source obvious.
+                if ($proposal -is [hashtable] -or $proposal -is [System.Collections.IDictionary]) {
+                    $proposal['source'] = 'hf-trending'
+                } else {
+                    $proposal | Add-Member -NotePropertyName source -NotePropertyValue 'hf-trending' -Force
+                }
+                $proposals += $proposal
+                $stats.proposalsAdded++
+                $stats['trendingProposed']++
+                Write-Log "[TREND] $($repo.id) :: $($file.path)" -Level "success"
+            }
+        }
+    }
+
 
     $hasProposals = $proposals.Count -gt 0
     if (-not $hasProposals) {
