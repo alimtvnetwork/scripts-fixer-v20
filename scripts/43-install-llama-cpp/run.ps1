@@ -16,7 +16,11 @@ param(
 
     [switch]$Apply,
 
-    [string]$Family = ""
+    [string]$Family = "",
+
+    [switch]$Trending,
+
+    [int]$TrendingLimit = 30
 )
 
 Set-StrictMode -Version Latest
