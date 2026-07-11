@@ -1,4 +1,20 @@
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting history-substring-search)
+
+# zsh-autosuggestions: accept the full suggestion with Ctrl+Space (widget guarded
+# so it's a no-op if the plugin isn't loaded yet).
+ZSH_AUTOSUGGEST_ACCEPT_WIDGETS+=(forward-word end-of-line)
+bindkey '^ ' autosuggest-accept 2>/dev/null
+
+# history-substring-search: Up/Down and vim-style k/j walk history for the
+# current prefix. Load key bindings from the plugin if present.
+if [ -r "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/history-substring-search/zsh-history-substring-search.zsh" ]; then
+  source "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/history-substring-search/zsh-history-substring-search.zsh"
+fi
+bindkey '^[[A' history-substring-search-up 2>/dev/null
+bindkey '^[[B' history-substring-search-down 2>/dev/null
+bindkey -M vicmd 'k' history-substring-search-up 2>/dev/null
+bindkey -M vicmd 'j' history-substring-search-down 2>/dev/null
+
 
 alias clear_history='echo "" > ~/.zsh_history & exec $SHELL -l'
 alias brew_fix='eval $(~/.linuxbrew/bin/brew shellenv) && test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv) && test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv) && test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile && source $ZSH/oh-my-zsh.sh'
