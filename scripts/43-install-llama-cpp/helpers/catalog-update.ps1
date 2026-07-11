@@ -418,6 +418,38 @@ function Invoke-CatalogUpdateCheck {
         }
     }
 
+    # -- Trending pass ---------------------------------------------------------
+    # Adds unknown-family repos that HF is currently trending. This surfaces
+    # brand-new architectures the family list doesn't cover yet.
+    if ($Trending) {
+        $stats['trendingScanned'] = 0
+        $stats['trendingProposed'] = 0
+        $trendingRepos = @(Get-HfTrendingGgufRepos -CacheDir $cacheDir -Limit $TrendingLimit)
+        Write-Log ("Trending pass: {0} repo(s) from HF sort=trendingScore" -f $trendingRepos.Count) -Level "info"
+        foreach ($repo in $trendingRepos) {
+            $stats['trendingScanned']++
+            $isKnown = Test-RepoAlreadyKnown -Repo $repo -ExistingPagePrefixes $loaded.ExistingPagePrefixes
+            if ($isKnown) { $stats.skippedKnown++; continue }
+            $files = @(Get-RepoGgufFiles -CacheDir $cacheDir -RepoId $repo.id | Select-Object -First $script:MaxFilesPerRepo)
+            if ($files.Count -eq 0) { continue }
+            foreach ($file in $files) {
+                $stats.ggufFilesFound++
+                $proposal = New-ProposalEntry -FamilyName "trending" -Repo $repo -File $file
+                # Tag trending origin so the review file makes the source obvious.
+                if ($proposal -is [hashtable] -or $proposal -is [System.Collections.IDictionary]) {
+                    $proposal['source'] = 'hf-trending'
+                } else {
+                    $proposal | Add-Member -NotePropertyName source -NotePropertyValue 'hf-trending' -Force
+                }
+                $proposals += $proposal
+                $stats.proposalsAdded++
+                $stats['trendingProposed']++
+                Write-Log "[TREND] $($repo.id) :: $($file.path)" -Level "success"
+            }
+        }
+    }
+
+
     $hasProposals = $proposals.Count -gt 0
     if (-not $hasProposals) {
         Write-Log "No new GGUF candidates found across $($stats.familiesScanned) families." -Level "info"
