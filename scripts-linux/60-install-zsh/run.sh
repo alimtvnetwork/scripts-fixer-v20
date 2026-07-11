@@ -38,9 +38,37 @@ DO_DEPLOY_EXTRAS=$(jq -r '.deploy_extras'   "$CONFIG")
 DO_BACKUP=$(jq -r '.backup_existing_zshrc'  "$CONFIG")
 DO_CHSH=$(jq -r '.set_default_shell'        "$CONFIG")
 
-# theme_preset=powerlevel10k overrides default_theme.
-if [ "$THEME_PRESET" = "powerlevel10k" ]; then
-  DEFAULT_THEME="powerlevel10k/powerlevel10k"
+# theme_preset registry (config.theme_presets[$THEME_PRESET]) overrides default_theme
+# when it defines a non-empty zsh_theme. External-prompt presets (starship) leave
+# ZSH_THEME empty and inject their init line into the extras block.
+PRESET_TYPE=""
+PRESET_REPO=""
+PRESET_DEST_REL=""
+PRESET_SYM_FROM=""
+PRESET_SYM_TO=""
+PRESET_INSTALL_SH=""
+PRESET_EXTRAS_LINE=""
+if [ -n "$THEME_PRESET" ] && [ "$THEME_PRESET" != "null" ]; then
+  if jq -e ".theme_presets.\"$THEME_PRESET\"" "$CONFIG" >/dev/null 2>&1; then
+    PRESET_TYPE=$(jq -r        ".theme_presets.\"$THEME_PRESET\".type // \"\""         "$CONFIG")
+    PRESET_REPO=$(jq -r        ".theme_presets.\"$THEME_PRESET\".repo // \"\""         "$CONFIG")
+    PRESET_DEST_REL=$(jq -r    ".theme_presets.\"$THEME_PRESET\".dest_rel // \"\""     "$CONFIG")
+    PRESET_SYM_FROM=$(jq -r    ".theme_presets.\"$THEME_PRESET\".post_symlink.from // \"\"" "$CONFIG")
+    PRESET_SYM_TO=$(jq -r      ".theme_presets.\"$THEME_PRESET\".post_symlink.to // \"\""   "$CONFIG")
+    PRESET_INSTALL_SH=$(jq -r  ".theme_presets.\"$THEME_PRESET\".install_sh // \"\""   "$CONFIG")
+    PRESET_EXTRAS_LINE=$(jq -r ".theme_presets.\"$THEME_PRESET\".extras_line // \"\""  "$CONFIG")
+    PRESET_THEME=$(jq -r       ".theme_presets.\"$THEME_PRESET\".zsh_theme // \"\""    "$CONFIG")
+    [ -n "$PRESET_THEME" ] && DEFAULT_THEME="$PRESET_THEME"
+  elif [ "$THEME_PRESET" = "powerlevel10k" ]; then
+    # Back-compat: legacy branch when theme_presets map isn't present.
+    DEFAULT_THEME="powerlevel10k/powerlevel10k"
+    PRESET_TYPE="omz-custom-theme"
+    PRESET_REPO="$P10K_REPO"
+    PRESET_DEST_REL="custom/themes/powerlevel10k"
+  else
+    log_warn "[60] theme_preset='$THEME_PRESET' not found in config.theme_presets -- ignoring"
+    THEME_PRESET=""
+  fi
 fi
 
 OMZ_DIR="$HOME/.oh-my-zsh"
