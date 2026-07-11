@@ -292,13 +292,57 @@ function Test-RepoAlreadyKnown {
 }
 
 # --------------------------------------------------------------------------
+function Get-HfTrendingGgufRepos {
+    <#
+    .SYNOPSIS
+        Query the HF trending endpoint for GGUF repos (sort=trendingScore).
+        Not scoped to any known family -- surfaces brand-new architectures.
+    #>
+    param(
+        [Parameter(Mandatory)] [string] $CacheDir,
+        [int] $Limit = 30
+    )
+    $isCacheMissing = -not (Test-Path -LiteralPath $CacheDir)
+    if ($isCacheMissing) {
+        try { New-Item -Path $CacheDir -ItemType Directory -Force | Out-Null }
+        catch { Write-Log "Failed to create cache dir: $CacheDir (failure: $($_.Exception.Message))" -Level "error"; return @() }
+    }
+    $cacheFile = Join-Path $CacheDir "hf-trending-gguf.json"
+    if (Test-Path -LiteralPath $cacheFile) {
+        $age = (Get-Date) - (Get-Item -LiteralPath $cacheFile).LastWriteTime
+        if ($age.TotalHours -lt $script:CacheTtlHours) {
+            try {
+                $cached = Get-Content -LiteralPath $cacheFile -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+                Write-Log "[CACHED] HF trending -> $cacheFile (age: $([int]$age.TotalMinutes)m)" -Level "info"
+                return $cached
+            } catch { Write-Log "Trending cache read failed: $($_.Exception.Message)" -Level "warn" }
+        }
+    }
+    # HF: sort=trendingScore + filter=gguf returns the currently rising GGUF repos.
+    $url = "{0}?filter=gguf&sort=trendingScore&direction=-1&limit={1}" -f $script:HfApiBase, $Limit
+    Write-Log "[TREND] $url" -Level "info"
+    try {
+        $resp = Invoke-RestMethod -Uri $url -Method Get -TimeoutSec 30 -ErrorAction Stop `
+            -UserAgent "gitmap-v6-catalog-update/1.0"
+    } catch {
+        Write-Log "HF trending request failed: $url (failure: $($_.Exception.Message))" -Level "error"
+        return @()
+    }
+    try { ($resp | ConvertTo-Json -Depth 8) | Set-Content -LiteralPath $cacheFile -Encoding UTF8 -ErrorAction Stop }
+    catch { Write-Log "Failed to write trending cache: $cacheFile (failure: $($_.Exception.Message))" -Level "warn" }
+    return $resp
+}
+
 function Invoke-CatalogUpdateCheck {
     param(
         [Parameter(Mandatory)] [string] $CatalogPath,
         [Parameter(Mandatory)] [string] $ScriptDir,
         [string] $FamilyFilter = "",
-        [switch] $Apply
+        [switch] $Apply,
+        [switch] $Trending,
+        [int]    $TrendingLimit = 30
     )
+
 
     Write-Log "Catalog auto-update check starting (catalog: $CatalogPath)" -Level "info"
 
