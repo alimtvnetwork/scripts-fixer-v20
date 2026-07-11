@@ -101,7 +101,9 @@ function Get-HfFamilyResults {
     param(
         [Parameter(Mandatory)] [string] $CacheDir,
         [Parameter(Mandatory)] [string] $FamilyName,
-        [Parameter(Mandatory)] [string] $SearchTerm
+        [Parameter(Mandatory)] [string] $SearchTerm,
+        [ValidateSet('lastModified','trending','downloads','likes')]
+        [string] $Sort = 'lastModified'
     )
 
     $isCacheMissing = -not (Test-Path -LiteralPath $CacheDir)
@@ -115,7 +117,7 @@ function Get-HfFamilyResults {
     }
 
     $safeName  = ($FamilyName -replace '[^a-zA-Z0-9]+', '-').Trim('-').ToLowerInvariant()
-    $cacheFile = Join-Path $CacheDir ("hf-{0}.json" -f $safeName)
+    $cacheFile = Join-Path $CacheDir ("hf-{0}-{1}.json" -f $safeName, $Sort.ToLower())
 
     $hasCache = Test-Path -LiteralPath $cacheFile
     if ($hasCache) {
@@ -124,7 +126,7 @@ function Get-HfFamilyResults {
         if ($isFresh) {
             try {
                 $cached = Get-Content -LiteralPath $cacheFile -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
-                Write-Log "[CACHED] $FamilyName -> $cacheFile (age: $([int]$cacheAge.TotalMinutes)m)" -Level "info"
+                Write-Log "[CACHED] $FamilyName ($Sort) -> $cacheFile (age: $([int]$cacheAge.TotalMinutes)m)" -Level "info"
                 return $cached
             } catch {
                 Write-Log "Cache read failed, refetching: $cacheFile (failure: $($_.Exception.Message))" -Level "warn"
@@ -133,7 +135,14 @@ function Get-HfFamilyResults {
     }
 
     $query = [System.Uri]::EscapeDataString("$SearchTerm gguf")
-    $url   = "{0}?search={1}&sort=lastModified&limit={2}" -f $script:HfApiBase, $query, $script:MaxReposPerFamily
+    # HF API sort values: 'trendingScore' (rising models), 'downloads',
+    # 'likes', 'lastModified'. Map friendly names to what the API expects.
+    $sortParam = switch ($Sort) {
+        'trending'   { 'trendingScore' }
+        default      { $Sort }
+    }
+    $url = "{0}?search={1}&sort={2}&direction=-1&limit={3}" -f $script:HfApiBase, $query, $sortParam, $script:MaxReposPerFamily
+
 
     Write-Log "[CHECK] $FamilyName -> $url" -Level "info"
 
