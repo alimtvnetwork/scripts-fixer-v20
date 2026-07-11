@@ -153,19 +153,38 @@ install_packages() {
   if is_macos; then brew_install_packages; else apt_install_packages; fi
 }
 
-install_powerlevel10k() {
-  [ "$THEME_PRESET" = "powerlevel10k" ] || return 0
-  local dest="$OMZ_DIR/custom/themes/powerlevel10k"
-  if [ -d "$dest" ]; then
-    log_ok "[60] powerlevel10k already cloned at $dest"
-    return 0
-  fi
-  mkdir -p "$(dirname "$dest")" || { log_file_error "$(dirname "$dest")" "cannot create p10k parent"; return 1; }
-  log_info "[60] Cloning Powerlevel10k -> $dest"
-  if ! git clone --depth=1 "$P10K_REPO" "$dest"; then
-    log_err "[60] git clone failed for powerlevel10k from $P10K_REPO"
-    return 1
-  fi
+install_theme_preset() {
+  [ -n "$PRESET_TYPE" ] || return 0
+  case "$PRESET_TYPE" in
+    omz-custom-theme)
+      local dest="$OMZ_DIR/$PRESET_DEST_REL"
+      if [ -d "$dest" ]; then
+        log_ok "[60] theme_preset '$THEME_PRESET' already cloned at $dest"
+      else
+        mkdir -p "$(dirname "$dest")" || { log_file_error "$(dirname "$dest")" "cannot create theme parent"; return 1; }
+        log_info "[60] Cloning theme_preset '$THEME_PRESET' -> $dest"
+        if ! git clone --depth=1 "$PRESET_REPO" "$dest"; then
+          log_err "[60] git clone failed for theme_preset '$THEME_PRESET' from $PRESET_REPO"
+          return 1
+        fi
+      fi
+      if [ -n "$PRESET_SYM_FROM" ] && [ -n "$PRESET_SYM_TO" ]; then
+        local sfrom="$OMZ_DIR/$PRESET_SYM_FROM" sto="$OMZ_DIR/$PRESET_SYM_TO"
+        [ -e "$sto" ] || ln -sf "$sfrom" "$sto" 2>/dev/null || log_warn "[60] symlink $sto -> $sfrom failed"
+      fi
+      ;;
+    external-prompt)
+      if command -v starship >/dev/null 2>&1; then
+        log_ok "[60] theme_preset '$THEME_PRESET' binary already present ($(command -v starship))"
+      elif [ -n "$PRESET_INSTALL_SH" ]; then
+        log_info "[60] Installing theme_preset '$THEME_PRESET' via: $PRESET_INSTALL_SH"
+        sh -c "$PRESET_INSTALL_SH" || log_warn "[60] external prompt installer returned non-zero"
+      fi
+      ;;
+    *)
+      log_warn "[60] Unknown theme_preset type '$PRESET_TYPE' -- skipping"
+      ;;
+  esac
 }
 
 install_omz() {
