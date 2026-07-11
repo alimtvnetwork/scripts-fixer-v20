@@ -14,13 +14,26 @@ cyan()  { printf '\033[36m%s\033[0m\n' "$*"; }
 
 check() {
   local phase="$1" kind="$2" path="$3"
-  if [[ "$kind" == "file" && -f "$path" ]]; then
-    green "  [OK]   $phase  file  $path"
-  elif [[ "$kind" == "dir"  && -d "$path" ]]; then
-    green "  [OK]   $phase  dir   $path"
-  else
-    red   "  [FAIL] $phase  $kind  MISSING: $path"
-    FAIL=$((FAIL+1))
+  if [[ "$kind" == "file" ]]; then
+    if [[ ! -f "$path" ]]; then
+      red   "  [FAIL] $phase  file  MISSING: $path"
+      FAIL=$((FAIL+1))
+    elif [[ ! -s "$path" ]]; then
+      red   "  [FAIL] $phase  file  EMPTY:   $path"
+      FAIL=$((FAIL+1))
+    else
+      green "  [OK]   $phase  file  $path ($(wc -c <"$path") bytes)"
+    fi
+  elif [[ "$kind" == "dir" ]]; then
+    if [[ ! -d "$path" ]]; then
+      red   "  [FAIL] $phase  dir   MISSING: $path"
+      FAIL=$((FAIL+1))
+    elif [[ -z "$(ls -A "$path" 2>/dev/null)" ]]; then
+      red   "  [FAIL] $phase  dir   EMPTY:   $path"
+      FAIL=$((FAIL+1))
+    else
+      green "  [OK]   $phase  dir   $path"
+    fi
   fi
 }
 
