@@ -63,16 +63,20 @@ version: 1.0
 
 **Goal:** Absorb the project's unified rulebook.
 
-1. Navigate to `spec/12-consolidated-guidelines/` (if present in this repo).
-2. Read files in numeric order (`01-*.md` through `NN-*.md`).
-3. Each file is a self-contained policy document.
+This repo does not have a `spec/12-consolidated-guidelines/` folder. The equivalent knowledge is split across:
+
+1. `.lovable/strictly-avoid.md` — hard prohibitions (already read in Phase 1).
+2. `.lovable/memory/index.md` Core section + all `constraints/` and `preferences/` entries.
+3. `spec/error-management/` — `powershell-error-management.md` + `gap-audit.md` (CODE RED error rules).
+4. `spec/shared/` — shared helper contracts (`logging.md`, `install-paths.md`, `admin-check.md`, `fast-download.md`, `tool-version.md`, `registry-backup.md`, `symlink-utils.md`, `invoke-with-timeout.md`, `ensure-summary.md`, `tool-version-parsers.md`).
+
+Read each file top-to-bottom. If a consolidated-guidelines folder is added later, prepend it to this list.
 
 Confirm internally:
-- [ ] Total number of guideline files read.
-- [ ] One-sentence summary of each file's key rule.
-- [ ] Any rules that contradict default training (spec wins).
+- [ ] Every file above read.
+- [ ] Any rule that contradicts default training (spec wins).
 
-> DO NOT proceed to Phase 3 until all consolidated guideline files have been read.
+> DO NOT proceed to Phase 3 until all files above have been read.
 
 ---
 
@@ -80,17 +84,16 @@ Confirm internally:
 
 **Goal:** Understand how specs are structured so you can read them correctly and author new ones.
 
-1. Navigate to `spec/00-spec-writing-guide/` (canonical in this repo) or `spec/01-spec-authoring-guide/` if it exists.
-2. Read every file in numeric order.
+Canonical guide in this repo: `spec/00-spec-writing-guide/readme.md` (single file — read it end-to-end). It mirrors the SP-N hard-stop rules from `.lovable/memory/constraints/strictly-prohibited.md` (§11a).
 
 After reading, confirm you understand:
 
 | Concept | Where Defined |
 |---------|---------------|
-| File / folder naming conventions | Spec authoring guide |
-| Required files in every spec folder (`00-overview.md`, `99-consistency-report.md`) | Spec authoring guide |
-| The `.lovable/` folder structure and its purpose | Memory-folder guide |
-| Linter infrastructure requirements | Spec authoring guide |
+| File / folder naming conventions | `spec/00-spec-writing-guide/readme.md` |
+| Required files in a spec folder | `spec/00-spec-writing-guide/readme.md` |
+| The `.lovable/` folder structure | `.lovable/what-to-read.md` + `.lovable/overview.md` |
+| SP-N hard-stop rules (mirrored) | `spec/00-spec-writing-guide/readme.md` §11a |
 
 > DO NOT begin any task until Phases 1–3 are complete.
 
@@ -98,21 +101,30 @@ After reading, confirm you understand:
 
 ## Phase 4 — Deep-Dive Source Specs (Task-Driven)
 
-Before performing any task, read the relevant source spec(s).
+Before performing any task, read the relevant source spec(s). Folders below all exist in this repo.
 
 | Task involves... | Read |
 |------------------|------|
-| Writing / reviewing code | `spec/02-coding-guidelines/` (or repo equivalent) |
-| Error handling | `spec/03-error-manage/` / `spec/02-app-issues/` |
-| Database schema | `spec/04-database-conventions/` |
-| Configuration systems | `spec/06-seedable-config-architecture/` |
-| PowerShell scripts | `spec/10-powershell-integration/` + `spec/NN-install-*` |
-| CI/CD pipelines | `spec/13-cicd-pipeline-workflows/` + `.lovable/cicd-issues/` |
-| Self-update / bootstrap | `spec/14-self-update-app-update/` |
-| App-specific features | `spec/21-app/` |
-| App bugs | `spec/22-app-issues/` |
+| Generic install-script behavior | `spec/00-generic-install-script-behavior/` |
+| Error handling (CODE RED) | `spec/error-management/` + `.lovable/memory/features/error-management-file-path-rule.md` |
+| Shared helpers (logging, install-paths, admin, fast-download, tool-version, ...) | `spec/shared/` |
+| PowerShell install scripts | `spec/NN-install-*/` for the target tool |
+| Database installers | `spec/databases/` + `spec/18..29-install-*/` |
+| Root dispatcher / run.ps1 / run.sh | `spec/root-dispatcher/` |
+| Models catalog / llama.cpp / Ollama | `spec/models/` + `spec/kimodo/` + `spec/43-install-llama-cpp` handling |
+| CI/CD pipelines | `spec/ci-cd/` + `.lovable/cicd-index.md` + `.lovable/cicd-issues/` |
+| Install / bootstrap flow | `spec/install-bootstrap/` |
+| Doctor / drift checks | `spec/doctor/` |
+| Release + version bump | `spec/release-pipeline/` + `spec/bump-version/` |
+| User management (Windows + Linux) | `spec/68-user-mgmt/` |
+| VS Code repair / context menus | `spec/52-vscode-folder-repair/` + `spec/53..55-*context-menu*/` |
+| Chrome AI fix / profile copy | `spec/58-install-chrome/` + `spec/chrome-fix-ai/` |
+| App-specific bugs | `spec/02-app-issues/` |
+| 2025 batch scripts | `spec/2025-batch/` |
 
-Reading order within each folder: `00-overview.md` → numbered files → `99-consistency-report.md`.
+Reading order within each folder: `readme.md` first, then numbered files in order, then any `99-*.md` consistency report if present.
+
+
 
 ---
 
