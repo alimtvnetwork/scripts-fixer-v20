@@ -185,4 +185,5 @@ Then stop and wait. Do not suggest next steps.
 
 ## Changelog
 
+- v1.1 — replaced non-existent spec paths (`12-consolidated-guidelines/`, `01-spec-authoring-guide/`, `02-coding-guidelines/`, `03-error-manage/`, `04-database-conventions/`, `06-seedable-config-architecture/`, `10-powershell-integration/`, `13-cicd-pipeline-workflows/`, `14-self-update-app-update/`, `21-app/`, `22-app-issues/`) with real folders in this repo (`00-spec-writing-guide/`, `error-management/`, `shared/`, `ci-cd/`, `install-bootstrap/`, `root-dispatcher/`, `models/`, `doctor/`, `release-pipeline/`, `bump-version/`, `68-user-mgmt/`, `2025-batch/`, `02-app-issues/`).
 - v1.0 — initial canonical read-memory prompt (aligns with `.lovable/what-to-read.md`).
