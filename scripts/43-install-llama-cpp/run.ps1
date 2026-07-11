@@ -76,7 +76,7 @@ Write-InstallPaths `
     Initialize-Logging -ScriptName $logMessages.scriptName
     try {
         Invoke-CatalogUpdateCheck -CatalogPath $catalogPath -ScriptDir $scriptDir `
-            -FamilyFilter $Family -Apply:$Apply
+            -FamilyFilter $Family -Apply:$Apply -Trending:$Trending -TrendingLimit $TrendingLimit
     } catch {
         Write-Log "Catalog update check failed: $_" -Level "error"
         Write-Log "Stack: $($_.ScriptStackTrace)" -Level "error"
