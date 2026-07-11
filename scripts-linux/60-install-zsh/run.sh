@@ -38,9 +38,37 @@ DO_DEPLOY_EXTRAS=$(jq -r '.deploy_extras'   "$CONFIG")
 DO_BACKUP=$(jq -r '.backup_existing_zshrc'  "$CONFIG")
 DO_CHSH=$(jq -r '.set_default_shell'        "$CONFIG")
 
-# theme_preset=powerlevel10k overrides default_theme.
-if [ "$THEME_PRESET" = "powerlevel10k" ]; then
-  DEFAULT_THEME="powerlevel10k/powerlevel10k"
+# theme_preset registry (config.theme_presets[$THEME_PRESET]) overrides default_theme
+# when it defines a non-empty zsh_theme. External-prompt presets (starship) leave
+# ZSH_THEME empty and inject their init line into the extras block.
+PRESET_TYPE=""
+PRESET_REPO=""
+PRESET_DEST_REL=""
+PRESET_SYM_FROM=""
+PRESET_SYM_TO=""
+PRESET_INSTALL_SH=""
+PRESET_EXTRAS_LINE=""
+if [ -n "$THEME_PRESET" ] && [ "$THEME_PRESET" != "null" ]; then
+  if jq -e ".theme_presets.\"$THEME_PRESET\"" "$CONFIG" >/dev/null 2>&1; then
+    PRESET_TYPE=$(jq -r        ".theme_presets.\"$THEME_PRESET\".type // \"\""         "$CONFIG")
+    PRESET_REPO=$(jq -r        ".theme_presets.\"$THEME_PRESET\".repo // \"\""         "$CONFIG")
+    PRESET_DEST_REL=$(jq -r    ".theme_presets.\"$THEME_PRESET\".dest_rel // \"\""     "$CONFIG")
+    PRESET_SYM_FROM=$(jq -r    ".theme_presets.\"$THEME_PRESET\".post_symlink.from // \"\"" "$CONFIG")
+    PRESET_SYM_TO=$(jq -r      ".theme_presets.\"$THEME_PRESET\".post_symlink.to // \"\""   "$CONFIG")
+    PRESET_INSTALL_SH=$(jq -r  ".theme_presets.\"$THEME_PRESET\".install_sh // \"\""   "$CONFIG")
+    PRESET_EXTRAS_LINE=$(jq -r ".theme_presets.\"$THEME_PRESET\".extras_line // \"\""  "$CONFIG")
+    PRESET_THEME=$(jq -r       ".theme_presets.\"$THEME_PRESET\".zsh_theme // \"\""    "$CONFIG")
+    [ -n "$PRESET_THEME" ] && DEFAULT_THEME="$PRESET_THEME"
+  elif [ "$THEME_PRESET" = "powerlevel10k" ]; then
+    # Back-compat: legacy branch when theme_presets map isn't present.
+    DEFAULT_THEME="powerlevel10k/powerlevel10k"
+    PRESET_TYPE="omz-custom-theme"
+    PRESET_REPO="$P10K_REPO"
+    PRESET_DEST_REL="custom/themes/powerlevel10k"
+  else
+    log_warn "[60] theme_preset='$THEME_PRESET' not found in config.theme_presets -- ignoring"
+    THEME_PRESET=""
+  fi
 fi
 
 OMZ_DIR="$HOME/.oh-my-zsh"
@@ -125,19 +153,38 @@ install_packages() {
   if is_macos; then brew_install_packages; else apt_install_packages; fi
 }
 
-install_powerlevel10k() {
-  [ "$THEME_PRESET" = "powerlevel10k" ] || return 0
-  local dest="$OMZ_DIR/custom/themes/powerlevel10k"
-  if [ -d "$dest" ]; then
-    log_ok "[60] powerlevel10k already cloned at $dest"
-    return 0
-  fi
-  mkdir -p "$(dirname "$dest")" || { log_file_error "$(dirname "$dest")" "cannot create p10k parent"; return 1; }
-  log_info "[60] Cloning Powerlevel10k -> $dest"
-  if ! git clone --depth=1 "$P10K_REPO" "$dest"; then
-    log_err "[60] git clone failed for powerlevel10k from $P10K_REPO"
-    return 1
-  fi
+install_theme_preset() {
+  [ -n "$PRESET_TYPE" ] || return 0
+  case "$PRESET_TYPE" in
+    omz-custom-theme)
+      local dest="$OMZ_DIR/$PRESET_DEST_REL"
+      if [ -d "$dest" ]; then
+        log_ok "[60] theme_preset '$THEME_PRESET' already cloned at $dest"
+      else
+        mkdir -p "$(dirname "$dest")" || { log_file_error "$(dirname "$dest")" "cannot create theme parent"; return 1; }
+        log_info "[60] Cloning theme_preset '$THEME_PRESET' -> $dest"
+        if ! git clone --depth=1 "$PRESET_REPO" "$dest"; then
+          log_err "[60] git clone failed for theme_preset '$THEME_PRESET' from $PRESET_REPO"
+          return 1
+        fi
+      fi
+      if [ -n "$PRESET_SYM_FROM" ] && [ -n "$PRESET_SYM_TO" ]; then
+        local sfrom="$OMZ_DIR/$PRESET_SYM_FROM" sto="$OMZ_DIR/$PRESET_SYM_TO"
+        [ -e "$sto" ] || ln -sf "$sfrom" "$sto" 2>/dev/null || log_warn "[60] symlink $sto -> $sfrom failed"
+      fi
+      ;;
+    external-prompt)
+      if command -v starship >/dev/null 2>&1; then
+        log_ok "[60] theme_preset '$THEME_PRESET' binary already present ($(command -v starship))"
+      elif [ -n "$PRESET_INSTALL_SH" ]; then
+        log_info "[60] Installing theme_preset '$THEME_PRESET' via: $PRESET_INSTALL_SH"
+        sh -c "$PRESET_INSTALL_SH" || log_warn "[60] external prompt installer returned non-zero"
+      fi
+      ;;
+    *)
+      log_warn "[60] Unknown theme_preset type '$PRESET_TYPE' -- skipping"
+      ;;
+  esac
 }
 
 install_omz() {
@@ -205,6 +252,11 @@ append_extras_zshrc() {
     echo ""
     echo "$EXTRAS_MARKER_BEGIN"
     cat "$PAYLOAD_EXTRAS"
+    if [ -n "$PRESET_EXTRAS_LINE" ]; then
+      echo ""
+      echo "# theme_preset=$THEME_PRESET init"
+      echo "$PRESET_EXTRAS_LINE"
+    fi
     echo ""
     echo "$EXTRAS_MARKER_END"
   } >> "$ZSHRC"
@@ -405,7 +457,7 @@ verb_install() {
   backup_existing_config || true
   install_packages       || return 1
   install_omz            || return 1
-  install_powerlevel10k  || true
+  install_theme_preset   || true
   clone_custom_plugins
   deploy_base_zshrc      || return 1
   append_extras_zshrc    || return 1

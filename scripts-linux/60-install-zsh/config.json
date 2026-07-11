@@ -6,8 +6,32 @@
   },
   "default_theme": "robbyrussell",
   "theme_preset": "",
-  "_theme_preset_doc": "Set to 'powerlevel10k' to clone romkatv/powerlevel10k into custom/themes and switch ZSH_THEME to powerlevel10k/powerlevel10k. Empty disables.",
-  "plugins": ["git", "z", "sudo", "history", "command-not-found", "zsh-autosuggestions", "zsh-syntax-highlighting"],
+  "_theme_preset_doc": "Opt-in registry key. Supported: 'powerlevel10k' (clones romkatv/powerlevel10k as OMZ custom theme), 'starship' (installs starship prompt binary + wires init in extras; ZSH_THEME left blank), 'spaceship' (clones spaceship-prompt as OMZ custom theme). Empty = use default_theme as-is.",
+  "theme_presets": {
+    "powerlevel10k": {
+      "type":      "omz-custom-theme",
+      "repo":      "https://github.com/romkatv/powerlevel10k.git",
+      "zsh_theme": "powerlevel10k/powerlevel10k",
+      "dest_rel":  "custom/themes/powerlevel10k"
+    },
+    "spaceship": {
+      "type":      "omz-custom-theme",
+      "repo":      "https://github.com/spaceship-prompt/spaceship-prompt.git",
+      "zsh_theme": "spaceship",
+      "dest_rel":  "custom/themes/spaceship-prompt",
+      "post_symlink": {
+        "from": "custom/themes/spaceship-prompt/spaceship.zsh-theme",
+        "to":   "custom/themes/spaceship.zsh-theme"
+      }
+    },
+    "starship": {
+      "type":      "external-prompt",
+      "install_sh": "curl -fsSL https://starship.rs/install.sh | sh -s -- -y",
+      "zsh_theme": "",
+      "extras_line": "command -v starship >/dev/null 2>&1 && eval \"$(starship init zsh)\""
+    }
+  },
+  "plugins": ["git", "z", "sudo", "history", "command-not-found", "zsh-autosuggestions", "zsh-syntax-highlighting", "history-substring-search"],
   "custom_plugins": [
     {
       "name": "zsh-autosuggestions",
@@ -18,6 +42,11 @@
       "name": "zsh-syntax-highlighting",
       "repo": "https://github.com/zsh-users/zsh-syntax-highlighting",
       "dest": "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+    },
+    {
+      "name": "zsh-history-substring-search",
+      "repo": "https://github.com/zsh-users/zsh-history-substring-search",
+      "dest": "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/history-substring-search"
     }
   ],
   "deploy_zshrc": true,
