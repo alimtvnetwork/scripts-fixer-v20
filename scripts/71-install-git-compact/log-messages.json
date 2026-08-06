@@ -1,0 +1,56 @@
+{
+  "scriptName": "install-git-compact",
+  "description": "Installs the git-compact CLI -- compacts and prunes local git repositories. Sourced from https://raw.githubusercontent.com/alimtvnetwork/git-compact/main/install.ps1 (UNIX equivalent: .../install.sh).",
+  "messages": {
+    "notAdmin": "This script requires admin privileges. Please run as Administrator.",
+    "checking": "Checking for git-compact...",
+    "found": "git-compact already installed",
+    "foundVersion": "git-compact already installed (v{version})",
+    "notFound": "git-compact not found -- will install now",
+    "installDir": "git-compact install directory: {path}",
+    "installing": "Installing git-compact via remote installer...",
+    "installSuccess": "git-compact installed successfully",
+    "installSuccessVersion": "git-compact installed successfully (v{version})",
+    "installFailed": "git-compact install failed: {error}",
+    "notInPath": "git-compact installed but not found in PATH (may need shell restart)",
+    "verifyStart": "Verifying 'git-compact --version' works in current session...",
+    "verifyOk": "Verified: git-compact --version -> {version}",
+    "verifyBinaryAt": "git-compact binary path: {path}",
+    "verifyMissing": "'git-compact' not found on PATH after install -- refreshing environment...",
+    "verifyRefreshed": "PATH refreshed from registry. Entries added: {count}",
+    "verifyExitCode": "'git-compact --version' exited with code {code}; output: {output}",
+    "verifyFinalFail": "Could not run 'git-compact --version' after install. Open a NEW terminal and re-run.",
+    "setupComplete": "git-compact setup complete",
+    "disabled": "git-compact install is disabled in config",
+    "downloadingInstaller": "Downloading git-compact installer from GitHub...",
+    "runningInstaller": "Running git-compact installer...",
+    "remoteInstallerFailed": "Remote installer failed -- falling back to ZIP download",
+    "downloadingZip": "Downloading git-compact release ZIP from: {url}",
+    "zipExtracted": "ZIP extracted to: {path}",
+    "zipFallbackFailed": "ZIP fallback also failed: {error}",
+    "uninstalling": "Uninstalling {name}...",
+    "uninstallSuccess": "{name} uninstalled successfully.",
+    "uninstallFailed": "{name} uninstall failed -- package may need manual removal.",
+    "uninstallComplete": "Uninstall complete. Package removed, tracking purged."
+  },
+  "help": {
+    "commands": {
+      "install": "Install git-compact CLI (default)",
+      "check": "Verify the installed binary responds to --version",
+      "uninstall": "Uninstall completely, remove tracking, clean up"
+    },
+    "flags": {
+      "-Tag <ref>": "Pin a git ref (branch / tag / commit) on alimtvnetwork/git-compact (e.g. main, dev, v1.2.0). Substituted into installUrl/releaseZipUrl. Default: main.",
+      "-Version <ref>": "Back-compat alias for -Tag.",
+      "-Help": "Show this help text and exit."
+    },
+    "examples": [
+      ".\\run.ps1 -I 71",
+      ".\\run.ps1 -I 71 -Tag main",
+      ".\\run.ps1 -I 71 -Tag v1.2.0",
+      ".\\run.ps1 install git-compact",
+      ".\\run.ps1 -I 71 -- -Help",
+      ".\\run.ps1 -I 71 uninstall"
+    ]
+  }
+}
