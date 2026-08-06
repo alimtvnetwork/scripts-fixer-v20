@@ -65,6 +65,7 @@
     "06": "06-install-golang",
     "07": "07-install-git",
     "08": "08-install-github-desktop",
-    "09": "09-install-cpp"
+    "09": "09-install-cpp",
+    "71": "71-install-git-compact"
   }
 }
