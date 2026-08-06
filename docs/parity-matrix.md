@@ -86,6 +86,7 @@ Auto-generated from `registry.yaml`. Legend: ✅ supported, ⬜ not implemented.
 | 89 | Change RabbitMQ AMQP listener port (rabbitmq.conf) | ⬜ | ✅ | ✅ |
 | 90 | Postfix SMTP port inspector (READ-ONLY; refuses to change port 25) | ⬜ | ✅ | ✅ |
 | 91 | Interactive change-port menu (dispatches to 80-90) | ⬜ | ✅ | ✅ |
+| 71 | 71-install-git-compact | ✅ | ✅ | ✅ |
 | 100 | Install BIND9 DNS server (auth + recursive) | ⬜ | ✅ | ✅ |
 | 101 | Install Unbound recursive caching resolver | ⬜ | ✅ | ✅ |
 | 102 | Install PowerDNS Authoritative server | ⬜ | ✅ | ✅ |
@@ -97,19 +98,4 @@ Auto-generated from `registry.yaml`. Legend: ✅ supported, ⬜ not implemented.
 | 108 | Install NSD (NLnet authoritative-only DNS) | ⬜ | ✅ | ✅ |
 | 109 | Interactive DNS-install menu (dispatches to 100-108) | ⬜ | ✅ | ✅ |
 
-**Coverage:** 43 on all three OSes · 22 Windows-only · 26 Linux/macOS-only · 91 total.
-
-## Orchestrator playbooks (Linux/macOS fan-out over SSH)
-
-Fan-out wrappers under `scripts-orchestrator/playbooks/` that ship the matching
-`scripts-linux/` modules to every host in an inventory group. Windows targets
-are out of scope for the orchestrator.
-
-| Playbook | Ships | Purpose |
-| --- | --- | --- |
-| `zsh-fanout` | `60-install-zsh` + `61-install-zsh-theme-switcher` + `62-install-zsh-clear` | Install zsh + Oh-My-Zsh + curated `.zshrc` on every host. Honours `TARGET_USER`, `THEME`, `SKIP_THEME_SWITCHER`, `DRY_RUN`. |
-| `users-fanout` | `68-user-mgmt` | Cross-OS user/group provisioning from a JSON payload. |
-| `ssh-keys-fanout` | `_shared/ssh-key-ledger.sh` | Distribute + record authorized_keys and merge ledgers on the controller. |
-| `groups-fanout` | `68-user-mgmt` group verbs | Group membership sync. |
-| `k8s-kubeadm` | `kubernetes/02-05` | kubeadm v1.31 + CRI-O + Weave + Helm bring-up. |
-
+**Coverage:** 44 on all three OSes · 22 Windows-only · 26 Linux/macOS-only · 92 total.
