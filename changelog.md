@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.9.0] -- 2026-08-06
+
+### Fixed
+- **`scripts/07-install-git/config.json`** -- `_minFreeGB_note` contained a raw Windows path (`C:\Program Files\Git`). The `\P` sequence is not a valid JSON escape, so `ConvertFrom-Json` in `scripts/shared/logging.ps1` threw "Bad JSON escape sequence: \P" and script 07 could not start. Backslashes are now doubled.
+- **`scripts/16-install-php/config.json`** -- same class of bug: `C:\tools` parsed as a literal TAB. Escaped.
+
+### Added
+- **`tools/validate-json-configs.mjs`** -- parses every `config.json`, `log-messages.json`, `manifest.json`, and `registry.json` under `scripts/`, `scripts-linux/`, `core/`, `tools/`, and `scripts-orchestrator/`, reporting the exact path, line, column, and parser reason on failure. Wired into `.githooks/pre-commit` and a new `validate-json-configs` CI workflow. Runtime output folders (`.logs/`, `.summary/`, `.installed/`, `.resolved/`) are skipped.
+- **Script 71 -- install git-compact** (Windows + Linux/macOS): `scripts/71-install-git-compact/` (run.ps1, config, log-messages, manifest, helpers) and `scripts-linux/71-install-git-compact/` (run.sh, config, log-messages, manifest, readme). Commands: `install` (default), `check`, `repair` (Linux), `uninstall`, plus full `--help` / `-Help` text, `-Tag` / `--tag` ref pinning, triple-path logging, `.installed/` tracking, and ASCII status glyphs. Spec at `spec/71-install-git-compact/readme.md`.
+
+### Changed
+- **GitMap (script 35) now points at `alimtvnetwork/gitmap-v28`** instead of `gitmap-v23`, across Windows config/run/log-messages/readme, Linux config/run.sh, the spec, and the root readme. Ref pinning behaviour is unchanged.
+- `registry.yaml` and both generated registries include id `71`.
+
+
 ## [v1.3.0] -- 2026-06-25
 
 ### Added
