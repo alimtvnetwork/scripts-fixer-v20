@@ -1,0 +1,12 @@
+{
+  "install": {
+    "method":      "curlOneLiner",
+    "scriptName":  "git-compact",
+    "releaseTag":  "main",
+    "installUrl":  "https://raw.githubusercontent.com/alimtvnetwork/git-compact/{tag}/install.sh",
+    "binDir":      "${HOME}/.local/bin"
+  },
+  "verify": {
+    "binary": "${HOME}/.local/bin/git-compact --version"
+  }
+}
