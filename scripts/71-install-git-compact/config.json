@@ -1,0 +1,20 @@
+{
+  "minFreeGB": 0.2,
+  "devDir": {
+    "mode": "smart",
+    "default": "C:\\dev-tool\\GitCompact",
+    "override": ""
+  },
+  "gitCompact": {
+    "enabled": true,
+    "verifyCommand": "git-compact",
+    "name": "git-compact",
+    "desc": "Compacts and prunes local git repositories (gc, reflog expire, repack)",
+    "installUrl": "https://raw.githubusercontent.com/alimtvnetwork/git-compact/{tag}/install.ps1",
+    "repo": "alimtvnetwork/git-compact",
+    "releaseTag": "main",
+    "releaseZipUrl": "https://github.com/alimtvnetwork/git-compact/releases/download/{tag}/git-compact-windows-amd64.zip",
+    "fallbackTag": "main",
+    "installDir": ""
+  }
+}
