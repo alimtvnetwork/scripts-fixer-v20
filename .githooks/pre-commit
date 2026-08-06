@@ -33,7 +33,15 @@ fi
 
 # ── 3. Registry + version drift guard ───────────────────────────────────────
 if command -v node >/dev/null 2>&1; then
+  if [ -f "tools/validate-json-configs.mjs" ]; then
+    say "validate-json-configs"
+    if ! node tools/validate-json-configs.mjs; then
+      err "malformed JSON config(s). Fix the exact paths listed above (Windows paths need doubled backslashes)."
+      fail=1
+    fi
+  fi
   if [ -f "tools/registry-sync.cjs" ]; then
+
     say "registry-sync --check"
     if ! node tools/registry-sync.cjs --check; then
       err "registry JSONs drifted. Run: node tools/registry-sync.cjs"
