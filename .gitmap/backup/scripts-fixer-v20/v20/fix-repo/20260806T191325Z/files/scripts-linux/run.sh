@@ -47,7 +47,7 @@ while [ $# -gt 0 ]; do
           sha=$(cd "$ROOT/.." 2>/dev/null && git rev-parse --short HEAD 2>/dev/null || echo "no-git")
           [ -z "$sha" ] && sha="no-git"
         fi
-        printf '\n  scripts-fixer v%s  (%s)\n  https://github.com/alimtvnetwork/scripts-fixer-v20\n\n' "$ver" "$sha"
+        printf '\n  scripts-fixer v%s  (%s)\n  https://github.com/alimtvnetwork/scripts-fixer-v19\n\n' "$ver" "$sha"
         exit 0
         ;;
     # ---- top-level shortcuts to script 64 (cross-OS startup-add) ----

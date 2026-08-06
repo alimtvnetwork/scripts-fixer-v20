@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "repo": "scripts-fixer-v20",
+  "currentVersion": 20,
+  "timestamp": "20260806T191325Z",
+  "gitmapVersion": "6.83.0",
+  "files": [
+    ".lovable/cicd-issues/02-legacy-ref-scan-noise.md",
+    ".lovable/memory/index.md",
+    ".lovable/memory/preferences/readme-install-placement.md",
+    ".lovable/question-and-ambiguity/10-install-bootstrap-version-flag.md",
+    ".lovable/question-and-ambiguity/README.md",
+    "CHANGELOG.md",
+    "README.md",
+    "install.ps1",
+    "install.sh",
+    "legacy-fix-report.json",
+    "scripts-linux/run.sh",
+    "scripts/profile/log-messages.json",
+    "spec/00-generic-install-script-behavior/04-main-branch-fallback.md",
+    "spec/error-management/powershell-error-management.md",
+    "spec/install-bootstrap/readme.md",
+    "spec/root-dispatcher/readme.md",
+    "tools/fix-and-verify-legacy-refs.ps1",
+    "tools/fix-and-verify-legacy-refs.sh",
+    "tools/fix-legacy-fixer-refs.ps1",
+    "tools/fix-legacy-fixer-refs.sh",
+    "version.json"
+  ]
+}
