@@ -61,11 +61,30 @@ curl -fsSL https://raw.githubusercontent.com/alimtvnetwork/git-compact/main/inst
 | `repair` | no | yes | Removes the binary and reinstalls |
 | `uninstall` | yes | yes | Removes the binary and purges tracking |
 
-## Ref pinning
+## Flags
+
+| Flag | Platform | Description |
+|------|----------|-------------|
+| `-Tag <ref>` | Windows | Pin a branch, tag, or commit on `alimtvnetwork/git-compact`. |
+| `-Version <ref>` | Windows | Back-compat alias for `-Tag`. |
+| `-Help` | Windows | Print the help block from `log-messages.json` and exit. |
+| `--tag <ref>` / `--tag=<ref>` | Linux / macOS | Same as `-Tag`. |
+| `--help`, `-h` | Linux / macOS | Print usage, commands, flags, env vars, and examples. |
+| `$GIT_COMPACT_TAG` | Linux / macOS | Env-var form of `--tag`, lower precedence than the flag. |
 
 Precedence on Windows: `-Tag` / `-Version` flag > `gitCompact.releaseTag` > `gitCompact.fallbackTag` > `main`.
 Precedence on Linux: `--tag` flag > `$GIT_COMPACT_TAG` > `install.releaseTag` > `main`.
 Numeric refs such as `1.2.0` are normalised to `v1.2.0`; branch names pass through unchanged.
+
+## Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success: installed, already installed, verified, or uninstalled cleanly |
+| `1` | Failure: missing dependency (git / curl), insufficient disk space, download failure, or `--version` verification failed |
+| `2` | Unknown verb passed to `run.sh` (see `--help`) |
+
+
 
 ## Config (`config.json`)
 
