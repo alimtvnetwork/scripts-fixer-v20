@@ -415,12 +415,6 @@
       "folder": "109-install-dns-menu",
       "phase": "16",
       "title": "Interactive DNS-install menu (dispatches to 100-108)"
-    },
-    {
-      "id": "71",
-      "folder": "71-install-git-compact",
-      "phase": "10",
-      "title": "git-compact (repo compactor CLI)"
     }
   ]
 }
