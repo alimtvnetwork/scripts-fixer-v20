@@ -1,0 +1,38 @@
+{
+  "description": "Log messages for 71-install-git-compact",
+  "messages": {
+    "start":            "[71] Starting git-compact installer",
+    "tag":              "[71] git-compact ref: {tag}",
+    "url":              "[71] resolved install URL: {url}",
+    "deploy":           "[71] Installing git-compact to {path}",
+    "deployFailed":     "[71] Deploy failed at {path}",
+    "verifyStart":      "[71] Verifying 'git-compact --version'",
+    "verifyOk":         "[71] Verify OK (git-compact --version)",
+    "verifyFail":       "[71] Verify FAILED",
+    "alreadyInstalled": "[71] Already installed",
+    "removed":          "[71] Removed git-compact"
+  },
+  "help": {
+    "usage": "run.sh [install|check|repair|uninstall] [--tag <ref>] [--help]",
+    "commands": {
+      "install":   "Install the git-compact CLI (default)",
+      "check":     "Verify the installed binary responds to --version",
+      "repair":    "Remove the binary and reinstall from scratch",
+      "uninstall": "Remove the binary and its install marker"
+    },
+    "flags": {
+      "--tag <ref>": "Pin a git ref (branch / tag / commit) on alimtvnetwork/git-compact. Default: main.",
+      "--help":      "Show this help text and exit."
+    },
+    "env": {
+      "GIT_COMPACT_TAG": "Same as --tag, lower precedence than the flag."
+    },
+    "examples": [
+      "./run.sh install",
+      "./run.sh install --tag v1.2.0",
+      "./run.sh check",
+      "./run.sh uninstall",
+      "curl -fsSL https://raw.githubusercontent.com/alimtvnetwork/git-compact/main/install.sh | sh"
+    ]
+  }
+}
