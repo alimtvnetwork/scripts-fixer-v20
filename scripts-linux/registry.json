@@ -357,6 +357,12 @@
       "title": "Interactive change-port menu (dispatches to 80-90)"
     },
     {
+      "id": "71",
+      "folder": "71-install-git-compact",
+      "phase": "10",
+      "title": "git-compact (repo compactor CLI)"
+    },
+    {
       "id": "100",
       "folder": "100-install-dns-bind9",
       "phase": "16",

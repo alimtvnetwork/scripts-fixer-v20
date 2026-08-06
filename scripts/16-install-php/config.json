@@ -14,6 +14,6 @@
   },
   "defaultMode": "php+phpmyadmin",
   "minFreeGB": 1,
-  "_minFreeGB_note": "PHP + phpMyAdmin via Chocolatey install to system paths (C:\tools). 1 GB is generous padding for Chocolatey cache and any temp downloads.",
+  "_minFreeGB_note": "PHP + phpMyAdmin via Chocolatey install to system paths (C:\\tools). 1 GB is generous padding for Chocolatey cache and any temp downloads.",
   "validModes": ["php+phpmyadmin", "php-only", "phpmyadmin-only"]
 }

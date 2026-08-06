@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0",
+  "id": "71",
+  "name": "git-compact (repo compactor CLI)",
+  "summary": "Installs the git-compact CLI that compacts and prunes local git repositories",
+  "aliases": ["git-compact", "gitcompact"],
+  "platforms": {
+    "windows": {
+      "folder": "71-install-git-compact",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "71-install-git-compact",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "71-install-git-compact",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": ["07"],
+  "idempotent": true,
+  "destructive": false,
+  "commands": ["install", "check", "repair", "uninstall"],
+  "phase": "10",
+  "tags": ["git", "cli"]
+}
