@@ -24,9 +24,18 @@ import {
 } from "@/lib/configSchema";
 import { diffJson, summarizeDiff, type DiffEntry } from "@/lib/jsonDiff";
 import { DiffRow } from "@/components/DiffRow";
+import { safeQuery } from "@/utils/query-wrapper";
 
-type Edition = "stable" | "insiders";
-type BridgeStatus = "unknown" | "checking" | "online" | "offline";
+export enum EditionType {
+  Stable = "stable",
+  Insiders = "insiders",
+}
+export enum BridgeStatusType {
+  Unknown = "unknown",
+  Checking = "checking",
+  Online = "online",
+  Offline = "offline",
+}
 
 const BRIDGE_KEY = "config-bridge-url";
 const TOKEN_KEY = "config-bridge-token";
@@ -77,12 +86,17 @@ const clearCachedPreview = () => {
   }
 };
 
+const MS_IN_MINUTE = 60_000;
+const MS_IN_HOUR = 3_600_000;
+const MS_IN_DAY = 86_400_000;
+const HTTP_STATUS_NOT_FOUND = 404;
+
 const formatRelativeTime = (epochMs: number): string => {
   const diff = Date.now() - epochMs;
-  if (diff < 60_000) return "just now";
-  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
-  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
-  return `${Math.floor(diff / 86_400_000)}d ago`;
+  if (diff < MS_IN_MINUTE) return "just now";
+  if (diff < MS_IN_HOUR) return `${Math.floor(diff / MS_IN_MINUTE)}m ago`;
+  if (diff < MS_IN_DAY) return `${Math.floor(diff / MS_IN_HOUR)}h ago`;
+  return `${Math.floor(diff / MS_IN_DAY)}d ago`;
 };
 
 // Deep-merge mirrors the bridge's Merge-Config so the preview matches what
@@ -103,10 +117,10 @@ const deepMerge = (base: unknown, patch: unknown): unknown => {
 // Booleans fall back to safe values when the baseline omits them.
 const baseRecord = baseConfig as Record<string, unknown>;
 const defaultEditions = Array.isArray(baseRecord.enabledEditions)
-  ? (baseRecord.enabledEditions as Edition[])
-  : (["stable"] as Edition[]);
+  ? (baseRecord.enabledEditions as EditionType[])
+  : ([EditionType.Stable] as EditionType[]);
 const DEFAULTS = {
-  edition: (defaultEditions[0] ?? "stable") as Edition,
+  edition: (defaultEditions[0] ?? EditionType.Stable) as EditionType,
   adminOnly: typeof baseRecord.requireAdmin === "boolean" ? (baseRecord.requireAdmin as boolean) : true,
   nonInteractive:
     typeof baseRecord.nonInteractive === "boolean" ? (baseRecord.nonInteractive as boolean) : false,
@@ -121,7 +135,7 @@ const DEFAULT_PATCH = {
 };
 
 const Settings = () => {
-  const [edition, setEdition] = useState<Edition>(DEFAULTS.edition);
+  const [edition, setEdition] = useState<EditionType>(DEFAULTS.edition);
   const [adminOnly, setAdminOnly] = useState(DEFAULTS.adminOnly);
   const [nonInteractive, setNonInteractive] = useState(DEFAULTS.nonInteractive);
   const [requireSignature, setRequireSignature] = useState(DEFAULTS.requireSignature);
@@ -132,7 +146,7 @@ const Settings = () => {
   const [bridgeToken, setBridgeToken] = useState(
     () => localStorage.getItem(TOKEN_KEY) ?? "",
   );
-  const [bridgeStatus, setBridgeStatus] = useState<BridgeStatus>("unknown");
+  const [bridgeStatus, setBridgeStatus] = useState<BridgeStatusType>(BridgeStatusType.Unknown);
   const [isSaving, setIsSaving] = useState(false);
 
   // Diff/confirm state
@@ -180,12 +194,12 @@ const Settings = () => {
   useEffect(() => {
     let cancelled = false;
     const probe = async () => {
-      setBridgeStatus("checking");
+      setBridgeStatus(BridgeStatusType.Checking);
       try {
-        const r = await fetch(`${bridgeUrl.replace(/\/$/, "")}/health`, { method: "GET" });
-        if (!cancelled) setBridgeStatus(r.ok ? "online" : "offline");
+        const r = await safeQuery(`${bridgeUrl.replace(/\/$/, "")}/health`, { method: "GET" });
+        if (!cancelled) setBridgeStatus(r.ok ? BridgeStatusType.Online : BridgeStatusType.Offline);
       } catch {
-        if (!cancelled) setBridgeStatus("offline");
+        if (!cancelled) setBridgeStatus(BridgeStatusType.Offline);
       }
     };
     probe();
@@ -233,7 +247,9 @@ const Settings = () => {
     const payload = override ?? patch;
     // Client-side validation (mirrors server Zod surface)
     const opts = script52OptionsSchema.safeParse(payload);
-    if (!opts.success) {
+    if (opts.success) {
+      // Valid
+    } else {
       const first = opts.error.issues[0];
       toast({
         title: "Invalid options",
@@ -243,7 +259,9 @@ const Settings = () => {
       return;
     }
     const url = bridgeUrlSchema.safeParse(bridgeUrl);
-    if (!url.success) {
+    if (url.success) {
+      // Valid
+    } else {
       toast({
         title: "Invalid bridge URL",
         description: url.error.issues[0].message,
@@ -252,7 +270,9 @@ const Settings = () => {
       return;
     }
     const tok = bridgeTokenSchema.safeParse(bridgeToken);
-    if (!tok.success) {
+    if (tok.success) {
+      // Valid
+    } else {
       toast({
         title: "Invalid bridge token",
         description: tok.error.issues[0].message,
@@ -267,7 +287,7 @@ const Settings = () => {
       const headers: Record<string, string> = {};
       if (tok.data) headers["X-Bridge-Token"] = tok.data;
 
-      const res = await fetch(endpoint, { method: "GET", headers });
+      const res = await safeQuery(endpoint, { method: "GET", headers });
       let current: unknown = {};
       if (res.ok) {
         const text = await res.text();
@@ -278,7 +298,7 @@ const Settings = () => {
         } catch {
           current = {};
         }
-      } else if (res.status !== 404) {
+      } else if (res.status !== HTTP_STATUS_NOT_FOUND) {
         const data = await res.json().catch(() => ({}));
         const reason =
           (data as { reason?: string; error?: string }).reason ??
@@ -304,7 +324,7 @@ const Settings = () => {
       setConfirmOpen(true);
     } catch (err) {
       const reason = err instanceof Error ? err.message : String(err);
-      setBridgeStatus("offline");
+      setBridgeStatus(BridgeStatusType.Offline);
       toast({
         title: "Could not load current config",
         description: reason.includes("path:")
@@ -324,13 +344,15 @@ const Settings = () => {
     try {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (bridgeToken) headers["X-Bridge-Token"] = bridgeToken;
-      const res = await fetch(endpoint, {
+      const res = await safeQuery(endpoint, {
         method: "PATCH",
         headers,
         body: JSON.stringify(pendingPayload ?? patch),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
+      if (res.ok) {
+        // Valid
+      } else {
         const path = (data as { path?: string }).path ?? CONFIG_PATH;
         const reason =
           (data as { reason?: string; error?: string }).reason ??
@@ -344,14 +366,14 @@ const Settings = () => {
         title: "Saved to local config.json",
         description: `${savedPath} (${bytes} bytes) — ${diff.length} change(s) applied`,
       });
-      setBridgeStatus("online");
+      setBridgeStatus(BridgeStatusType.Online);
       setConfirmOpen(false);
       // Saved successfully — the cached preview no longer reflects unsaved work.
       clearCachedPreview();
       setCachedSavedAt(null);
     } catch (err) {
       const reason = err instanceof Error ? err.message : String(err);
-      setBridgeStatus("offline");
+      setBridgeStatus(BridgeStatusType.Offline);
       toast({
         title: "Bridge save failed",
         description: reason.includes("path:")
@@ -389,7 +411,7 @@ const Settings = () => {
           <CardContent>
             <RadioGroup
               value={edition}
-              onValueChange={(v) => setEdition(v as Edition)}
+              onValueChange={(v) => setEdition(v as EditionType)}
               className="grid grid-cols-2 gap-3"
             >
               <Label
@@ -503,7 +525,7 @@ const Settings = () => {
             <p className="text-xs text-muted-foreground">
               Status:{" "}
               <span className="font-medium text-foreground">{bridgeStatus}</span>
-              {bridgeStatus === "offline" &&
+              {bridgeStatus === BridgeStatusType.Offline &&
                 " — start the bridge with .\\tools\\config-bridge.ps1 from the repo root."}
             </p>
           </CardContent>
@@ -551,7 +573,7 @@ const Settings = () => {
           <Button
             variant="outline"
             onClick={handleResetToDefaults}
-            disabled={isPreparing || isSaving || bridgeStatus !== "online"}
+            disabled={isPreparing || isSaving || bridgeStatus !== BridgeStatusType.Online}
             title="Revert option fields to the defaults from the stored model"
           >
             Reset to defaults
@@ -561,7 +583,7 @@ const Settings = () => {
           </Button>
           <Button
             onClick={() => handlePrepareSave()}
-            disabled={isPreparing || isSaving || bridgeStatus !== "online"}
+            disabled={isPreparing || isSaving || bridgeStatus !== BridgeStatusType.Online}
           >
             {isPreparing ? "Loading current…" : "Review & save"}
           </Button>
@@ -648,13 +670,13 @@ const ToggleRow = ({
   </div>
 );
 
-const StatusDot = ({ status }: { status: BridgeStatus }) => {
+const StatusDot = ({ status }: { status: BridgeStatusType }) => {
   const color =
-    status === "online"
+    status === BridgeStatusType.Online
       ? "bg-green-500"
-      : status === "checking"
+      : status === BridgeStatusType.Checking
       ? "bg-yellow-500 animate-pulse"
-      : status === "offline"
+      : status === BridgeStatusType.Offline
       ? "bg-red-500"
       : "bg-muted-foreground";
   return (

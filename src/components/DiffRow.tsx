@@ -1,4 +1,5 @@
 import type { DiffEntry } from "@/lib/jsonDiff";
+import { DiffKindType } from "@/lib/jsonDiff";
 import { Badge } from "@/components/ui/badge";
 
 // Human-friendly formatter used by the confirm-changes dialog.
@@ -71,9 +72,9 @@ const ValueCell = ({ value }: { value: unknown }) => {
 
 const KindLabel = ({ kind }: { kind: DiffEntry["kind"] }) => {
   const tone =
-    kind === "added"
+    kind === DiffKindType.Added
       ? "bg-green-500/15 text-green-700 dark:text-green-400 border-green-500/30"
-      : kind === "removed"
+      : kind === DiffKindType.Removed
         ? "bg-red-500/15 text-red-700 dark:text-red-400 border-red-500/30"
         : "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30";
   return (
@@ -93,7 +94,7 @@ export const DiffRow = ({ entry }: { entry: DiffEntry }) => {
         <span className="font-mono text-xs text-foreground">{entry.path}</span>
       </div>
       <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
-        {entry.kind !== "added" && (
+        {entry.kind !== DiffKindType.Added && (
           <>
             <span className="text-red-600 dark:text-red-400">before</span>
             <div className="min-w-0">
@@ -101,7 +102,7 @@ export const DiffRow = ({ entry }: { entry: DiffEntry }) => {
             </div>
           </>
         )}
-        {entry.kind !== "removed" && (
+        {entry.kind !== DiffKindType.Removed && (
           <>
             <span className="text-green-600 dark:text-green-400">after</span>
             <div className="min-w-0">

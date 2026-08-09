@@ -2,11 +2,16 @@
 // of changes keyed by dot/bracket path. Good enough for showing a config
 // preview before the user confirms a save.
 
-export type DiffKind = "added" | "removed" | "changed" | "unchanged";
+export enum DiffKindType {
+  Added = "added",
+  Removed = "removed",
+  Changed = "changed",
+  Unchanged = "unchanged"
+}
 
 export interface DiffEntry {
   path: string;          // e.g. "behavior.requireAdmin" or "enabledEditions[0]"
-  kind: DiffKind;
+  kind: DiffKindType;
   before?: unknown;
   after?: unknown;
 }
@@ -24,12 +29,12 @@ const fmtIdx = (parent: string, idx: number) => `${parent}[${idx}]`;
 export function diffJson(before: Json, after: Json, path = ""): DiffEntry[] {
   // Strict-equal scalars / same reference
   if (Object.is(before, after)) {
-    return path ? [{ path, kind: "unchanged", before, after }] : [];
+    return path ? [{ path, kind: DiffKindType.Unchanged, before, after }] : [];
   }
 
   // One side missing
-  if (before === undefined) return [{ path, kind: "added", after }];
-  if (after === undefined) return [{ path, kind: "removed", before }];
+  if (before === undefined) return [{ path, kind: DiffKindType.Added, after }];
+  if (after === undefined) return [{ path, kind: DiffKindType.Removed, before }];
 
   // Both are objects -> recurse by key union
   if (isObject(before) && isObject(after)) {
@@ -48,15 +53,15 @@ export function diffJson(before: Json, after: Json, path = ""): DiffEntry[] {
   }
 
   // Type mismatch or differing scalars
-  return [{ path, kind: "changed", before, after }];
+  return [{ path, kind: DiffKindType.Changed, before, after }];
 }
 
 export const summarizeDiff = (entries: DiffEntry[]) => {
   let added = 0, removed = 0, changed = 0;
   for (const e of entries) {
-    if (e.kind === "added") added++;
-    else if (e.kind === "removed") removed++;
-    else if (e.kind === "changed") changed++;
+    if (e.kind === DiffKindType.Added) added++;
+    else if (e.kind === DiffKindType.Removed) removed++;
+    else if (e.kind === DiffKindType.Changed) changed++;
   }
   return { added, removed, changed, total: added + removed + changed };
 };

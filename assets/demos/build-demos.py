@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import html
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import List, Tuple
 
@@ -41,22 +42,61 @@ LINE_HEIGHT = 38
 FONT_SIZE = 22
 TYPE_SPEED = 0.04  # seconds per character while typing the prompt
 
-CHROME_BG = "#0b0f17"
-SCREEN_BG = "#0e1420"
-TITLE_BG = "#161c2a"
-TITLE_FG = "#8b95a7"
-PROMPT_USER = "#56d364"   # green - user@host
-PROMPT_AT = "#8b95a7"     # gray @ separator
-PROMPT_HOST = "#79c0ff"   # blue - host
-PROMPT_PATH = "#d2a8ff"   # purple - cwd
-PROMPT_ARROW = "#f0883e"  # orange - PS> arrow
-TEXT_FG = "#e6edf3"
-DIM_FG = "#8b95a7"
-ACCENT_OK = "#56d364"
-ACCENT_WARN = "#e3b341"
-ACCENT_INFO = "#79c0ff"
-ACCENT_HEADER = "#d2a8ff"
+CURSOR_WIDTH = 14
+CURSOR_HEIGHT = 26
+CURSOR_OFFSET_Y = 22
+CURSOR_OPACITY_START = "0"
+CURSOR_OPACITY_END = "1"
+CURSOR_DUR = "1s"
+CURSOR_REPEAT = "indefinite"
+CURSOR_ANIM_VALUES = "1;0;1"
+DELAY_BETWEEN_LINES = 0.05
+CURSOR_BLINK_START = 0.2
+CHAR_ADVANCE_PX = 13
+SHADOW_PADDING = 32
+CHROME_PADDING = 16
+SHADOW_RX = 14
+CHROME_RX = 14
+CHROME_X_Y = 8
+TITLE_H = 56
+TITLE_INNER_Y = 44
+TITLE_INNER_H = 20
+TRAFFIC_CY = 36
+TRAFFIC_R = 8
+TRAFFIC_R_CX = 40
+TRAFFIC_Y_CX = 68
+TRAFFIC_G_CX = 96
+TITLE_TEXT_Y = 42
+TITLE_TEXT_SZ = 16
+SCREEN_RX = 6
+SCREEN_PAD_W = 40
+SCREEN_PAD_H = 92
+SCREEN_Y = 72
+SCREEN_X = 20
+SHADOW_X = 16
+SHADOW_Y = 20
+STROKE_WIDTH = 1
+SHADOW_OPACITY = "0.35"
+TITLE_ANCHOR = "middle"
+FILL_FREEZE = "freeze"
+OPACITY_ATTR = "opacity"
 
+class ColorType(str, Enum):
+    CHROME_BG = "#0b0f17"
+    SCREEN_BG = "#0e1420"
+    TITLE_BG = "#161c2a"
+    TITLE_FG = "#8b95a7"
+    PROMPT_USER = "#56d364"   # green - user@host
+    PROMPT_AT = "#8b95a7"     # gray @ separator
+    PROMPT_HOST = "#79c0ff"   # blue - host
+    PROMPT_PATH = "#d2a8ff"   # purple - cwd
+    PROMPT_ARROW = "#f0883e"  # orange - PS> arrow
+    TEXT_FG = "#e6edf3"
+    DIM_FG = "#8b95a7"
+    ACCENT_OK = "#56d364"
+    ACCENT_WARN = "#e3b341"
+    ACCENT_INFO = "#79c0ff"
+    ACCENT_HEADER = "#d2a8ff"
 
 @dataclass
 class Line:
@@ -105,7 +145,7 @@ def typewriter_line(segments: List[Tuple[str, str]], y: int, start: float) -> Tu
         tspan_id_suffix = f"_{i}"
         out.append(
             '<tspan fill="{c}" opacity="0">{t}'
-            '<set attributeName="opacity" to="1" begin="{begin:.3f}s" fill="freeze"/>'
+            f'<set attributeName="{OPACITY_ATTR}" to="{CURSOR_OPACITY_END}" begin="{{begin:.3f}}s" fill="{FILL_FREEZE}"/>'
             "</tspan>".format(c=color, t=esc(ch), begin=t)
         )
         t += TYPE_SPEED
@@ -128,7 +168,7 @@ def instant_line(segments: List[Tuple[str, str]], y: int, start: float) -> str:
     for text, color in segments:
         parts.append(
             '<tspan fill="{c}" opacity="0">{t}'
-            '<set attributeName="opacity" to="1" begin="{begin:.3f}s" fill="freeze"/>'
+            f'<set attributeName="{OPACITY_ATTR}" to="{CURSOR_OPACITY_END}" begin="{{begin:.3f}}s" fill="{FILL_FREEZE}"/>'
             "</tspan>".format(c=color, t=esc(text), begin=start)
         )
     parts.append("</text>")
@@ -155,12 +195,12 @@ def build_svg(title: str, lines: List[Line], loop_seconds: float, out_path: Path
             body_parts.append(frag)
             # cursor follows the end of the typed text
             char_count = sum(len(seg[0]) for seg in line.segments)
-            cursor_x = PADDING_X + char_count * 13  # approx char advance
+            cursor_x = PADDING_X + char_count * CHAR_ADVANCE_PX  # approx char advance
             cursor_y = y
             t = end_t
         else:
             body_parts.append(instant_line(line.segments, y, t))
-            t += 0.05  # tiny gap between instant lines
+            t += DELAY_BETWEEN_LINES  # tiny gap between instant lines
 
         y += LINE_HEIGHT
 
@@ -168,12 +208,12 @@ def build_svg(title: str, lines: List[Line], loop_seconds: float, out_path: Path
     cursor = ""
     if cursor_x is not None and cursor_y is not None:
         cursor = (
-            '<rect x="{x}" y="{cy}" width="14" height="26" fill="#e6edf3" opacity="0">'
-            '  <set attributeName="opacity" to="1" begin="{start:.3f}s" fill="freeze"/>'
-            '  <animate attributeName="opacity" values="1;0;1" dur="1s" '
-            '    begin="{start:.3f}s" repeatCount="indefinite"/>'
+            f'<rect x="{{x}}" y="{{cy}}" width="{CURSOR_WIDTH}" height="{CURSOR_HEIGHT}" fill="{ColorType.TEXT_FG.value}" opacity="{CURSOR_OPACITY_START}">'
+            f'  <set attributeName="{OPACITY_ATTR}" to="{CURSOR_OPACITY_END}" begin="{{start:.3f}}s" fill="{FILL_FREEZE}"/>'
+            f'  <animate attributeName="{OPACITY_ATTR}" values="{CURSOR_ANIM_VALUES}" dur="{CURSOR_DUR}" '
+            f'    begin="{{start:.3f}}s" repeatCount="{CURSOR_REPEAT}"/>'
             "</rect>"
-        ).format(x=cursor_x, cy=cursor_y - 22, start=t + 0.2)
+        ).format(x=cursor_x, cy=cursor_y - CURSOR_OFFSET_Y, start=t + CURSOR_BLINK_START)
 
     # Master loop: re-trigger all <set>s by resetting their `begin`.
     # SMIL re-runs an animation when its host element re-enters the
@@ -207,39 +247,39 @@ def build_svg(title: str, lines: List[Line], loop_seconds: float, out_path: Path
       }}
       .title {{
         font-family: "Ubuntu", "Segoe UI", system-ui, sans-serif;
-        font-size: 16px;
+        font-size: {TITLE_TEXT_SZ}px;
         font-weight: 500;
-        fill: {TITLE_FG};
+        fill: {ColorType.TITLE_FG.value};
       }}
     </style>
     <linearGradient id="screen" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0e1420"/>
-      <stop offset="100%" stop-color="#0a0f1a"/>
+      <stop offset="0%" stop-color="{ColorType.SCREEN_GRADIENT_START.value}"/>
+      <stop offset="100%" stop-color="{ColorType.SCREEN_GRADIENT_END.value}"/>
     </linearGradient>
   </defs>
 
   <!-- Drop shadow -->
-  <rect x="16" y="20" width="{WIDTH-32}" height="{HEIGHT-32}" rx="14"
-        fill="#000" opacity="0.35"/>
+  <rect x="{SHADOW_X}" y="{SHADOW_Y}" width="{WIDTH-SHADOW_PADDING}" height="{HEIGHT-SHADOW_PADDING}" rx="{SHADOW_RX}"
+        fill="{ColorType.SHADOW_BG.value}" opacity="{SHADOW_OPACITY}"/>
 
   <!-- Window chrome -->
-  <rect x="8" y="8" width="{WIDTH-16}" height="{HEIGHT-16}" rx="14"
-        fill="{CHROME_BG}" stroke="#222a3a" stroke-width="1"/>
+  <rect x="{CHROME_X_Y}" y="{CHROME_X_Y}" width="{WIDTH-CHROME_PADDING}" height="{HEIGHT-CHROME_PADDING}" rx="{CHROME_RX}"
+        fill="{ColorType.CHROME_BG.value}" stroke="{ColorType.CHROME_STROKE.value}" stroke-width="{STROKE_WIDTH}"/>
 
   <!-- Title bar -->
-  <rect x="8" y="8" width="{WIDTH-16}" height="56" rx="14" fill="{TITLE_BG}"/>
-  <rect x="8" y="44" width="{WIDTH-16}" height="20" fill="{TITLE_BG}"/>
+  <rect x="{CHROME_X_Y}" y="{CHROME_X_Y}" width="{WIDTH-CHROME_PADDING}" height="{TITLE_H}" rx="{CHROME_RX}" fill="{ColorType.TITLE_BG.value}"/>
+  <rect x="{CHROME_X_Y}" y="{TITLE_INNER_Y}" width="{WIDTH-CHROME_PADDING}" height="{TITLE_INNER_H}" fill="{ColorType.TITLE_BG.value}"/>
 
   <!-- Traffic lights -->
-  <circle cx="40" cy="36" r="8" fill="#ff5f56"/>
-  <circle cx="68" cy="36" r="8" fill="#ffbd2e"/>
-  <circle cx="96" cy="36" r="8" fill="#27c93f"/>
+  <circle cx="{TRAFFIC_R_CX}" cy="{TRAFFIC_CY}" r="{TRAFFIC_R}" fill="{ColorType.TRAFFIC_RED.value}"/>
+  <circle cx="{TRAFFIC_Y_CX}" cy="{TRAFFIC_CY}" r="{TRAFFIC_R}" fill="{ColorType.TRAFFIC_YELLOW.value}"/>
+  <circle cx="{TRAFFIC_G_CX}" cy="{TRAFFIC_CY}" r="{TRAFFIC_R}" fill="{ColorType.TRAFFIC_GREEN.value}"/>
 
   <!-- Title text -->
-  <text x="{WIDTH//2}" y="42" class="title" text-anchor="middle">{esc(title)}</text>
+  <text x="{WIDTH//2}" y="{TITLE_TEXT_Y}" class="title" text-anchor="{TITLE_ANCHOR}">{esc(title)}</text>
 
   <!-- Screen background -->
-  <rect x="20" y="72" width="{WIDTH-40}" height="{HEIGHT-92}" rx="6"
+  <rect x="{SCREEN_X}" y="{SCREEN_Y}" width="{WIDTH-SCREEN_PAD_W}" height="{HEIGHT-SCREEN_PAD_H}" rx="{SCREEN_RX}"
         fill="url(#screen)"/>
 
   <!-- Animated content -->
@@ -260,13 +300,13 @@ def build_svg(title: str, lines: List[Line], loop_seconds: float, out_path: Path
 def prompt_segments(command: str) -> List[Tuple[str, str]]:
     """Build the colored prompt + command segments, ready for typewriter."""
     return [
-        ("PS ", PROMPT_AT),
-        ("dev@gitmap", PROMPT_USER),
-        (" ", PROMPT_AT),
-        ("E:\\dev-tool", PROMPT_PATH),
-        (" ", PROMPT_AT),
-        ("> ", PROMPT_ARROW),
-        (command, TEXT_FG),
+        ("PS ", ColorType.PROMPT_AT.value),
+        ("dev@gitmap", ColorType.PROMPT_USER.value),
+        (" ", ColorType.PROMPT_AT.value),
+        ("E:\\dev-tool", ColorType.PROMPT_PATH.value),
+        (" ", ColorType.PROMPT_AT.value),
+        ("> ", ColorType.PROMPT_ARROW.value),
+        (command, ColorType.TEXT_FG.value),
     ]
 
 
@@ -278,20 +318,20 @@ def demo_profile() -> None:
     lines: List[Line] = [
         Line(prompt_segments(".\\run.ps1 profile advance"), delay=0.4, typed=True),
 
-        Line([("", TEXT_FG)], delay=3.6),  # blank
-        Line([("==> Profile: advance", ACCENT_HEADER)], delay=3.7),
-        Line([("    Includes: base + git + extras (15 tools)", DIM_FG)], delay=3.85),
-        Line([("", TEXT_FG)], delay=4.0),
+        Line([("", ColorType.TEXT_FG.value)], delay=3.6),  # blank
+        Line([("==> Profile: advance", ColorType.ACCENT_HEADER.value)], delay=3.7),
+        Line([("    Includes: base + git + extras (15 tools)", ColorType.DIM_FG.value)], delay=3.85),
+        Line([("", ColorType.TEXT_FG.value)], delay=4.0),
 
-        Line([("[1/15] ", ACCENT_INFO), ("vscode               ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.2),
-        Line([("[2/15] ", ACCENT_INFO), ("git                  ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.5),
-        Line([("[3/15] ", ACCENT_INFO), ("nodejs               ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.8),
-        Line([("[4/15] ", ACCENT_INFO), ("pnpm                 ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.1),
-        Line([("[5/15] ", ACCENT_INFO), ("python               ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.4),
-        Line([("[6/15] ", ACCENT_INFO), ("notepad++ + settings ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.7),
-        Line([("...   ", DIM_FG), ("9 more tools installed   ", DIM_FG), ("OK", ACCENT_OK)], delay=6.0),
-        Line([("", TEXT_FG)], delay=6.4),
-        Line([("Profile applied in ", DIM_FG), ("4m 12s", ACCENT_WARN), (" - ready to ship.", DIM_FG)], delay=6.6),
+        Line([("[1/15] ", ColorType.ACCENT_INFO.value), ("vscode               ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.2),
+        Line([("[2/15] ", ColorType.ACCENT_INFO.value), ("git                  ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.5),
+        Line([("[3/15] ", ColorType.ACCENT_INFO.value), ("nodejs               ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.8),
+        Line([("[4/15] ", ColorType.ACCENT_INFO.value), ("pnpm                 ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.1),
+        Line([("[5/15] ", ColorType.ACCENT_INFO.value), ("python               ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.4),
+        Line([("[6/15] ", ColorType.ACCENT_INFO.value), ("notepad++ + settings ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.7),
+        Line([("...   ", ColorType.DIM_FG.value), ("9 more tools installed   ", ColorType.DIM_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=6.0),
+        Line([("", ColorType.TEXT_FG.value)], delay=6.4),
+        Line([("Profile applied in ", ColorType.DIM_FG.value), ("4m 12s", ColorType.ACCENT_WARN.value), (" - ready to ship.", ColorType.DIM_FG.value)], delay=6.6),
 
         Line(prompt_segments(""), delay=7.4, typed=False),
     ]
@@ -311,18 +351,18 @@ def demo_profile_minimal() -> None:
     lines: List[Line] = [
         Line(prompt_segments(".\\run.ps1 profile minimal"), delay=0.4, typed=True),
 
-        Line([("", TEXT_FG)], delay=3.4),
-        Line([("==> Profile: minimal  (fresh-Windows bootstrap)", ACCENT_HEADER)], delay=3.5),
-        Line([("    4 steps: choco -> git -> 7zip -> chrome", DIM_FG)], delay=3.65),
-        Line([("", TEXT_FG)], delay=3.8),
+        Line([("", ColorType.TEXT_FG.value)], delay=3.4),
+        Line([("==> Profile: minimal  (fresh-Windows bootstrap)", ColorType.ACCENT_HEADER.value)], delay=3.5),
+        Line([("    4 steps: choco -> git -> 7zip -> chrome", ColorType.DIM_FG.value)], delay=3.65),
+        Line([("", ColorType.TEXT_FG.value)], delay=3.8),
 
-        Line([("[1/4] ", ACCENT_INFO), ("chocolatey           ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.0),
-        Line([("[2/4] ", ACCENT_INFO), ("git + lfs            ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.4),
-        Line([("[3/4] ", ACCENT_INFO), ("7-zip                ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.8),
-        Line([("[4/4] ", ACCENT_INFO), ("google chrome        ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.2),
+        Line([("[1/4] ", ColorType.ACCENT_INFO.value), ("chocolatey           ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.0),
+        Line([("[2/4] ", ColorType.ACCENT_INFO.value), ("git + lfs            ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.4),
+        Line([("[3/4] ", ColorType.ACCENT_INFO.value), ("7-zip                ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.8),
+        Line([("[4/4] ", ColorType.ACCENT_INFO.value), ("google chrome        ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.2),
 
-        Line([("", TEXT_FG)], delay=5.6),
-        Line([("Bootstrap done in ", DIM_FG), ("1m 47s", ACCENT_WARN), (" - browser + archiver + git ready.", DIM_FG)], delay=5.8),
+        Line([("", ColorType.TEXT_FG.value)], delay=5.6),
+        Line([("Bootstrap done in ", ColorType.DIM_FG.value), ("1m 47s", ColorType.ACCENT_WARN.value), (" - browser + archiver + git ready.", ColorType.DIM_FG.value)], delay=5.8),
 
         Line(prompt_segments(""), delay=6.6, typed=False),
     ]
@@ -342,18 +382,18 @@ def demo_profile_small_dev() -> None:
     lines: List[Line] = [
         Line(prompt_segments(".\\run.ps1 profile small-dev"), delay=0.4, typed=True),
 
-        Line([("", TEXT_FG)], delay=3.6),
-        Line([("==> Profile: small-dev  (advance + Go only)", ACCENT_HEADER)], delay=3.7),
-        Line([("    Expanded: 24 steps (advance 23 + golang)", DIM_FG)], delay=3.85),
-        Line([("", TEXT_FG)], delay=4.0),
+        Line([("", ColorType.TEXT_FG.value)], delay=3.6),
+        Line([("==> Profile: small-dev  (advance + Go only)", ColorType.ACCENT_HEADER.value)], delay=3.7),
+        Line([("    Expanded: 24 steps (advance 23 + golang)", ColorType.DIM_FG.value)], delay=3.85),
+        Line([("", ColorType.TEXT_FG.value)], delay=4.0),
 
-        Line([("[ 1-12 ] ", ACCENT_INFO), ("base profile (12 steps) ........ ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.2),
-        Line([("[13-17 ] ", ACCENT_INFO), ("git-compact (5 steps) .......... ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.55),
-        Line([("[18-23 ] ", ACCENT_INFO), ("advance extras (6 steps) ....... ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.9),
-        Line([("[24/24 ] ", ACCENT_INFO), ("golang  -> E:\\dev-tool\\go ...... ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.25),
+        Line([("[ 1-12 ] ", ColorType.ACCENT_INFO.value), ("base profile (12 steps) ........ ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.2),
+        Line([("[13-17 ] ", ColorType.ACCENT_INFO.value), ("git-compact (5 steps) .......... ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.55),
+        Line([("[18-23 ] ", ColorType.ACCENT_INFO.value), ("advance extras (6 steps) ....... ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.9),
+        Line([("[24/24 ] ", ColorType.ACCENT_INFO.value), ("golang  -> E:\\dev-tool\\go ...... ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.25),
 
-        Line([("", TEXT_FG)], delay=5.6),
-        Line([("small-dev ready in ", DIM_FG), ("4m 51s", ACCENT_WARN), (" - advance stack + Go on E:\\.", DIM_FG)], delay=5.8),
+        Line([("", ColorType.TEXT_FG.value)], delay=5.6),
+        Line([("small-dev ready in ", ColorType.DIM_FG.value), ("4m 51s", ColorType.ACCENT_WARN.value), (" - advance stack + Go on E:\\.", ColorType.DIM_FG.value)], delay=5.8),
 
         Line(prompt_segments(""), delay=6.6, typed=False),
     ]
@@ -369,22 +409,22 @@ def demo_profile_base() -> None:
     lines: List[Line] = [
         Line(prompt_segments(".\\run.ps1 profile base"), delay=0.4, typed=True),
 
-        Line([("", TEXT_FG)], delay=3.5),
-        Line([("==> Profile: base  (daily-driver Windows workstation)", ACCENT_HEADER)], delay=3.65),
-        Line([("    12 steps: media + browser + editor + terminal + XMind", DIM_FG)], delay=3.8),
-        Line([("", TEXT_FG)], delay=4.0),
+        Line([("", ColorType.TEXT_FG.value)], delay=3.5),
+        Line([("==> Profile: base  (daily-driver Windows workstation)", ColorType.ACCENT_HEADER.value)], delay=3.65),
+        Line([("    12 steps: media + browser + editor + terminal + XMind", ColorType.DIM_FG.value)], delay=3.8),
+        Line([("", ColorType.TEXT_FG.value)], delay=4.0),
 
-        Line([("[1/12] ", ACCENT_INFO), ("chocolatey ................. ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.2),
-        Line([("[2/12] ", ACCENT_INFO), ("git + lfs .................. ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.45),
-        Line([("[3/12] ", ACCENT_INFO), ("vlc ........................ ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.7),
-        Line([("[4/12] ", ACCENT_INFO), ("7-zip + winrar ............. ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.95),
-        Line([("[5/12] ", ACCENT_INFO), ("ubuntu font + xmind ........ ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.2),
-        Line([("[6/12] ", ACCENT_INFO), ("notepad++ + settings ....... ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.45),
-        Line([("[7/12] ", ACCENT_INFO), ("chrome + conemu ............ ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.7),
-        Line([("[8/12] ", ACCENT_INFO), ("hibernation off + psreadline ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.95),
+        Line([("[1/12] ", ColorType.ACCENT_INFO.value), ("chocolatey ................. ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.2),
+        Line([("[2/12] ", ColorType.ACCENT_INFO.value), ("git + lfs .................. ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.45),
+        Line([("[3/12] ", ColorType.ACCENT_INFO.value), ("vlc ........................ ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.7),
+        Line([("[4/12] ", ColorType.ACCENT_INFO.value), ("7-zip + winrar ............. ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.95),
+        Line([("[5/12] ", ColorType.ACCENT_INFO.value), ("ubuntu font + xmind ........ ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.2),
+        Line([("[6/12] ", ColorType.ACCENT_INFO.value), ("notepad++ + settings ....... ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.45),
+        Line([("[7/12] ", ColorType.ACCENT_INFO.value), ("chrome + conemu ............ ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.7),
+        Line([("[8/12] ", ColorType.ACCENT_INFO.value), ("hibernation off + psreadline ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.95),
 
-        Line([("", TEXT_FG)], delay=6.3),
-        Line([("Base workstation ready in ", DIM_FG), ("3m 41s", ACCENT_WARN), ("  -- all apps on C:\\.", DIM_FG)], delay=6.55),
+        Line([("", ColorType.TEXT_FG.value)], delay=6.3),
+        Line([("Base workstation ready in ", ColorType.DIM_FG.value), ("3m 41s", ColorType.ACCENT_WARN.value), ("  -- all apps on C:\\.", ColorType.DIM_FG.value)], delay=6.55),
 
         Line(prompt_segments(""), delay=7.3, typed=False),
     ]
@@ -400,18 +440,18 @@ def demo_profile_cpp_dx() -> None:
     lines: List[Line] = [
         Line(prompt_segments(".\\run.ps1 profile cpp-dx"), delay=0.4, typed=True),
 
-        Line([("", TEXT_FG)], delay=3.4),
-        Line([("==> Profile: cpp-dx  (native runtime prerequisites)", ACCENT_HEADER)], delay=3.55),
-        Line([("    3 steps: VC++ runtimes + DirectX runtime + DirectX SDK", DIM_FG)], delay=3.75),
-        Line([("", TEXT_FG)], delay=3.95),
+        Line([("", ColorType.TEXT_FG.value)], delay=3.4),
+        Line([("==> Profile: cpp-dx  (native runtime prerequisites)", ColorType.ACCENT_HEADER.value)], delay=3.55),
+        Line([("    3 steps: VC++ runtimes + DirectX runtime + DirectX SDK", ColorType.DIM_FG.value)], delay=3.75),
+        Line([("", ColorType.TEXT_FG.value)], delay=3.95),
 
-        Line([("[1/3] ", ACCENT_INFO), ("vcredist-all ............... ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.2),
-        Line([("[2/3] ", ACCENT_INFO), ("directx runtime ............ ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.55),
-        Line([("[3/3] ", ACCENT_INFO), ("directx sdk ................ ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.9),
-        Line([("       ", DIM_FG), ("system runtime DLLs + SDK headers ready", DIM_FG)], delay=5.15),
+        Line([("[1/3] ", ColorType.ACCENT_INFO.value), ("vcredist-all ............... ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.2),
+        Line([("[2/3] ", ColorType.ACCENT_INFO.value), ("directx runtime ............ ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.55),
+        Line([("[3/3] ", ColorType.ACCENT_INFO.value), ("directx sdk ................ ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.9),
+        Line([("       ", ColorType.DIM_FG.value), ("system runtime DLLs + SDK headers ready", ColorType.DIM_FG.value)], delay=5.15),
 
-        Line([("", TEXT_FG)], delay=5.5),
-        Line([("cpp-dx done in ", DIM_FG), ("2m 12s", ACCENT_WARN), ("  -- native stack ready on C:\\.", DIM_FG)], delay=5.75),
+        Line([("", ColorType.TEXT_FG.value)], delay=5.5),
+        Line([("cpp-dx done in ", ColorType.DIM_FG.value), ("2m 12s", ColorType.ACCENT_WARN.value), ("  -- native stack ready on C:\\.", ColorType.DIM_FG.value)], delay=5.75),
 
         Line(prompt_segments(""), delay=6.55, typed=False),
     ]
@@ -431,21 +471,21 @@ def demo_profile_git() -> None:
     lines: List[Line] = [
         Line(prompt_segments(".\\run.ps1 profile git-compact"), delay=0.4, typed=True),
 
-        Line([("", TEXT_FG)], delay=3.8),
-        Line([("==> Profile: git-compact", ACCENT_HEADER)], delay=3.9),
-        Line([("    Git stack + SSH key + GitHub dir + .gitconfig", DIM_FG)], delay=4.05),
-        Line([("", TEXT_FG)], delay=4.2),
+        Line([("", ColorType.TEXT_FG.value)], delay=3.8),
+        Line([("==> Profile: git-compact", ColorType.ACCENT_HEADER.value)], delay=3.9),
+        Line([("    Git stack + SSH key + GitHub dir + .gitconfig", ColorType.DIM_FG.value)], delay=4.05),
+        Line([("", ColorType.TEXT_FG.value)], delay=4.2),
 
-        Line([("[1/5] ", ACCENT_INFO), ("git + git-lfs + gh           ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.4),
-        Line([("[2/5] ", ACCENT_INFO), ("github desktop               ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.75),
-        Line([("[3/5] ", ACCENT_INFO), ("ssh key (ed25519)            ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.1),
-        Line([("       ", DIM_FG), ("public key copied to clipboard", DIM_FG)], delay=5.3),
-        Line([("[4/5] ", ACCENT_INFO), ("default github dir           ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.6),
-        Line([("       ", DIM_FG), ("created C:\\Users\\dev\\GitHub", DIM_FG)], delay=5.8),
-        Line([("[5/5] ", ACCENT_INFO), ("apply default .gitconfig     ", TEXT_FG), ("OK", ACCENT_OK)], delay=6.1),
+        Line([("[1/5] ", ColorType.ACCENT_INFO.value), ("git + git-lfs + gh           ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.4),
+        Line([("[2/5] ", ColorType.ACCENT_INFO.value), ("github desktop               ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.75),
+        Line([("[3/5] ", ColorType.ACCENT_INFO.value), ("ssh key (ed25519)            ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.1),
+        Line([("       ", ColorType.DIM_FG.value), ("public key copied to clipboard", ColorType.DIM_FG.value)], delay=5.3),
+        Line([("[4/5] ", ColorType.ACCENT_INFO.value), ("default github dir           ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.6),
+        Line([("       ", ColorType.DIM_FG.value), ("created C:\\Users\\dev\\GitHub", ColorType.DIM_FG.value)], delay=5.8),
+        Line([("[5/5] ", ColorType.ACCENT_INFO.value), ("apply default .gitconfig     ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=6.1),
 
-        Line([("", TEXT_FG)], delay=6.5),
-        Line([("git-compact done in ", DIM_FG), ("2m 04s", ACCENT_WARN), (" - clone & push, ready.", DIM_FG)], delay=6.7),
+        Line([("", ColorType.TEXT_FG.value)], delay=6.5),
+        Line([("git-compact done in ", ColorType.DIM_FG.value), ("2m 04s", ColorType.ACCENT_WARN.value), (" - clone & push, ready.", ColorType.DIM_FG.value)], delay=6.7),
 
         Line(prompt_segments(""), delay=7.5, typed=False),
     ]
@@ -465,22 +505,22 @@ def demo_os_clean_detailed() -> None:
     lines: List[Line] = [
         Line(prompt_segments(".\\run.ps1 os clean --dry-run"), delay=0.4, typed=True),
 
-        Line([("", TEXT_FG)], delay=4.0),
-        Line([("==> OS toolbox: clean (DRY RUN -- nothing deleted)", ACCENT_HEADER)], delay=4.1),
-        Line([("    Scope: temp + caches + recycle bin + event logs", DIM_FG)], delay=4.3),
-        Line([("", TEXT_FG)], delay=4.5),
+        Line([("", ColorType.TEXT_FG.value)], delay=4.0),
+        Line([("==> OS toolbox: clean (DRY RUN -- nothing deleted)", ColorType.ACCENT_HEADER.value)], delay=4.1),
+        Line([("    Scope: temp + caches + recycle bin + event logs", ColorType.DIM_FG.value)], delay=4.3),
+        Line([("", ColorType.TEXT_FG.value)], delay=4.5),
 
-        Line([("  [scan] ", ACCENT_INFO), ("%TEMP%                          ", TEXT_FG), ("4,812 files   2.10 GB", DIM_FG)], delay=4.7),
-        Line([("  [scan] ", ACCENT_INFO), ("%LOCALAPPDATA%\\Temp             ", TEXT_FG), ("1,203 files   780 MB", DIM_FG)], delay=4.95),
-        Line([("  [scan] ", ACCENT_INFO), ("C:\\Windows\\Temp                 ", TEXT_FG), ("612 files   340 MB", DIM_FG)], delay=5.2),
-        Line([("  [scan] ", ACCENT_INFO), ("C:\\Windows\\SoftwareDistribution ", TEXT_FG), ("2,041 files   1.40 GB", DIM_FG)], delay=5.45),
-        Line([("  [scan] ", ACCENT_INFO), ("chocolatey lib-bad/lib-bkp      ", TEXT_FG), ("18 files   62 MB", DIM_FG)], delay=5.7),
-        Line([("  [scan] ", ACCENT_INFO), ("Recycle Bin (all drives)        ", TEXT_FG), ("87 items   210 MB", DIM_FG)], delay=5.95),
-        Line([("  [scan] ", ACCENT_INFO), ("Event logs + PSReadLine history ", TEXT_FG), ("- ", DIM_FG), ("clear", ACCENT_OK)], delay=6.2),
+        Line([("  [scan] ", ColorType.ACCENT_INFO.value), ("%TEMP%                          ", ColorType.TEXT_FG.value), ("4,812 files   2.10 GB", ColorType.DIM_FG.value)], delay=4.7),
+        Line([("  [scan] ", ColorType.ACCENT_INFO.value), ("%LOCALAPPDATA%\\Temp             ", ColorType.TEXT_FG.value), ("1,203 files   780 MB", ColorType.DIM_FG.value)], delay=4.95),
+        Line([("  [scan] ", ColorType.ACCENT_INFO.value), ("C:\\Windows\\Temp                 ", ColorType.TEXT_FG.value), ("612 files   340 MB", ColorType.DIM_FG.value)], delay=5.2),
+        Line([("  [scan] ", ColorType.ACCENT_INFO.value), ("C:\\Windows\\SoftwareDistribution ", ColorType.TEXT_FG.value), ("2,041 files   1.40 GB", ColorType.DIM_FG.value)], delay=5.45),
+        Line([("  [scan] ", ColorType.ACCENT_INFO.value), ("chocolatey lib-bad/lib-bkp      ", ColorType.TEXT_FG.value), ("18 files   62 MB", ColorType.DIM_FG.value)], delay=5.7),
+        Line([("  [scan] ", ColorType.ACCENT_INFO.value), ("Recycle Bin (all drives)        ", ColorType.TEXT_FG.value), ("87 items   210 MB", ColorType.DIM_FG.value)], delay=5.95),
+        Line([("  [scan] ", ColorType.ACCENT_INFO.value), ("Event logs + PSReadLine history ", ColorType.TEXT_FG.value), ("- ", ColorType.DIM_FG.value), ("clear", ColorType.ACCENT_OK.value)], delay=6.2),
 
-        Line([("", TEXT_FG)], delay=6.55),
-        Line([("Total reclaimable: ", DIM_FG), ("4.89 GB", ACCENT_WARN), ("   files: ", DIM_FG), ("8,773", ACCENT_WARN)], delay=6.75),
-        Line([("Re-run without --dry-run to delete.", DIM_FG)], delay=7.0),
+        Line([("", ColorType.TEXT_FG.value)], delay=6.55),
+        Line([("Total reclaimable: ", ColorType.DIM_FG.value), ("4.89 GB", ColorType.ACCENT_WARN.value), ("   files: ", ColorType.DIM_FG.value), ("8,773", ColorType.ACCENT_WARN.value)], delay=6.75),
+        Line([("Re-run without --dry-run to delete.", ColorType.DIM_FG.value)], delay=7.0),
 
         Line(prompt_segments(""), delay=7.8, typed=False),
     ]
@@ -500,19 +540,19 @@ def demo_postgres() -> None:
     lines: List[Line] = [
         Line(prompt_segments(".\\run.ps1 install postgresql"), delay=0.4, typed=True),
 
-        Line([("", TEXT_FG)], delay=4.0),
-        Line([("==> Resolving keyword 'postgresql' -> script #20", ACCENT_HEADER)], delay=4.1),
-        Line([("    Dev directory: ", DIM_FG), ("E:\\dev-tool\\postgresql", PROMPT_PATH)], delay=4.3),
-        Line([("", TEXT_FG)], delay=4.5),
+        Line([("", ColorType.TEXT_FG.value)], delay=4.0),
+        Line([("==> Resolving keyword 'postgresql' -> script #20", ColorType.ACCENT_HEADER.value)], delay=4.1),
+        Line([("    Dev directory: ", ColorType.DIM_FG.value), ("E:\\dev-tool\\postgresql", ColorType.PROMPT_PATH.value)], delay=4.3),
+        Line([("", ColorType.TEXT_FG.value)], delay=4.5),
 
-        Line([("[step 1/4] ", ACCENT_INFO), ("download installer ........ ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.7),
-        Line([("[step 2/4] ", ACCENT_INFO), ("install service ........... ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.2),
-        Line([("[step 3/4] ", ACCENT_INFO), ("create role + database .... ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.7),
-        Line([("[step 4/4] ", ACCENT_INFO), ("verify with psql .......... ", TEXT_FG), ("OK", ACCENT_OK)], delay=6.2),
+        Line([("[step 1/4] ", ColorType.ACCENT_INFO.value), ("download installer ........ ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.7),
+        Line([("[step 2/4] ", ColorType.ACCENT_INFO.value), ("install service ........... ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.2),
+        Line([("[step 3/4] ", ColorType.ACCENT_INFO.value), ("create role + database .... ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.7),
+        Line([("[step 4/4] ", ColorType.ACCENT_INFO.value), ("verify with psql .......... ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=6.2),
 
-        Line([("", TEXT_FG)], delay=6.6),
-        Line([("PostgreSQL 16 ", TEXT_FG), ("running", ACCENT_OK), (" on port ", DIM_FG), ("5432", ACCENT_WARN)], delay=6.8),
-        Line([("Connect: ", DIM_FG), ("psql -U dev -d devdb", PROMPT_HOST)], delay=7.0),
+        Line([("", ColorType.TEXT_FG.value)], delay=6.6),
+        Line([("PostgreSQL 16 ", ColorType.TEXT_FG.value), ("running", ColorType.ACCENT_OK.value), (" on port ", ColorType.DIM_FG.value), ("5432", ColorType.ACCENT_WARN.value)], delay=6.8),
+        Line([("Connect: ", ColorType.DIM_FG.value), ("psql -U dev -d devdb", ColorType.PROMPT_HOST.value)], delay=7.0),
 
         Line(prompt_segments(""), delay=7.8, typed=False),
     ]
@@ -532,24 +572,24 @@ def demo_os_clean() -> None:
     lines: List[Line] = [
         Line(prompt_segments(".\\run.ps1 os clean"), delay=0.4, typed=True),
 
-        Line([("", TEXT_FG)], delay=2.6),
-        Line([("==> OS toolbox: clean", ACCENT_HEADER)], delay=2.7),
-        Line([("    Scope: temp + caches + recycle bin", DIM_FG)], delay=2.85),
-        Line([("", TEXT_FG)], delay=3.0),
+        Line([("", ColorType.TEXT_FG.value)], delay=2.6),
+        Line([("==> OS toolbox: clean", ColorType.ACCENT_HEADER.value)], delay=2.7),
+        Line([("    Scope: temp + caches + recycle bin", ColorType.DIM_FG.value)], delay=2.85),
+        Line([("", ColorType.TEXT_FG.value)], delay=3.0),
 
-        Line([("  scanning   %TEMP%        ", TEXT_FG), ("4,812 files   2.1 GB", DIM_FG)], delay=3.2),
-        Line([("  scanning   %LOCALAPPDATA%\\Temp   ", TEXT_FG), ("1,203 files   780 MB", DIM_FG)], delay=3.5),
-        Line([("  scanning   Windows update cache  ", TEXT_FG), ("412 files   1.4 GB", DIM_FG)], delay=3.8),
-        Line([("  scanning   Recycle Bin         ", TEXT_FG), ("87 files   320 MB", DIM_FG)], delay=4.1),
+        Line([("  scanning   %TEMP%        ", ColorType.TEXT_FG.value), ("4,812 files   2.1 GB", ColorType.DIM_FG.value)], delay=3.2),
+        Line([("  scanning   %LOCALAPPDATA%\\Temp   ", ColorType.TEXT_FG.value), ("1,203 files   780 MB", ColorType.DIM_FG.value)], delay=3.5),
+        Line([("  scanning   Windows update cache  ", ColorType.TEXT_FG.value), ("412 files   1.4 GB", ColorType.DIM_FG.value)], delay=3.8),
+        Line([("  scanning   Recycle Bin         ", ColorType.TEXT_FG.value), ("87 files   320 MB", ColorType.DIM_FG.value)], delay=4.1),
 
-        Line([("", TEXT_FG)], delay=4.4),
-        Line([("==> Reclaiming space ...", ACCENT_HEADER)], delay=4.5),
-        Line([("  removed temp ............. ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.8),
-        Line([("  removed update cache ..... ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.1),
-        Line([("  emptied recycle bin ...... ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.4),
+        Line([("", ColorType.TEXT_FG.value)], delay=4.4),
+        Line([("==> Reclaiming space ...", ColorType.ACCENT_HEADER.value)], delay=4.5),
+        Line([("  removed temp ............. ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.8),
+        Line([("  removed update cache ..... ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.1),
+        Line([("  emptied recycle bin ...... ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.4),
 
-        Line([("", TEXT_FG)], delay=5.7),
-        Line([("Freed ", DIM_FG), ("4.6 GB", ACCENT_WARN), (" in ", DIM_FG), ("18s", ACCENT_WARN), (" - disk happy.", DIM_FG)], delay=5.9),
+        Line([("", ColorType.TEXT_FG.value)], delay=5.7),
+        Line([("Freed ", ColorType.DIM_FG.value), ("4.6 GB", ColorType.ACCENT_WARN.value), (" in ", ColorType.DIM_FG.value), ("18s", ColorType.ACCENT_WARN.value), (" - disk happy.", ColorType.DIM_FG.value)], delay=5.9),
 
         Line(prompt_segments(""), delay=6.7, typed=False),
     ]
@@ -580,21 +620,21 @@ def demo_install_comma() -> None:
     lines: List[Line] = [
         Line(prompt_segments(cmd), delay=0.4, typed=True),
 
-        Line([("", TEXT_FG)], delay=4.6),
-        Line([("==> Resolving 6 keywords -> 6 scripts", ACCENT_HEADER)], delay=4.7),
-        Line([("    vscode -> #01    git -> #07    nodejs -> #03", DIM_FG)], delay=4.9),
-        Line([("    pnpm   -> #04    python -> #05  npp    -> #33", DIM_FG)], delay=5.05),
-        Line([("", TEXT_FG)], delay=5.2),
+        Line([("", ColorType.TEXT_FG.value)], delay=4.6),
+        Line([("==> Resolving 6 keywords -> 6 scripts", ColorType.ACCENT_HEADER.value)], delay=4.7),
+        Line([("    vscode -> #01    git -> #07    nodejs -> #03", ColorType.DIM_FG.value)], delay=4.9),
+        Line([("    pnpm   -> #04    python -> #05  npp    -> #33", ColorType.DIM_FG.value)], delay=5.05),
+        Line([("", ColorType.TEXT_FG.value)], delay=5.2),
 
-        Line([("[1/6] ", ACCENT_INFO), ("vscode               ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.4),
-        Line([("[2/6] ", ACCENT_INFO), ("git + lfs + gh       ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.7),
-        Line([("[3/6] ", ACCENT_INFO), ("nodejs (E:\\dev-tool) ", TEXT_FG), ("OK", ACCENT_OK)], delay=6.0),
-        Line([("[4/6] ", ACCENT_INFO), ("pnpm   (E:\\dev-tool) ", TEXT_FG), ("OK", ACCENT_OK)], delay=6.3),
-        Line([("[5/6] ", ACCENT_INFO), ("python (E:\\dev-tool) ", TEXT_FG), ("OK", ACCENT_OK)], delay=6.6),
-        Line([("[6/6] ", ACCENT_INFO), ("notepad++ + settings ", TEXT_FG), ("OK", ACCENT_OK)], delay=6.9),
+        Line([("[1/6] ", ColorType.ACCENT_INFO.value), ("vscode               ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.4),
+        Line([("[2/6] ", ColorType.ACCENT_INFO.value), ("git + lfs + gh       ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.7),
+        Line([("[3/6] ", ColorType.ACCENT_INFO.value), ("nodejs (E:\\dev-tool) ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=6.0),
+        Line([("[4/6] ", ColorType.ACCENT_INFO.value), ("pnpm   (E:\\dev-tool) ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=6.3),
+        Line([("[5/6] ", ColorType.ACCENT_INFO.value), ("python (E:\\dev-tool) ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=6.6),
+        Line([("[6/6] ", ColorType.ACCENT_INFO.value), ("notepad++ + settings ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=6.9),
 
-        Line([("", TEXT_FG)], delay=7.3),
-        Line([("6 tools installed in ", DIM_FG), ("3m 02s", ACCENT_WARN), ("  -- one command, comma-separated.", DIM_FG)], delay=7.5),
+        Line([("", ColorType.TEXT_FG.value)], delay=7.3),
+        Line([("6 tools installed in ", ColorType.DIM_FG.value), ("3m 02s", ColorType.ACCENT_WARN.value), ("  -- one command, comma-separated.", ColorType.DIM_FG.value)], delay=7.5),
 
         Line(prompt_segments(""), delay=8.4, typed=False),
     ]
@@ -614,20 +654,20 @@ def demo_classic_context() -> None:
     lines: List[Line] = [
         Line(prompt_segments(".\\run.ps1 profile minimal"), delay=0.4, typed=True),
 
-        Line([("", TEXT_FG)], delay=3.4),
-        Line([("==> Profile: minimal  (5 steps -- includes Win11 fix)", ACCENT_HEADER)], delay=3.5),
-        Line([("    bootstrap + classic right-click menu", DIM_FG)], delay=3.65),
-        Line([("", TEXT_FG)], delay=3.8),
+        Line([("", ColorType.TEXT_FG.value)], delay=3.4),
+        Line([("==> Profile: minimal  (5 steps -- includes Win11 fix)", ColorType.ACCENT_HEADER.value)], delay=3.5),
+        Line([("    bootstrap + classic right-click menu", ColorType.DIM_FG.value)], delay=3.65),
+        Line([("", ColorType.TEXT_FG.value)], delay=3.8),
 
-        Line([("[1/5] ", ACCENT_INFO), ("chocolatey                       ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.0),
-        Line([("[2/5] ", ACCENT_INFO), ("git + lfs                        ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.35),
-        Line([("[3/5] ", ACCENT_INFO), ("7-zip                            ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.7),
-        Line([("[4/5] ", ACCENT_INFO), ("google chrome                    ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.05),
-        Line([("[5/5] ", ACCENT_INFO), ("win11 classic right-click menu   ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.4),
-        Line([("       ", DIM_FG), ("HKCU CLSID {86ca1aa0-...} written -- restart explorer", DIM_FG)], delay=5.6),
+        Line([("[1/5] ", ColorType.ACCENT_INFO.value), ("chocolatey                       ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.0),
+        Line([("[2/5] ", ColorType.ACCENT_INFO.value), ("git + lfs                        ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.35),
+        Line([("[3/5] ", ColorType.ACCENT_INFO.value), ("7-zip                            ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.7),
+        Line([("[4/5] ", ColorType.ACCENT_INFO.value), ("google chrome                    ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.05),
+        Line([("[5/5] ", ColorType.ACCENT_INFO.value), ("win11 classic right-click menu   ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.4),
+        Line([("       ", ColorType.DIM_FG.value), ("HKCU CLSID {86ca1aa0-...} written -- restart explorer", ColorType.DIM_FG.value)], delay=5.6),
 
-        Line([("", TEXT_FG)], delay=5.95),
-        Line([("Bootstrap done in ", DIM_FG), ("1m 58s", ACCENT_WARN), ("  -- right-click menu now shows ALL apps.", DIM_FG)], delay=6.15),
+        Line([("", ColorType.TEXT_FG.value)], delay=5.95),
+        Line([("Bootstrap done in ", ColorType.DIM_FG.value), ("1m 58s", ColorType.ACCENT_WARN.value), ("  -- right-click menu now shows ALL apps.", ColorType.DIM_FG.value)], delay=6.15),
 
         Line(prompt_segments(""), delay=7.0, typed=False),
     ]
@@ -647,21 +687,21 @@ def demo_profile_dev() -> None:
     lines: List[Line] = [
         Line(prompt_segments(".\\run.ps1 profile dev"), delay=0.4, typed=True),
 
-        Line([("", TEXT_FG)], delay=3.2),
-        Line([("==> Profile: dev  (polyglot daily-driver)", ACCENT_HEADER)], delay=3.35),
-        Line([("    29 steps: small-dev (24) + Py + Node+Yarn+Bun + pnpm + Rust + PHP", DIM_FG)], delay=3.55),
-        Line([("", TEXT_FG)], delay=3.75),
+        Line([("", ColorType.TEXT_FG.value)], delay=3.2),
+        Line([("==> Profile: dev  (polyglot daily-driver)", ColorType.ACCENT_HEADER.value)], delay=3.35),
+        Line([("    29 steps: small-dev (24) + Py + Node+Yarn+Bun + pnpm + Rust + PHP", ColorType.DIM_FG.value)], delay=3.55),
+        Line([("", ColorType.TEXT_FG.value)], delay=3.75),
 
-        Line([("[ 1-23 ] ", ACCENT_INFO), ("advance stack ..................... ", TEXT_FG), ("OK", ACCENT_OK)], delay=3.95),
-        Line([("[  24  ] ", ACCENT_INFO), ("golang        -> E:\\dev-tool\\go ... ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.3),
-        Line([("[  25  ] ", ACCENT_INFO), ("python + pip  -> E:\\dev-tool\\python ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.65),
-        Line([("[  26  ] ", ACCENT_INFO), ("node+yarn+bun -> E:\\dev-tool\\nodejs ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.0),
-        Line([("[  27  ] ", ACCENT_INFO), ("pnpm          -> E:\\dev-tool\\pnpm . ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.35),
-        Line([("[  28  ] ", ACCENT_INFO), ("rust (rustup) -> E:\\dev-tool\\rust . ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.7),
-        Line([("[  29  ] ", ACCENT_INFO), ("php cli       -> E:\\dev-tool\\php .. ", TEXT_FG), ("OK", ACCENT_OK)], delay=6.05),
+        Line([("[ 1-23 ] ", ColorType.ACCENT_INFO.value), ("advance stack ..................... ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=3.95),
+        Line([("[  24  ] ", ColorType.ACCENT_INFO.value), ("golang        -> E:\\dev-tool\\go ... ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.3),
+        Line([("[  25  ] ", ColorType.ACCENT_INFO.value), ("python + pip  -> E:\\dev-tool\\python ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.65),
+        Line([("[  26  ] ", ColorType.ACCENT_INFO.value), ("node+yarn+bun -> E:\\dev-tool\\nodejs ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.0),
+        Line([("[  27  ] ", ColorType.ACCENT_INFO.value), ("pnpm          -> E:\\dev-tool\\pnpm . ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.35),
+        Line([("[  28  ] ", ColorType.ACCENT_INFO.value), ("rust (rustup) -> E:\\dev-tool\\rust . ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.7),
+        Line([("[  29  ] ", ColorType.ACCENT_INFO.value), ("php cli       -> E:\\dev-tool\\php .. ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=6.05),
 
-        Line([("", TEXT_FG)], delay=6.4),
-        Line([("dev box ready in ", DIM_FG), ("8m 12s", ACCENT_WARN), (" - 6 runtimes on E:\\, apps on C:\\.", DIM_FG)], delay=6.6),
+        Line([("", ColorType.TEXT_FG.value)], delay=6.4),
+        Line([("dev box ready in ", ColorType.DIM_FG.value), ("8m 12s", ColorType.ACCENT_WARN.value), (" - 6 runtimes on E:\\, apps on C:\\.", ColorType.DIM_FG.value)], delay=6.6),
 
         Line(prompt_segments(""), delay=7.4, typed=False),
     ]
@@ -681,19 +721,19 @@ def demo_profile_dev_advance() -> None:
     lines: List[Line] = [
         Line(prompt_segments(".\\run.ps1 profile dev-advance"), delay=0.4, typed=True),
 
-        Line([("", TEXT_FG)], delay=3.6),
-        Line([("==> Profile: dev-advance  (everything-bagel box)", ACCENT_HEADER)], delay=3.75),
-        Line([("    33 steps: dev (29) + .NET SDK + cpp-dx (3)", DIM_FG)], delay=3.95),
-        Line([("", TEXT_FG)], delay=4.15),
+        Line([("", ColorType.TEXT_FG.value)], delay=3.6),
+        Line([("==> Profile: dev-advance  (everything-bagel box)", ColorType.ACCENT_HEADER.value)], delay=3.75),
+        Line([("    33 steps: dev (29) + .NET SDK + cpp-dx (3)", ColorType.DIM_FG.value)], delay=3.95),
+        Line([("", ColorType.TEXT_FG.value)], delay=4.15),
 
-        Line([("[ 1-29 ] ", ACCENT_INFO), ("dev profile (Go/Py/Node/pnpm/Rust/PHP) ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.35),
-        Line([("[  30  ] ", ACCENT_INFO), (".NET SDK (C#) -> C:\\Program Files\\dotnet ", TEXT_FG), ("OK", ACCENT_OK)], delay=4.7),
-        Line([("[  31  ] ", ACCENT_INFO), ("vcredist-all  -> System32 runtime DLLs   ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.05),
-        Line([("[  32  ] ", ACCENT_INFO), ("directx       -> System32 DX runtime     ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.4),
-        Line([("[  33  ] ", ACCENT_INFO), ("directx sdk   -> Program Files (x86)     ", TEXT_FG), ("OK", ACCENT_OK)], delay=5.75),
+        Line([("[ 1-29 ] ", ColorType.ACCENT_INFO.value), ("dev profile (Go/Py/Node/pnpm/Rust/PHP) ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.35),
+        Line([("[  30  ] ", ColorType.ACCENT_INFO.value), (".NET SDK (C#) -> C:\\Program Files\\dotnet ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=4.7),
+        Line([("[  31  ] ", ColorType.ACCENT_INFO.value), ("vcredist-all  -> System32 runtime DLLs   ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.05),
+        Line([("[  32  ] ", ColorType.ACCENT_INFO.value), ("directx       -> System32 DX runtime     ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.4),
+        Line([("[  33  ] ", ColorType.ACCENT_INFO.value), ("directx sdk   -> Program Files (x86)     ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value)], delay=5.75),
 
-        Line([("", TEXT_FG)], delay=6.1),
-        Line([("dev-advance ready in ", DIM_FG), ("11m 04s", ACCENT_WARN), (" - polyglot + native + .NET, all on disk.", DIM_FG)], delay=6.3),
+        Line([("", ColorType.TEXT_FG.value)], delay=6.1),
+        Line([("dev-advance ready in ", ColorType.DIM_FG.value), ("11m 04s", ColorType.ACCENT_WARN.value), (" - polyglot + native + .NET, all on disk.", ColorType.DIM_FG.value)], delay=6.3),
 
         Line(prompt_segments(""), delay=7.1, typed=False),
     ]
@@ -717,36 +757,36 @@ def demo_models_picker() -> None:
     lines: List[Line] = [
         Line(prompt_segments(".\\run.ps1 -I 43 models"), delay=0.4, typed=True),
 
-        Line([("", TEXT_FG)], delay=3.6),
-        Line([("==> llama.cpp model picker  (90 GGUFs across 33 families)", ACCENT_HEADER)], delay=3.75),
-        Line([("    Filters: RAM -> Size -> Speed -> Capability", DIM_FG)], delay=3.95),
-        Line([("", TEXT_FG)], delay=4.15),
+        Line([("", ColorType.TEXT_FG.value)], delay=3.6),
+        Line([("==> llama.cpp model picker  (90 GGUFs across 33 families)", ColorType.ACCENT_HEADER.value)], delay=3.75),
+        Line([("    Filters: RAM -> Size -> Speed -> Capability", ColorType.DIM_FG.value)], delay=3.95),
+        Line([("", ColorType.TEXT_FG.value)], delay=4.15),
 
-        Line([("RAM filter      ", ACCENT_INFO), ("[1]4  [2]8  [3]16  ", TEXT_FG), ("[4]32", ACCENT_OK), ("  [5]64  >", DIM_FG)], delay=4.35),
-        Line([("Size filter     ", ACCENT_INFO), ("[1]Tiny [2]Small ", TEXT_FG), ("[3]Medium", ACCENT_OK), (" [4]Large [5]XLarge >", DIM_FG)], delay=4.7),
-        Line([("Speed filter    ", ACCENT_INFO), ("[1]Instant ", TEXT_FG), ("[2]Fast", ACCENT_OK), (" [3]Moderate [4]Slow >", DIM_FG)], delay=5.05),
-        Line([("Capability      ", ACCENT_INFO), ("[1]Coding", ACCENT_OK), (" [2]Reasoning [3]Writing [4]Chat >", DIM_FG)], delay=5.4),
-        Line([("", TEXT_FG)], delay=5.6),
+        Line([("RAM filter      ", ColorType.ACCENT_INFO.value), ("[1]4  [2]8  [3]16  ", ColorType.TEXT_FG.value), ("[4]32", ColorType.ACCENT_OK.value), ("  [5]64  >", ColorType.DIM_FG.value)], delay=4.35),
+        Line([("Size filter     ", ColorType.ACCENT_INFO.value), ("[1]Tiny [2]Small ", ColorType.TEXT_FG.value), ("[3]Medium", ColorType.ACCENT_OK.value), (" [4]Large [5]XLarge >", ColorType.DIM_FG.value)], delay=4.7),
+        Line([("Speed filter    ", ColorType.ACCENT_INFO.value), ("[1]Instant ", ColorType.TEXT_FG.value), ("[2]Fast", ColorType.ACCENT_OK.value), (" [3]Moderate [4]Slow >", ColorType.DIM_FG.value)], delay=5.05),
+        Line([("Capability      ", ColorType.ACCENT_INFO.value), ("[1]Coding", ColorType.ACCENT_OK.value), (" [2]Reasoning [3]Writing [4]Chat >", ColorType.DIM_FG.value)], delay=5.4),
+        Line([("", ColorType.TEXT_FG.value)], delay=5.6),
 
-        Line([(" #  Model                          Params  Quant     Size   RAM  Caps", ACCENT_HEADER)], delay=5.75),
-        Line([(" 1  ", ACCENT_INFO), ("qwen2.5-coder-3b              ", TEXT_FG), ("3B      Q4_K_M    1.8GB  4GB  ", DIM_FG), ("Code+Multi", ACCENT_OK)], delay=5.95),
-        Line([(" 2  ", ACCENT_INFO), ("phi-4-mini-3.8b               ", TEXT_FG), ("3.8B    Q4_K_M    2.4GB  6GB  ", DIM_FG), ("Code+Reason", ACCENT_OK)], delay=6.10),
-        Line([(" 3  ", ACCENT_INFO), ("gemma-3-4b-it                 ", TEXT_FG), ("4B      Q4_K_M    2.6GB  6GB  ", DIM_FG), ("Multi+Chat", ACCENT_OK)], delay=6.25),
-        Line([(" 4  ", ACCENT_INFO), ("qwen3.5-4b-opus-distill       ", TEXT_FG), ("4B      Q4_K_M    2.7GB  5GB  ", DIM_FG), ("Code+Reason", ACCENT_OK)], delay=6.40),
-        Line([(" 5  ", ACCENT_INFO), ("mimo-v2-flash  [LB #1]        ", TEXT_FG), ("3B      Q4_K_M    4.5GB  8GB  ", DIM_FG), ("Code+Reason", ACCENT_OK)], delay=6.55),
-        Line([("...   ", DIM_FG), ("12 more models match filters", DIM_FG)], delay=6.70),
-        Line([("", TEXT_FG)], delay=6.85),
+        Line([(" #  Model                          Params  Quant     Size   RAM  Caps", ColorType.ACCENT_HEADER.value)], delay=5.75),
+        Line([(" 1  ", ColorType.ACCENT_INFO.value), ("qwen2.5-coder-3b              ", ColorType.TEXT_FG.value), ("3B      Q4_K_M    1.8GB  4GB  ", ColorType.DIM_FG.value), ("Code+Multi", ColorType.ACCENT_OK.value)], delay=5.95),
+        Line([(" 2  ", ColorType.ACCENT_INFO.value), ("phi-4-mini-3.8b               ", ColorType.TEXT_FG.value), ("3.8B    Q4_K_M    2.4GB  6GB  ", ColorType.DIM_FG.value), ("Code+Reason", ColorType.ACCENT_OK.value)], delay=6.10),
+        Line([(" 3  ", ColorType.ACCENT_INFO.value), ("gemma-3-4b-it                 ", ColorType.TEXT_FG.value), ("4B      Q4_K_M    2.6GB  6GB  ", ColorType.DIM_FG.value), ("Multi+Chat", ColorType.ACCENT_OK.value)], delay=6.25),
+        Line([(" 4  ", ColorType.ACCENT_INFO.value), ("qwen3.5-4b-opus-distill       ", ColorType.TEXT_FG.value), ("4B      Q4_K_M    2.7GB  5GB  ", ColorType.DIM_FG.value), ("Code+Reason", ColorType.ACCENT_OK.value)], delay=6.40),
+        Line([(" 5  ", ColorType.ACCENT_INFO.value), ("mimo-v2-flash  [LB #1]        ", ColorType.TEXT_FG.value), ("3B      Q4_K_M    4.5GB  8GB  ", ColorType.DIM_FG.value), ("Code+Reason", ColorType.ACCENT_OK.value)], delay=6.55),
+        Line([("...   ", ColorType.DIM_FG.value), ("12 more models match filters", ColorType.DIM_FG.value)], delay=6.70),
+        Line([("", ColorType.TEXT_FG.value)], delay=6.85),
 
-        Line([("Select: ", ACCENT_INFO), ("1,3-4", TEXT_FG), ("    -> ", DIM_FG), ("3 models, 7.1 GB", ACCENT_WARN)], delay=7.05),
-        Line([("Disk space check: ", DIM_FG), ("OK", ACCENT_OK), (" (free 412 GB on E:\\)", DIM_FG)], delay=7.30),
-        Line([("", TEXT_FG)], delay=7.50),
+        Line([("Select: ", ColorType.ACCENT_INFO.value), ("1,3-4", ColorType.TEXT_FG.value), ("    -> ", ColorType.DIM_FG.value), ("3 models, 7.1 GB", ColorType.ACCENT_WARN.value)], delay=7.05),
+        Line([("Disk space check: ", ColorType.DIM_FG.value), ("OK", ColorType.ACCENT_OK.value), (" (free 412 GB on E:\\)", ColorType.DIM_FG.value)], delay=7.30),
+        Line([("", ColorType.TEXT_FG.value)], delay=7.50),
 
-        Line([("[1/3] ", ACCENT_INFO), ("aria2c -> qwen2.5-coder-3b ........ ", TEXT_FG), ("OK", ACCENT_OK), ("  18MB/s", DIM_FG)], delay=7.70),
-        Line([("[2/3] ", ACCENT_INFO), ("aria2c -> gemma-3-4b-it ........... ", TEXT_FG), ("OK", ACCENT_OK), ("  21MB/s", DIM_FG)], delay=8.00),
-        Line([("[3/3] ", ACCENT_INFO), ("aria2c -> qwen3.5-4b-opus-distill . ", TEXT_FG), ("OK", ACCENT_OK), ("  19MB/s", DIM_FG)], delay=8.30),
+        Line([("[1/3] ", ColorType.ACCENT_INFO.value), ("aria2c -> qwen2.5-coder-3b ........ ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value), ("  18MB/s", ColorType.DIM_FG.value)], delay=7.70),
+        Line([("[2/3] ", ColorType.ACCENT_INFO.value), ("aria2c -> gemma-3-4b-it ........... ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value), ("  21MB/s", ColorType.DIM_FG.value)], delay=8.00),
+        Line([("[3/3] ", ColorType.ACCENT_INFO.value), ("aria2c -> qwen3.5-4b-opus-distill . ", ColorType.TEXT_FG.value), ("OK", ColorType.ACCENT_OK.value), ("  19MB/s", ColorType.DIM_FG.value)], delay=8.30),
 
-        Line([("", TEXT_FG)], delay=8.65),
-        Line([("3 models downloaded in ", DIM_FG), ("4m 18s", ACCENT_WARN), (" - ready in E:\\dev-tool\\llama-models.", DIM_FG)], delay=8.85),
+        Line([("", ColorType.TEXT_FG.value)], delay=8.65),
+        Line([("3 models downloaded in ", ColorType.DIM_FG.value), ("4m 18s", ColorType.ACCENT_WARN.value), (" - ready in E:\\dev-tool\\llama-models.", ColorType.DIM_FG.value)], delay=8.85),
 
         Line(prompt_segments(""), delay=9.65, typed=False),
     ]
