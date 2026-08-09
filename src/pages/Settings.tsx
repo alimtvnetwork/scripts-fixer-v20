@@ -24,7 +24,7 @@ import {
 } from "@/lib/configSchema";
 import { diffJson, summarizeDiff, type DiffEntry } from "@/lib/jsonDiff";
 import { DiffRow } from "@/components/DiffRow";
-import { safeQuery } from "@/utils/query-wrapper";
+import { safeQuery, StatusType } from "@/utils/query-wrapper";
 
 export enum EditionType {
   Stable = "stable",
@@ -197,7 +197,7 @@ const Settings = () => {
       setBridgeStatus(BridgeStatusType.Checking);
       try {
         const r = await safeQuery(`${bridgeUrl.replace(/\/$/, "")}/health`, { method: "GET" });
-        if (!cancelled) setBridgeStatus(r.ok ? BridgeStatusType.Online : BridgeStatusType.Offline);
+        if (!cancelled) setBridgeStatus(r.isFail === false ? BridgeStatusType.Online : BridgeStatusType.Offline);
       } catch {
         if (!cancelled) setBridgeStatus(BridgeStatusType.Offline);
       }
@@ -289,8 +289,8 @@ const Settings = () => {
 
       const res = await safeQuery(endpoint, { method: "GET", headers });
       let current: unknown = {};
-      if (res.ok) {
-        const text = await res.text();
+      if (res.isFail === false && res.response) {
+        const text = await res.response.text();
         try {
           // Bridge returns the raw file contents as a JSON string
           const parsedOuter = JSON.parse(text);
@@ -298,13 +298,15 @@ const Settings = () => {
         } catch {
           current = {};
         }
-      } else if (res.status !== HTTP_STATUS_NOT_FOUND) {
-        const data = await res.json().catch(() => ({}));
+      } else if (res.response && res.response.status !== HTTP_STATUS_NOT_FOUND) {
+        const data = await res.response.json().catch(() => ({}));
         const reason =
           (data as { reason?: string; error?: string }).reason ??
           (data as { error?: string }).error ??
-          `HTTP ${res.status}`;
+          `HTTP ${res.response.status}`;
         throw new Error(`path: ${endpoint} — reason: ${reason}`);
+      } else if (res.isFail) {
+        throw res.error ?? new Error(`Network error for URL ${endpoint}`);
       }
 
       const next = deepMerge(current, payload);
@@ -349,15 +351,15 @@ const Settings = () => {
         headers,
         body: JSON.stringify(pendingPayload ?? patch),
       });
-      const data = await res.json().catch(() => ({}));
-      if (res.ok) {
+      const data = res.response ? await res.response.json().catch(() => ({})) : {};
+      if (res.isFail === false) {
         // Valid
       } else {
         const path = (data as { path?: string }).path ?? CONFIG_PATH;
         const reason =
           (data as { reason?: string; error?: string }).reason ??
           (data as { error?: string }).error ??
-          `HTTP ${res.status}`;
+          `HTTP ${res.response?.status ?? "Unknown"}`;
         throw new Error(`path: ${path} — reason: ${reason}`);
       }
       const savedPath = (data as { path?: string }).path ?? CONFIG_PATH;
