@@ -14,3 +14,8 @@
 ## Logging
 
 - **Rule**: All caught errors must be explicitly logged following the guidelines in the error manage folder. The query wrapper handles this for network requests.
+
+## Common Mistakes to Avoid (Lessons Learned)
+
+- **UI Components (Shadcn)**: Do NOT leave string union types (e.g. `"horizontal" | "vertical"` or `"line" | "dot"`) in imported UI components like `carousel.tsx`, `chart.tsx`, or `sidebar.tsx`. They MUST be converted to Enums with the `Type` suffix (e.g. `CarouselOrientationType`).
+- **Empty Catch Blocks**: Do NOT use `catch { // ignore }` to swallow errors, even for non-critical operations like `localStorage` or `JSON.parse`. Every single `catch` block MUST log the exact file path and failure reason using `console.error` (e.g., `console.error('[Error] path: localStorage(key) — reason:', err)`).

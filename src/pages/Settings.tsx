@@ -60,7 +60,8 @@ const loadCachedPreview = (): CachedPreview | null => {
     const parsed = JSON.parse(raw) as CachedPreview;
     if (parsed?.v !== PREVIEW_CACHE_VERSION || !Array.isArray(parsed.diff)) return null;
     return parsed;
-  } catch {
+  } catch (err) {
+    console.error(`[Error] path: localStorage(${PREVIEW_CACHE_KEY}) — reason:`, err);
     return null;
   }
 };
@@ -73,16 +74,18 @@ const saveCachedPreview = (snapshot: Omit<CachedPreview, "v" | "savedAt">) => {
       ...snapshot,
     };
     localStorage.setItem(PREVIEW_CACHE_KEY, JSON.stringify(payload));
-  } catch {
+  } catch (err) {
     // localStorage can throw on quota/private mode — preview cache is best-effort
+    console.error(`[Error] path: localStorage(${PREVIEW_CACHE_KEY}) — reason:`, err);
   }
 };
 
 const clearCachedPreview = () => {
   try {
     localStorage.removeItem(PREVIEW_CACHE_KEY);
-  } catch {
+  } catch (err) {
     // ignore
+    console.error(`[Error] path: localStorage(${PREVIEW_CACHE_KEY}) — reason:`, err);
   }
 };
 
@@ -198,7 +201,8 @@ const Settings = () => {
       try {
         const r = await safeQuery(`${bridgeUrl.replace(/\/$/, "")}/health`, { method: "GET" });
         if (!cancelled) setBridgeStatus(r.isFail === false ? BridgeStatusType.Online : BridgeStatusType.Offline);
-      } catch {
+      } catch (err) {
+        console.error(`[Error] path: ${bridgeUrl}/health — reason:`, err);
         if (!cancelled) setBridgeStatus(BridgeStatusType.Offline);
       }
     };
@@ -295,7 +299,8 @@ const Settings = () => {
           // Bridge returns the raw file contents as a JSON string
           const parsedOuter = JSON.parse(text);
           current = typeof parsedOuter === "string" ? JSON.parse(parsedOuter) : parsedOuter;
-        } catch {
+        } catch (err) {
+          console.error(`[Error] path: JSON parse bridge response — reason:`, err);
           current = {};
         }
       } else if (res.response && res.response.status !== HTTP_STATUS_NOT_FOUND) {

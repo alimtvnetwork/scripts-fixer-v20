@@ -6,6 +6,12 @@ import { cn } from "@/lib/utils";
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;
 
+export enum ChartIndicatorType {
+  Line = "line",
+  Dot = "dot",
+  Dashed = "dashed",
+}
+
 export type ChartConfig = {
   [k in string]: {
     label?: React.ReactNode;
@@ -95,7 +101,7 @@ const ChartTooltipContent = React.forwardRef<
     React.ComponentProps<"div"> & {
       hideLabel?: boolean;
       hideIndicator?: boolean;
-      indicator?: "line" | "dot" | "dashed";
+      indicator?: ChartIndicatorType;
       nameKey?: string;
       labelKey?: string;
     }
@@ -105,7 +111,7 @@ const ChartTooltipContent = React.forwardRef<
       active,
       payload,
       className,
-      indicator = "dot",
+      indicator = ChartIndicatorType.Dot,
       hideLabel = false,
       hideIndicator = false,
       label,
@@ -148,7 +154,7 @@ const ChartTooltipContent = React.forwardRef<
       return null;
     }
 
-    const nestLabel = payload.length === 1 && indicator !== "dot";
+    const nestLabel = payload.length === 1 && indicator !== ChartIndicatorType.Dot;
 
     return (
       <div
@@ -170,7 +176,7 @@ const ChartTooltipContent = React.forwardRef<
                 key={item.dataKey}
                 className={cn(
                   "flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground",
-                  indicator === "dot" && "items-center",
+                  indicator === ChartIndicatorType.Dot && "items-center",
                 )}
               >
                 {formatter && item?.value !== undefined && item.name ? (
@@ -183,10 +189,10 @@ const ChartTooltipContent = React.forwardRef<
                       !hideIndicator && (
                         <div
                           className={cn("shrink-0 rounded-[2px] border-[--color-border] bg-[--color-bg]", {
-                            "h-2.5 w-2.5": indicator === "dot",
-                            "w-1": indicator === "line",
-                            "w-0 border-[1.5px] border-dashed bg-transparent": indicator === "dashed",
-                            "my-0.5": nestLabel && indicator === "dashed",
+                            "h-2.5 w-2.5": indicator === ChartIndicatorType.Dot,
+                            "w-1": indicator === ChartIndicatorType.Line,
+                            "w-0 border-[1.5px] border-dashed bg-transparent": indicator === ChartIndicatorType.Dashed,
+                            "my-0.5": nestLabel && indicator === ChartIndicatorType.Dashed,
                           })}
                           style={
                             {
