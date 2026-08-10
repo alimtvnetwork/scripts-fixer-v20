@@ -10,4 +10,4 @@ Implement a query wrapper for fetching data that explicitly logs failures and us
 - [x] Run vitest to ensure tests pass.
 - [x] Check build.
 - [x] Commit changes.
-- [ ] Push changes.
+- [x] Push changes.
