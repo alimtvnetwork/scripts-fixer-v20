@@ -29,3 +29,4 @@ release-assets
 /.resolved
 /.reports
 /.state
+/scripts/.resolved
