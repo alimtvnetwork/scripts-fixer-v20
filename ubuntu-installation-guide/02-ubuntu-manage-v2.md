@@ -690,6 +690,40 @@ rm -f latest.zip
 ls /var/www/wordpress | head -n 10
 ```
 
+
+### AnyDesk (Cross-Platform Remote Desktop)
+Install the latest version of AnyDesk directly from their official APT repository.
+
+```bash
+# Set up download directory
+mkdir -p ~/scripts-download && cd ~/scripts-download
+
+# Add repository key and list
+wget -qO - https://keys.anydesk.com/repos/DEB-GPG-KEY | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/anydesk.gpg
+echo "deb http://deb.anydesk.com/ all main" | sudo tee /etc/apt/sources.list.d/anydesk-stable.list
+
+# Install
+sudo apt-fast update -y
+sudo apt-fast install -y anydesk
+```
+
+### AnyDesk (Windows Installation via PowerShell)
+To automate the installation of AnyDesk on a Windows host, you can use PowerShell to download it into the `scripts-download` directory and install it silently.
+
+```powershell
+# Set up download directory in user profile
+$downloadDir = "$HOME\scripts-download"
+New-Item -ItemType Directory -Force -Path $downloadDir | Out-Null
+Set-Location $downloadDir
+
+# Download latest AnyDesk for Windows
+Invoke-WebRequest -Uri "https://download.anydesk.com/AnyDesk.exe" -OutFile "AnyDesk.exe"
+
+# Install silently (runs in background)
+Start-Process -FilePath ".\AnyDesk.exe" -ArgumentList "--install", "$env:ProgramFiles\AnyDesk", "--start-with-win", "--silent" -Wait -NoNewWindow
+```
+
+
 ## VMware Open VM Tools And Shared Folders
 
 Enables clipboard sharing, proper scrolling and host folder mounting inside a VMware guest, then links the shares reliably to your desktop on startup.
@@ -701,6 +735,11 @@ sudo systemctl enable --now open-vm-tools
 ```
 
 ### Automount VMware Shared Folders on Startup to Desktop
+
+> **Note**: If you are using our provided `setup.sh` helper, you can instantly apply this fix across Ubuntu/CentOS/Fedora by simply running:
+> ```bash
+> ./setup.sh vm-shared-folder-fix
+> ```
 
 Using `/etc/fstab` can fail if VMware tools load too late during boot. This approach uses a systemd mount unit to guarantee that any files you share from the host will immediately appear on your Ubuntu Desktop under `SharedDirectories` every time the OS runs.
 
@@ -819,7 +858,8 @@ python2.7 -V
 Caution: bundles its own Apache, MySQL and PHP outside apt and is not hardened for production. Use the PHP section above for development instead.
 
 ```bash
-mkdir -p ~/Downloads && cd ~/Downloads
+mkdir -p ~/Downloads && mkdir -p ~/scripts-download && cd ~/scripts-download
+mkdir -p ~/scripts-download && cd ~/scripts-download
 aria2c -c -s 20 -x 15 -k 1M -j 1 https://sourceforge.net/projects/xampp/files/XAMPP%20Linux/8.2.12/xampp-linux-x64-8.2.12-0-installer.run/download -o xampp-linux-x64-installer.run
 chmod +x xampp-linux-x64-installer.run
 sudo ./xampp-linux-x64-installer.run
