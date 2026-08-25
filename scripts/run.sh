@@ -1,6 +1,7 @@
 #!/bin/bash
 COMMAND=$1
-ARGS=$2
+shift
+ARGS="$*"
 
 case "$COMMAND" in
     "os")
