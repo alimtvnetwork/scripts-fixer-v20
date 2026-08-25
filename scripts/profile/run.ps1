@@ -709,3 +709,8 @@ if ($failedCount -eq 0) {
     Save-LogFile -Status "partial"
     exit 1
 }
+
+if ($Args -contains "ubuntu-basic" -or $ubuntu_basic) { wsl -e bash scripts/os/ubuntu/profile-ubuntu-basic.sh; exit 0 }
+if ($Args -contains "ubuntu+vscode" -or $ubuntu_vscode) { wsl -e bash scripts/os/ubuntu/profile-ubuntu-vscode.sh; exit 0 }
+if ($Args -contains "ubuntu+simple-dev" -or $ubuntu_simple_dev) { wsl -e bash scripts/os/ubuntu/profile-ubuntu-simple-dev.sh; exit 0 }
+if ($Args -contains "ubuntu+dev" -or $ubuntu_dev) { wsl -e bash scripts/os/ubuntu/profile-ubuntu-dev.sh; exit 0 }

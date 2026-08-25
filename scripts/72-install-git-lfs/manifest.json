@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "46",
+  "name": "Kubernetes (kubectl/kubeadm apt)",
+  "summary": "Kubernetes (kubectl/kubeadm apt)",
+  "aliases": [],
+  "platforms": {
+    "windows": {
+      "folder": "46-install-kubernetes",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "46-install-kubernetes",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "46-install-kubernetes",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "08",
+  "tags": []
+}
