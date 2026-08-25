@@ -37,3 +37,5 @@ test-reports/
 *.out
 *.bin
 *.exe
+
+.lovable/temp/
