@@ -1,3 +1,1 @@
-# Master Plan Index
-
-- [Linux Manage Conversion](pending/01-linux-manage.md)
+- [chrome-migration](completed/01-02-chrome-migration.md)
