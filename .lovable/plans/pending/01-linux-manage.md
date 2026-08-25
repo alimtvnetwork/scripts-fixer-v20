@@ -1,0 +1,36 @@
+# Linux Manage Conversion Plan
+
+**Goal:** Convert the OneNote document (`Linux Manage 2024 v2.one`) into three distinct markdown installation guides for Ubuntu, Fedora, and CentOS.
+**Context:** Extracted commands show various software setups (Docker, ZSH, VSCode, K8s, etc.). These must be mapped to their respective package managers (`apt`, `dnf`, `yum`).
+
+## Subtasks
+- [01 01-initialize-and-assets](subtasks/01-linux-manage/01-initialize-and-assets.md)
+- [02 02-ubuntu-skeleton](subtasks/01-linux-manage/02-ubuntu-skeleton.md)
+- [03 03-fedora-skeleton](subtasks/01-linux-manage/03-fedora-skeleton.md)
+- [04 04-centos-skeleton](subtasks/01-linux-manage/04-centos-skeleton.md)
+- [05 05-system-update-translation](subtasks/01-linux-manage/05-system-update-translation.md)
+- [06 06-zsh-installation](subtasks/01-linux-manage/06-zsh-installation.md)
+- [07 07-git-installation](subtasks/01-linux-manage/07-git-installation.md)
+- [08 08-docker-installation](subtasks/01-linux-manage/08-docker-installation.md)
+- [09 09-docker-compose-snap](subtasks/01-linux-manage/09-docker-compose-snap.md)
+- [10 10-python-installation](subtasks/01-linux-manage/10-python-installation.md)
+- [11 11-golang-installation](subtasks/01-linux-manage/11-golang-installation.md)
+- [12 12-k8s-kubectl-minikube](subtasks/01-linux-manage/12-k8s-kubectl-minikube.md)
+- [13 13-vscode-installation](subtasks/01-linux-manage/13-vscode-installation.md)
+- [14 14-dbeaver-installation](subtasks/01-linux-manage/14-dbeaver-installation.md)
+- [15 15-beyond-compare-installation](subtasks/01-linux-manage/15-beyond-compare-installation.md)
+- [16 16-jetbrains-tools](subtasks/01-linux-manage/16-jetbrains-tools.md)
+- [17 17-xampp-installation](subtasks/01-linux-manage/17-xampp-installation.md)
+- [18 18-wordpress-setup](subtasks/01-linux-manage/18-wordpress-setup.md)
+- [19 19-network-ssh-config](subtasks/01-linux-manage/19-network-ssh-config.md)
+- [20 20-nginx-aliases](subtasks/01-linux-manage/20-nginx-aliases.md)
+- [21 21-aria2-wget](subtasks/01-linux-manage/21-aria2-wget.md)
+- [22 22-system-utils](subtasks/01-linux-manage/22-system-utils.md)
+- [23 23-vmware-tools](subtasks/01-linux-manage/23-vmware-tools.md)
+- [24 24-vim-config](subtasks/01-linux-manage/24-vim-config.md)
+- [25 25-powershell-linux](subtasks/01-linux-manage/25-powershell-linux.md)
+- [26 26-user-management](subtasks/01-linux-manage/26-user-management.md)
+- [27 27-ubuntu-validation](subtasks/01-linux-manage/27-ubuntu-validation.md)
+- [28 28-fedora-validation](subtasks/01-linux-manage/28-fedora-validation.md)
+- [29 29-centos-validation](subtasks/01-linux-manage/29-centos-validation.md)
+- [30 30-final-review-commits](subtasks/01-linux-manage/30-final-review-commits.md)

@@ -30,3 +30,10 @@ release-assets
 /.reports
 /.state
 /scripts/.resolved
+
+# Generated
+artifacts/
+test-reports/
+*.out
+*.bin
+*.exe
