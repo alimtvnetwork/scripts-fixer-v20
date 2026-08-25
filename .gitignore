@@ -39,3 +39,13 @@ test-reports/
 *.exe
 
 .lovable/temp/
+clean_text.py
+clean_ascii.txt
+clean_ascii.py
+clean.txt
+commands_extracted.txt
+extracted_ascii.txt
+extracted_utf16.txt
+make_md.py
+make_v2.py
+make_v3.py
