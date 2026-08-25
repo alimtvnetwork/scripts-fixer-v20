@@ -49,3 +49,7 @@ extracted_utf16.txt
 make_md.py
 make_v2.py
 make_v3.py
+
+.lovable/temp-scripts/
+
+.lovable/temp-agents/
