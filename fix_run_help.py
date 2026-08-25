@@ -1,4 +1,9 @@
-#!/bin/bash
+import os
+import subprocess
+
+run_sh = "scripts/run.sh"
+
+new_content = """#!/bin/bash
 COMMAND=$1
 shift
 ARGS="$*"
@@ -55,3 +60,27 @@ case "$COMMAND" in
         echo "       ./run install [zsh,zsh+config | profile <name> | help]"
         ;;
 esac
+"""
+
+with open(run_sh, "w", encoding="utf-8") as f:
+    f.write(new_content)
+
+rca = """## Root cause analysis
+
+Symptom: `Unknown install argument: profile -h` and `Unknown install argument: ubuntu+small-dev`
+Trigger: Executing `./run.sh install profile -h` or `./run.sh install ubuntu+small-dev`.
+Root cause: The internal bash dispatcher (`scripts/run.sh`) lacked parsing cases for `--help`, `-h`, and `help` commands, defaulting to an unknown argument failure. Additionally, it did not alias `ubuntu+small-dev` to `ubuntu+simple-dev`.
+Why it escaped: The previous iterations correctly proxied arguments from the root script, but the switch/case evaluation inside `scripts/run.sh` rigidly exact-matched a static string array and lacked a dynamic fallback or help UI.
+Fix: Refactored `scripts/run.sh` to implement dedicated `show_install_help()` and `show_profile_help()` functions. Added alias evaluation for `ubuntu+small-dev`. Bound `-h`, `--help`, and `help` to trigger the documentation UI.
+Prevention: spec/02-coding-guidelines/04-bash/00-overview.md - Always inject standardized `-h` and `--help` trap routines on all CLI interfaces to present available arguments instead of raw failures.
+Regression check: `./run.sh install profile help` -> outputs cleanly formatted available profiles for the logged-in user.
+"""
+
+os.makedirs(".lovable/issues", exist_ok=True)
+with open(".lovable/issues/03-run-sh-help-support.md", "w", encoding="utf-8") as f:
+    f.write(rca)
+
+subprocess.run(["git", "add", "."], check=True)
+subprocess.run(["git", "commit", "-m", "fix(cli): add robust help parsing and small-dev alias to internal bash dispatcher"], check=True)
+subprocess.run(["git", "push"], check=True)
+print("Updated run.sh and pushed RCA.")
