@@ -1,2 +1,2 @@
 #!/bin/bash
-apt-get install -y gh
+sudo apt-get install -y gh

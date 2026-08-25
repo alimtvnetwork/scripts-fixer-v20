@@ -1,3 +1,3 @@
 #!/bin/bash
 bash scripts/os/ubuntu/profile-ubuntu-basic.sh
-snap install code --classic
+sudo snap install code --classic

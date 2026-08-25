@@ -1,2 +1,2 @@
 #!/bin/bash
-npm install -g yarn
+sudo npm install -g yarn

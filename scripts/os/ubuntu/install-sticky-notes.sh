@@ -1,2 +1,2 @@
 #!/bin/bash
-snap install rhinote
+sudo snap install rhinote

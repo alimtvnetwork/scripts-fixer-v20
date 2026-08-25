@@ -1,2 +1,2 @@
 #!/bin/bash
-npm install -g pnpm
+sudo npm install -g pnpm

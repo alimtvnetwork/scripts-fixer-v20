@@ -1,2 +1,2 @@
 #!/bin/bash
-apt-get install -y python3 python3-pip python3-venv
+sudo apt-get install -y python3 python3-pip python3-venv

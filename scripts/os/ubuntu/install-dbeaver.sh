@@ -1,2 +1,2 @@
 #!/bin/bash
-snap install dbeaver-ce
+sudo snap install dbeaver-ce

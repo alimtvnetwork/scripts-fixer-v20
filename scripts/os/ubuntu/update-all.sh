@@ -1,2 +1,2 @@
 #!/bin/bash
-apt update -y && apt-get update -y && apt upgrade -y && do-release-upgrade -y
+sudo apt update -y && apt-get update -y && sudo apt upgrade -y && sudo do-release-upgrade -y

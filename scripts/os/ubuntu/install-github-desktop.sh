@@ -1,2 +1,2 @@
 #!/bin/bash
-snap install github-desktop --beta
+sudo snap install github-desktop --beta
