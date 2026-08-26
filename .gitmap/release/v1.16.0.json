@@ -1,0 +1,20 @@
+{
+  "version": "1.16.0",
+  "branch": "release/v1.16.0",
+  "sourceBranch": "main",
+  "commit": "d30cb3f1f44852a44f4786d1ec50c1a8eabf84c7",
+  "tag": "v1.16.0",
+  "assets": [],
+  "changelog": [
+    "**Under-the-Hood Profile Hierarchy Trees**: `scripts/shared/profile_tree.py` dynamically resolves both Windows and Ubuntu profiles (`ubuntu-basic`, `ubuntu+vscode`, `ubuntu+small-dev`, `ubuntu+dev`, `minimal`, `base`, `dev`, `small-dev`, etc.) into ASCII tree diagrams with step-by-step breakdowns.",
+    "**Expanded `install ls` / `install list`**: Displays full component trees and single-tool descriptions from the SQLite ledger (`~/.scripts-fixer/install_log.db`) across both Linux (`run.sh`) and Windows (`run.ps1`).",
+    "**GLM \u0026 Kimi Models Integration**: Added Zhipu AI GLM-4 (9B), GLM-Edge (4B), Moonshot AI Kimi K2 (8B), and Kimi Coder (8B) to both Ollama (`scripts/42-install-ollama/config.json`) and GGUF (`scripts/43-install-llama-cpp/models-catalog.json`) catalogs.",
+    "**Cross-Platform High-Contrast Theming**: Replaced dark magenta colors with vibrant `LightGreen`, `Cyan`, and `LightGray` in `scripts/shared/theme.json`, `run.sh`, `run.ps1`, and `list_installs.py`.",
+    "Synchronized Windows (`run.ps1`) and Linux (`scripts/run.sh`) installation summary and logging pipelines.",
+    "Updated `.lovable/memory/release-architecture-map.md` to reflect release v1.16.0."
+  ],
+  "isDraft": false,
+  "isPreRelease": false,
+  "createdAt": "2026-08-26T15:10:26Z",
+  "isLatest": false
+}
