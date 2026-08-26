@@ -1,18 +1,23 @@
-#!/bin/bash
+import os
+import subprocess
+
+run_sh = "scripts/run.sh"
+
+new_content = """#!/bin/bash
 
 # ANSI Color codes
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[0;33m'
-CYAN='\033[0;36m'
-MAGENTA='\033[0;35m'
-DARK_GRAY='\033[1;30m'
-NC='\033[0m' # No Color
+RED='\\033[0;31m'
+GREEN='\\033[0;32m'
+YELLOW='\\033[0;33m'
+CYAN='\\033[0;36m'
+MAGENTA='\\033[0;35m'
+DARK_GRAY='\\033[1;30m'
+NC='\\033[0m' # No Color
 
 show_header() {
     echo -e ""
     echo -e "  ${MAGENTA}Scripts Fixer (Linux)${NC}"
-    echo -e "  ${CYAN}git $(git rev-parse --short HEAD 2>/dev/null || echo "unknown") ($(git branch --show-current 2>/dev/null || echo "unknown"))${NC}"
+    echo -e "  ${CYAN}git $(git rev-parse --short HEAD) ($(git branch --show-current))${NC}"
     echo -e ""
     echo -e "  ${CYAN}Dev Tools Setup Scripts${NC}"
     echo -e "  ${DARK_GRAY}=======================${NC}"
@@ -23,58 +28,22 @@ show_main_help() {
     show_header
     echo -e "  ${YELLOW}Usage:${NC}"
     echo -e ""
-    printf "    %-44s ${DARK_GRAY}%s${NC}\n" "./run.sh install <keywords>" "Install by keyword (bare command)"
-    printf "    %-44s ${DARK_GRAY}%s${NC}\n" "./run.sh os <action>" "OS level actions (update, update-all)"
-    printf "    %-44s ${DARK_GRAY}%s${NC}\n" "./run.sh <command> -h" "Show detailed help for a command"
+    printf "    %-44s ${DARK_GRAY}%s${NC}\\n" "./run.sh install <keywords>" "Install by keyword"
+    printf "    %-44s ${DARK_GRAY}%s${NC}\\n" "./run.sh os <action>" "OS level actions (update, etc)"
+    printf "    %-44s ${DARK_GRAY}%s${NC}\\n" "./run.sh <command> -h" "Show detailed help for a command"
     echo -e ""
-    
-    echo -e "  ${YELLOW}Combo Shortcuts:${NC}"
-    echo -e ""
-    printf "    %-28s ${DARK_GRAY}%s${NC}\n" "ubuntu-basic" "Git, ZSH, aria2c, vim, curl, wget"
-    printf "    %-28s ${DARK_GRAY}%s${NC}\n" "ubuntu+vscode" "ubuntu-basic + VS Code snap"
-    printf "    %-28s ${DARK_GRAY}%s${NC}\n" "ubuntu+simple-dev" "ubuntu+vscode + Golang, Rust, PHP, Python3"
-    printf "    %-28s ${DARK_GRAY}%s${NC}\n" "ubuntu+dev" "ubuntu+simple-dev + Node.js, PNPM"
-    echo -e ""
-    
-    echo -e "  ${YELLOW}Available Scripts:${NC}"
-    echo -e ""
-    echo -e "    ${DARK_GRAY}ID  Name                            Description${NC}"
-    echo -e "    ${DARK_GRAY}--  ------------------------------  --------------------------------------------------${NC}"
-    echo -e ""
-    echo -e "    ${MAGENTA}Core Tools${NC}"
-    printf "    ${DARK_GRAY}%s${NC}  %-30s  %s\n" "01" "Install VS Code" "Install Visual Studio Code (snap)"
-    printf "    ${DARK_GRAY}%s${NC}  %-30s  %s\n" "03" "Node.js + Yarn" "Install Node.js LTS, Yarn"
-    printf "    ${DARK_GRAY}%s${NC}  %-30s  %s\n" "04" "pnpm" "Install pnpm globally"
-    printf "    ${DARK_GRAY}%s${NC}  %-30s  %s\n" "05" "Python 3" "Install Python 3, pip, venv"
-    printf "    ${DARK_GRAY}%s${NC}  %-30s  %s\n" "06" "Golang" "Install Go compiler via APT"
-    printf "    ${DARK_GRAY}%s${NC}  %-30s  %s\n" "07" "Git + LFS + gh" "Install Git, Git LFS, GitHub CLI"
-    printf "    ${DARK_GRAY}%s${NC}  %-30s  %s\n" "16" "PHP" "Install PHP, CLI, FPM"
-    printf "    ${DARK_GRAY}%s${NC}  %-30s  %s\n" "20" "Rust" "Install Rust (cargo, rustup)"
-    echo -e ""
-    
-    echo -e "    ${MAGENTA}System & Orchestration${NC}"
-    printf "    ${DARK_GRAY}%s${NC}  %-30s  %s\n" "10" "OS Update" "Run apt update && apt upgrade"
-    printf "    ${DARK_GRAY}%s${NC}  %-30s  %s\n" "11" "OS Update All" "Run update + release-upgrade"
-    printf "    ${DARK_GRAY}%s${NC}  %-30s  %s\n" "46" "Kubernetes" "Install Kubernetes CLI (kubectl)"
-    printf "    ${DARK_GRAY}%s${NC}  %-30s  %s\n" "47" "Docker" "Install Docker and Docker Compose"
-    echo -e ""
-    
-    echo -e "    ${MAGENTA}Desktop Tools${NC}"
-    printf "    ${DARK_GRAY}%s${NC}  %-30s  %s\n" "32" "DBeaver Community" "Install DBeaver via snap"
-    printf "    ${DARK_GRAY}%s${NC}  %-30s  %s\n" "33" "GitHub Desktop" "Install GitHub Desktop GUI"
-    printf "    ${DARK_GRAY}%s${NC}  %-30s  %s\n" "34" "Sticky Notes" "Install Sticky Notes GUI utility"
-    echo -e ""
-    
-    echo -e "    ${MAGENTA}ZSH Environment${NC}"
-    printf "    ${DARK_GRAY}%s${NC}  %-30s  %s\n" "50" "ZSH" "Install ZSH shell"
-    printf "    ${DARK_GRAY}%s${NC}  %-30s  %s\n" "51" "ZSH + Config" "Install ZSH, Oh-My-Zsh & plugins"
-    echo -e ""
-    
-    echo -e "  ${YELLOW}Usage Examples:${NC}"
-    echo -e "    ./run.sh install docker"
-    echo -e "    ./run.sh install profile ubuntu+dev"
-    echo -e "    ./run.sh os update-all"
-    echo -e "    ./run.sh install help"
+    echo -e "  ${YELLOW}Available Installations:${NC}"
+    printf "    %-44s ${DARK_GRAY}%s${NC}\\n" "docker" "Install Docker and Docker Compose"
+    printf "    %-44s ${DARK_GRAY}%s${NC}\\n" "kubernetes" "Install Kubernetes CLI (kubectl)"
+    printf "    %-44s ${DARK_GRAY}%s${NC}\\n" "python2, python3" "Install Python environments"
+    printf "    %-44s ${DARK_GRAY}%s${NC}\\n" "rust" "Install Rust (cargo, rustup)"
+    printf "    %-44s ${DARK_GRAY}%s${NC}\\n" "golang" "Install Go compiler"
+    printf "    %-44s ${DARK_GRAY}%s${NC}\\n" "node, pnpm, yarn" "Install Node.js & package managers"
+    printf "    %-44s ${DARK_GRAY}%s${NC}\\n" "php" "Install PHP, CLI, FPM"
+    printf "    %-44s ${DARK_GRAY}%s${NC}\\n" "git-lfs, gh" "Install Git LFS and GitHub CLI"
+    printf "    %-44s ${DARK_GRAY}%s${NC}\\n" "dbeaver, github-desktop, sticky-notes" "Install GUI tools via Snap"
+    printf "    %-44s ${DARK_GRAY}%s${NC}\\n" "zsh, zsh+config" "Install ZSH, Oh-My-Zsh & plugins"
+    printf "    %-44s ${DARK_GRAY}%s${NC}\\n" "profile <name>" "Install complete profile"
     echo -e ""
 }
 
@@ -104,26 +73,6 @@ show_profile_help() {
     echo -e "    ${YELLOW}Usage:${NC} ./run.sh install profile <profile_name>"
 }
 
-show_footer() {
-    local VER="unknown"
-    if [ -f "version.json" ]; then
-        VER=$(grep -o '"version": "[^"]*"' version.json | cut -d'"' -f4)
-    fi
-    local SHA=$(git rev-parse --short=12 HEAD 2>/dev/null || echo "unknown")
-    local BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
-    local REMOTE=$(git config --get remote.origin.url 2>/dev/null)
-    local TIME=$(git log -1 --format=%cd --date=local 2>/dev/null || echo "unknown")
-
-    echo -e ""
-    echo -ne "  ${MAGENTA}scripts-fixer v${VER}${NC} ${DARK_GRAY}|${NC} "
-    echo -ne "${CYAN}git ${SHA} (${BRANCH})${NC} ${DARK_GRAY}|${NC} "
-    echo -e "${YELLOW}${TIME}${NC}"
-    if [ ! -z "$REMOTE" ]; then
-        echo -e "  ${DARK_GRAY}repo: ${NC}${REMOTE}"
-    fi
-    echo -e ""
-}
-
 COMMAND=$1
 shift
 ARGS="$*"
@@ -133,14 +82,12 @@ if [ -z "$COMMAND" ]; then
     echo -e "  ${CYAN}Refreshing local repository (git pull)...${NC}"
     git pull
     show_main_help
-    show_footer
     exit 0
 fi
 
 # General help check
 if [[ "$COMMAND" == "help" || "$COMMAND" == "-h" || "$COMMAND" == "--help" ]]; then
     show_main_help
-    show_footer
     exit 0
 fi
 
@@ -150,7 +97,6 @@ case "$COMMAND" in
             echo -e "  ${YELLOW}OS Command Help:${NC}"
             echo -e "    update      - Run apt update and upgrade"
             echo -e "    update-all  - Run update and release-upgrade"
-            show_footer
             exit 0
         elif [ "$ARGS" = "update-all" ]; then
             bash scripts/os/ubuntu/update-all.sh
@@ -164,11 +110,9 @@ case "$COMMAND" in
         # Sub-help handling
         if [[ "$ARGS" == *"profile help"* || "$ARGS" == *"profile -h"* || "$ARGS" == *"profile --help"* || "$ARGS" == *"profile -help"* ]]; then
             show_profile_help
-            show_footer
             exit 0
         elif [[ "$ARGS" == *"help"* || "$ARGS" == *"-h"* || "$ARGS" == *"--help"* || "$ARGS" == *"-help"* ]]; then
             show_install_help
-            show_footer
             exit 0
         fi
 
@@ -201,6 +145,7 @@ case "$COMMAND" in
         elif [[ "$ARGS" == *"zsh,zsh+config"* || "$ARGS" == *"zsh"* ]]; then
             bash scripts/os/ubuntu/dep-omyzsh.sh
             bash scripts/os/ubuntu/dep-zsh-autosuggestions.sh
+
         else
             echo -e "  ${RED}Unknown install argument: $ARGS${NC}"
             echo -e "  Run './run.sh install help' for more details."
@@ -211,5 +156,12 @@ case "$COMMAND" in
         show_main_help
         ;;
 esac
+"""
 
-show_footer
+with open(run_sh, "w", encoding="utf-8", newline='\n') as f:
+    f.write(new_content)
+
+subprocess.run(["git", "add", run_sh], check=True)
+subprocess.run(["git", "commit", "-m", "feat(cli): enhance linux run.sh with rich UI, git pull default, and deep help menus"], check=True)
+subprocess.run(["git", "push"], check=True)
+print("Updated run.sh with beautiful UI.")
