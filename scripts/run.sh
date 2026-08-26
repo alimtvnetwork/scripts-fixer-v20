@@ -57,6 +57,26 @@ show_install_help() {
     echo -e ""
 }
 
+show_footer() {
+    local VER="unknown"
+    if [ -f "version.json" ]; then
+        VER=$(grep -o '"version": "[^"]*"' version.json | cut -d'"' -f4)
+    fi
+    local SHA=$(git rev-parse --short=12 HEAD 2>/dev/null || echo "unknown")
+    local BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+    local REMOTE=$(git config --get remote.origin.url 2>/dev/null)
+    local TIME=$(git log -1 --format=%cd --date=local 2>/dev/null || echo "unknown")
+
+    echo -e ""
+    echo -ne "  ${MAGENTA}scripts-fixer v${VER}${NC} ${DARK_GRAY}|${NC} "
+    echo -ne "${CYAN}git ${SHA} (${BRANCH})${NC} ${DARK_GRAY}|${NC} "
+    echo -e "${YELLOW}${TIME}${NC}"
+    if [ ! -z "$REMOTE" ]; then
+        echo -e "  ${DARK_GRAY}repo: ${NC}${REMOTE}"
+    fi
+    echo -e ""
+}
+
 show_profile_help() {
     echo -e "  ${YELLOW}Available Profiles for $USER:${NC}"
     echo -e "    ${CYAN}ubuntu-basic${NC}       ${DARK_GRAY}- Git, ZSH, aria2c, vim, build-essential, curl, wget${NC}"
@@ -77,12 +97,14 @@ if [ -z "$COMMAND" ]; then
     echo -e "  ${CYAN}Refreshing local repository (git pull)...${NC}"
     git pull
     show_main_help
+    show_footer
     exit 0
 fi
 
 # General help check
 if [[ "$COMMAND" == "help" || "$COMMAND" == "-h" || "$COMMAND" == "--help" ]]; then
     show_main_help
+    show_footer
     exit 0
 fi
 
@@ -92,7 +114,8 @@ case "$COMMAND" in
             echo -e "  ${YELLOW}OS Command Help:${NC}"
             echo -e "    update      - Run apt update and upgrade"
             echo -e "    update-all  - Run update and release-upgrade"
-            exit 0
+            show_footer
+    exit 0
         elif [ "$ARGS" = "update-all" ]; then
             bash scripts/os/ubuntu/update-all.sh
         elif [ "$ARGS" = "update" ]; then
@@ -105,10 +128,12 @@ case "$COMMAND" in
         # Sub-help handling
         if [[ "$ARGS" == *"profile help"* || "$ARGS" == *"profile -h"* || "$ARGS" == *"profile --help"* || "$ARGS" == *"profile -help"* ]]; then
             show_profile_help
-            exit 0
+            show_footer
+    exit 0
         elif [[ "$ARGS" == *"help"* || "$ARGS" == *"-h"* || "$ARGS" == *"--help"* || "$ARGS" == *"-help"* ]]; then
             show_install_help
-            exit 0
+            show_footer
+    exit 0
         fi
 
         # Profile installation
@@ -151,3 +176,5 @@ case "$COMMAND" in
         show_main_help
         ;;
 esac
+
+show_footer

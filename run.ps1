@@ -154,9 +154,10 @@ function Show-VersionFooter {
     $ver = Get-ScriptVersion
     if ([string]::IsNullOrWhiteSpace($ver)) { $ver = "unknown" }
 
-    $sha    = "unknown"
+        $sha    = "unknown"
     $branch = "unknown"
     $remote = $null
+    $time   = "unknown"
     try {
         Push-Location $RootDir
         $hasGit = Get-Command git -ErrorAction SilentlyContinue
@@ -167,13 +168,17 @@ function Show-VersionFooter {
             if ($b) { $branch = "$b".Trim() }
             $r = (& git config --get remote.origin.url 2>$null) | Select-Object -First 1
             if ($r) { $remote = "$r".Trim() }
+            $t = (& git log -1 --format=%cd --date=local 2>$null) | Select-Object -First 1
+            if ($t) { $time = "$t".Trim() }
         }
     } catch {} finally { Pop-Location -ErrorAction SilentlyContinue }
 
     Write-Host ""
     Write-Host "  scripts-fixer v$ver" -ForegroundColor Magenta -NoNewline
     Write-Host " | " -ForegroundColor DarkGray -NoNewline
-    Write-Host "git $sha ($branch)" -ForegroundColor Cyan
+    Write-Host "git $sha ($branch)" -ForegroundColor Cyan -NoNewline
+    Write-Host " | " -ForegroundColor DarkGray -NoNewline
+    Write-Host "$time" -ForegroundColor Yellow
     if ($remote) {
         Write-Host "  repo: " -ForegroundColor DarkGray -NoNewline
         Write-Host "$remote" -ForegroundColor White
