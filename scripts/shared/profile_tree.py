@@ -36,7 +36,8 @@ PROFILES = {
             "│   ├── zsh + oh-my-zsh (Shell environment)",
             "│   ├── aria2c (Download accelerator)",
             "│   └── build-essential & core tools",
-            "└── vscode (Visual Studio Code IDE via canonical snap classic)"
+            "├── vscode (Visual Studio Code IDE via canonical snap classic)",
+            "└── vscode-settings (settings.json, keybindings.json & curated dev extensions)"
         ],
         "steps": [
             ("1. Base Foundation", "Executes full ubuntu-basic setup (git, zsh, build-essential, vim, curl, aria2c)."),
@@ -48,9 +49,10 @@ PROFILES = {
         "description": "Complete multi-language developer workstation with VS Code, Go, Rust, PHP, and Python 3.",
         "tree": [
             "ubuntu+small-dev (ubuntu+simple-dev)",
-            "├── ubuntu+vscode (Base environment + VS Code IDE)",
+            "├── ubuntu+vscode (Base environment + VS Code IDE + synced settings)",
             "│   ├── ubuntu-basic (git, zsh, build-essential, aria2c, vim, curl)",
-            "│   └── vscode (Visual Studio Code)",
+            "│   ├── vscode (Visual Studio Code IDE)",
+            "│   └── vscode-settings (settings.json, keybindings.json & extensions)",
             "├── golang (Go compiler, GOPATH & Go runtime tooling)",
             "├── rust (Rust toolchain, rustup installer & cargo package manager)",
             "├── php (PHP 8.x CLI, PHP-FPM, core extensions & composer readiness)",

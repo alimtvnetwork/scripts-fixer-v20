@@ -9,6 +9,20 @@ import sqlite3
 import os
 
 TOOL_DESCRIPTIONS = {
+    "11": "VS Code Settings, Keybindings & Curated Extensions Sync",
+    "vscode-settings": "VS Code Settings, Keybindings & Curated Extensions Sync",
+    "vscode+settings": "VS Code IDE + Settings & Extensions Sync",
+    "bcompare": "Beyond Compare Diff & Merge Tool (Git Diff/Merge integrated)",
+    "beyondcompare": "Beyond Compare Diff & Merge Tool (Git Diff/Merge integrated)",
+    "bc": "Beyond Compare Diff & Merge Tool (Git Diff/Merge integrated)",
+    "ollama": "Ollama Local LLM Runner & Models (Qwen, DeepSeek, GLM, Kimi)",
+    "llm": "Local LLM Execution Stack (Ollama + Models)",
+    "models": "Local LLM Model Catalog & Execution Suite",
+    "clean": "System Deep Cleanup (APT cache, logs & temporary files)",
+    "cleanup": "System Deep Cleanup (APT cache, logs & temporary files)",
+    "fastfetch": "Fastfetch System Information & Hardware Diagnostic Utility",
+    "tools": "Modern CLI Dev Tools (fastfetch, bat, eza, ripgrep, fzf)",
+    "cli-tools": "Modern CLI Dev Tools (fastfetch, bat, eza, ripgrep, fzf)",
     "01": "Visual Studio Code IDE (snap classic)",
     "vscode": "Visual Studio Code IDE (snap classic)",
     "03": "Node.js LTS Runtime & Yarn Package Manager",

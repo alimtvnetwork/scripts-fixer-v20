@@ -2,6 +2,25 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.17.0] 2026-08-27 VS Code Settings Binding, Beyond Compare, Ollama LLM & System Cleanup
+
+### Install Prompt Architect v1.17.0
+To pin your repository to this exact version, run the following one-liner:
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.17.0/install.sh | bash -s -- ".lovable/prompts" "v1.17.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.17.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.17.0"`
+
+### Added
+- **Ubuntu VS Code Settings Sync**: `scripts/os/ubuntu/dep-vscode-settings.sh` synchronizes `settings.json`, `keybindings.json`, and installs curated extensions (Go, Rust Analyzer, Python, Intelephense, Prettier, GitLens) directly during `ubuntu+vscode` and `ubuntu+small-dev` installations.
+- **Beyond Compare Integration**: Added `scripts/os/ubuntu/install-bcompare.sh` installing Beyond Compare for Linux and automatically configuring Git `diff.tool` and `merge.tool` (`bc`/`bc4`).
+- **Linux Local LLM Suite**: Added `scripts/os/ubuntu/install-ollama.sh` installing the Ollama service and pulling default coding & reasoning models (`qwen2.5-coder:7b`, `glm4:9b`, `kimi-k2:8b`).
+- **System Deep Cleanup**: Added `scripts/os/ubuntu/clean.sh` for purging obsolete packages, vacuuming systemd journal logs, and clearing temporary disk caches.
+- **Modern CLI Dev Tools**: Added `scripts/os/ubuntu/install-modern-tools.sh` deploying `fastfetch`, `bat`, `eza`, `ripgrep`, and `fzf`.
+- **Combo Shortcuts Parity**: `scripts/run.sh` now supports `vscode+settings`, `vscode+s`, `vms`, `bcompare`, `ollama`, `llm`, `clean`, and `fastfetch`.
+
+### Changed
+- Refactored `scripts/shared/profile_tree.py` so `ubuntu+small-dev` and `ubuntu+vscode` explicitly render `vscode-settings` in their hierarchy tree.
+- Updated `scripts/shared/list_installs.py` with expanded metadata descriptions for all newly added tools.
+
 ## [v1.16.0] 2026-08-26 UI Parity, Tree Hierarchy, Model Integrations & Theme System
 
 ### Install Prompt Architect v1.16.0

@@ -250,7 +250,26 @@ case "$COMMAND" in
             elif [[ "$ITEM" == *"dbeaver"* || "$ITEM" == *"32"* ]]; then bash scripts/os/ubuntu/install-dbeaver.sh && SUCCESS=true
             elif [[ "$ITEM" == *"github-desktop"* || "$ITEM" == *"33"* ]]; then bash scripts/os/ubuntu/install-github-desktop.sh && SUCCESS=true
             elif [[ "$ITEM" == *"sticky-notes"* || "$ITEM" == *"34"* ]]; then bash scripts/os/ubuntu/install-sticky-notes.sh && SUCCESS=true
-            elif [[ "$ITEM" == *"vscode"* || "$ITEM" == *"01"* ]]; then bash scripts/os/ubuntu/profile-ubuntu-vscode.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"vscode+menu+settings"* || "$ITEM" == *"vms"* ]]; then
+                bash scripts/os/ubuntu/profile-ubuntu-vscode.sh
+                bash scripts/os/ubuntu/dep-vscode-settings.sh
+                SUCCESS=true
+            elif [[ "$ITEM" == *"vscode+settings"* || "$ITEM" == *"vscode+s"* ]]; then
+                bash scripts/os/ubuntu/profile-ubuntu-vscode.sh
+                bash scripts/os/ubuntu/dep-vscode-settings.sh
+                SUCCESS=true
+            elif [[ "$ITEM" == *"vscode-settings"* || "$ITEM" == *"settings"* || "$ITEM" == *"11"* ]]; then
+                bash scripts/os/ubuntu/dep-vscode-settings.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"vscode"* || "$ITEM" == *"01"* ]]; then 
+                bash scripts/os/ubuntu/profile-ubuntu-vscode.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"bcompare"* || "$ITEM" == *"beyondcompare"* || "$ITEM" == *"bc"* ]]; then
+                bash scripts/os/ubuntu/install-bcompare.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"ollama"* || "$ITEM" == *"llm"* || "$ITEM" == *"models"* || "$ITEM" == *"42"* ]]; then
+                bash scripts/os/ubuntu/install-ollama.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"clean"* || "$ITEM" == *"cleanup"* ]]; then
+                bash scripts/os/ubuntu/clean.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"fastfetch"* || "$ITEM" == *"tools"* || "$ITEM" == *"cli-tools"* ]]; then
+                bash scripts/os/ubuntu/install-modern-tools.sh && SUCCESS=true
             elif [[ "$ITEM" == *"zsh,zsh+config"* || "$ITEM" == *"zsh+config"* || "$ITEM" == *"51"* ]]; then
                 bash scripts/os/ubuntu/dep-omyzsh.sh
                 bash scripts/os/ubuntu/dep-zsh-autosuggestions.sh
