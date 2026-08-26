@@ -80,6 +80,8 @@ show_main_help() {
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "22" "curl" "Install curl network tool"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "23" "wget" "Install wget downloader"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "24" "vim" "Install vim text editor"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "25" "ssh" "Install SSH & configure port"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "26" "aria2c" "Install aria2c downloader"
     echo -e ""
     
     echo -e "    ${PRIMARY}System & Orchestration${TEXT}"
@@ -243,6 +245,12 @@ case "$COMMAND" in
             bash scripts/os/ubuntu/dep-wget.sh
         elif [[ "$ARGS" == *"vim"* || "$ARGS" == *"24"* ]]; then
             bash scripts/os/ubuntu/dep-vim.sh
+        elif [[ "$ARGS" == *"ssh"* || "$ARGS" == *"25"* ]]; then
+            # Extract port if provided, e.g., './run.sh install ssh 2222'
+            PORT=$(echo "$ARGS" | grep -oE '[0-9]+' | head -n 1)
+            bash scripts/os/ubuntu/install-ssh.sh "$PORT"
+        elif [[ "$ARGS" == *"aria2c"* || "$ARGS" == *"26"* ]]; then
+            bash scripts/os/ubuntu/dep-aria2c.sh
         else
             echo -e "  ${ERROR}Unknown install argument: $ARGS${TEXT}"
             echo -e "  Run './run.sh install help' for more details."
