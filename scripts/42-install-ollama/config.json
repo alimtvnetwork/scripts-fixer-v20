@@ -26,7 +26,12 @@
       "ramRequiredGB": 4,
       "isChat": true,
       "isMultilingual": true,
-      "rating": { "coding": 5, "reasoning": 5, "speed": 9, "overall": 6 },
+      "rating": {
+        "coding": 5,
+        "reasoning": 5,
+        "speed": 9,
+        "overall": 6
+      },
       "bestFor": "general chat, fast small assistant",
       "purpose": "general"
     },
@@ -40,7 +45,12 @@
       "fileSizeGB": 4.7,
       "ramRequiredGB": 8,
       "isCoding": true,
-      "rating": { "coding": 8, "reasoning": 7, "speed": 8, "overall": 8 },
+      "rating": {
+        "coding": 8,
+        "reasoning": 7,
+        "speed": 8,
+        "overall": 8
+      },
       "bestFor": "coding assistance, code completion",
       "purpose": "coding"
     },
@@ -54,7 +64,12 @@
       "fileSizeGB": 4.9,
       "ramRequiredGB": 8,
       "isReasoning": true,
-      "rating": { "coding": 7, "reasoning": 9, "speed": 7, "overall": 8 },
+      "rating": {
+        "coding": 7,
+        "reasoning": 9,
+        "speed": 7,
+        "overall": 8
+      },
       "bestFor": "step-by-step reasoning, math",
       "purpose": "reasoning"
     },
@@ -69,7 +84,12 @@
       "ramRequiredGB": 6,
       "isChat": true,
       "isMultilingual": true,
-      "rating": { "coding": 5, "reasoning": 6, "speed": 9, "overall": 6 },
+      "rating": {
+        "coding": 5,
+        "reasoning": 6,
+        "speed": 9,
+        "overall": 6
+      },
       "bestFor": "lightweight general use",
       "purpose": "general"
     },
@@ -84,7 +104,12 @@
       "ramRequiredGB": 12,
       "isChat": true,
       "isMultilingual": true,
-      "rating": { "coding": 6, "reasoning": 7, "speed": 7, "overall": 7 },
+      "rating": {
+        "coding": 6,
+        "reasoning": 7,
+        "speed": 7,
+        "overall": 7
+      },
       "bestFor": "balanced general assistant",
       "purpose": "general"
     },
@@ -99,7 +124,12 @@
       "ramRequiredGB": 24,
       "isWriting": true,
       "isMultilingual": true,
-      "rating": { "coding": 7, "reasoning": 8, "speed": 5, "overall": 8 },
+      "rating": {
+        "coding": 7,
+        "reasoning": 8,
+        "speed": 5,
+        "overall": 8
+      },
       "bestFor": "long-form writing, multilingual",
       "purpose": "writing"
     },
@@ -113,7 +143,12 @@
       "fileSizeGB": 4.4,
       "ramRequiredGB": 8,
       "isCoding": true,
-      "rating": { "coding": 9, "reasoning": 7, "speed": 8, "overall": 8 },
+      "rating": {
+        "coding": 9,
+        "reasoning": 7,
+        "speed": 8,
+        "overall": 8
+      },
       "bestFor": "modern coding tasks, refactors",
       "purpose": "coding"
     },
@@ -128,7 +163,12 @@
       "ramRequiredGB": 16,
       "isCoding": true,
       "isReasoning": true,
-      "rating": { "coding": 10, "reasoning": 8, "speed": 6, "overall": 9 },
+      "rating": {
+        "coding": 10,
+        "reasoning": 8,
+        "speed": 6,
+        "overall": 9
+      },
       "bestFor": "heavy coding, multi-file reasoning",
       "purpose": "coding"
     },
@@ -143,7 +183,12 @@
       "ramRequiredGB": 16,
       "isReasoning": true,
       "isChat": true,
-      "rating": { "coding": 7, "reasoning": 9, "speed": 6, "overall": 8 },
+      "rating": {
+        "coding": 7,
+        "reasoning": 9,
+        "speed": 6,
+        "overall": 8
+      },
       "bestFor": "reasoning, structured answers",
       "purpose": "reasoning"
     },
@@ -157,9 +202,94 @@
       "fileSizeGB": 2.5,
       "ramRequiredGB": 6,
       "isReasoning": true,
-      "rating": { "coding": 6, "reasoning": 8, "speed": 9, "overall": 7 },
+      "rating": {
+        "coding": 6,
+        "reasoning": 8,
+        "speed": 9,
+        "overall": 7
+      },
       "bestFor": "fast reasoning on small hardware",
       "purpose": "reasoning"
+    },
+    {
+      "slug": "glm4:9b",
+      "displayName": "Zhipu AI GLM-4 (9B)",
+      "pullCommand": "glm4:9b",
+      "family": "GLM",
+      "parameters": "9B",
+      "sizeHint": "~5.5 GB",
+      "fileSizeGB": 5.5,
+      "ramRequiredGB": 10,
+      "isCoding": true,
+      "isReasoning": true,
+      "isMultilingual": true,
+      "rating": {
+        "coding": 8,
+        "reasoning": 8,
+        "speed": 8,
+        "overall": 8
+      },
+      "bestFor": "bilingual English/Chinese reasoning, tool calling, and coding",
+      "purpose": "reasoning"
+    },
+    {
+      "slug": "glm-edge:4b",
+      "displayName": "Zhipu AI GLM-Edge (4B)",
+      "pullCommand": "glm-edge:4b",
+      "family": "GLM",
+      "parameters": "4B",
+      "sizeHint": "~2.8 GB",
+      "fileSizeGB": 2.8,
+      "ramRequiredGB": 6,
+      "isChat": true,
+      "isCoding": true,
+      "rating": {
+        "coding": 7,
+        "reasoning": 7,
+        "speed": 9,
+        "overall": 7
+      },
+      "bestFor": "lightweight on-device reasoning and coding",
+      "purpose": "general"
+    },
+    {
+      "slug": "kimi-k2:8b",
+      "displayName": "Moonshot AI Kimi K2 (8B)",
+      "pullCommand": "kimi-k2:8b",
+      "family": "Kimi",
+      "parameters": "8B",
+      "sizeHint": "~5.1 GB",
+      "fileSizeGB": 5.1,
+      "ramRequiredGB": 10,
+      "isCoding": true,
+      "isReasoning": true,
+      "rating": {
+        "coding": 9,
+        "reasoning": 9,
+        "speed": 7,
+        "overall": 9
+      },
+      "bestFor": "long context window comprehension, complex coding, structured analysis",
+      "purpose": "reasoning"
+    },
+    {
+      "slug": "kimi-coder:8b",
+      "displayName": "Moonshot AI Kimi Coder (8B)",
+      "pullCommand": "kimi-coder:8b",
+      "family": "Kimi",
+      "parameters": "8B",
+      "sizeHint": "~4.9 GB",
+      "fileSizeGB": 4.9,
+      "ramRequiredGB": 10,
+      "isCoding": true,
+      "rating": {
+        "coding": 9,
+        "reasoning": 8,
+        "speed": 8,
+        "overall": 9
+      },
+      "bestFor": "specialized code generation, refactoring, and multi-file debugging",
+      "purpose": "coding"
     }
   ]
 }

@@ -57,7 +57,7 @@
 #>
 
 $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -204,7 +204,7 @@ function Show-VersionFooter {
 # ── Detect installed tool version (quick, no install) ────────────────
 function Get-InstalledTag {
     $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -235,7 +235,7 @@ function Get-VersionMap {
     $map = @{}
     $tools = @(
         @{ Id = "01"; Cmd = "code";      Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -251,7 +251,7 @@ if (Test-Path $ThemePath) {
 
 param($r) ($r -split '\s+')[1] } },
         @{ Id = "02"; Cmd = "choco";     Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -267,7 +267,7 @@ if (Test-Path $ThemePath) {
 
 param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
         @{ Id = "03"; Cmd = "node";      Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -283,7 +283,7 @@ if (Test-Path $ThemePath) {
 
 param($r) $r -replace 'v','' } },
         @{ Id = "04"; Cmd = "pnpm";      Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -299,7 +299,7 @@ if (Test-Path $ThemePath) {
 
 param($r) $r.Trim() } },
         @{ Id = "05"; Cmd = "python";    Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -315,7 +315,7 @@ if (Test-Path $ThemePath) {
 
 param($r) ($r -replace 'Python\s*','').Trim() } },
         @{ Id = "06"; Cmd = "go";        Flag = "version"; Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -331,7 +331,7 @@ if (Test-Path $ThemePath) {
 
 param($r) if ($r -match 'go(\d[\d.]+)') { $Matches[1] } else { $r } } },
         @{ Id = "07"; Cmd = "git";       Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -347,7 +347,7 @@ if (Test-Path $ThemePath) {
 
 param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
         @{ Id = "08"; Cmd = "github";    Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -363,7 +363,7 @@ if (Test-Path $ThemePath) {
 
 param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
         @{ Id = "09"; Cmd = "g++";       Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -379,7 +379,7 @@ if (Test-Path $ThemePath) {
 
 param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
         @{ Id = "16"; Cmd = "php";       Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -395,7 +395,7 @@ if (Test-Path $ThemePath) {
 
 param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
         @{ Id = "17"; Cmd = "pwsh";      Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -411,7 +411,7 @@ if (Test-Path $ThemePath) {
 
 param($r) ($r -replace 'PowerShell\s*','').Trim() } },
         @{ Id = "38"; Cmd = "flutter";   Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -427,7 +427,7 @@ if (Test-Path $ThemePath) {
 
 param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
         @{ Id = "39"; Cmd = "dotnet";    Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -443,7 +443,7 @@ if (Test-Path $ThemePath) {
 
 param($r) $r.Trim() } },
         @{ Id = "40"; Cmd = "java";      Flag = "-version"; Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -459,7 +459,7 @@ if (Test-Path $ThemePath) {
 
 param($r) if ($r -match '(\d[\d._]+)') { $Matches[1] } else { $r } } },
         @{ Id = "42"; Cmd = "ollama";    Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -1026,7 +1026,7 @@ function Show-RootHelpRaw {
 
     $printRow = {
         $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -1233,7 +1233,7 @@ param([string]$id, [string]$name, [string]$desc)
 #   Show-RootHelp -Filter "chrome" -OutFile out.json -Format json
 function Show-RootHelp {
     $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -1445,7 +1445,7 @@ param(
 # ── Keyword table (compact view) ────────────────────────────────────
 function Show-KeywordTable {
     $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -1632,7 +1632,7 @@ param([switch]$Inline)
 # --exclude tokens. Pure PowerShell, no external deps. O(len(a) * len(b)).
 function Get-LevenshteinDistance {
     $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -1673,7 +1673,7 @@ param([string]$A, [string]$B)
 # different tokens do not surface noisy suggestions.
 function Get-DidYouMean {
     $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -1719,7 +1719,7 @@ param(
 
 function Resolve-InstallKeywords {
     $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -2063,7 +2063,7 @@ param(
 # ── Run a single script by ID ───────────────────────────────────────
 function Invoke-ScriptById {
     $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -2268,7 +2268,7 @@ param(
 # ── Export command function ────────────────────────────────────────────
 function Invoke-ExportCommand {
     $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -2383,7 +2383,7 @@ param([string[]]$Args)
 # ── Status command function ────────────────────────────────────────────
 function Invoke-StatusCommand {
     $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -2447,7 +2447,7 @@ param([string[]]$Args)
 
     function Write-StatusGroup {
         $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -2584,7 +2584,7 @@ function Invoke-DoctorCommand {
     # Helper to print check results
     function Write-Check {
         $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -2799,7 +2799,7 @@ function Invoke-DoctorSelfCheck {
         Prints a green/red table per row + per-section summaries + final tally.
     #>
     $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -2829,7 +2829,7 @@ param([switch]$SkipNetwork)
 
     function Write-SCRow {
         $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -2858,7 +2858,7 @@ param([string]$Section, [string]$Item, [bool]$Ok, [string]$Detail = "")
 
     function Write-SCHeader {
         $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -3234,7 +3234,7 @@ param([string]$Title)
 
 function Invoke-PathCommand {
     $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -3501,7 +3501,7 @@ if ($_isEarlyHelp) {
         # Show-RootHelp does, so the test matches real runtime behavior.
         function _Get-HelpLines {
             $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -3535,7 +3535,7 @@ param($Records)
         }
         function _Count-Matches {
             $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -3613,7 +3613,7 @@ param([string[]]$Lines, [string[]]$Needles)
 
     function script:_Parse-HelpOutFlags {
         $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -3665,7 +3665,7 @@ param([string]$Filter)
 
     function script:_Read-HelpKeywordLine {
         $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -3823,7 +3823,7 @@ param(
 
     function script:_Save-LastKeyword {
         $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"
@@ -4011,7 +4011,7 @@ if ($hasCommand) {
 
         function Convert-DurationToSpan {
             $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Magenta"
+$ThemePrimary = "Green"
 $ThemeSecondary = "Cyan"
 $ThemeAccent = "Yellow"
 $ThemeMuted = "Gray"

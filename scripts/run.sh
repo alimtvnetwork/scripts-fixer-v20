@@ -1,19 +1,19 @@
 #!/bin/bash
 
-# Default ANSI Color codes
-PRIMARY='\033[0;35m'   # Magenta
-SECONDARY='\033[0;36m' # Cyan
-ACCENT='\033[0;33m'    # Yellow
-MUTED='\033[1;30m'     # DarkGray
-ERROR='\033[0;31m'     # Red
-TEXT='\033[0m'         # NC / White
+# Default High-Contrast ANSI Color codes (Vibrant Light Colors)
+PRIMARY='\033[1;32m'   # Bright LightGreen
+SECONDARY='\033[1;36m' # Bright Cyan
+ACCENT='\033[1;33m'    # Bright Yellow
+MUTED='\033[0;37m'     # Bright Light Gray
+ERROR='\033[1;31m'     # Bright Red
+TEXT='\033[0m'         # Reset / White
 
 map_color() {
     case "$1" in
         "Magenta") echo '\033[0;35m' ;;
-        "Cyan") echo '\033[0;36m' ;;
-        "Yellow") echo '\033[0;33m' ;;
-        "Red") echo '\033[0;31m' ;;
+        "Cyan") echo '\033[1;36m' ;;
+        "Yellow") echo '\033[1;33m' ;;
+        "Red") echo '\033[1;31m' ;;
         "Gray") echo '\033[0;37m' ;;
         "DarkGray") echo '\033[1;30m' ;;
         "LightBlue") echo '\033[1;34m' ;;
@@ -50,17 +50,19 @@ show_main_help() {
     show_header
     echo -e "  ${ACCENT}Usage:${TEXT}"
     echo -e ""
-    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install <keywords>" "Install by keyword (bare command)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install <keywords>" "Install by keyword / ID (bare command)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install ls" "List all previously installed items"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh os <action>" "OS level actions (update, update-all)"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh <command> -h" "Show detailed help for a command"
     echo -e ""
     
     echo -e "  ${ACCENT}Profiles:${TEXT}"
     echo -e ""
-    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu-basic" "Git, ZSH, aria2c, vim, curl, wget"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu-basic" "Git, ZSH, aria2c, vim, curl, wget, build-essential"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+vscode" "ubuntu-basic + VS Code snap"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+simple-dev" "ubuntu+vscode + Golang, Rust, PHP, Python3"
-    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+dev" "ubuntu+simple-dev + Node.js, PNPM"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+small-dev" "Alias for ubuntu+simple-dev"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+dev" "ubuntu+simple-dev + Node.js, PNPM, Yarn"
     echo -e ""
     
     echo -e "  ${ACCENT}Available Scripts:${TEXT}"
@@ -105,37 +107,35 @@ show_main_help() {
     
     echo -e "  ${ACCENT}Usage Examples:${TEXT}"
     echo -e "    ./run.sh install docker"
+    echo -e "    ./run.sh install profile ubuntu+small-dev"
     echo -e "    ./run.sh install profile ubuntu+dev"
+    echo -e "    ./run.sh install 01,03,06,20"
     echo -e "    ./run.sh os update-all"
-    echo -e "    ./run.sh install help"
+    echo -e "    ./run.sh install ls"
+    echo -e "    ./run.sh install profile help"
     echo -e ""
 }
 
 show_install_help() {
     echo -e "  ${ACCENT}Install Command Help:${TEXT}"
-    echo -e "    Installs specified tools or profiles on the Ubuntu system."
+    echo -e "    Installs specified tools, keywords, or profiles on the Ubuntu system."
     echo -e ""
     echo -e "  ${ACCENT}Usage:${TEXT}"
-    echo -e "    ./run.sh install <tool>"
+    echo -e "    ./run.sh install <tool|ID>"
+    echo -e "    ./run.sh install <tool1,tool2,tool3>"
     echo -e "    ./run.sh install profile <name>"
+    echo -e "    ./run.sh install ls"
     echo -e ""
     echo -e "  ${ACCENT}Examples:${TEXT}"
     echo -e "    ./run.sh install docker"
-    echo -e "    ./run.sh install zsh,zsh+config"
+    echo -e "    ./run.sh install 01,05,golang,rust"
+    echo -e "    ./run.sh install profile ubuntu+small-dev"
     echo -e "    ./run.sh install profile ubuntu+dev"
     echo -e ""
 }
 
 show_profile_help() {
-    echo -e "  ${ACCENT}Available Profiles for $USER:${TEXT}"
-    echo -e "    ${SECONDARY}ubuntu-basic${TEXT}       ${MUTED}- Git, ZSH, aria2c, vim, build-essential, curl, wget${TEXT}"
-    echo -e "    ${SECONDARY}ubuntu+vscode${TEXT}      ${MUTED}- ubuntu-basic + VS Code snap${TEXT}"
-    echo -e "    ${SECONDARY}ubuntu+simple-dev${TEXT}  ${MUTED}- ubuntu+vscode + Golang, Rust, PHP, Python3${TEXT}"
-    echo -e "    ${SECONDARY}ubuntu+small-dev${TEXT}   ${MUTED}- Alias for ubuntu+simple-dev${TEXT}"
-    echo -e "    ${SECONDARY}ubuntu+dev${TEXT}         ${MUTED}- ubuntu+simple-dev + Node.js, PNPM${TEXT}"
-    echo -e ""
-    echo -e "    ${ACCENT}Usage:${TEXT} ./run.sh install profile <profile_name>"
-    echo -e "    ${ACCENT}Example:${TEXT} ./run.sh install profile ubuntu+dev"
+    python3 scripts/shared/profile_tree.py all
 }
 
 show_footer() {
@@ -211,6 +211,7 @@ case "$COMMAND" in
         fi
 
         INSTALLED=()
+        PROFILE_INSTALLED=""
 
         # Split by comma
         IFS=',' read -ra ITEMS <<< "$ARGS"
@@ -225,13 +226,13 @@ case "$COMMAND" in
 
             # Profile installation
             if [[ "$ITEM" == *"profile ubuntu+dev"* ]]; then
-                bash scripts/os/ubuntu/profile-ubuntu-dev.sh && SUCCESS=true
+                bash scripts/os/ubuntu/profile-ubuntu-dev.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+dev"
             elif [[ "$ITEM" == *"profile ubuntu+small-dev"* || "$ITEM" == *"profile ubuntu+simple-dev"* ]]; then
-                bash scripts/os/ubuntu/profile-ubuntu-simple-dev.sh && SUCCESS=true
+                bash scripts/os/ubuntu/profile-ubuntu-simple-dev.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+simple-dev"
             elif [[ "$ITEM" == *"profile ubuntu+vscode"* ]]; then
-                bash scripts/os/ubuntu/profile-ubuntu-vscode.sh && SUCCESS=true
+                bash scripts/os/ubuntu/profile-ubuntu-vscode.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+vscode"
             elif [[ "$ITEM" == *"profile ubuntu-basic"* ]]; then
-                bash scripts/os/ubuntu/profile-ubuntu-basic.sh && SUCCESS=true
+                bash scripts/os/ubuntu/profile-ubuntu-basic.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu-basic"
             
             # Tools
             elif [[ "$ITEM" == *"docker"* || "$ITEM" == *"47"* ]]; then bash scripts/os/ubuntu/install-docker.sh && SUCCESS=true
@@ -281,11 +282,14 @@ case "$COMMAND" in
         done
 
         if [ ${#INSTALLED[@]} -gt 0 ]; then
-            echo -e "
-  ${PRIMARY}Installation Summary:${TEXT}"
+            echo -e "\n  ${PRIMARY}Installation Summary:${TEXT}"
             for p in "${INSTALLED[@]}"; do
                 echo -e "    ${SECONDARY}✔${TEXT} $p"
             done
+            
+            if [ ! -z "$PROFILE_INSTALLED" ]; then
+                python3 scripts/shared/profile_tree.py "$PROFILE_INSTALLED"
+            fi
         fi
         ;;
     *)

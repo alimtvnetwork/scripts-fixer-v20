@@ -18,6 +18,7 @@
 | 8 | `.lovable/prompts/index.md` | Reusable prompt registry (incl. write-memory) |
 | 9 | `.lovable/prompt.md` | Top-level pointer to prompts |
 | 10 | `.lovable/memory/workflow/` | Current workflow state and status markers |
+| 11 | `.lovable/memory/release-architecture-map.md` | Release architecture and versioning rules |
 
 If any of the above is missing, **create it** using the templates in `.lovable/prompts/01-write-memory.md`.
 

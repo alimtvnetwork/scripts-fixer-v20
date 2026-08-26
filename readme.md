@@ -2635,8 +2635,6 @@ You may use, copy, modify, merge, publish, distribute, sublicense, and/or sell c
 - [Fedora Manage](ubuntu-installation-guide/03-fedora-manage.md)
 - [Debian Manage](ubuntu-installation-guide/04-debian-manage.md)
 
-## Installation Guides
-- [Ubuntu Manage](ubuntu-installation-guide/01-ubuntu-manage.md)
-- [CentOS Manage](ubuntu-installation-guide/02-centos-manage.md)
-- [Fedora Manage](ubuntu-installation-guide/03-fedora-manage.md)
-- [Debian Manage](ubuntu-installation-guide/04-debian-manage.md)
+## Architecture & Releases
+- [Release Architecture Map](.lovable/memory/release-architecture-map.md)
+
