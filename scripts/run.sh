@@ -204,6 +204,10 @@ case "$COMMAND" in
             show_install_help
             show_footer
             exit 0
+        elif [[ "$ARGS" == "ls" || "$ARGS" == "list" ]]; then
+            python3 scripts/shared/list_installs.py
+            show_footer
+            exit 0
         fi
 
         INSTALLED=()
