@@ -1,0 +1,10 @@
+{
+  "colors": {
+    "primary": "Magenta",
+    "secondary": "Cyan",
+    "accent": "Yellow",
+    "muted": "Gray",
+    "error": "Red",
+    "text": "White"
+  }
+}

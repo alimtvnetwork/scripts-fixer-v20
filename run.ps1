@@ -56,6 +56,21 @@
     Version: 7.3.0
 #>
 
+$ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
 param(
     [Parameter(Position = 0)]
     [string]$Command,
@@ -105,7 +120,7 @@ if (Test-Path $_dispatcherArgsHelper) {
 
     $_argCheck = Test-DispatcherArgs -Args $Install -Command $Command -Context "run.ps1"
     if (-not $_argCheck.Ok) {
-        Write-Host "  Aborting before any child script runs." -ForegroundColor Red
+        Write-Host "  Aborting before any child script runs." -ForegroundColor $ThemeError
         Write-Host ""
         exit 2
     }
@@ -146,7 +161,7 @@ function Show-VersionHeader {
     $hasVersion = -not [string]::IsNullOrWhiteSpace($ver)
     if ($hasVersion) {
         Write-Host ""
-        Write-Host "  Scripts Fixer v$ver" -ForegroundColor Magenta
+        Write-Host "  Scripts Fixer v$ver" -ForegroundColor $ThemePrimary
     }
 }
 
@@ -174,13 +189,13 @@ function Show-VersionFooter {
     } catch {} finally { Pop-Location -ErrorAction SilentlyContinue }
 
     Write-Host ""
-    Write-Host "  scripts-fixer v$ver" -ForegroundColor Magenta -NoNewline
-    Write-Host " | " -ForegroundColor DarkGray -NoNewline
-    Write-Host "git $sha ($branch)" -ForegroundColor Cyan -NoNewline
-    Write-Host " | " -ForegroundColor DarkGray -NoNewline
-    Write-Host "$time" -ForegroundColor Yellow
+    Write-Host "  scripts-fixer v$ver" -ForegroundColor $ThemePrimary -NoNewline
+    Write-Host " | " -ForegroundColor $ThemeMuted -NoNewline
+    Write-Host "git $sha ($branch)" -ForegroundColor $ThemeSecondary -NoNewline
+    Write-Host " | " -ForegroundColor $ThemeMuted -NoNewline
+    Write-Host "$time" -ForegroundColor $ThemeAccent
     if ($remote) {
-        Write-Host "  repo: " -ForegroundColor DarkGray -NoNewline
+        Write-Host "  repo: " -ForegroundColor $ThemeMuted -NoNewline
         Write-Host "$remote" -ForegroundColor White
     }
     Write-Host ""
@@ -188,7 +203,22 @@ function Show-VersionFooter {
 
 # ── Detect installed tool version (quick, no install) ────────────────
 function Get-InstalledTag {
-    param([string]$ToolCmd, [string]$Flag = "--version", [scriptblock]$Parse)
+    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param([string]$ToolCmd, [string]$Flag = "--version", [scriptblock]$Parse)
     $cmd = Get-Command $ToolCmd -ErrorAction SilentlyContinue
     $isMissing = -not $cmd
     if ($isMissing) { return $null }
@@ -204,21 +234,246 @@ function Get-InstalledTag {
 function Get-VersionMap {
     $map = @{}
     $tools = @(
-        @{ Id = "01"; Cmd = "code";      Parse = { param($r) ($r -split '\s+')[1] } },
-        @{ Id = "02"; Cmd = "choco";     Parse = { param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
-        @{ Id = "03"; Cmd = "node";      Parse = { param($r) $r -replace 'v','' } },
-        @{ Id = "04"; Cmd = "pnpm";      Parse = { param($r) $r.Trim() } },
-        @{ Id = "05"; Cmd = "python";    Parse = { param($r) ($r -replace 'Python\s*','').Trim() } },
-        @{ Id = "06"; Cmd = "go";        Flag = "version"; Parse = { param($r) if ($r -match 'go(\d[\d.]+)') { $Matches[1] } else { $r } } },
-        @{ Id = "07"; Cmd = "git";       Parse = { param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
-        @{ Id = "08"; Cmd = "github";    Parse = { param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
-        @{ Id = "09"; Cmd = "g++";       Parse = { param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
-        @{ Id = "16"; Cmd = "php";       Parse = { param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
-        @{ Id = "17"; Cmd = "pwsh";      Parse = { param($r) ($r -replace 'PowerShell\s*','').Trim() } },
-        @{ Id = "38"; Cmd = "flutter";   Parse = { param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
-        @{ Id = "39"; Cmd = "dotnet";    Parse = { param($r) $r.Trim() } },
-        @{ Id = "40"; Cmd = "java";      Flag = "-version"; Parse = { param($r) if ($r -match '(\d[\d._]+)') { $Matches[1] } else { $r } } },
-        @{ Id = "42"; Cmd = "ollama";    Parse = { param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } }
+        @{ Id = "01"; Cmd = "code";      Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param($r) ($r -split '\s+')[1] } },
+        @{ Id = "02"; Cmd = "choco";     Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
+        @{ Id = "03"; Cmd = "node";      Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param($r) $r -replace 'v','' } },
+        @{ Id = "04"; Cmd = "pnpm";      Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param($r) $r.Trim() } },
+        @{ Id = "05"; Cmd = "python";    Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param($r) ($r -replace 'Python\s*','').Trim() } },
+        @{ Id = "06"; Cmd = "go";        Flag = "version"; Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param($r) if ($r -match 'go(\d[\d.]+)') { $Matches[1] } else { $r } } },
+        @{ Id = "07"; Cmd = "git";       Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
+        @{ Id = "08"; Cmd = "github";    Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
+        @{ Id = "09"; Cmd = "g++";       Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
+        @{ Id = "16"; Cmd = "php";       Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
+        @{ Id = "17"; Cmd = "pwsh";      Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param($r) ($r -replace 'PowerShell\s*','').Trim() } },
+        @{ Id = "38"; Cmd = "flutter";   Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
+        @{ Id = "39"; Cmd = "dotnet";    Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param($r) $r.Trim() } },
+        @{ Id = "40"; Cmd = "java";      Flag = "-version"; Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param($r) if ($r -match '(\d[\d._]+)') { $Matches[1] } else { $r } } },
+        @{ Id = "42"; Cmd = "ollama";    Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } }
     )
     foreach ($t in $tools) {
         $flag = if ($t.Flag) { $t.Flag } else { "--version" }
@@ -229,7 +484,7 @@ function Get-VersionMap {
 
     # Registry/file-based detection for GUI apps without CLI --version
     $regApps = @(
-        @{ Id = "08"; Name = "GitHub Desktop";   Paths = @(
+        @{ Id = "08"; Name = "github-desktop";   Paths = @(
             "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\GitHubDesktop",
             "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\GitHubDesktop",
             "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\GitHubDesktop"
@@ -244,17 +499,17 @@ function Get-VersionMap {
             "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Notepad++",
             "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Notepad++"
         )},
-        @{ Id = "34"; Name = "Simple Sticky Notes"; Paths = @(
+        @{ Id = "34"; Name = "sticky-notes"; Paths = @(
             "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Simple Sticky Notes*",
             "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Simple Sticky Notes*",
             "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Simple Sticky Notes*"
         )},
-        @{ Id = "36"; Name = "OBS Studio";       Paths = @(
+        @{ Id = "36"; Name = "obs";       Paths = @(
             "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\OBS Studio",
             "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\OBS Studio",
             "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\OBS Studio"
         )},
-        @{ Id = "37"; Name = "Windows Terminal";  Paths = @(
+        @{ Id = "37"; Name = "wt";  Paths = @(
             "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*WindowsTerminal*",
             "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*WindowsTerminal*",
             "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*WindowsTerminal*",
@@ -308,77 +563,77 @@ function Get-VersionMap {
 function Show-RootHelpRaw {
     Show-VersionHeader
     Write-Host ""
-    Write-Host "  Dev Tools Setup Scripts" -ForegroundColor Cyan
-    Write-Host "  =======================" -ForegroundColor DarkGray
+    Write-Host "  Dev Tools Setup Scripts" -ForegroundColor $ThemeSecondary
+    Write-Host "  =======================" -ForegroundColor $ThemeMuted
     Write-Host ""
-    Write-Host "  Usage:" -ForegroundColor Yellow
+    Write-Host "  Usage:" -ForegroundColor $ThemeAccent
     Write-Host ""
     $col = 44
-    Write-Host "    $(".\run.ps1 install <keywords>".PadRight($col))" -NoNewline; Write-Host "Install by keyword (bare command)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -Install <keywords>".PadRight($col))" -NoNewline; Write-Host "Install by keyword (named parameter)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 update".PadRight($col))" -NoNewline; Write-Host "Show outdated, confirm, upgrade all" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 update nodejs,git".PadRight($col))" -NoNewline; Write-Host "Upgrade specific packages only" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 update --check".PadRight($col))" -NoNewline; Write-Host "List outdated packages (no upgrade)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 update -y".PadRight($col))" -NoNewline; Write-Host "Upgrade all, skip confirmation" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 update --exclude=pkg1,pkg2".PadRight($col))" -NoNewline; Write-Host "Upgrade all except listed" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 self-update".PadRight($col))" -NoNewline; Write-Host "Refresh local scripts-fixer copy (git pull)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 self-update --check".PadRight($col))" -NoNewline; Write-Host "Show if local copy is behind upstream (no pull)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 self-update --reinstall".PadRight($col))" -NoNewline; Write-Host "Pull, then re-run install.ps1 (refresh shims/PATH)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 export".PadRight($col))" -NoNewline; Write-Host "Export all app settings to repo" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 export npp,obs".PadRight($col))" -NoNewline; Write-Host "Export specific app settings" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 status".PadRight($col))" -NoNewline; Write-Host "Show dashboard of all installed tools" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 status --no-choco".PadRight($col))" -NoNewline; Write-Host "Status without outdated package check" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 report [--since=24h] [--open]".PadRight($col))" -NoNewline; Write-Host "Timestamped JSON+HTML report of install/uninstall actions" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 doctor".PadRight($col))" -NoNewline; Write-Host "Quick health check of project setup" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 doctor --self-check".PadRight($col))" -NoNewline; Write-Host "Deep audit: changelog files, version, clean catalog, keyword resolution, SHA256 pins" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 doctor --self-check --skip-network".PadRight($col))" -NoNewline; Write-Host "Same as above but skips sections (d) + (e) for offline use" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 models".PadRight($col))" -NoNewline; Write-Host "Pick AI model backend (llama.cpp / Ollama), browse + install" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 models <ids>".PadRight($col))" -NoNewline; Write-Host "Direct install: CSV of model ids (auto-routes per backend)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 models list".PadRight($col))" -NoNewline; Write-Host "List all models from both catalogs" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 models-download <n|id>".PadRight($col))" -NoNewline; Write-Host "Top-level shortcut for 'models download ...'" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 install model <ids>".PadRight($col))" -NoNewline; Write-Host "Same shortcut: 'install model 93' or 'install model 93,94' (standalone GGUF)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -M".PadRight($col))" -NoNewline; Write-Host "Shortcut for 'models'" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 download <url> [<dir>]".PadRight($col))" -NoNewline; Write-Host "Fast download (aria2c, defaults -s 16 -p 1M); 'url' is alias" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 download <url> -s 12 -p 2M".PadRight($col))" -NoNewline; Write-Host "Override splits (per-server connections) and piece size" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 os <action>".PadRight($col))" -NoNewline; Write-Host "OS housekeeping: clean, temp-clean, hib-off, flp, add-user ('os -h' for full list)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 os power [flags]".PadRight($col))" -NoNewline; Write-Host "Set display/sleep/disk/hibernate timeouts (--display N --sleep N --disk N --hibernate N | --never | --ac-only | --dc-only | --dry-run)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 os hib-off | hib-on".PadRight($col))" -NoNewline; Write-Host "Disable / enable Windows hibernation" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 os browser <name>".PadRight($col))" -NoNewline; Write-Host "Set default web browser (chrome | firefox | edge | brave | opera | vivaldi | librewolf)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 os email <name>".PadRight($col))" -NoNewline; Write-Host "Set default mail client (outlook | thunderbird | mailbird | em-client | windows-mail)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 os clean | temp-clean".PadRight($col))" -NoNewline; Write-Host "Disk cleanup (categories, buckets, consent system) or just temp dirs" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 os add-user | edit-user | remove-user".PadRight($col))" -NoNewline; Write-Host "Local Windows user management (add/edit/remove, JSON-bulk variants too)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 ssh <verb>".PadRight($col))" -NoNewline; Write-Host "SSH keys: gen | view | read | cat | search | install | revoke | ledger ('ssh help')" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 ssh view".PadRight($col))" -NoNewline; Write-Host "Pretty-print ~/.ssh (public keys + masked private + ledger summary)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 ssh search <p>".PadRight($col))" -NoNewline; Write-Host "Substring/regex search across ~/.ssh files AND the cross-OS ledger" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 menu <verb> [target]".PadRight($col))" -NoNewline; Write-Host "Context-menu manager: install|uninstall|list|help; targets all|pwsh|wt|conemu|vscode|sf" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 menu install all -y".PadRight($col))" -NoNewline; Write-Host "Install every right-click menu (PowerShell, Windows Terminal, ConEmu, VS Code, SF)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 menu install pwsh|wt|conemu".PadRight($col))" -NoNewline; Write-Host "Install one menu only (PowerShell / Windows Terminal / ConEmu submenu)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 menu uninstall conemu".PadRight($col))" -NoNewline; Write-Host "Snapshot to .reg + remove a target's right-click entries" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 vscode-folder <action>".PadRight($col))" -NoNewline; Write-Host "VS Code folder-only context-menu repair ('vscode-folder help')" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 vscode-context-menu install".PadRight($col))" -NoNewline; Write-Host "Legacy alias for 'menu install vscode' (kept for back-compat)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 profile <name>".PadRight($col))" -NoNewline; Write-Host "Run a profile recipe (see 'Profiles' section below for list)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 install <profile>".PadRight($col))" -NoNewline; Write-Host "Same as above -- 'install minimal' == 'profile minimal'" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 profile list".PadRight($col))" -NoNewline; Write-Host "Show all available profiles with descriptions" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 gsa".PadRight($col))" -NoNewline; Write-Host "git safe.directory='*' (wildcard, idempotent)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 gsa --scan <path>".PadRight($col))" -NoNewline; Write-Host "Add each .git repo under <path> individually" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 git-tools <action>".PadRight($col))" -NoNewline; Write-Host "Git config helpers ('git-tools help' for actions)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 path <dir>".PadRight($col))" -NoNewline; Write-Host "Set default dev directory" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 path".PadRight($col))" -NoNewline; Write-Host "Show current dev directory" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 path --reset".PadRight($col))" -NoNewline; Write-Host "Clear saved path, use smart detection" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -I <number>".PadRight($col))" -NoNewline; Write-Host "Run a specific script by ID" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -d".PadRight($col))" -NoNewline; Write-Host "Shortcut for -I 12 (interactive menu)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -a".PadRight($col))" -NoNewline; Write-Host "Shortcut for -I 13 (audit mode)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -h".PadRight($col))" -NoNewline; Write-Host "Shortcut for -I 13 -Report (health check)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -v".PadRight($col))" -NoNewline; Write-Host "Shortcut for -I 1  (install VS Code)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -w".PadRight($col))" -NoNewline; Write-Host "Shortcut for -I 14 (install Winget)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -t".PadRight($col))" -NoNewline; Write-Host "Shortcut for -I 15 (Windows tweaks)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -Defaults".PadRight($col))" -NoNewline; Write-Host "Use all defaults, prompt to confirm" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -Defaults -Y".PadRight($col))" -NoNewline; Write-Host "Use all defaults, skip confirmation" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -I <number> -Merge".PadRight($col))" -NoNewline; Write-Host "Run with merge flag (script 02)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -I <number> -Clean".PadRight($col))" -NoNewline; Write-Host "Wipe cache, then run" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -CleanOnly".PadRight($col))" -NoNewline; Write-Host "Wipe all cached data" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -Help".PadRight($col))" -NoNewline; Write-Host "Show this help" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -List".PadRight($col))" -NoNewline; Write-Host "Show keyword table only" -ForegroundColor DarkGray
+    Write-Host "    $(".\run.ps1 install <keywords>".PadRight($col))" -NoNewline; Write-Host "Install by keyword (bare command)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -Install <keywords>".PadRight($col))" -NoNewline; Write-Host "Install by keyword (named parameter)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 update".PadRight($col))" -NoNewline; Write-Host "Show outdated, confirm, upgrade all" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 update nodejs,git".PadRight($col))" -NoNewline; Write-Host "Upgrade specific packages only" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 update --check".PadRight($col))" -NoNewline; Write-Host "List outdated packages (no upgrade)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 update -y".PadRight($col))" -NoNewline; Write-Host "Upgrade all, skip confirmation" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 update --exclude=pkg1,pkg2".PadRight($col))" -NoNewline; Write-Host "Upgrade all except listed" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 self-update".PadRight($col))" -NoNewline; Write-Host "Refresh local scripts-fixer copy (git pull)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 self-update --check".PadRight($col))" -NoNewline; Write-Host "Show if local copy is behind upstream (no pull)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 self-update --reinstall".PadRight($col))" -NoNewline; Write-Host "Pull, then re-run install.ps1 (refresh shims/PATH)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 export".PadRight($col))" -NoNewline; Write-Host "Export all app settings to repo" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 export npp,obs".PadRight($col))" -NoNewline; Write-Host "Export specific app settings" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 status".PadRight($col))" -NoNewline; Write-Host "Show dashboard of all installed tools" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 status --no-choco".PadRight($col))" -NoNewline; Write-Host "Status without outdated package check" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 report [--since=24h] [--open]".PadRight($col))" -NoNewline; Write-Host "Timestamped JSON+HTML report of install/uninstall actions" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 doctor".PadRight($col))" -NoNewline; Write-Host "Quick health check of project setup" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 doctor --self-check".PadRight($col))" -NoNewline; Write-Host "Deep audit: changelog files, version, clean catalog, keyword resolution, SHA256 pins" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 doctor --self-check --skip-network".PadRight($col))" -NoNewline; Write-Host "Same as above but skips sections (d) + (e) for offline use" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 models".PadRight($col))" -NoNewline; Write-Host "Pick AI model backend (llama.cpp / Ollama), browse + install" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 models <ids>".PadRight($col))" -NoNewline; Write-Host "Direct install: CSV of model ids (auto-routes per backend)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 models list".PadRight($col))" -NoNewline; Write-Host "List all models from both catalogs" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 models-download <n|id>".PadRight($col))" -NoNewline; Write-Host "Top-level shortcut for 'models download ...'" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 install model <ids>".PadRight($col))" -NoNewline; Write-Host "Same shortcut: 'install model 93' or 'install model 93,94' (standalone GGUF)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -M".PadRight($col))" -NoNewline; Write-Host "Shortcut for 'models'" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 download <url> [<dir>]".PadRight($col))" -NoNewline; Write-Host "Fast download (aria2c, defaults -s 16 -p 1M); 'url' is alias" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 download <url> -s 12 -p 2M".PadRight($col))" -NoNewline; Write-Host "Override splits (per-server connections) and piece size" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 os <action>".PadRight($col))" -NoNewline; Write-Host "OS housekeeping: clean, temp-clean, hib-off, flp, add-user ('os -h' for full list)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 os power [flags]".PadRight($col))" -NoNewline; Write-Host "Set display/sleep/disk/hibernate timeouts (--display N --sleep N --disk N --hibernate N | --never | --ac-only | --dc-only | --dry-run)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 os hib-off | hib-on".PadRight($col))" -NoNewline; Write-Host "Disable / enable Windows hibernation" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 os browser <name>".PadRight($col))" -NoNewline; Write-Host "Set default web browser (chrome | firefox | edge | brave | opera | vivaldi | librewolf)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 os email <name>".PadRight($col))" -NoNewline; Write-Host "Set default mail client (outlook | thunderbird | mailbird | em-client | windows-mail)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 os clean | temp-clean".PadRight($col))" -NoNewline; Write-Host "Disk cleanup (categories, buckets, consent system) or just temp dirs" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 os add-user | edit-user | remove-user".PadRight($col))" -NoNewline; Write-Host "Local Windows user management (add/edit/remove, JSON-bulk variants too)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 ssh <verb>".PadRight($col))" -NoNewline; Write-Host "SSH keys: gen | view | read | cat | search | install | revoke | ledger ('ssh help')" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 ssh view".PadRight($col))" -NoNewline; Write-Host "Pretty-print ~/.ssh (public keys + masked private + ledger summary)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 ssh search <p>".PadRight($col))" -NoNewline; Write-Host "Substring/regex search across ~/.ssh files AND the cross-OS ledger" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 menu <verb> [target]".PadRight($col))" -NoNewline; Write-Host "Context-menu manager: install|uninstall|list|help; targets all|pwsh|wt|conemu|vscode|sf" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 menu install all -y".PadRight($col))" -NoNewline; Write-Host "Install every right-click menu (PowerShell, Windows Terminal, ConEmu, VS Code, SF)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 menu install pwsh|wt|conemu".PadRight($col))" -NoNewline; Write-Host "Install one menu only (PowerShell / Windows Terminal / ConEmu submenu)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 menu uninstall conemu".PadRight($col))" -NoNewline; Write-Host "Snapshot to .reg + remove a target's right-click entries" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 vscode-folder <action>".PadRight($col))" -NoNewline; Write-Host "VS Code folder-only context-menu repair ('vscode-folder help')" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 vscode-context-menu install".PadRight($col))" -NoNewline; Write-Host "Legacy alias for 'menu install vscode' (kept for back-compat)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 profile <name>".PadRight($col))" -NoNewline; Write-Host "Run a profile recipe (see 'Profiles' section below for list)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 install <profile>".PadRight($col))" -NoNewline; Write-Host "Same as above -- 'install minimal' == 'profile minimal'" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 profile list".PadRight($col))" -NoNewline; Write-Host "Show all available profiles with descriptions" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 gsa".PadRight($col))" -NoNewline; Write-Host "git safe.directory='*' (wildcard, idempotent)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 gsa --scan <path>".PadRight($col))" -NoNewline; Write-Host "Add each .git repo under <path> individually" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 git-tools <action>".PadRight($col))" -NoNewline; Write-Host "Git config helpers ('git-tools help' for actions)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 path <dir>".PadRight($col))" -NoNewline; Write-Host "Set default dev directory" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 path".PadRight($col))" -NoNewline; Write-Host "Show current dev directory" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 path --reset".PadRight($col))" -NoNewline; Write-Host "Clear saved path, use smart detection" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -I <number>".PadRight($col))" -NoNewline; Write-Host "Run a specific script by ID" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -d".PadRight($col))" -NoNewline; Write-Host "Shortcut for -I 12 (interactive menu)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -a".PadRight($col))" -NoNewline; Write-Host "Shortcut for -I 13 (audit mode)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -h".PadRight($col))" -NoNewline; Write-Host "Shortcut for -I 13 -Report (health check)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -v".PadRight($col))" -NoNewline; Write-Host "Shortcut for -I 1  (install VS Code)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -w".PadRight($col))" -NoNewline; Write-Host "Shortcut for -I 14 (install Winget)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -t".PadRight($col))" -NoNewline; Write-Host "Shortcut for -I 15 (Windows tweaks)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -Defaults".PadRight($col))" -NoNewline; Write-Host "Use all defaults, prompt to confirm" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -Defaults -Y".PadRight($col))" -NoNewline; Write-Host "Use all defaults, skip confirmation" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -I <number> -Merge".PadRight($col))" -NoNewline; Write-Host "Run with merge flag (script 02)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -I <number> -Clean".PadRight($col))" -NoNewline; Write-Host "Wipe cache, then run" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -CleanOnly".PadRight($col))" -NoNewline; Write-Host "Wipe all cached data" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -Help".PadRight($col))" -NoNewline; Write-Host "Show this help" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -List".PadRight($col))" -NoNewline; Write-Host "Show keyword table only" -ForegroundColor $ThemeMuted
     Write-Host ""
 
     # ── Profiles section (dynamic, schema-validated against scripts/profile/*.json) ──
@@ -434,11 +689,11 @@ function Show-RootHelpRaw {
         if ($byTgt) { $aliasesByTarget = $byTgt }
     }
 
-    Write-Host ("  Profiles ({0} available):" -f $profileEntries.Count) -ForegroundColor Yellow
-    Write-Host "  (multi-step install recipes -- run with 'profile <name>' or 'install <name>')" -ForegroundColor DarkGray
-    Write-Host ("  source: {0}" -f $profileCfgPath) -ForegroundColor DarkGray
+    Write-Host ("  Profiles ({0} available):" -f $profileEntries.Count) -ForegroundColor $ThemeAccent
+    Write-Host "  (multi-step install recipes -- run with 'profile <name>' or 'install <name>')" -ForegroundColor $ThemeMuted
+    Write-Host ("  source: {0}" -f $profileCfgPath) -ForegroundColor $ThemeMuted
     if ($aliasesByTarget.Count -gt 0) {
-        Write-Host ("  aliases: {0} (grouped under their resolved profile)" -f $profileAliasesPath) -ForegroundColor DarkGray
+        Write-Host ("  aliases: {0} (grouped under their resolved profile)" -f $profileAliasesPath) -ForegroundColor $ThemeMuted
     }
     Write-Host ""
 
@@ -448,21 +703,21 @@ function Show-RootHelpRaw {
             $line = $entry.Description
             if ([string]::IsNullOrWhiteSpace($line)) { $line = $entry.Label }
             Write-Host "    $($entry.Name.PadRight($pc))" -NoNewline -ForegroundColor Green
-            Write-Host $line -ForegroundColor DarkGray
+            Write-Host $line -ForegroundColor $ThemeMuted
 
             # Show this profile's aliases inline, grouped underneath
             if ($aliasesByTarget.ContainsKey($entry.Name)) {
                 foreach ($a in $aliasesByTarget[$entry.Name]) {
                     $kindTag = if ($a.Kind -eq "fallback") { "[fallback]" } else { "[exact]   " }
                     Write-Host ("    {0}  {1} " -f (" " * $pc), $kindTag) -NoNewline -ForegroundColor DarkCyan
-                    Write-Host ("{0,-14} -> {1}" -f $a.Name, $entry.Name) -NoNewline -ForegroundColor Cyan
+                    Write-Host ("{0,-14} -> {1}" -f $a.Name, $entry.Name) -NoNewline -ForegroundColor $ThemeSecondary
                     if ($entry.Description) {
-                        Write-Host ("  ({0})" -f $entry.Description) -ForegroundColor DarkGray
+                        Write-Host ("  ({0})" -f $entry.Description) -ForegroundColor $ThemeMuted
                     } else {
                         Write-Host ""
                     }
                     if ($a.Kind -eq "fallback" -and $a.Reason) {
-                        Write-Host ("    {0}             reason: {1}" -f (" " * $pc), $a.Reason) -ForegroundColor DarkGray
+                        Write-Host ("    {0}             reason: {1}" -f (" " * $pc), $a.Reason) -ForegroundColor $ThemeMuted
                     }
                 }
             }
@@ -486,8 +741,8 @@ function Show-RootHelpRaw {
     # ── Orphan aliases (target not in profile catalog) ──────────────────
     if ($aliasesByTarget.ContainsKey('__orphans__') -and $aliasesByTarget['__orphans__'].Count -gt 0) {
         $orphans = $aliasesByTarget['__orphans__']
-        Write-Host ("  Orphan aliases ({0}) -- target not in profile catalog:" -f $orphans.Count) -ForegroundColor Yellow
-        Write-Host ("  source: {0}" -f $profileAliasesPath) -ForegroundColor DarkGray
+        Write-Host ("  Orphan aliases ({0}) -- target not in profile catalog:" -f $orphans.Count) -ForegroundColor $ThemeAccent
+        Write-Host ("  source: {0}" -f $profileAliasesPath) -ForegroundColor $ThemeMuted
         Write-Host ""
         foreach ($a in $orphans) {
             Write-Host ("    [{0}] {1,-14} -> {2}  (UNRESOLVED)" -f $a.Kind, $a.Name, $a.Target) -ForegroundColor DarkYellow
@@ -499,343 +754,358 @@ function Show-RootHelpRaw {
         Format-ProfileConfigIssues -Result $aliasValidation -Title "Profile aliases issues"
     }
 
-    Write-Host "  Profile Examples (copy-paste):" -ForegroundColor Yellow
-    Write-Host "  (both forms are equivalent -- pick whichever you prefer)" -ForegroundColor DarkGray
+    Write-Host "  Profile Examples (copy-paste):" -ForegroundColor $ThemeAccent
+    Write-Host "  (both forms are equivalent -- pick whichever you prefer)" -ForegroundColor $ThemeMuted
     Write-Host ""
     if ($profileNamesForExamples.Count -gt 0) {
         $ec = 40
         foreach ($pname in $profileNamesForExamples) {
             Write-Host "    $((".\run.ps1 profile $pname").PadRight($ec))" -NoNewline -ForegroundColor Green
-            Write-Host "# run '$pname' profile" -ForegroundColor DarkGray
+            Write-Host "# run '$pname' profile" -ForegroundColor $ThemeMuted
             Write-Host "    $((".\run.ps1 install $pname").PadRight($ec))" -NoNewline -ForegroundColor Green
-            Write-Host "# same, via 'install' shortcut" -ForegroundColor DarkGray
+            Write-Host "# same, via 'install' shortcut" -ForegroundColor $ThemeMuted
             Write-Host ""
         }
     }
-    Write-Host "  Common profile flags:" -ForegroundColor Yellow
+    Write-Host "  Common profile flags:" -ForegroundColor $ThemeAccent
     Write-Host ""
-    Write-Host "    .\run.ps1 profile list                  " -NoNewline; Write-Host "# list all profiles with full descriptions" -ForegroundColor DarkGray
+    Write-Host "    .\run.ps1 profile list                  " -NoNewline; Write-Host "# list all profiles with full descriptions" -ForegroundColor $ThemeMuted
     if ($profileNamesForExamples.Count -gt 0) {
         $sample = $profileNamesForExamples[0]
-        Write-Host "    .\run.ps1 profile $sample --dry-run".PadRight(44) -NoNewline; Write-Host "# preview steps, do not execute" -ForegroundColor DarkGray
-        Write-Host "    .\run.ps1 profile $sample -y".PadRight(44)        -NoNewline; Write-Host "# skip confirmation prompts" -ForegroundColor DarkGray
-        Write-Host "    .\run.ps1 install $sample -y".PadRight(44)        -NoNewline; Write-Host "# install shortcut + auto-confirm" -ForegroundColor DarkGray
+        Write-Host "    .\run.ps1 profile $sample --dry-run".PadRight(44) -NoNewline; Write-Host "# preview steps, do not execute" -ForegroundColor $ThemeMuted
+        Write-Host "    .\run.ps1 profile $sample -y".PadRight(44)        -NoNewline; Write-Host "# skip confirmation prompts" -ForegroundColor $ThemeMuted
+        Write-Host "    .\run.ps1 install $sample -y".PadRight(44)        -NoNewline; Write-Host "# install shortcut + auto-confirm" -ForegroundColor $ThemeMuted
     }
     Write-Host ""
 
-    Write-Host "  Install by Keyword:" -ForegroundColor Yellow
+    Write-Host "  Install by Keyword:" -ForegroundColor $ThemeAccent
     Write-Host ""
     $kc = 44
-    Write-Host "    $("install vscode".PadRight($kc))" -NoNewline; Write-Host "Install Visual Studio Code" -ForegroundColor DarkGray
-    Write-Host "    $("install nodejs".PadRight($kc))" -NoNewline; Write-Host "Install Node.js + Yarn + Bun" -ForegroundColor DarkGray
-    Write-Host "    $("install pnpm".PadRight($kc))" -NoNewline; Write-Host "Install Node.js + pnpm (auto-chains)" -ForegroundColor DarkGray
-    Write-Host "    $("install python".PadRight($kc))" -NoNewline; Write-Host "Install Python + pip" -ForegroundColor DarkGray
-    Write-Host "    $("install pylibs".PadRight($kc))" -NoNewline; Write-Host "Install Python + pip + all libraries (numpy, pandas, jupyter...)" -ForegroundColor DarkGray
-    Write-Host "    $("install go".PadRight($kc))" -NoNewline; Write-Host "Install Go + configure GOPATH" -ForegroundColor DarkGray
-    Write-Host "    $("install git".PadRight($kc))" -NoNewline; Write-Host "Install Git + LFS + GitHub CLI" -ForegroundColor DarkGray
-    Write-Host "    $("install cpp".PadRight($kc))" -NoNewline; Write-Host "Install C++ MinGW-w64 compiler" -ForegroundColor DarkGray
-    Write-Host "    $("install php".PadRight($kc))" -NoNewline; Write-Host "Install PHP via Chocolatey" -ForegroundColor DarkGray
-    Write-Host "    $("install powershell".PadRight($kc))" -NoNewline; Write-Host "Install latest PowerShell" -ForegroundColor DarkGray
-    Write-Host "    $("install winget".PadRight($kc))" -NoNewline; Write-Host "Install Winget package manager" -ForegroundColor DarkGray
-    Write-Host "    $("install flutter".PadRight($kc))" -NoNewline; Write-Host "Install Flutter SDK + Dart" -ForegroundColor DarkGray
-    Write-Host "    $("install dotnet".PadRight($kc))" -NoNewline; Write-Host "Install .NET SDK (latest)" -ForegroundColor DarkGray
-    Write-Host "    $("install java".PadRight($kc))" -NoNewline; Write-Host "Install OpenJDK (latest LTS)" -ForegroundColor DarkGray
-    Write-Host "    $("install settingssync".PadRight($kc))" -NoNewline; Write-Host "Sync VSCode settings + extensions (auto-installs VS Code)" -ForegroundColor DarkGray
-    Write-Host "    $("install contextmenu".PadRight($kc))" -NoNewline; Write-Host "Fix VSCode right-click menu (auto-installs VS Code + settings)" -ForegroundColor DarkGray
-    Write-Host "    $("install chrome".PadRight($kc))" -NoNewline; Write-Host "Install Google Chrome (choco googlechrome + official installer fallback) [58]" -ForegroundColor DarkGray
-    Write-Host "    $("install chrome with-ext".PadRight($kc))" -NoNewline; Write-Host "Chrome + every configured Web Store extension in one shot [58]" -ForegroundColor DarkGray
-    Write-Host "    $("install chrome ext".PadRight($kc))" -NoNewline; Write-Host "Show extension catalog; 'ext vpn,tabcopy' installs by name [58]" -ForegroundColor DarkGray
-    Write-Host "    $("install chrome ext-all".PadRight($kc))" -NoNewline; Write-Host "Install ALL configured extensions (vpn, tabcopy, tabextend, adblocker, ...) [58]" -ForegroundColor DarkGray
-    Write-Host "    $("install chrome ext-url <urls|file>".PadRight($kc))" -NoNewline; Write-Host "Install ad-hoc extensions from raw Web Store URLs / IDs / .csv / .txt [58]" -ForegroundColor DarkGray
-    Write-Host "    $("uninstall chrome".PadRight($kc))" -NoNewline; Write-Host "Uninstall Chrome + clean shortcuts/registry/AppData (warns on HKLM if not elevated) [58]" -ForegroundColor DarkGray
-    Write-Host "    $("chrome fix-ai".PadRight($kc))" -NoNewline; Write-Host "Disable built-in AI (Gemini Nano) + reclaim 2-4 GB; --dry-run / --verify / --restore [58]" -ForegroundColor DarkGray
-    Write-Host "    $("install protonvpn".PadRight($kc))" -NoNewline; Write-Host "Install Proton VPN (aliases: proton, proton-vpn, vpn) [60]" -ForegroundColor DarkGray
-    Write-Host "    $("uninstall protonvpn".PadRight($kc))" -NoNewline; Write-Host "Uninstall Proton VPN + clean .installed/protonvpn.json record [60]" -ForegroundColor DarkGray
-    Write-Host "    $("install jumpjump-vpn".PadRight($kc))" -NoNewline; Write-Host "Install JumpJump VPN via direct download (aliases: jumpjump, jumpjumpvpn, jjvpn) [61]" -ForegroundColor DarkGray
-    Write-Host "    $("uninstall jumpjump-vpn".PadRight($kc))" -NoNewline; Write-Host "Uninstall JumpJump VPN + clean .installed/jumpjump-vpn.json record [61]" -ForegroundColor DarkGray
+    Write-Host "    $("install vscode".PadRight($kc))" -NoNewline; Write-Host "Install Visual Studio Code" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install nodejs".PadRight($kc))" -NoNewline; Write-Host "Install Node.js + Yarn + Bun" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install pnpm".PadRight($kc))" -NoNewline; Write-Host "Install Node.js + pnpm (auto-chains)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install python".PadRight($kc))" -NoNewline; Write-Host "Install Python + pip" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install pylibs".PadRight($kc))" -NoNewline; Write-Host "Install Python + pip + all libraries (numpy, pandas, jupyter...)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install go".PadRight($kc))" -NoNewline; Write-Host "Install Go + configure GOPATH" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install git".PadRight($kc))" -NoNewline; Write-Host "Install Git + LFS + GitHub CLI" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install cpp".PadRight($kc))" -NoNewline; Write-Host "Install C++ MinGW-w64 compiler" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install php".PadRight($kc))" -NoNewline; Write-Host "Install PHP via Chocolatey" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install powershell".PadRight($kc))" -NoNewline; Write-Host "Install latest PowerShell" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install winget".PadRight($kc))" -NoNewline; Write-Host "Install Winget package manager" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install flutter".PadRight($kc))" -NoNewline; Write-Host "Install Flutter SDK + Dart" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install dotnet".PadRight($kc))" -NoNewline; Write-Host "Install .NET SDK (latest)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install java".PadRight($kc))" -NoNewline; Write-Host "Install OpenJDK (latest LTS)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install settingssync".PadRight($kc))" -NoNewline; Write-Host "Sync VSCode settings + extensions (auto-installs VS Code)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install contextmenu".PadRight($kc))" -NoNewline; Write-Host "Fix VSCode right-click menu (auto-installs VS Code + settings)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install chrome".PadRight($kc))" -NoNewline; Write-Host "Install Google Chrome (choco googlechrome + official installer fallback) [58]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install chrome with-ext".PadRight($kc))" -NoNewline; Write-Host "Chrome + every configured Web Store extension in one shot [58]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install chrome ext".PadRight($kc))" -NoNewline; Write-Host "Show extension catalog; 'ext vpn,tabcopy' installs by name [58]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install chrome ext-all".PadRight($kc))" -NoNewline; Write-Host "Install ALL configured extensions (vpn, tabcopy, tabextend, adblocker, ...) [58]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install chrome ext-url <urls|file>".PadRight($kc))" -NoNewline; Write-Host "Install ad-hoc extensions from raw Web Store URLs / IDs / .csv / .txt [58]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("uninstall chrome".PadRight($kc))" -NoNewline; Write-Host "Uninstall Chrome + clean shortcuts/registry/AppData (warns on HKLM if not elevated) [58]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("chrome fix-ai".PadRight($kc))" -NoNewline; Write-Host "Disable built-in AI (Gemini Nano) + reclaim 2-4 GB; --dry-run / --verify / --restore [58]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install protonvpn".PadRight($kc))" -NoNewline; Write-Host "Install Proton VPN (aliases: proton, proton-vpn, vpn) [60]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("uninstall protonvpn".PadRight($kc))" -NoNewline; Write-Host "Uninstall Proton VPN + clean .installed/protonvpn.json record [60]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install jumpjump-vpn".PadRight($kc))" -NoNewline; Write-Host "Install JumpJump VPN via direct download (aliases: jumpjump, jumpjumpvpn, jjvpn) [61]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("uninstall jumpjump-vpn".PadRight($kc))" -NoNewline; Write-Host "Uninstall JumpJump VPN + clean .installed/jumpjump-vpn.json record [61]" -ForegroundColor $ThemeMuted
     Write-Host ""
 
     # ----- Dedicated Chrome & extensions cheatsheet ---------------------------
     # Surfaces every extension install mode (single, comma-list, all, raw URL,
     # file-of-URLs) with copy-paste examples so users do not have to grep the
     # script's source to discover what's possible.
-    Write-Host "    Chrome & Extensions (script 58) -- detailed examples:" -ForegroundColor Magenta
+    Write-Host "    Chrome & Extensions (script 58) -- detailed examples:" -ForegroundColor $ThemePrimary
     Write-Host "      Browser:" -ForegroundColor DarkYellow
-    Write-Host "        .\run.ps1 install chrome".PadRight(60) -NoNewline; Write-Host "# Chrome only (choco -> official installer fallback)" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 install chrome with-ext".PadRight(60) -NoNewline; Write-Host "# Chrome + all configured Web Store extensions" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 uninstall chrome".PadRight(60) -NoNewline; Write-Host "# Remove Chrome + clean shortcuts / registry / AppData" -ForegroundColor DarkGray
+    Write-Host "        .\run.ps1 install chrome".PadRight(60) -NoNewline; Write-Host "# Chrome only (choco -> official installer fallback)" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 install chrome with-ext".PadRight(60) -NoNewline; Write-Host "# Chrome + all configured Web Store extensions" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 uninstall chrome".PadRight(60) -NoNewline; Write-Host "# Remove Chrome + clean shortcuts / registry / AppData" -ForegroundColor $ThemeMuted
     Write-Host "      AI / Gemini Nano disable (reclaim 2-4 GB):" -ForegroundColor DarkYellow
-    Write-Host "        .\run.ps1 chrome fix-ai".PadRight(60) -NoNewline; Write-Host "# Disable Chrome's built-in AI + delete on-device model cache" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 chrome fix-ai --dry-run".PadRight(60) -NoNewline; Write-Host "# Preview policy + flag + cache changes without writing" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 chrome fix-ai --verify".PadRight(60) -NoNewline; Write-Host "# Report current policy/flag/cache state only" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 chrome fix-ai --restore".PadRight(60) -NoNewline; Write-Host "# Revert policies + restore Local State backup" -ForegroundColor DarkGray
+    Write-Host "        .\run.ps1 chrome fix-ai".PadRight(60) -NoNewline; Write-Host "# Disable Chrome's built-in AI + delete on-device model cache" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 chrome fix-ai --dry-run".PadRight(60) -NoNewline; Write-Host "# Preview policy + flag + cache changes without writing" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 chrome fix-ai --verify".PadRight(60) -NoNewline; Write-Host "# Report current policy/flag/cache state only" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 chrome fix-ai --restore".PadRight(60) -NoNewline; Write-Host "# Revert policies + restore Local State backup" -ForegroundColor $ThemeMuted
     Write-Host "      Extensions from the bundled catalog:" -ForegroundColor DarkYellow
-    Write-Host "        .\run.ps1 install chrome ext".PadRight(60) -NoNewline; Write-Host "# List the catalog (name -> Web Store ID)" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 install chrome ext vpn".PadRight(60) -NoNewline; Write-Host "# Install ONE extension by name" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 install chrome ext vpn,tabcopy,adblocker".PadRight(60) -NoNewline; Write-Host "# Install MANY by comma-separated names (no spaces)" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 install chrome ext vpn tabcopy adblocker".PadRight(60) -NoNewline; Write-Host "# Same thing, space-separated also works" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 install chrome ext-all".PadRight(60) -NoNewline; Write-Host "# Install every extension in config.json (alias: extall, all-ext)" -ForegroundColor DarkGray
+    Write-Host "        .\run.ps1 install chrome ext".PadRight(60) -NoNewline; Write-Host "# List the catalog (name -> Web Store ID)" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 install chrome ext vpn".PadRight(60) -NoNewline; Write-Host "# Install ONE extension by name" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 install chrome ext vpn,tabcopy,adblocker".PadRight(60) -NoNewline; Write-Host "# Install MANY by comma-separated names (no spaces)" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 install chrome ext vpn tabcopy adblocker".PadRight(60) -NoNewline; Write-Host "# Same thing, space-separated also works" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 install chrome ext-all".PadRight(60) -NoNewline; Write-Host "# Install every extension in config.json (alias: extall, all-ext)" -ForegroundColor $ThemeMuted
     Write-Host "      Ad-hoc extensions from raw Web Store URLs / IDs:" -ForegroundColor DarkYellow
-    Write-Host "        .\run.ps1 install chrome ext-url https://chromewebstore.google.com/detail/<slug>/<id>" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 install chrome ext-url <id1> <id2> <id3>".PadRight(70) -NoNewline; Write-Host "# Multiple raw 32-char IDs / URLs" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 install chrome ext-url url1,url2,url3".PadRight(70)        -NoNewline; Write-Host "# Comma-separated list (quoted URLs with commas are handled)" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 install chrome ext-url .\my-extensions.csv".PadRight(70)   -NoNewline; Write-Host "# .csv file -- one URL/ID per row, quoted fields OK" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 install chrome ext-url list.txt https://...".PadRight(70)  -NoNewline; Write-Host "# Mix file(s) and inline URLs in one call" -ForegroundColor DarkGray
+    Write-Host "        .\run.ps1 install chrome ext-url https://chromewebstore.google.com/detail/<slug>/<id>" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 install chrome ext-url <id1> <id2> <id3>".PadRight(70) -NoNewline; Write-Host "# Multiple raw 32-char IDs / URLs" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 install chrome ext-url url1,url2,url3".PadRight(70)        -NoNewline; Write-Host "# Comma-separated list (quoted URLs with commas are handled)" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 install chrome ext-url .\my-extensions.csv".PadRight(70)   -NoNewline; Write-Host "# .csv file -- one URL/ID per row, quoted fields OK" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 install chrome ext-url list.txt https://...".PadRight(70)  -NoNewline; Write-Host "# Mix file(s) and inline URLs in one call" -ForegroundColor $ThemeMuted
     Write-Host "      Copy-paste cookbook (real, runnable):" -ForegroundColor DarkYellow
-    Write-Host "        .\run.ps1 install chrome with-ext".PadRight(78) -NoNewline; Write-Host "# Fresh machine -> Chrome + every catalog extension" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 install chrome ext vpn,tabcopy,adblocker".PadRight(78) -NoNewline; Write-Host "# 3 extensions by name" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 install chrome ext-url ddkjiahejlhfcafbddmgiahcphecmpfh".PadRight(78) -NoNewline; Write-Host "# 1 extension by raw 32-char ID" -ForegroundColor DarkGray
-    Write-Host '        .\run.ps1 install chrome ext-url "https://chromewebstore.google.com/detail/<slug>/<id>"' -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 install chrome ext-url .\extensions.csv -Yes".PadRight(78) -NoNewline; Write-Host "# Bulk + skip warning prompt (CI)" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 install chrome ext-url .\extensions.txt https://...".PadRight(78) -NoNewline; Write-Host "# Mix file + inline URL" -ForegroundColor DarkGray
+    Write-Host "        .\run.ps1 install chrome with-ext".PadRight(78) -NoNewline; Write-Host "# Fresh machine -> Chrome + every catalog extension" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 install chrome ext vpn,tabcopy,adblocker".PadRight(78) -NoNewline; Write-Host "# 3 extensions by name" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 install chrome ext-url ddkjiahejlhfcafbddmgiahcphecmpfh".PadRight(78) -NoNewline; Write-Host "# 1 extension by raw 32-char ID" -ForegroundColor $ThemeMuted
+    Write-Host '        .\run.ps1 install chrome ext-url "https://chromewebstore.google.com/detail/<slug>/<id>"' -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 install chrome ext-url .\extensions.csv -Yes".PadRight(78) -NoNewline; Write-Host "# Bulk + skip warning prompt (CI)" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 install chrome ext-url .\extensions.txt https://...".PadRight(78) -NoNewline; Write-Host "# Mix file + inline URL" -ForegroundColor $ThemeMuted
     Write-Host "      Discover / search inline:" -ForegroundColor DarkYellow
-    Write-Host "        .\run.ps1 help chrome".PadRight(78)             -NoNewline; Write-Host "# All Chrome lines (browser + extensions)" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 help chrome ext".PadRight(78)         -NoNewline; Write-Host "# AND filter -> only extension lines" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 help ext-url".PadRight(78)            -NoNewline; Write-Host "# Only ad-hoc URL / ID / file examples" -ForegroundColor DarkGray
-    Write-Host "        .\run.ps1 help chrome --out chrome-help.txt".PadRight(78) -NoNewline; Write-Host "# Export matched lines to a file" -ForegroundColor DarkGray
-    Write-Host "      Tip: extensions land under the Chrome ExtensionInstallForcelist policy registry key" -ForegroundColor DarkGray
-    Write-Host "           (HKLM\\SOFTWARE\\Policies\\Google\\Chrome\\ExtensionInstallForcelist) and apply on next launch." -ForegroundColor DarkGray
+    Write-Host "        .\run.ps1 help chrome".PadRight(78)             -NoNewline; Write-Host "# All Chrome lines (browser + extensions)" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 help chrome ext".PadRight(78)         -NoNewline; Write-Host "# AND filter -> only extension lines" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 help ext-url".PadRight(78)            -NoNewline; Write-Host "# Only ad-hoc URL / ID / file examples" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 help chrome --out chrome-help.txt".PadRight(78) -NoNewline; Write-Host "# Export matched lines to a file" -ForegroundColor $ThemeMuted
+    Write-Host "      Tip: extensions land under the Chrome ExtensionInstallForcelist policy registry key" -ForegroundColor $ThemeMuted
+    Write-Host "           (HKLM\\SOFTWARE\\Policies\\Google\\Chrome\\ExtensionInstallForcelist) and apply on next launch." -ForegroundColor $ThemeMuted
     Write-Host ""
 
-    Write-Host "    Settings & Context Menus:" -ForegroundColor Magenta
-    Write-Host "      Each keyword auto-installs its prerequisite app first, then applies settings," -ForegroundColor DarkGray
-    Write-Host "      and finally registers the right-click menu (where applicable)." -ForegroundColor DarkGray
+    Write-Host "    Settings & Context Menus:" -ForegroundColor $ThemePrimary
+    Write-Host "      Each keyword auto-installs its prerequisite app first, then applies settings," -ForegroundColor $ThemeMuted
+    Write-Host "      and finally registers the right-click menu (where applicable)." -ForegroundColor $ThemeMuted
     Write-Host ""
     Write-Host "      VS Code:" -ForegroundColor DarkYellow
-    Write-Host "    $("install vscode+settings".PadRight($kc))" -NoNewline; Write-Host "VS Code + sync settings/keybindings/extensions [01,11]" -ForegroundColor DarkGray
-    Write-Host "    $("install vscode+s".PadRight($kc))" -NoNewline; Write-Host "Same as vscode+settings (short alias) [01,11]" -ForegroundColor DarkGray
-    Write-Host "    $("install vscode-settings".PadRight($kc))" -NoNewline; Write-Host "Same as vscode+settings (legacy alias of settings-sync) [01,11]" -ForegroundColor DarkGray
-    Write-Host "    $("install vscode+menu+settings (= vms)".PadRight($kc))" -NoNewline; Write-Host "VS Code + settings + right-click menu [01,11,10]" -ForegroundColor DarkGray
-    Write-Host "    $("install vscode+menu".PadRight($kc))" -NoNewline; Write-Host "VS Code right-click menu (auto-installs VS Code + settings) [01,11,10]" -ForegroundColor DarkGray
-    Write-Host "    $("install vscode+context, vscode-context-menu".PadRight($kc))" -NoNewline; Write-Host "Same as vscode+menu (aliases) [01,11,10]" -ForegroundColor DarkGray
-    Write-Host "    $("install vscode-fix-menu".PadRight($kc))" -NoNewline; Write-Host "Repair-only: fix VS Code folder right-click registry (no reinstall) [52]" -ForegroundColor DarkGray
-    Write-Host "    $("install fix-vscode-menu".PadRight($kc))" -NoNewline; Write-Host "Same as vscode-fix-menu (alias) [52]" -ForegroundColor DarkGray
-    Write-Host "    $("install vscode+fix".PadRight($kc))" -NoNewline; Write-Host "VS Code + settings + folder right-click repair [01,11,52]" -ForegroundColor DarkGray
-    Write-Host "    $("install vscode+menu+fix".PadRight($kc))" -NoNewline; Write-Host "VS Code + settings + install menu + repair menu [01,11,10,52]" -ForegroundColor DarkGray
+    Write-Host "    $("install vscode+settings".PadRight($kc))" -NoNewline; Write-Host "VS Code + sync settings/keybindings/extensions [01,11]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install vscode+s".PadRight($kc))" -NoNewline; Write-Host "Same as vscode+settings (short alias) [01,11]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install vscode-settings".PadRight($kc))" -NoNewline; Write-Host "Same as vscode+settings (legacy alias of settings-sync) [01,11]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install vscode+menu+settings (= vms)".PadRight($kc))" -NoNewline; Write-Host "VS Code + settings + right-click menu [01,11,10]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install vscode+menu".PadRight($kc))" -NoNewline; Write-Host "VS Code right-click menu (auto-installs VS Code + settings) [01,11,10]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install vscode+context, vscode-context-menu".PadRight($kc))" -NoNewline; Write-Host "Same as vscode+menu (aliases) [01,11,10]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install vscode-fix-menu".PadRight($kc))" -NoNewline; Write-Host "Repair-only: fix VS Code folder right-click registry (no reinstall) [52]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install fix-vscode-menu".PadRight($kc))" -NoNewline; Write-Host "Same as vscode-fix-menu (alias) [52]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install vscode+fix".PadRight($kc))" -NoNewline; Write-Host "VS Code + settings + folder right-click repair [01,11,52]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install vscode+menu+fix".PadRight($kc))" -NoNewline; Write-Host "VS Code + settings + install menu + repair menu [01,11,10,52]" -ForegroundColor $ThemeMuted
     Write-Host ""
     Write-Host "      PowerShell:" -ForegroundColor DarkYellow
-    Write-Host "    $("install pwsh-menu".PadRight($kc))" -NoNewline; Write-Host "PowerShell submenu with 'Open Here' + 'Open as Admin' (auto-installs PowerShell) [17,31]" -ForegroundColor DarkGray
-    Write-Host "    $("install pwsh-context-menu".PadRight($kc))" -NoNewline; Write-Host "Same as pwsh-menu (alias) [17,31]" -ForegroundColor DarkGray
-    Write-Host "    $("install ps-context-menu".PadRight($kc))" -NoNewline; Write-Host "Same as pwsh-menu (alias) [17,31]" -ForegroundColor DarkGray
-    Write-Host "    $("install powershell-menu".PadRight($kc))" -NoNewline; Write-Host "Same as pwsh-menu (alias) [17,31]" -ForegroundColor DarkGray
+    Write-Host "    $("install pwsh-menu".PadRight($kc))" -NoNewline; Write-Host "PowerShell submenu with 'Open Here' + 'Open as Admin' (auto-installs PowerShell) [17,31]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install pwsh-context-menu".PadRight($kc))" -NoNewline; Write-Host "Same as pwsh-menu (alias) [17,31]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install ps-context-menu".PadRight($kc))" -NoNewline; Write-Host "Same as pwsh-menu (alias) [17,31]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install powershell-menu".PadRight($kc))" -NoNewline; Write-Host "Same as pwsh-menu (alias) [17,31]" -ForegroundColor $ThemeMuted
     Write-Host ""
     Write-Host "      ConEmu:" -ForegroundColor DarkYellow
-    Write-Host "    $("install conemu".PadRight($kc))" -NoNewline; Write-Host "ConEmu + settings auto-applied (ConEmu.xml) [48 install+settings]" -ForegroundColor DarkGray
-    Write-Host "    $("install conemu+settings".PadRight($kc))" -NoNewline; Write-Host "Same as conemu (explicit) [48 install+settings]" -ForegroundColor DarkGray
-    Write-Host "    $("install conemu-settings".PadRight($kc))" -NoNewline; Write-Host "Apply ConEmu.xml only (skip install) [48 settings-only]" -ForegroundColor DarkGray
-    Write-Host "    $("install install-conemu".PadRight($kc))" -NoNewline; Write-Host "Install ConEmu only (skip settings) [48 install-only]" -ForegroundColor DarkGray
-    Write-Host "    $("install conemu-menu".PadRight($kc))" -NoNewline; Write-Host "ConEmu submenu with 'Open Here' + 'Open as Admin' for folder/background right-click [48,59]" -ForegroundColor DarkGray
-    Write-Host "    $("install conemu+menu".PadRight($kc))" -NoNewline; Write-Host "Same as conemu-menu (alias) [48,59]" -ForegroundColor DarkGray
-    Write-Host "    $("install conemu-context-menu".PadRight($kc))" -NoNewline; Write-Host "Same as conemu-menu (alias) [48,59]" -ForegroundColor DarkGray
+    Write-Host "    $("install conemu".PadRight($kc))" -NoNewline; Write-Host "ConEmu + settings auto-applied (ConEmu.xml) [48 install+settings]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install conemu+settings".PadRight($kc))" -NoNewline; Write-Host "Same as conemu (explicit) [48 install+settings]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install conemu-settings".PadRight($kc))" -NoNewline; Write-Host "Apply ConEmu.xml only (skip install) [48 settings-only]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install install-conemu".PadRight($kc))" -NoNewline; Write-Host "Install ConEmu only (skip settings) [48 install-only]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install conemu-menu".PadRight($kc))" -NoNewline; Write-Host "ConEmu submenu with 'Open Here' + 'Open as Admin' for folder/background right-click [48,59]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install conemu+menu".PadRight($kc))" -NoNewline; Write-Host "Same as conemu-menu (alias) [48,59]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install conemu-context-menu".PadRight($kc))" -NoNewline; Write-Host "Same as conemu-menu (alias) [48,59]" -ForegroundColor $ThemeMuted
     Write-Host ""
     Write-Host "      Windows Terminal context menu:" -ForegroundColor DarkYellow
-    Write-Host "    $("install wt-menu".PadRight($kc))" -NoNewline; Write-Host "Windows Terminal submenu with 'Open Here' + 'Open as Admin' for folder/background right-click [37,64]" -ForegroundColor DarkGray
-    Write-Host "    $("install wt-context-menu".PadRight($kc))" -NoNewline; Write-Host "Same as wt-menu (alias) [37,64]" -ForegroundColor DarkGray
-    Write-Host "    $("install terminal-menu".PadRight($kc))" -NoNewline; Write-Host "Same as wt-menu (alias) [37,64]" -ForegroundColor DarkGray
+    Write-Host "    $("install wt-menu".PadRight($kc))" -NoNewline; Write-Host "Windows Terminal submenu with 'Open Here' + 'Open as Admin' for folder/background right-click [37,64]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install wt-context-menu".PadRight($kc))" -NoNewline; Write-Host "Same as wt-menu (alias) [37,64]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install terminal-menu".PadRight($kc))" -NoNewline; Write-Host "Same as wt-menu (alias) [37,64]" -ForegroundColor $ThemeMuted
     Write-Host ""
     Write-Host "      All right-click context menus (PowerShell + ConEmu + Windows Terminal):" -ForegroundColor DarkYellow
-    Write-Host "    $("install context-menu".PadRight($kc))" -NoNewline; Write-Host "Run script 57 bundle: prompt per menu (or pass -y / --yes for all) [57]" -ForegroundColor DarkGray
-    Write-Host "    $("install context".PadRight($kc))" -NoNewline; Write-Host "Search alias for the bundle [57]" -ForegroundColor DarkGray
-    Write-Host "    $("install menu".PadRight($kc))" -NoNewline; Write-Host "Search alias for the bundle [57]" -ForegroundColor DarkGray
-    Write-Host "    $("install right-click".PadRight($kc))" -NoNewline; Write-Host "Search alias for the bundle [57]" -ForegroundColor DarkGray
+    Write-Host "    $("install context-menu".PadRight($kc))" -NoNewline; Write-Host "Run script 57 bundle: prompt per menu (or pass -y / --yes for all) [57]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install context".PadRight($kc))" -NoNewline; Write-Host "Search alias for the bundle [57]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install menu".PadRight($kc))" -NoNewline; Write-Host "Search alias for the bundle [57]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install right-click".PadRight($kc))" -NoNewline; Write-Host "Search alias for the bundle [57]" -ForegroundColor $ThemeMuted
     Write-Host ""
     Write-Host "      Scripts Fixer cascading right-click menu (script 53):" -ForegroundColor DarkYellow
-    Write-Host "    $("install os-context-menu".PadRight($kc))" -NoNewline; Write-Host "Install full 'Scripts Fixer v{ver}' cascading right-click menu (file/folder/bg/desktop) [53]" -ForegroundColor DarkGray
-    Write-Host "    $("install context-menu-all".PadRight($kc))" -NoNewline; Write-Host "Same as os-context-menu (alias) [53]" -ForegroundColor DarkGray
-    Write-Host "    $("install all-context-menu".PadRight($kc))" -NoNewline; Write-Host "Same as os-context-menu (alias) [53]" -ForegroundColor DarkGray
-    Write-Host "    $("install os-install-context-menu".PadRight($kc))" -NoNewline; Write-Host "Same as os-context-menu (alias) [53]" -ForegroundColor DarkGray
-    Write-Host "    $("install scripts-fixer-menu".PadRight($kc))" -NoNewline; Write-Host "Same as os-context-menu (alias) [53]" -ForegroundColor DarkGray
-    Write-Host "    $("install sf-menu".PadRight($kc))" -NoNewline; Write-Host "Same as os-context-menu (short alias) [53]" -ForegroundColor DarkGray
+    Write-Host "    $("install os-context-menu".PadRight($kc))" -NoNewline; Write-Host "Install full 'Scripts Fixer v{ver}' cascading right-click menu (file/folder/bg/desktop) [53]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install context-menu-all".PadRight($kc))" -NoNewline; Write-Host "Same as os-context-menu (alias) [53]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install all-context-menu".PadRight($kc))" -NoNewline; Write-Host "Same as os-context-menu (alias) [53]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install os-install-context-menu".PadRight($kc))" -NoNewline; Write-Host "Same as os-context-menu (alias) [53]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install scripts-fixer-menu".PadRight($kc))" -NoNewline; Write-Host "Same as os-context-menu (alias) [53]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install sf-menu".PadRight($kc))" -NoNewline; Write-Host "Same as os-context-menu (short alias) [53]" -ForegroundColor $ThemeMuted
     Write-Host ""
     Write-Host "      Other apps with bundled settings:" -ForegroundColor DarkYellow
-    Write-Host "    $("install npp+settings".PadRight($kc))" -NoNewline; Write-Host "Notepad++ + settings [33 install+settings]" -ForegroundColor DarkGray
-    Write-Host "    $("install obs+settings".PadRight($kc))" -NoNewline; Write-Host "OBS Studio + settings [36 install+settings]" -ForegroundColor DarkGray
-    Write-Host "    $("install wt+settings".PadRight($kc))" -NoNewline; Write-Host "Windows Terminal + settings [37 install+settings]" -ForegroundColor DarkGray
-    Write-Host "    $("install dbeaver+settings".PadRight($kc))" -NoNewline; Write-Host "DBeaver + settings [32 install+settings]" -ForegroundColor DarkGray
+    Write-Host "    $("install npp+settings".PadRight($kc))" -NoNewline; Write-Host "Notepad++ + settings [33 install+settings]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install obs+settings".PadRight($kc))" -NoNewline; Write-Host "OBS Studio + settings [36 install+settings]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install wt+settings".PadRight($kc))" -NoNewline; Write-Host "Windows Terminal + settings [37 install+settings]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install dbeaver+settings".PadRight($kc))" -NoNewline; Write-Host "DBeaver + settings [32 install+settings]" -ForegroundColor $ThemeMuted
     Write-Host ""
     Write-Host "      All settings at once:" -ForegroundColor DarkYellow
-    Write-Host "    $("install all-settings".PadRight($kc))" -NoNewline; Write-Host "Install + apply ALL bundled settings: VS Code, NPP, OBS, WT, DBeaver, ConEmu (+ ConEmu right-click) [01,11,32,33,36,37,48,59]" -ForegroundColor DarkGray
-    Write-Host "    $("install settings".PadRight($kc))" -NoNewline; Write-Host "Same as all-settings (alias)" -ForegroundColor DarkGray
-    Write-Host "    $("install all-settings --exclude obs,wt".PadRight($kc))" -NoNewline; Write-Host "Apply all settings EXCEPT the listed apps" -ForegroundColor DarkGray
-    Write-Host "    $("install all-settings --exclude=conemu".PadRight($kc))" -NoNewline; Write-Host "Inline form (=) also accepted; valid tokens: vscode,npp,obs,wt,dbeaver,conemu" -ForegroundColor DarkGray
-    Write-Host "    $("install all-settings --exclude obs,xyz --exclude-strict".PadRight($kc))" -NoNewline; Write-Host "Abort (exit 2) if any --exclude token is unknown instead of warning" -ForegroundColor DarkGray
+    Write-Host "    $("install all-settings".PadRight($kc))" -NoNewline; Write-Host "Install + apply ALL bundled settings: VS Code, NPP, OBS, WT, DBeaver, ConEmu (+ ConEmu right-click) [01,11,32,33,36,37,48,59]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install settings".PadRight($kc))" -NoNewline; Write-Host "Same as all-settings (alias)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install all-settings --exclude obs,wt".PadRight($kc))" -NoNewline; Write-Host "Apply all settings EXCEPT the listed apps" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install all-settings --exclude=conemu".PadRight($kc))" -NoNewline; Write-Host "Inline form (=) also accepted; valid tokens: vscode,npp,obs,wt,dbeaver,conemu" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install all-settings --exclude obs,xyz --exclude-strict".PadRight($kc))" -NoNewline; Write-Host "Abort (exit 2) if any --exclude token is unknown instead of warning" -ForegroundColor $ThemeMuted
     Write-Host ""
     Write-Host "      --exclude token reference:" -ForegroundColor DarkYellow
-    Write-Host "      Each token is looked up in the same keyword map as install <keyword>." -ForegroundColor DarkGray
-    Write-Host "      Whatever script IDs the token resolves to are subtracted from the bundle." -ForegroundColor DarkGray
+    Write-Host "      Each token is looked up in the same keyword map as install <keyword>." -ForegroundColor $ThemeMuted
+    Write-Host "      Whatever script IDs the token resolves to are subtracted from the bundle." -ForegroundColor $ThemeMuted
     Write-Host ""
     Write-Host "      $("Token".PadRight(20))" -NoNewline -ForegroundColor White
     Write-Host "$("Removes IDs".PadRight(18))" -NoNewline -ForegroundColor White
     Write-Host "Aliases" -ForegroundColor White
-    Write-Host "      $("vscode".PadRight(20))" -NoNewline; Write-Host "$("[01, 11]".PadRight(18))" -NoNewline -ForegroundColor Cyan; Write-Host "vs-code, code, vscode+settings, vscode+s, vscode-settings (legacy: settings-sync)" -ForegroundColor DarkGray
-    Write-Host "      $("vscode-fix-menu".PadRight(20))" -NoNewline; Write-Host "$("[52]".PadRight(18))" -NoNewline -ForegroundColor Cyan; Write-Host "fix-vscode-menu, vscode-menu-fix, vscode-menu-repair, fix-vscode-context-menu (folder right-click repair only)" -ForegroundColor DarkGray
-    Write-Host "      $("npp".PadRight(20))" -NoNewline; Write-Host "$("[33]".PadRight(18))" -NoNewline -ForegroundColor Cyan; Write-Host "notepad++, notepadpp, notepad-plus, npp+settings, npp-settings" -ForegroundColor DarkGray
-    Write-Host "      $("obs".PadRight(20))" -NoNewline; Write-Host "$("[36]".PadRight(18))" -NoNewline -ForegroundColor Cyan; Write-Host "obs-studio, obs+settings, obs-settings, install-obs" -ForegroundColor DarkGray
-    Write-Host "      $("wt".PadRight(20))" -NoNewline; Write-Host "$("[37]".PadRight(18))" -NoNewline -ForegroundColor Cyan; Write-Host "windows-terminal, wt+settings, wt-settings, install-wt" -ForegroundColor DarkGray
-    Write-Host "      $("dbeaver".PadRight(20))" -NoNewline; Write-Host "$("[32]".PadRight(18))" -NoNewline -ForegroundColor Cyan; Write-Host "db-viewer, dbviewer, dbeaver+settings, dbeaver-settings" -ForegroundColor DarkGray
-    Write-Host "      $("conemu".PadRight(20))" -NoNewline; Write-Host "$("[48, 59]".PadRight(18))" -NoNewline -ForegroundColor Cyan; Write-Host "conemu+settings, conemu-settings, install-conemu, conemu-menu, conemu+menu, conemu-context-menu" -ForegroundColor DarkGray
-    Write-Host "      $("conemu-menu".PadRight(20))" -NoNewline; Write-Host "$("[59]".PadRight(18))" -NoNewline -ForegroundColor Cyan; Write-Host "conemu+menu, conemu-context-menu (right-click only; keeps script 48 install)" -ForegroundColor DarkGray
+    Write-Host "      $("vscode".PadRight(20))" -NoNewline; Write-Host "$("[01, 11]".PadRight(18))" -NoNewline -ForegroundColor $ThemeSecondary; Write-Host "vs-code, code, vscode+settings, vscode+s, vscode-settings (legacy: settings-sync)" -ForegroundColor $ThemeMuted
+    Write-Host "      $("vscode-fix-menu".PadRight(20))" -NoNewline; Write-Host "$("[52]".PadRight(18))" -NoNewline -ForegroundColor $ThemeSecondary; Write-Host "fix-vscode-menu, vscode-menu-fix, vscode-menu-repair, fix-vscode-context-menu (folder right-click repair only)" -ForegroundColor $ThemeMuted
+    Write-Host "      $("npp".PadRight(20))" -NoNewline; Write-Host "$("[33]".PadRight(18))" -NoNewline -ForegroundColor $ThemeSecondary; Write-Host "notepad++, notepadpp, notepad-plus, npp+settings, npp-settings" -ForegroundColor $ThemeMuted
+    Write-Host "      $("obs".PadRight(20))" -NoNewline; Write-Host "$("[36]".PadRight(18))" -NoNewline -ForegroundColor $ThemeSecondary; Write-Host "obs-studio, obs+settings, obs-settings, install-obs" -ForegroundColor $ThemeMuted
+    Write-Host "      $("wt".PadRight(20))" -NoNewline; Write-Host "$("[37]".PadRight(18))" -NoNewline -ForegroundColor $ThemeSecondary; Write-Host "windows-terminal, wt+settings, wt-settings, install-wt" -ForegroundColor $ThemeMuted
+    Write-Host "      $("dbeaver".PadRight(20))" -NoNewline; Write-Host "$("[32]".PadRight(18))" -NoNewline -ForegroundColor $ThemeSecondary; Write-Host "db-viewer, dbviewer, dbeaver+settings, dbeaver-settings" -ForegroundColor $ThemeMuted
+    Write-Host "      $("conemu".PadRight(20))" -NoNewline; Write-Host "$("[48, 59]".PadRight(18))" -NoNewline -ForegroundColor $ThemeSecondary; Write-Host "conemu+settings, conemu-settings, install-conemu, conemu-menu, conemu+menu, conemu-context-menu" -ForegroundColor $ThemeMuted
+    Write-Host "      $("conemu-menu".PadRight(20))" -NoNewline; Write-Host "$("[59]".PadRight(18))" -NoNewline -ForegroundColor $ThemeSecondary; Write-Host "conemu+menu, conemu-context-menu (right-click only; keeps script 48 install)" -ForegroundColor $ThemeMuted
     Write-Host ""
-    Write-Host "      Flag spellings (all equivalent):" -ForegroundColor DarkGray
-    Write-Host "        --exclude  -exclude  --ex  -ex  --without  -without  --skip  -skip" -ForegroundColor DarkGray
-    Write-Host "      Value formats: '--exclude obs,wt'  '--exclude obs wt'  '--exclude=obs,wt'" -ForegroundColor DarkGray
-    Write-Host "      Strict mode flags: --exclude-strict, --strict-exclude, --excludestrict" -ForegroundColor DarkGray
+    Write-Host "      Flag spellings (all equivalent):" -ForegroundColor $ThemeMuted
+    Write-Host "        --exclude  -exclude  --ex  -ex  --without  -without  --skip  -skip" -ForegroundColor $ThemeMuted
+    Write-Host "      Value formats: '--exclude obs,wt'  '--exclude obs wt'  '--exclude=obs,wt'" -ForegroundColor $ThemeMuted
+    Write-Host "      Strict mode flags: --exclude-strict, --strict-exclude, --excludestrict" -ForegroundColor $ThemeMuted
     Write-Host ""
 
-    Write-Host "    Python & pip libraries:" -ForegroundColor Magenta
+    Write-Host "    Python & pip libraries:" -ForegroundColor $ThemePrimary
     Write-Host ""
     Write-Host "      Quick install:" -ForegroundColor DarkYellow
-    Write-Host "    $("install pylibs".PadRight($kc))" -NoNewline; Write-Host "Install Python + all libraries in one go" -ForegroundColor DarkGray
-    Write-Host "    $("install python-libs".PadRight($kc))" -NoNewline; Write-Host "Install all pip libraries only (numpy, pandas, etc.)" -ForegroundColor DarkGray
-    Write-Host "    $("install python+libs".PadRight($kc))" -NoNewline; Write-Host "Install Python + all libraries in one go" -ForegroundColor DarkGray
+    Write-Host "    $("install pylibs".PadRight($kc))" -NoNewline; Write-Host "Install Python + all libraries in one go" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install python-libs".PadRight($kc))" -NoNewline; Write-Host "Install all pip libraries only (numpy, pandas, etc.)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install python+libs".PadRight($kc))" -NoNewline; Write-Host "Install Python + all libraries in one go" -ForegroundColor $ThemeMuted
     Write-Host ""
     Write-Host "      By purpose:" -ForegroundColor DarkYellow
-    Write-Host "    $("install data-science".PadRight($kc))" -NoNewline; Write-Host "Python + data/viz libs (pandas, matplotlib, plotly)" -ForegroundColor DarkGray
-    Write-Host "    $("install ai-dev".PadRight($kc))" -NoNewline; Write-Host "Python + ML libs (numpy, scipy, scikit-learn, torch)" -ForegroundColor DarkGray
-    Write-Host "    $("install deep-learning".PadRight($kc))" -NoNewline; Write-Host "Python + ML libs (same as ai-dev)" -ForegroundColor DarkGray
-    Write-Host "    $("install jupyter+libs".PadRight($kc))" -NoNewline; Write-Host "Jupyter only (jupyterlab, notebook, ipykernel)" -ForegroundColor DarkGray
-    Write-Host "    $("install viz-libs".PadRight($kc))" -NoNewline; Write-Host "Visualization (matplotlib, seaborn, plotly)" -ForegroundColor DarkGray
-    Write-Host "    $("install web-libs".PadRight($kc))" -NoNewline; Write-Host "Web frameworks (django, flask, fastapi, uvicorn)" -ForegroundColor DarkGray
-    Write-Host "    $("install scraping-libs".PadRight($kc))" -NoNewline; Write-Host "Scraping (requests, beautifulsoup4)" -ForegroundColor DarkGray
-    Write-Host "    $("install db-libs".PadRight($kc))" -NoNewline; Write-Host "Database (sqlalchemy)" -ForegroundColor DarkGray
-    Write-Host "    $("install cv-libs".PadRight($kc))" -NoNewline; Write-Host "Computer Vision (opencv-python)" -ForegroundColor DarkGray
-    Write-Host "    $("install data-libs".PadRight($kc))" -NoNewline; Write-Host "Data tools (pandas, polars)" -ForegroundColor DarkGray
+    Write-Host "    $("install data-science".PadRight($kc))" -NoNewline; Write-Host "Python + data/viz libs (pandas, matplotlib, plotly)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install ai-dev".PadRight($kc))" -NoNewline; Write-Host "Python + ML libs (numpy, scipy, scikit-learn, torch)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install deep-learning".PadRight($kc))" -NoNewline; Write-Host "Python + ML libs (same as ai-dev)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install jupyter+libs".PadRight($kc))" -NoNewline; Write-Host "Jupyter only (jupyterlab, notebook, ipykernel)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install viz-libs".PadRight($kc))" -NoNewline; Write-Host "Visualization (matplotlib, seaborn, plotly)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install web-libs".PadRight($kc))" -NoNewline; Write-Host "Web frameworks (django, flask, fastapi, uvicorn)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install scraping-libs".PadRight($kc))" -NoNewline; Write-Host "Scraping (requests, beautifulsoup4)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install db-libs".PadRight($kc))" -NoNewline; Write-Host "Database (sqlalchemy)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install cv-libs".PadRight($kc))" -NoNewline; Write-Host "Computer Vision (opencv-python)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install data-libs".PadRight($kc))" -NoNewline; Write-Host "Data tools (pandas, polars)" -ForegroundColor $ThemeMuted
     Write-Host ""
     Write-Host "      With Python (auto-installs Python first):" -ForegroundColor DarkYellow
-    Write-Host "    $("install python+viz".PadRight($kc))" -NoNewline; Write-Host "Python + visualization group" -ForegroundColor DarkGray
-    Write-Host "    $("install python+web".PadRight($kc))" -NoNewline; Write-Host "Python + web frameworks group" -ForegroundColor DarkGray
-    Write-Host "    $("install python+scraping".PadRight($kc))" -NoNewline; Write-Host "Python + scraping group" -ForegroundColor DarkGray
-    Write-Host "    $("install python+db".PadRight($kc))" -NoNewline; Write-Host "Python + database group" -ForegroundColor DarkGray
-    Write-Host "    $("install python+cv".PadRight($kc))" -NoNewline; Write-Host "Python + computer vision group" -ForegroundColor DarkGray
-    Write-Host "    $("install python+data".PadRight($kc))" -NoNewline; Write-Host "Python + data tools group" -ForegroundColor DarkGray
-    Write-Host "    $("install python+ml".PadRight($kc))" -NoNewline; Write-Host "Python + ML group" -ForegroundColor DarkGray
-    Write-Host "    $("install python+jupyter".PadRight($kc))" -NoNewline; Write-Host "Python + all libraries (includes Jupyter)" -ForegroundColor DarkGray
+    Write-Host "    $("install python+viz".PadRight($kc))" -NoNewline; Write-Host "Python + visualization group" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install python+web".PadRight($kc))" -NoNewline; Write-Host "Python + web frameworks group" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install python+scraping".PadRight($kc))" -NoNewline; Write-Host "Python + scraping group" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install python+db".PadRight($kc))" -NoNewline; Write-Host "Python + database group" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install python+cv".PadRight($kc))" -NoNewline; Write-Host "Python + computer vision group" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install python+data".PadRight($kc))" -NoNewline; Write-Host "Python + data tools group" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install python+ml".PadRight($kc))" -NoNewline; Write-Host "Python + ML group" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install python+jupyter".PadRight($kc))" -NoNewline; Write-Host "Python + all libraries (includes Jupyter)" -ForegroundColor $ThemeMuted
     Write-Host ""
     Write-Host "      By group (.\run.ps1 -I 41 --):" -ForegroundColor DarkYellow
-    Write-Host "    $(".\run.ps1 -I 41 -- group ml".PadRight($kc))" -NoNewline; Write-Host "ML group (numpy, scipy, scikit-learn, torch...)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -I 41 -- group jupyter".PadRight($kc))" -NoNewline; Write-Host "Jupyter (jupyterlab, notebook, ipykernel, ipywidgets)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -I 41 -- group viz".PadRight($kc))" -NoNewline; Write-Host "Visualization (matplotlib, seaborn, plotly)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -I 41 -- group data".PadRight($kc))" -NoNewline; Write-Host "Data tools (pandas, polars)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -I 41 -- group web".PadRight($kc))" -NoNewline; Write-Host "Web frameworks (django, flask, fastapi, uvicorn)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -I 41 -- group scraping".PadRight($kc))" -NoNewline; Write-Host "Scraping (requests, beautifulsoup4)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -I 41 -- group cv".PadRight($kc))" -NoNewline; Write-Host "Computer Vision (opencv-python)" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -I 41 -- group db".PadRight($kc))" -NoNewline; Write-Host "Database (sqlalchemy)" -ForegroundColor DarkGray
+    Write-Host "    $(".\run.ps1 -I 41 -- group ml".PadRight($kc))" -NoNewline; Write-Host "ML group (numpy, scipy, scikit-learn, torch...)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -I 41 -- group jupyter".PadRight($kc))" -NoNewline; Write-Host "Jupyter (jupyterlab, notebook, ipykernel, ipywidgets)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -I 41 -- group viz".PadRight($kc))" -NoNewline; Write-Host "Visualization (matplotlib, seaborn, plotly)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -I 41 -- group data".PadRight($kc))" -NoNewline; Write-Host "Data tools (pandas, polars)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -I 41 -- group web".PadRight($kc))" -NoNewline; Write-Host "Web frameworks (django, flask, fastapi, uvicorn)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -I 41 -- group scraping".PadRight($kc))" -NoNewline; Write-Host "Scraping (requests, beautifulsoup4)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -I 41 -- group cv".PadRight($kc))" -NoNewline; Write-Host "Computer Vision (opencv-python)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -I 41 -- group db".PadRight($kc))" -NoNewline; Write-Host "Database (sqlalchemy)" -ForegroundColor $ThemeMuted
     Write-Host ""
     Write-Host "      Utilities:" -ForegroundColor DarkYellow
-    Write-Host "    $(".\run.ps1 -I 41 -- add <pkg1> <pkg2>".PadRight($kc))" -NoNewline; Write-Host "Install specific packages by name" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -I 41 -- list".PadRight($kc))" -NoNewline; Write-Host "Show all available library groups" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -I 41 -- installed".PadRight($kc))" -NoNewline; Write-Host "Show currently installed pip packages" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -I 41 -- uninstall".PadRight($kc))" -NoNewline; Write-Host "Uninstall all tracked libraries" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -I 41 -- uninstall <pkg>".PadRight($kc))" -NoNewline; Write-Host "Uninstall specific packages" -ForegroundColor DarkGray
+    Write-Host "    $(".\run.ps1 -I 41 -- add <pkg1> <pkg2>".PadRight($kc))" -NoNewline; Write-Host "Install specific packages by name" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -I 41 -- list".PadRight($kc))" -NoNewline; Write-Host "Show all available library groups" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -I 41 -- installed".PadRight($kc))" -NoNewline; Write-Host "Show currently installed pip packages" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -I 41 -- uninstall".PadRight($kc))" -NoNewline; Write-Host "Uninstall all tracked libraries" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -I 41 -- uninstall <pkg>".PadRight($kc))" -NoNewline; Write-Host "Uninstall specific packages" -ForegroundColor $ThemeMuted
     Write-Host ""
 
-    Write-Host "    Database installs:" -ForegroundColor Magenta
-    Write-Host "    $("install databases".PadRight($kc))" -NoNewline; Write-Host "Open the interactive database installer menu" -ForegroundColor DarkGray
-    Write-Host "    $("install mysql".PadRight($kc))" -NoNewline; Write-Host "Install MySQL database" -ForegroundColor DarkGray
-    Write-Host "    $("install postgresql".PadRight($kc))" -NoNewline; Write-Host "Install PostgreSQL database" -ForegroundColor DarkGray
-    Write-Host "    $("install sqlite".PadRight($kc))" -NoNewline; Write-Host "Install SQLite + DB Browser for SQLite" -ForegroundColor DarkGray
-    Write-Host "    $("install mongodb,redis".PadRight($kc))" -NoNewline; Write-Host "Install MongoDB + Redis" -ForegroundColor DarkGray
-    Write-Host "    $("install alldev".PadRight($kc))" -NoNewline; Write-Host "Interactive dev tools menu (pick what to install)" -ForegroundColor DarkGray
+    Write-Host "    Database installs:" -ForegroundColor $ThemePrimary
+    Write-Host "    $("install databases".PadRight($kc))" -NoNewline; Write-Host "Open the interactive database installer menu" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install mysql".PadRight($kc))" -NoNewline; Write-Host "Install MySQL database" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install postgresql".PadRight($kc))" -NoNewline; Write-Host "Install PostgreSQL database" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install sqlite".PadRight($kc))" -NoNewline; Write-Host "Install SQLite + DB Browser for SQLite" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install mongodb,redis".PadRight($kc))" -NoNewline; Write-Host "Install MongoDB + Redis" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install alldev".PadRight($kc))" -NoNewline; Write-Host "Interactive dev tools menu (pick what to install)" -ForegroundColor $ThemeMuted
     Write-Host ""
 
-    Write-Host "    Combine keywords:" -ForegroundColor Magenta
-    Write-Host "    $("install nodejs,pnpm".PadRight($kc))" -NoNewline; Write-Host "Install Node.js + pnpm" -ForegroundColor DarkGray
-    Write-Host "    $("install go,git,cpp".PadRight($kc))" -NoNewline; Write-Host "Install Go, Git, and C++" -ForegroundColor DarkGray
-    Write-Host "    $("install python,php".PadRight($kc))" -NoNewline; Write-Host "Install Python + PHP" -ForegroundColor DarkGray
-    Write-Host "    $("install vscode,nodejs,git".PadRight($kc))" -NoNewline; Write-Host "Install VS Code, Node.js, and Git" -ForegroundColor DarkGray
-    Write-Host "    $("install alldev,mysql".PadRight($kc))" -NoNewline; Write-Host "Run the alldev menu, then install MySQL" -ForegroundColor DarkGray
+    Write-Host "    Combine keywords:" -ForegroundColor $ThemePrimary
+    Write-Host "    $("install nodejs,pnpm".PadRight($kc))" -NoNewline; Write-Host "Install Node.js + pnpm" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install go,git,cpp".PadRight($kc))" -NoNewline; Write-Host "Install Go, Git, and C++" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install python,php".PadRight($kc))" -NoNewline; Write-Host "Install Python + PHP" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install vscode,nodejs,git".PadRight($kc))" -NoNewline; Write-Host "Install VS Code, Node.js, and Git" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install alldev,mysql".PadRight($kc))" -NoNewline; Write-Host "Run the alldev menu, then install MySQL" -ForegroundColor $ThemeMuted
     Write-Host ""
 
-    Write-Host "    Remote installers (irm <url> | iex):" -ForegroundColor Magenta
-    Write-Host "      All aliases on each row are EQUIVALENT -- pick whichever you remember." -ForegroundColor DarkGray
+    Write-Host "    Remote installers (irm <url> | iex):" -ForegroundColor $ThemePrimary
+    Write-Host "      All aliases on each row are EQUIVALENT -- pick whichever you remember." -ForegroundColor $ThemeMuted
     Write-Host ""
-    Write-Host "    $("install clean-code".PadRight($kc))" -NoNewline; Write-Host "Coding Guidelines v23 -- alimtvnetwork/coding-guidelines-v23" -ForegroundColor DarkGray
-    Write-Host "    $("install code-guide  (= cg, cc)".PadRight($kc))" -NoNewline; Write-Host "Same as 'install clean-code' (4 aliases total)" -ForegroundColor DarkGray
-    Write-Host "    $("install coding-guidelines".PadRight($kc))" -NoNewline; Write-Host "Same as 'install clean-code' (long alias)" -ForegroundColor DarkGray
-    Write-Host "    $("install starship    (= ss)".PadRight($kc))" -NoNewline; Write-Host "Starship cross-shell prompt -- local wrapper (winget/scoop/cargo)" -ForegroundColor DarkGray
-    Write-Host "    $("install oh-my-posh  (= omp, posh)".PadRight($kc))" -NoNewline; Write-Host "Oh My Posh prompt -- ohmyposh.dev/install.ps1" -ForegroundColor DarkGray
-    Write-Host "    $("install scoop       (= sc)".PadRight($kc))" -NoNewline; Write-Host "Scoop CLI installer -- get.scoop.sh" -ForegroundColor DarkGray
+    Write-Host "    $("install clean-code".PadRight($kc))" -NoNewline; Write-Host "Coding Guidelines v23 -- alimtvnetwork/coding-guidelines-v23" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install code-guide  (= cg, cc)".PadRight($kc))" -NoNewline; Write-Host "Same as 'install clean-code' (4 aliases total)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install coding-guidelines".PadRight($kc))" -NoNewline; Write-Host "Same as 'install clean-code' (long alias)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install starship    (= ss)".PadRight($kc))" -NoNewline; Write-Host "Starship cross-shell prompt -- local wrapper (winget/scoop/cargo)" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install oh-my-posh  (= omp, posh)".PadRight($kc))" -NoNewline; Write-Host "Oh My Posh prompt -- ohmyposh.dev/install.ps1" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install scoop       (= sc)".PadRight($kc))" -NoNewline; Write-Host "Scoop CLI installer -- get.scoop.sh" -ForegroundColor $ThemeMuted
     Write-Host ""
-    Write-Host "    Combine remote + local: install vscode,cg  (VS Code first, then clean-code)" -ForegroundColor DarkGray
+    Write-Host "    Combine remote + local: install vscode,cg  (VS Code first, then clean-code)" -ForegroundColor $ThemeMuted
     Write-Host ""
 
     Show-KeywordTable -Inline
     Write-Host ""
 
     # ── Available Scripts (with installed versions) ──
-    Write-Host "  Available Scripts:" -ForegroundColor Yellow
+    Write-Host "  Available Scripts:" -ForegroundColor $ThemeAccent
     Write-Host ""
 
     $vMap = Get-VersionMap
     $nc = 30
 
     $printRow = {
-        param([string]$id, [string]$name, [string]$desc)
+        $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param([string]$id, [string]$name, [string]$desc)
         $ver = $vMap[$id]
         $hasVer = -not [string]::IsNullOrWhiteSpace($ver)
         Write-Host "    $id  $($name.PadRight($nc)) " -NoNewline
-        Write-Host $desc -ForegroundColor DarkGray -NoNewline
+        Write-Host $desc -ForegroundColor $ThemeMuted -NoNewline
         if ($hasVer) {
-            Write-Host "  [" -NoNewline -ForegroundColor DarkGray
+            Write-Host "  [" -NoNewline -ForegroundColor $ThemeMuted
             Write-Host "v$ver" -NoNewline -ForegroundColor Green
-            Write-Host "]" -NoNewline -ForegroundColor DarkGray
+            Write-Host "]" -NoNewline -ForegroundColor $ThemeMuted
         }
         Write-Host ""
     }
 
-    Write-Host "    ID  $("Name".PadRight($nc))  Description" -ForegroundColor DarkGray
-    Write-Host "    --  $(''.PadRight($nc, '-'))  $(''.PadRight(50, '-'))" -ForegroundColor DarkGray
+    Write-Host "    ID  $("Name".PadRight($nc))  Description" -ForegroundColor $ThemeMuted
+    Write-Host "    --  $(''.PadRight($nc, '-'))  $(''.PadRight(50, '-'))" -ForegroundColor $ThemeMuted
     Write-Host ""
-    Write-Host "    Core Tools" -ForegroundColor Magenta
-    & $printRow "01" "Install VS Code"          "Install Visual Studio Code (Stable/Insiders)"
-    & $printRow "02" "Chocolatey"               "Install Chocolatey package manager"
-    & $printRow "03" "Node.js + Yarn + Bun"     "Install Node.js LTS, Yarn, Bun, verify npx"
+    Write-Host "    Core Tools" -ForegroundColor $ThemePrimary
+    & $printRow "01" "vscode"          "Install Visual Studio Code (Stable/Insiders)"
+    & $printRow "02" "choco"               "Install Chocolatey package manager"
+    & $printRow "03" "nodejs"     "Install Node.js LTS, Yarn, Bun, verify npx"
     & $printRow "04" "pnpm"                     "Install pnpm, configure global store"
-    & $printRow "05" "Python"                   "Install Python, configure pip user site"
-    & $printRow "41" "Python Libraries"         "Install pip packages: ML, viz, web, jupyter (by group)"
-    & $printRow "06" "Golang"                   "Install Go, configure GOPATH and go env"
-    & $printRow "07" "Git + LFS + gh"           "Install Git, Git LFS, GitHub CLI, configure settings"
-    & $printRow "08" "GitHub Desktop"           "Install GitHub Desktop via Chocolatey"
-    & $printRow "09" "C++ (MinGW-w64)"          "Install MinGW-w64 C++ compiler, verify g++/gcc/make"
-    & $printRow "16" "PHP"                      "Install PHP via Chocolatey"
-    & $printRow "17" "PowerShell (latest)"      "Install latest PowerShell via Winget/Chocolatey"
-    & $printRow "38" "Flutter + Dart"           "Install Flutter SDK, Dart, Android toolchain"
-    & $printRow "39" ".NET SDK"                 "Install .NET SDK (6/8/9), configure dotnet CLI"
-    & $printRow "40" "Java (OpenJDK)"           "Install OpenJDK via Chocolatey (17/21)"
+    & $printRow "05" "python"                   "Install Python, configure pip user site"
+    & $printRow "41" "pylibs"         "Install pip packages: ML, viz, web, jupyter (by group)"
+    & $printRow "06" "golang"                   "Install Go, configure GOPATH and go env"
+    & $printRow "07" "git"           "Install Git, Git LFS, GitHub CLI, configure settings"
+    & $printRow "08" "github-desktop"           "Install GitHub Desktop via Chocolatey"
+    & $printRow "09" "cpp"          "Install MinGW-w64 C++ compiler, verify g++/gcc/make"
+    & $printRow "16" "php"                      "Install PHP via Chocolatey"
+    & $printRow "17" "pwsh"      "Install latest PowerShell via Winget/Chocolatey"
+    & $printRow "38" "flutter"           "Install Flutter SDK, Dart, Android toolchain"
+    & $printRow "39" "dotnet"                 "Install .NET SDK (6/8/9), configure dotnet CLI"
+    & $printRow "40" "java"           "Install OpenJDK via Chocolatey (17/21)"
     Write-Host ""
-    Write-Host "    Optional" -ForegroundColor Magenta
-    & $printRow "10" "VSCode Context Menu Fix"  "Add/repair VSCode right-click context menu entries"
-    & $printRow "11" "VSCode Settings Sync"     "Sync VSCode settings, keybindings, and extensions"
-    & $printRow "31" "PowerShell Context Menu"  "Add PowerShell submenu to right-click menu (Open Here + Open as Admin)"
+    Write-Host "    Optional" -ForegroundColor $ThemePrimary
+    & $printRow "10" "vscode-menu"  "Add/repair VSCode right-click context menu entries"
+    & $printRow "11" "vscode-sync"     "Sync VSCode settings, keybindings, and extensions"
+    & $printRow "31" "pwsh-menu"  "Add PowerShell submenu to right-click menu (Open Here + Open as Admin)"
     Write-Host ""
-    Write-Host "    Orchestrator" -ForegroundColor Magenta
-    & $printRow "12" "Install All Dev Tools"    "Interactive grouped menu: pick tools or install everything"
-    & $printRow "30" "Install Databases"        "Interactive database installer (SQL, NoSQL, file-based)"
+    Write-Host "    Orchestrator" -ForegroundColor $ThemePrimary
+    & $printRow "12" "all"    "Interactive grouped menu: pick tools or install everything"
+    & $printRow "30" "databases"        "Interactive database installer (SQL, NoSQL, file-based)"
     Write-Host ""
-    Write-Host "    Utilities" -ForegroundColor Magenta
-    & $printRow "13" "Audit Mode"               "Scan configs, specs, suggestions for stale IDs"
-    & $printRow "14" "Install Winget"           "Install/verify Winget package manager (standalone)"
-    & $printRow "15" "Windows Tweaks"           "Chris Titus Windows Utility (tweaks and debloating)"
+    Write-Host "    Utilities" -ForegroundColor $ThemePrimary
+    & $printRow "13" "audit"               "Scan configs, specs, suggestions for stale IDs"
+    & $printRow "14" "winget"           "Install/verify Winget package manager (standalone)"
+    & $printRow "15" "win-tweaks"           "Chris Titus Windows Utility (tweaks and debloating)"
     Write-Host ""
-    Write-Host "    Desktop Tools" -ForegroundColor Magenta
-    & $printRow "32" "DBeaver Community"        "Universal database visualization and management tool"
-    & $printRow "33" "Notepad++ (NPP)"          "Install NPP, NPP Settings, or NPP + Settings"
-    & $printRow "34" "Simple Sticky Notes"      "Install Simple Sticky Notes via Chocolatey"
-    & $printRow "35" "GitMap"                   "Git repository navigator CLI tool"
-    & $printRow "36" "OBS Studio"               "Install OBS, OBS Settings, or OBS + Settings"
-    & $printRow "37" "Windows Terminal"          "Install WT, WT Settings, or WT + Settings"
-    Write-Host ""
-
-    Write-Host "  Script 12 (Install All Dev Tools):" -ForegroundColor Yellow
-    Write-Host "    $(".\run.ps1 -I 12".PadRight($kc))" -NoNewline; Write-Host "Interactive menu -- pick what to install" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -I 12 -- -All".PadRight($kc))" -NoNewline; Write-Host "Install everything without prompting" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -I 12 -- -Skip 04,06".PadRight($kc))" -NoNewline; Write-Host "Skip pnpm and Go" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -I 12 -- -Only 02,03".PadRight($kc))" -NoNewline; Write-Host "Run only Package Managers + Node.js" -ForegroundColor DarkGray
+    Write-Host "    Desktop Tools" -ForegroundColor $ThemePrimary
+    & $printRow "32" "dbeaver"        "Universal database visualization and management tool"
+    & $printRow "33" "npp"          "Install NPP, NPP Settings, or NPP + Settings"
+    & $printRow "34" "sticky-notes"      "Install Simple Sticky Notes via Chocolatey"
+    & $printRow "35" "gitmap"                   "Git repository navigator CLI tool"
+    & $printRow "36" "obs"               "Install OBS, OBS Settings, or OBS + Settings"
+    & $printRow "37" "wt"          "Install WT, WT Settings, or WT + Settings"
     Write-Host ""
 
-    Write-Host "  Defaults Mode:" -ForegroundColor Yellow
-    Write-Host "    $(".\run.ps1 -d -Defaults".PadRight($kc))" -NoNewline; Write-Host "All-dev with defaults, prompt to confirm" -ForegroundColor DarkGray
-    Write-Host "    $(".\run.ps1 -d -Defaults -Y".PadRight($kc))" -NoNewline; Write-Host "All-dev with defaults, auto-confirm" -ForegroundColor DarkGray
+    Write-Host "  Script 12 (Install All Dev Tools):" -ForegroundColor $ThemeAccent
+    Write-Host "    $(".\run.ps1 -I 12".PadRight($kc))" -NoNewline; Write-Host "Interactive menu -- pick what to install" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -I 12 -- -All".PadRight($kc))" -NoNewline; Write-Host "Install everything without prompting" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -I 12 -- -Skip 04,06".PadRight($kc))" -NoNewline; Write-Host "Skip pnpm and Go" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -I 12 -- -Only 02,03".PadRight($kc))" -NoNewline; Write-Host "Run only Package Managers + Node.js" -ForegroundColor $ThemeMuted
+    Write-Host ""
+
+    Write-Host "  Defaults Mode:" -ForegroundColor $ThemeAccent
+    Write-Host "    $(".\run.ps1 -d -Defaults".PadRight($kc))" -NoNewline; Write-Host "All-dev with defaults, prompt to confirm" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 -d -Defaults -Y".PadRight($kc))" -NoNewline; Write-Host "All-dev with defaults, auto-confirm" -ForegroundColor $ThemeMuted
     Write-Host ""
 
     # Resolve actual default dev directory dynamically (saved path > smart detect)
@@ -899,56 +1169,56 @@ function Show-RootHelpRaw {
         }
     }
 
-    Write-Host "    Default dev directory: " -NoNewline -ForegroundColor DarkGray
+    Write-Host "    Default dev directory: " -NoNewline -ForegroundColor $ThemeMuted
     Write-Host "$resolvedDefault " -NoNewline -ForegroundColor White
-    Write-Host "($resolvedSource)" -ForegroundColor DarkGray
-    Write-Host "    Override with: " -NoNewline -ForegroundColor DarkGray; Write-Host ".\run.ps1 -I 12 -- -Path F:\dev-tool" -ForegroundColor White
-    Write-Host "    Default VS Code edition: " -NoNewline -ForegroundColor DarkGray; Write-Host "Stable" -ForegroundColor White
-    Write-Host "    Default sync mode: " -NoNewline -ForegroundColor DarkGray; Write-Host "Overwrite" -ForegroundColor White
+    Write-Host "($resolvedSource)" -ForegroundColor $ThemeMuted
+    Write-Host "    Override with: " -NoNewline -ForegroundColor $ThemeMuted; Write-Host ".\run.ps1 -I 12 -- -Path F:\dev-tool" -ForegroundColor White
+    Write-Host "    Default VS Code edition: " -NoNewline -ForegroundColor $ThemeMuted; Write-Host "Stable" -ForegroundColor White
+    Write-Host "    Default sync mode: " -NoNewline -ForegroundColor $ThemeMuted; Write-Host "Overwrite" -ForegroundColor White
     Write-Host ""
 
-    Write-Host "  Per-script help:" -ForegroundColor Yellow
-    Write-Host "    $(".\run.ps1 -I <number> -- -Help".PadRight($kc))" -NoNewline; Write-Host "Show help for a specific script" -ForegroundColor DarkGray
+    Write-Host "  Per-script help:" -ForegroundColor $ThemeAccent
+    Write-Host "    $(".\run.ps1 -I <number> -- -Help".PadRight($kc))" -NoNewline; Write-Host "Show help for a specific script" -ForegroundColor $ThemeMuted
     Write-Host ""
 
-    Write-Host "  Change default dev directory:" -ForegroundColor Yellow
-    Write-Host "    .\run.ps1 path                      Show current default dev directory" -ForegroundColor DarkGray
-    Write-Host "    .\run.ps1 path D:\dev-tool          Set default dev directory (persisted)" -ForegroundColor DarkGray
-    Write-Host "    .\run.ps1 path --reset              Clear saved path, use smart detection" -ForegroundColor DarkGray
-    Write-Host "    `$env:DEV_DIR = 'D:\dev-tool'        Per-session override (highest priority)" -ForegroundColor DarkGray
-    Write-Host "    .\run.ps1 -I <id> -Path D:\dev-tool  One-shot override for this run" -ForegroundColor DarkGray
+    Write-Host "  Change default dev directory:" -ForegroundColor $ThemeAccent
+    Write-Host "    .\run.ps1 path                      Show current default dev directory" -ForegroundColor $ThemeMuted
+    Write-Host "    .\run.ps1 path D:\dev-tool          Set default dev directory (persisted)" -ForegroundColor $ThemeMuted
+    Write-Host "    .\run.ps1 path --reset              Clear saved path, use smart detection" -ForegroundColor $ThemeMuted
+    Write-Host "    `$env:DEV_DIR = 'D:\dev-tool'        Per-session override (highest priority)" -ForegroundColor $ThemeMuted
+    Write-Host "    .\run.ps1 -I <id> -Path D:\dev-tool  One-shot override for this run" -ForegroundColor $ThemeMuted
     Write-Host ""
 
-    Write-Host "  Filter / search the help text:" -ForegroundColor Yellow
-    Write-Host "    .\run.ps1 help <keyword>            Show only help lines that match <keyword> (case-insensitive)" -ForegroundColor DarkGray
-    Write-Host "    .\run.ps1 -h <keyword>              Same as above (any of: help, --help, -h, /?, ?)" -ForegroundColor DarkGray
-    Write-Host "    .\run.ps1 help                      No keyword -> full help (this screen)" -ForegroundColor DarkGray
+    Write-Host "  Filter / search the help text:" -ForegroundColor $ThemeAccent
+    Write-Host "    .\run.ps1 help <keyword>            Show only help lines that match <keyword> (case-insensitive)" -ForegroundColor $ThemeMuted
+    Write-Host "    .\run.ps1 -h <keyword>              Same as above (any of: help, --help, -h, /?, ?)" -ForegroundColor $ThemeMuted
+    Write-Host "    .\run.ps1 help                      No keyword -> full help (this screen)" -ForegroundColor $ThemeMuted
     Write-Host ""
-    Write-Host "    Examples:" -ForegroundColor Cyan
-    Write-Host "      .\run.ps1 help chrome             Chrome browser + extension commands" -ForegroundColor DarkGray
-    Write-Host "      .\run.ps1 help ext-url            Ad-hoc Chrome extension URL / ID examples" -ForegroundColor DarkGray
-    Write-Host "      .\run.ps1 help conemu             ConEmu install + right-click context menu" -ForegroundColor DarkGray
-    Write-Host "      .\run.ps1 help vscode             VS Code install, settings sync, folder repair" -ForegroundColor DarkGray
-    Write-Host "      .\run.ps1 help profile            Profile recipes (small-dev, alldev, ...)" -ForegroundColor DarkGray
-    Write-Host "      .\run.ps1 help mysql              MySQL installer + related database keywords" -ForegroundColor DarkGray
-    Write-Host "      .\run.ps1 help uninstall          Every uninstall / remove command" -ForegroundColor DarkGray
-    Write-Host "      .\run.ps1 help export             Settings export commands across tools" -ForegroundColor DarkGray
-    Write-Host "      .\run.ps1 help chrome ext         Multiple terms -> AND match (lines with BOTH words)" -ForegroundColor DarkGray
-    Write-Host "      .\run.ps1 help vscode uninstall   AND match: VS Code uninstall commands only" -ForegroundColor DarkGray
+    Write-Host "    Examples:" -ForegroundColor $ThemeSecondary
+    Write-Host "      .\run.ps1 help chrome             Chrome browser + extension commands" -ForegroundColor $ThemeMuted
+    Write-Host "      .\run.ps1 help ext-url            Ad-hoc Chrome extension URL / ID examples" -ForegroundColor $ThemeMuted
+    Write-Host "      .\run.ps1 help conemu             ConEmu install + right-click context menu" -ForegroundColor $ThemeMuted
+    Write-Host "      .\run.ps1 help vscode             VS Code install, settings sync, folder repair" -ForegroundColor $ThemeMuted
+    Write-Host "      .\run.ps1 help profile            Profile recipes (small-dev, alldev, ...)" -ForegroundColor $ThemeMuted
+    Write-Host "      .\run.ps1 help mysql              MySQL installer + related database keywords" -ForegroundColor $ThemeMuted
+    Write-Host "      .\run.ps1 help uninstall          Every uninstall / remove command" -ForegroundColor $ThemeMuted
+    Write-Host "      .\run.ps1 help export             Settings export commands across tools" -ForegroundColor $ThemeMuted
+    Write-Host "      .\run.ps1 help chrome ext         Multiple terms -> AND match (lines with BOTH words)" -ForegroundColor $ThemeMuted
+    Write-Host "      .\run.ps1 help vscode uninstall   AND match: VS Code uninstall commands only" -ForegroundColor $ThemeMuted
     Write-Host ""
-    Write-Host "    Save filtered help to a file:" -ForegroundColor Cyan
-    Write-Host "      .\run.ps1 help chrome --out chrome-help.txt    Plain text (extension auto-detected)" -ForegroundColor DarkGray
-    Write-Host "      .\run.ps1 help chrome --out chrome-help.json   JSON (auto from .json extension)" -ForegroundColor DarkGray
-    Write-Host "      .\run.ps1 help vscode --json vscode.json       Force JSON regardless of extension" -ForegroundColor DarkGray
-    Write-Host "      .\run.ps1 help conemu --text conemu.log        Force plain text" -ForegroundColor DarkGray
+    Write-Host "    Save filtered help to a file:" -ForegroundColor $ThemeSecondary
+    Write-Host "      .\run.ps1 help chrome --out chrome-help.txt    Plain text (extension auto-detected)" -ForegroundColor $ThemeMuted
+    Write-Host "      .\run.ps1 help chrome --out chrome-help.json   JSON (auto from .json extension)" -ForegroundColor $ThemeMuted
+    Write-Host "      .\run.ps1 help vscode --json vscode.json       Force JSON regardless of extension" -ForegroundColor $ThemeMuted
+    Write-Host "      .\run.ps1 help conemu --text conemu.log        Force plain text" -ForegroundColor $ThemeMuted
     Write-Host ""
-    Write-Host "    Discover available filter keywords:" -ForegroundColor Cyan
-    Write-Host "      .\run.ps1 help --list                          Show every recommended filter + match count" -ForegroundColor DarkGray
-    Write-Host "      .\run.ps1 help filters                         Same (aliases: list, filters, keywords)" -ForegroundColor DarkGray
+    Write-Host "    Discover available filter keywords:" -ForegroundColor $ThemeSecondary
+    Write-Host "      .\run.ps1 help --list                          Show every recommended filter + match count" -ForegroundColor $ThemeMuted
+    Write-Host "      .\run.ps1 help filters                         Same (aliases: list, filters, keywords)" -ForegroundColor $ThemeMuted
     Write-Host ""
-    Write-Host "    Verify the filter is case-insensitive:" -ForegroundColor Cyan
-    Write-Host "      .\run.ps1 help --self-test                     Run canned PASS/FAIL casing tests" -ForegroundColor DarkGray
-    Write-Host "      .\run.ps1 help --test                          Same (short alias)" -ForegroundColor DarkGray
+    Write-Host "    Verify the filter is case-insensitive:" -ForegroundColor $ThemeSecondary
+    Write-Host "      .\run.ps1 help --self-test                     Run canned PASS/FAIL casing tests" -ForegroundColor $ThemeMuted
+    Write-Host "      .\run.ps1 help --test                          Same (short alias)" -ForegroundColor $ThemeMuted
     Write-Host ""
 
     Show-VersionFooter
@@ -962,7 +1232,22 @@ function Show-RootHelpRaw {
 #   Show-RootHelp -Filter "chrome" -OutFile out.txt     -> also save plain text
 #   Show-RootHelp -Filter "chrome" -OutFile out.json -Format json
 function Show-RootHelp {
-    param(
+    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param(
         [string]$Filter,
         [string]$OutFile,
         [ValidateSet("text", "json")]
@@ -1004,8 +1289,8 @@ function Show-RootHelp {
     $records = & { Show-RootHelpRaw } 6>&1
 
     Write-Host ""
-    Write-Host "  Filtered help -- keyword(s): $displayFilter" -ForegroundColor Cyan
-    Write-Host "  ===================================" -ForegroundColor DarkGray
+    Write-Host "  Filtered help -- keyword(s): $displayFilter" -ForegroundColor $ThemeSecondary
+    Write-Host "  ===================================" -ForegroundColor $ThemeMuted
     Write-Host ""
 
     $pending = New-Object System.Collections.Generic.List[object]
@@ -1073,23 +1358,23 @@ function Show-RootHelp {
 
     Write-Host ""
     if ($matched -eq 0) {
-        Write-Host "  No help lines match: $displayFilter" -ForegroundColor Yellow
-        Write-Host "  Tip: try fewer terms or broader keywords (e.g. 'chrome', 'ext', 'menu', 'os')." -ForegroundColor DarkGray
+        Write-Host "  No help lines match: $displayFilter" -ForegroundColor $ThemeAccent
+        Write-Host "  Tip: try fewer terms or broader keywords (e.g. 'chrome', 'ext', 'menu', 'os')." -ForegroundColor $ThemeMuted
     } else {
         $termWord = if ($needles.Count -eq 1) { "term" } else { "terms (AND)" }
         Write-Host "  $matched line(s) matched $($needles.Count) $termWord -- $displayFilter" -ForegroundColor Green
-        Write-Host "  Run '.\run.ps1 help' (no keyword) to see the full help screen." -ForegroundColor DarkGray
+        Write-Host "  Run '.\run.ps1 help' (no keyword) to see the full help screen." -ForegroundColor $ThemeMuted
     }
 
     # ── Per-term match summary ───────────────────────────────────────
     # Always show, even when AND result is 0 -- helps diagnose which
     # term killed the intersection (e.g. one term has 0 hits on its own).
     Write-Host ""
-    Write-Host "  Per-term hit counts (independent, not AND):" -ForegroundColor Cyan
+    Write-Host "  Per-term hit counts (independent, not AND):" -ForegroundColor $ThemeSecondary
     $kwCol = [Math]::Max(8, ($needles | Measure-Object -Property Length -Maximum).Maximum + 2)
     $hitCol = 7
-    Write-Host ("    {0}{1}{2}" -f "Keyword".PadRight($kwCol), "Lines".PadRight($hitCol), "Share") -ForegroundColor DarkGray
-    Write-Host ("    {0}{1}{2}" -f ("".PadRight($kwCol,'-')), ("".PadRight($hitCol,'-')), "-----") -ForegroundColor DarkGray
+    Write-Host ("    {0}{1}{2}" -f "Keyword".PadRight($kwCol), "Lines".PadRight($hitCol), "Share") -ForegroundColor $ThemeMuted
+    Write-Host ("    {0}{1}{2}" -f ("".PadRight($kwCol,'-')), ("".PadRight($hitCol,'-')), "-----") -ForegroundColor $ThemeMuted
     foreach ($n in $needles) {
         $hits = [int]$perTermCounts[$n]
         $color = if ($hits -eq 0) { "Red" }
@@ -1104,10 +1389,10 @@ function Show-RootHelp {
         }
         Write-Host ("    {0}" -f $n.PadRight($kwCol)) -ForegroundColor White -NoNewline
         Write-Host ("{0}" -f "$hits".PadRight($hitCol)) -ForegroundColor $color -NoNewline
-        Write-Host $share -ForegroundColor DarkGray
+        Write-Host $share -ForegroundColor $ThemeMuted
     }
     if ($needles.Count -gt 1) {
-        Write-Host "    (AND intersection: $matched line(s))" -ForegroundColor DarkGray
+        Write-Host "    (AND intersection: $matched line(s))" -ForegroundColor $ThemeMuted
     }
 
 
@@ -1145,13 +1430,13 @@ function Show-RootHelp {
             Write-Host ""
             Write-Host "  [  OK  ] " -ForegroundColor Green -NoNewline
             Write-Host "Saved $matched line(s) to: " -NoNewline
-            Write-Host "$outFull" -ForegroundColor Cyan
-            Write-Host "          Format: $Format" -ForegroundColor DarkGray
+            Write-Host "$outFull" -ForegroundColor $ThemeSecondary
+            Write-Host "          Format: $Format" -ForegroundColor $ThemeMuted
         } catch {
             Write-Host ""
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "Could not write export file: $OutFile"
-            Write-Host "          Reason: $($_.Exception.Message)" -ForegroundColor DarkGray
+            Write-Host "          Reason: $($_.Exception.Message)" -ForegroundColor $ThemeMuted
         }
     }
     Write-Host ""
@@ -1159,30 +1444,45 @@ function Show-RootHelp {
 
 # ── Keyword table (compact view) ────────────────────────────────────
 function Show-KeywordTable {
-    param([switch]$Inline)
+    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param([switch]$Inline)
 
     $isStandalone = -not $Inline
     if ($isStandalone) {
         Write-Host ""
-        Write-Host "  Available Keywords" -ForegroundColor Cyan
-        Write-Host "  ==================" -ForegroundColor DarkGray
+        Write-Host "  Available Keywords" -ForegroundColor $ThemeSecondary
+        Write-Host "  ==================" -ForegroundColor $ThemeMuted
     } else {
-        Write-Host "  Available Keywords:" -ForegroundColor Yellow
+        Write-Host "  Available Keywords:" -ForegroundColor $ThemeAccent
     }
     Write-Host ""
 
     $kwCol = 28
     $descCol = 36
 
-    Write-Host "    $("Keyword".PadRight($kwCol))$("Description".PadRight($descCol))Script ID" -ForegroundColor DarkGray
-    Write-Host "    $(''.PadRight($kwCol, '-'))$(''.PadRight($descCol, '-'))---------" -ForegroundColor DarkGray
+    Write-Host "    $("Keyword".PadRight($kwCol))$("Description".PadRight($descCol))Script ID" -ForegroundColor $ThemeMuted
+    Write-Host "    $(''.PadRight($kwCol, '-'))$(''.PadRight($descCol, '-'))---------" -ForegroundColor $ThemeMuted
 
     Write-Host "    $("vscode, vs-code".PadRight($kwCol))$("VS Code".PadRight($descCol))01"
-    Write-Host "    $("choco, chocolatey".PadRight($kwCol))$("Chocolatey".PadRight($descCol))02"
-    Write-Host "    $("nodejs, node".PadRight($kwCol))$("Node.js + Yarn + Bun".PadRight($descCol))03"
+    Write-Host "    $("choco, chocolatey".PadRight($kwCol))$("choco".PadRight($descCol))02"
+    Write-Host "    $("nodejs, node".PadRight($kwCol))$("nodejs".PadRight($descCol))03"
     Write-Host "    $("pnpm".PadRight($kwCol))$("Node.js + pnpm".PadRight($descCol))03, 04"
     Write-Host ""
-    Write-Host "    Python & Libraries" -ForegroundColor Magenta
+    Write-Host "    Python & Libraries" -ForegroundColor $ThemePrimary
     Write-Host "    $("python, pip".PadRight($kwCol))$("Python + pip".PadRight($descCol))05"
     Write-Host "    $("pylibs".PadRight($kwCol))$("Python + all libraries".PadRight($descCol))05, 41"
     Write-Host "    $("python-libs, pip-libs".PadRight($kwCol))$("All pip libraries only".PadRight($descCol))41"
@@ -1207,20 +1507,20 @@ function Show-KeywordTable {
     Write-Host "    $("data-science".PadRight($kwCol))$("Python + data/viz libs".PadRight($descCol))05, 41"
     Write-Host "    $("ai-dev, deep-learning".PadRight($kwCol))$("Python + ML libs".PadRight($descCol))05, 41"
     Write-Host ""
-    Write-Host "    Languages & Runtimes" -ForegroundColor Magenta
+    Write-Host "    Languages & Runtimes" -ForegroundColor $ThemePrimary
     Write-Host "    $("go, golang".PadRight($kwCol))$("Go".PadRight($descCol))06"
     Write-Host "    $("git, gh".PadRight($kwCol))$("Git + LFS + GitHub CLI".PadRight($descCol))07"
-    Write-Host "    $("github-desktop".PadRight($kwCol))$("GitHub Desktop".PadRight($descCol))08"
-    Write-Host "    $("cpp, c++, gcc".PadRight($kwCol))$("C++ (MinGW-w64)".PadRight($descCol))09"
+    Write-Host "    $("github-desktop".PadRight($kwCol))$("github-desktop".PadRight($descCol))08"
+    Write-Host "    $("cpp, c++, gcc".PadRight($kwCol))$("cpp".PadRight($descCol))09"
     Write-Host "    $("php, php+phpmyadmin".PadRight($kwCol))$("PHP + phpMyAdmin (default)".PadRight($descCol))16"
     Write-Host "    $("php-only".PadRight($kwCol))$("PHP only".PadRight($descCol))16"
     Write-Host "    $("phpmyadmin".PadRight($kwCol))$("phpMyAdmin only".PadRight($descCol))16"
-    Write-Host "    $("powershell, pwsh".PadRight($kwCol))$("PowerShell (latest)".PadRight($descCol))17"
+    Write-Host "    $("powershell, pwsh".PadRight($kwCol))$("pwsh".PadRight($descCol))17"
     Write-Host "    $("flutter, dart".PadRight($kwCol))$("Flutter SDK + Dart".PadRight($descCol))38"
-    Write-Host "    $("dotnet, csharp, .net".PadRight($kwCol))$(".NET SDK".PadRight($descCol))39"
+    Write-Host "    $("dotnet, csharp, .net".PadRight($kwCol))$("dotnet".PadRight($descCol))39"
     Write-Host "    $("java, openjdk, jdk".PadRight($kwCol))$("OpenJDK".PadRight($descCol))40"
     Write-Host ""
-    Write-Host "    Config & Settings" -ForegroundColor Magenta
+    Write-Host "    Config & Settings" -ForegroundColor $ThemePrimary
     Write-Host "    $("vscode+menu, vscode+context".PadRight($kwCol))$("VS Code + Settings + Right-click Menu".PadRight($descCol))01, 10, 11"
     Write-Host "    $("vscode+settings, vscode+s".PadRight($kwCol))$("VS Code + Settings Sync".PadRight($descCol))01, 11"
     Write-Host "    $("pwsh+menu, pwsh-menu".PadRight($kwCol))$("PowerShell + Right-click Menu".PadRight($descCol))17, 31"
@@ -1232,7 +1532,7 @@ function Show-KeywordTable {
     Write-Host "    $("winget".PadRight($kwCol))$("Winget package manager".PadRight($descCol))14"
     Write-Host "    $("tweaks".PadRight($kwCol))$("Windows tweaks".PadRight($descCol))15"
     Write-Host ""
-    Write-Host "    Databases" -ForegroundColor Magenta
+    Write-Host "    Databases" -ForegroundColor $ThemePrimary
     Write-Host "    $("mysql".PadRight($kwCol))$("MySQL".PadRight($descCol))18"
     Write-Host "    $("mariadb".PadRight($kwCol))$("MariaDB".PadRight($descCol))19"
     Write-Host "    $("postgresql, postgres".PadRight($kwCol))$("PostgreSQL".PadRight($descCol))20"
@@ -1247,12 +1547,12 @@ function Show-KeywordTable {
     Write-Host "    $("litedb".PadRight($kwCol))$("LiteDB".PadRight($descCol))29"
     Write-Host "    $("databases, db".PadRight($kwCol))$("Database installer menu".PadRight($descCol))30"
     Write-Host ""
-    Write-Host "    Desktop Tools" -ForegroundColor Magenta
+    Write-Host "    Desktop Tools" -ForegroundColor $ThemePrimary
     Write-Host "    $("notepad++, npp".PadRight($kwCol))$("NPP + Settings (install + sync)".PadRight($descCol))33"
     Write-Host "    $("npp+settings".PadRight($kwCol))$("NPP + Settings (explicit)".PadRight($descCol))33"
     Write-Host "    $("npp-settings".PadRight($kwCol))$("NPP Settings (settings only)".PadRight($descCol))33"
     Write-Host "    $("install-npp".PadRight($kwCol))$("Install NPP (install only)".PadRight($descCol))33"
-    Write-Host "    $("sticky-notes, sticky".PadRight($kwCol))$("Simple Sticky Notes".PadRight($descCol))34"
+    Write-Host "    $("sticky-notes, sticky".PadRight($kwCol))$("sticky-notes".PadRight($descCol))34"
     Write-Host "    $("gitmap, git-map".PadRight($kwCol))$("GitMap CLI".PadRight($descCol))35"
     Write-Host "    $("obs, obs+settings".PadRight($kwCol))$("OBS + Settings (install + sync)".PadRight($descCol))36"
     Write-Host "    $("obs-settings".PadRight($kwCol))$("OBS Settings (settings only)".PadRight($descCol))36"
@@ -1265,7 +1565,7 @@ function Show-KeywordTable {
     Write-Host "    $("dbeaver-settings".PadRight($kwCol))$("DBeaver Settings (settings only)".PadRight($descCol))32"
     Write-Host "    $("install-dbeaver".PadRight($kwCol))$("Install DBeaver (install only)".PadRight($descCol))32"
     Write-Host ""
-    Write-Host "    AI & Local LLM" -ForegroundColor Magenta
+    Write-Host "    AI & Local LLM" -ForegroundColor $ThemePrimary
     Write-Host "    $("ollama, local-llm".PadRight($kwCol))$("Ollama (local LLM runner)".PadRight($descCol))42"
     Write-Host "    $("llama-cpp, llamacpp".PadRight($kwCol))$("llama.cpp + KoboldCPP".PadRight($descCol))43"
     Write-Host "    $("llama, gguf".PadRight($kwCol))$("llama.cpp (alias)".PadRight($descCol))43"
@@ -1277,7 +1577,7 @@ function Show-KeywordTable {
     Write-Host "    $("ollama+llama".PadRight($kwCol))$("Ollama + llama.cpp".PadRight($descCol))42, 43"
     Write-Host "    $("ai-full, aifull".PadRight($kwCol))$("Python + libs + Ollama + llama.cpp".PadRight($descCol))05, 41, 42, 43"
     Write-Host ""
-    Write-Host "    DevOps & Containers" -ForegroundColor Magenta
+    Write-Host "    DevOps & Containers" -ForegroundColor $ThemePrimary
     Write-Host "    $("rust, cargo".PadRight($kwCol))$("Rust + Cargo".PadRight($descCol))44"
     Write-Host "    $("docker".PadRight($kwCol))$("Docker Desktop".PadRight($descCol))45"
     Write-Host "    $("kubernetes, k8s".PadRight($kwCol))$("Kubernetes tools".PadRight($descCol))46"
@@ -1285,7 +1585,7 @@ function Show-KeywordTable {
     Write-Host "    $("container-dev".PadRight($kwCol))$("Docker + Kubernetes".PadRight($descCol))45, 46"
     Write-Host "    $("systems-dev".PadRight($kwCol))$("C++ + Rust".PadRight($descCol))09, 44"
     Write-Host ""
-    Write-Host "    Remote installers (irm | iex)" -ForegroundColor Magenta
+    Write-Host "    Remote installers (irm | iex)" -ForegroundColor $ThemePrimary
     Write-Host "    $("clean-code, cg, cc".PadRight($kwCol))$("Coding Guidelines v23".PadRight($descCol))remote"
     Write-Host "    $("code-guide".PadRight($kwCol))$("Coding Guidelines v23 (alias)".PadRight($descCol))remote"
     Write-Host "    $("coding-guidelines".PadRight($kwCol))$("Coding Guidelines v23 (alias)".PadRight($descCol))remote"
@@ -1297,7 +1597,7 @@ function Show-KeywordTable {
     Write-Host "    $("scoop-installer".PadRight($kwCol))$("Scoop (alias)".PadRight($descCol))remote"
     Write-Host ""
 
-    Write-Host "  Combo Shortcuts:" -ForegroundColor Yellow
+    Write-Host "  Combo Shortcuts:" -ForegroundColor $ThemeAccent
     Write-Host ""
     Write-Host "    $("vscode+settings, vscode+s".PadRight($kwCol))$("VSCode + Settings Sync".PadRight($descCol))01, 11"
     Write-Host "    $("vscode+menu+settings, vms".PadRight($kwCol))$("VSCode + Menu Fix + Sync".PadRight($descCol))01, 10, 11"
@@ -1308,7 +1608,7 @@ function Show-KeywordTable {
     Write-Host "    $("web-dev, webdev".PadRight($kwCol))$("VSCode + Node + pnpm + Git + Sync".PadRight($descCol))01, 03, 04, 07, 11"
     Write-Host "    $("essentials".PadRight($kwCol))$("VSCode + Choco + Node + Git + Sync".PadRight($descCol))01, 02, 03, 07, 11"
     Write-Host ""
-    Write-Host "    Python & Libraries" -ForegroundColor Magenta
+    Write-Host "    Python & Libraries" -ForegroundColor $ThemePrimary
     Write-Host "    $("pylibs".PadRight($kwCol))$("Python + all libraries".PadRight($descCol))05, 41"
     Write-Host "    $("python+libs, ml-dev".PadRight($kwCol))$("Python + all libraries".PadRight($descCol))05, 41"
     Write-Host "    $("python+jupyter".PadRight($kwCol))$("Python + all libraries".PadRight($descCol))05, 41"
@@ -1318,12 +1618,12 @@ function Show-KeywordTable {
     Write-Host "    $("ai-dev, aidev".PadRight($kwCol))$("Python + ML libs".PadRight($descCol))05, 41"
     Write-Host "    $("deep-learning, ml-full".PadRight($kwCol))$("Python + ML libs".PadRight($descCol))05, 41"
     Write-Host ""
-    Write-Host "    General" -ForegroundColor Magenta
+    Write-Host "    General" -ForegroundColor $ThemePrimary
     Write-Host "    $("full-stack, fullstack".PadRight($kwCol))$("Everything for full-stack dev".PadRight($descCol))01-09, 11, 16, 39, 40"
     Write-Host "    $("mobile-dev".PadRight($kwCol))$("Flutter mobile dev".PadRight($descCol))38"
     Write-Host "    $("data-dev".PadRight($kwCol))$("Postgres + Redis + DuckDB + DBeaver".PadRight($descCol))20, 24, 28, 32"
     Write-Host ""
-    Write-Host "  Usage: " -NoNewline -ForegroundColor Yellow; Write-Host ".\run.ps1 install <keyword>[,<keyword>,...]"
+    Write-Host "  Usage: " -NoNewline -ForegroundColor $ThemeAccent; Write-Host ".\run.ps1 install <keyword>[,<keyword>,...]"
     Write-Host ""
     }
 
@@ -1331,7 +1631,22 @@ function Show-KeywordTable {
 # Levenshtein distance -- used to rank "did you mean" suggestions for unknown
 # --exclude tokens. Pure PowerShell, no external deps. O(len(a) * len(b)).
 function Get-LevenshteinDistance {
-    param([string]$A, [string]$B)
+    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param([string]$A, [string]$B)
     if ([string]::IsNullOrEmpty($A)) { return [int]$B.Length }
     if ([string]::IsNullOrEmpty($B)) { return [int]$A.Length }
     $la = $A.Length; $lb = $B.Length
@@ -1357,7 +1672,22 @@ function Get-LevenshteinDistance {
 # return the top N closest matches. Filters by a length-aware cutoff so wildly
 # different tokens do not surface noisy suggestions.
 function Get-DidYouMean {
-    param(
+    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param(
         [string]   $Token,
         [string[]] $Candidates,
         [int]      $Top = 3
@@ -1388,14 +1718,29 @@ function Get-DidYouMean {
 
 
 function Resolve-InstallKeywords {
-    param(
+    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param(
         [string[]]$Keywords
     )
 
     $keywordsFile = Join-Path $RootDir "scripts\shared\install-keywords.json"
     $isKeywordsFileMissing = -not (Test-Path $keywordsFile)
     if ($isKeywordsFileMissing) {
-        Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+        Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
         Write-Host "Keyword mapping not found: $keywordsFile"
         return $null
     }
@@ -1564,7 +1909,7 @@ function Resolve-InstallKeywords {
         }
         $isUnknown = $null -eq $ids
         if ($isUnknown) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "Unknown keyword: '$token'"
             $hasError = $true
             continue
@@ -1599,7 +1944,7 @@ function Resolve-InstallKeywords {
                     $hasPath = -not [string]::IsNullOrWhiteSpace($remotePath)
                     $isRemoteMissing = $null -eq $remoteEntry -or (-not $hasUrl -and -not $hasPath)
                     if ($isRemoteMissing) {
-                        Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+                        Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
                         Write-Host "Remote keyword '$token' resolves to 'remote:$action' but no source is mapped in $keywordsFile (need 'remote.$action.url' OR 'remote.$action.path')."
                         $hasError = $true
                         continue
@@ -1662,7 +2007,7 @@ function Resolve-InstallKeywords {
 
     if ($hasError) {
         Write-Host ""
-        Write-Host "  Run .\run.ps1 -Help to see all available keywords" -ForegroundColor Cyan
+        Write-Host "  Run .\run.ps1 -Help to see all available keywords" -ForegroundColor $ThemeSecondary
         return $null
     }
 
@@ -1717,7 +2062,22 @@ function Resolve-InstallKeywords {
 
 # ── Run a single script by ID ───────────────────────────────────────
 function Invoke-ScriptById {
-    param(
+    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param(
         [int]$ScriptId,
         [hashtable]$ExtraArgs = @{}
     )
@@ -1745,7 +2105,7 @@ function Invoke-ScriptById {
     $isScriptMissing = -not $scriptDir -or -not (Test-Path $scriptDir.FullName)
     if ($isScriptMissing) {
         Write-Host ""
-        Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+        Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
         Write-Host "No script folder found for ID $prefix"
         return $false
     }
@@ -1753,7 +2113,7 @@ function Invoke-ScriptById {
     $scriptFile = Join-Path $scriptDir.FullName "run.ps1"
     $isRunFileMissing = -not (Test-Path $scriptFile)
     if ($isRunFileMissing) {
-        Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+        Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
         Write-Host "run.ps1 not found in $($scriptDir.Name)"
         return $false
     }
@@ -1766,7 +2126,7 @@ function Invoke-ScriptById {
     New-Item -Path $logsDir -ItemType Directory -Force | Out-Null
 
     Write-Host ""
-    Write-Host "  [ RUN   ] " -ForegroundColor Magenta -NoNewline
+    Write-Host "  [ RUN   ] " -ForegroundColor $ThemePrimary -NoNewline
     Write-Host "Executing: $($scriptDir.Name)\run.ps1"
     Write-Host ""
 
@@ -1777,7 +2137,7 @@ function Invoke-ScriptById {
     if ($hasArgValidator) {
         $isChildArgsOk = Test-ChildScriptArgs -ExtraArgs $ExtraArgs -ScriptId $ScriptId
         if (-not $isChildArgsOk) {
-            Write-Host "  [ SKIP ] Refusing to invoke child script with malformed path arguments." -ForegroundColor Red
+            Write-Host "  [ SKIP ] Refusing to invoke child script with malformed path arguments." -ForegroundColor $ThemeError
             return $false
         }
     }
@@ -1887,11 +2247,11 @@ function Invoke-ScriptById {
         $token = $_.Exception.CommandName
         $dump  = try { ($ExtraArgs | ConvertTo-Json -Depth 5 -Compress) } catch { "$ExtraArgs" }
         Write-Host ""
-        Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+        Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
         Write-Host "Child invocation failed: PowerShell tried to execute '$token' as a command." -ForegroundColor White
-        Write-Host "          script    : $scriptFile" -ForegroundColor DarkGray
-        Write-Host "          ExtraArgs : $dump"        -ForegroundColor DarkGray
-        Write-Host "          hint      : a path containing spaces was passed unquoted into a positional parameter." -ForegroundColor Yellow
+        Write-Host "          script    : $scriptFile" -ForegroundColor $ThemeMuted
+        Write-Host "          ExtraArgs : $dump"        -ForegroundColor $ThemeMuted
+        Write-Host "          hint      : a path containing spaces was passed unquoted into a positional parameter." -ForegroundColor $ThemeAccent
 
         if (Get-Command Write-FileError -ErrorAction SilentlyContinue) {
             Write-FileError -FilePath $token -Operation "invoke-child" `
@@ -1907,19 +2267,34 @@ function Invoke-ScriptById {
 
 # ── Export command function ────────────────────────────────────────────
 function Invoke-ExportCommand {
-    param([string[]]$Args)
+    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param([string[]]$Args)
 
     Write-Host ""
-    Write-Host "  Export Settings" -ForegroundColor Cyan
-    Write-Host "  ===============" -ForegroundColor DarkGray
+    Write-Host "  Export Settings" -ForegroundColor $ThemeSecondary
+    Write-Host "  ===============" -ForegroundColor $ThemeMuted
     Write-Host ""
 
     # Settings-capable scripts: scriptId -> keyword for display
     $exportScripts = @{
         "32" = "DBeaver"
         "33" = "Notepad++"
-        "36" = "OBS Studio"
-        "37" = "Windows Terminal"
+        "36" = "obs"
+        "37" = "wt"
     }
 
     # Parse filter keywords from args
@@ -1950,8 +2325,8 @@ function Invoke-ExportCommand {
             if ($hasMapping) {
                 $scriptIds += $exportKeywordMap[$kwLower]
             } else {
-                Write-Host "  [ WARN ] Unknown export keyword: $kw" -ForegroundColor Yellow
-                Write-Host "           Available: dbeaver, npp, obs, wt" -ForegroundColor DarkGray
+                Write-Host "  [ WARN ] Unknown export keyword: $kw" -ForegroundColor $ThemeAccent
+                Write-Host "           Available: dbeaver, npp, obs, wt" -ForegroundColor $ThemeMuted
             }
         }
         $scriptIds = @($scriptIds | Select-Object -Unique)
@@ -1961,9 +2336,9 @@ function Invoke-ExportCommand {
 
     $hasNoScripts = $scriptIds.Count -eq 0
     if ($hasNoScripts) {
-        Write-Host "  [ FAIL ] No valid export targets specified" -ForegroundColor Red
+        Write-Host "  [ FAIL ] No valid export targets specified" -ForegroundColor $ThemeError
         Write-Host ""
-        Write-Host "  Usage:" -ForegroundColor Yellow
+        Write-Host "  Usage:" -ForegroundColor $ThemeAccent
         Write-Host "    .\run.ps1 export              # export all settings"
         Write-Host "    .\run.ps1 export npp,obs      # export specific apps"
         Write-Host "    .\run.ps1 export dbeaver      # export DBeaver settings"
@@ -1971,7 +2346,7 @@ function Invoke-ExportCommand {
         return
     }
 
-    Write-Host "  Exporting $($scriptIds.Count) app(s): $($scriptIds | ForEach-Object { $exportScripts[$_] }) " -ForegroundColor Magenta
+    Write-Host "  Exporting $($scriptIds.Count) app(s): $($scriptIds | ForEach-Object { $exportScripts[$_] }) " -ForegroundColor $ThemePrimary
     Write-Host ""
 
     $successCount = 0
@@ -1979,7 +2354,7 @@ function Invoke-ExportCommand {
 
     foreach ($id in $scriptIds) {
         $label = $exportScripts[$id]
-        Write-Host "  [ RUN  ] Exporting: $label (script $id)..." -ForegroundColor Cyan
+        Write-Host "  [ RUN  ] Exporting: $label (script $id)..." -ForegroundColor $ThemeSecondary
 
         try {
             $isExported = Invoke-ScriptById -ScriptId $id -ExtraArgs @("export")
@@ -1989,16 +2364,16 @@ function Invoke-ExportCommand {
                 $failCount++
             }
         } catch {
-            Write-Host "  [ FAIL ] Export failed for $label : $_" -ForegroundColor Red
+            Write-Host "  [ FAIL ] Export failed for $label : $_" -ForegroundColor $ThemeError
             $failCount++
         }
     }
 
     Write-Host ""
-    Write-Host "  ======================================" -ForegroundColor DarkGray
+    Write-Host "  ======================================" -ForegroundColor $ThemeMuted
     $hasFails = $failCount -gt 0
     if ($hasFails) {
-        Write-Host "  [ DONE ] $successCount of $($scriptIds.Count) exported successfully ($failCount failed)" -ForegroundColor Yellow
+        Write-Host "  [ DONE ] $successCount of $($scriptIds.Count) exported successfully ($failCount failed)" -ForegroundColor $ThemeAccent
     } else {
         Write-Host "  [ DONE ] $successCount of $($scriptIds.Count) exported successfully" -ForegroundColor Green
     }
@@ -2007,17 +2382,32 @@ function Invoke-ExportCommand {
 
 # ── Status command function ────────────────────────────────────────────
 function Invoke-StatusCommand {
-    param([string[]]$Args)
+    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param([string[]]$Args)
 
     Write-Host ""
-    Write-Host "  Tool Status Dashboard" -ForegroundColor Cyan
-    Write-Host "  =====================" -ForegroundColor DarkGray
+    Write-Host "  Tool Status Dashboard" -ForegroundColor $ThemeSecondary
+    Write-Host "  =====================" -ForegroundColor $ThemeMuted
     Write-Host ""
 
     $installedDir = Join-Path $RootDir ".installed"
     $isInstalledDirMissing = -not (Test-Path $installedDir)
     if ($isInstalledDirMissing) {
-        Write-Host "  No tools tracked yet. Run some install scripts first." -ForegroundColor Yellow
+        Write-Host "  No tools tracked yet. Run some install scripts first." -ForegroundColor $ThemeAccent
         Write-Host ""
         return
     }
@@ -2025,7 +2415,7 @@ function Invoke-StatusCommand {
     $records = Get-ChildItem -Path $installedDir -Filter "*.json" -File | Sort-Object Name
     $hasNoRecords = $records.Count -eq 0
     if ($hasNoRecords) {
-        Write-Host "  No tools tracked yet. Run some install scripts first." -ForegroundColor Yellow
+        Write-Host "  No tools tracked yet. Run some install scripts first." -ForegroundColor $ThemeAccent
         Write-Host ""
         return
     }
@@ -2056,20 +2446,35 @@ function Invoke-StatusCommand {
     $unknownCount = 0
 
     function Write-StatusGroup {
-        param([string]$Title, $Files, [int]$NameCol, [int]$VerCol, [int]$StatusCol, [int]$MethodCol)
+        $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param([string]$Title, $Files, [int]$NameCol, [int]$VerCol, [int]$StatusCol, [int]$MethodCol)
 
         $hasFiles = @($Files).Count -gt 0
         if (-not $hasFiles) {
-            Write-Host "  $Title -- (none tracked)" -ForegroundColor DarkGray
+            Write-Host "  $Title -- (none tracked)" -ForegroundColor $ThemeMuted
             Write-Host ""
             return @{ ok = 0; err = 0; unk = 0 }
         }
 
         Write-Host "  $Title" -ForegroundColor White
         $header = "    {0}  {1}  {2}  {3}" -f "Name".PadRight($NameCol), "Version".PadRight($VerCol), "Status".PadRight($StatusCol), "Source".PadRight($MethodCol)
-        Write-Host $header -ForegroundColor DarkGray
+        Write-Host $header -ForegroundColor $ThemeMuted
         $separator = "    {0}  {1}  {2}  {3}" -f ("-" * $NameCol), ("-" * $VerCol), ("-" * $StatusCol), ("-" * $MethodCol)
-        Write-Host $separator -ForegroundColor DarkGray
+        Write-Host $separator -ForegroundColor $ThemeMuted
 
         $local = @{ ok = 0; err = 0; unk = 0 }
         foreach ($file in $Files) {
@@ -2114,10 +2519,10 @@ function Invoke-StatusCommand {
     if ($showTools)  { $totalShown += @($toolRecords).Count }
     if ($showModels) { $totalShown += @($modelRecords).Count }
 
-    Write-Host "  Summary: " -NoNewline -ForegroundColor DarkGray
+    Write-Host "  Summary: " -NoNewline -ForegroundColor $ThemeMuted
     Write-Host "$okCount ok" -ForegroundColor Green -NoNewline
-    if ($errorCount -gt 0)   { Write-Host ", $errorCount error(s)" -ForegroundColor Red -NoNewline }
-    if ($unknownCount -gt 0) { Write-Host ", $unknownCount unverified" -ForegroundColor Yellow -NoNewline }
+    if ($errorCount -gt 0)   { Write-Host ", $errorCount error(s)" -ForegroundColor $ThemeError -NoNewline }
+    if ($unknownCount -gt 0) { Write-Host ", $unknownCount unverified" -ForegroundColor $ThemeAccent -NoNewline }
     Write-Host " -- $totalShown tracked (tools: $(@($toolRecords).Count), models: $(@($modelRecords).Count))"
 
     # Optionally check choco outdated
@@ -2127,13 +2532,13 @@ function Invoke-StatusCommand {
         $isChocoAvailable = $null -ne $chocoCmd
         if ($isChocoAvailable) {
             Write-Host ""
-            Write-Host "  Checking for outdated packages..." -ForegroundColor DarkGray
+            Write-Host "  Checking for outdated packages..." -ForegroundColor $ThemeMuted
             try {
                 $outdated = & choco outdated -r 2>$null | Where-Object { $_ -match '\|' }
                 $hasOutdated = $null -ne $outdated -and @($outdated).Count -gt 0
                 if ($hasOutdated) {
                     Write-Host ""
-                    Write-Host "  Outdated Packages:" -ForegroundColor Yellow
+                    Write-Host "  Outdated Packages:" -ForegroundColor $ThemeAccent
                     foreach ($line in $outdated) {
                         $parts = $line -split '\|'
                         $hasParts = $parts.Count -ge 3
@@ -2141,21 +2546,21 @@ function Invoke-StatusCommand {
                             $pkgName = $parts[0]
                             $currentVer = $parts[1]
                             $availableVer = $parts[2]
-                            Write-Host "    $($pkgName.PadRight(24))  $currentVer -> $availableVer" -ForegroundColor DarkGray
+                            Write-Host "    $($pkgName.PadRight(24))  $currentVer -> $availableVer" -ForegroundColor $ThemeMuted
                         }
                     }
                 } else {
                     Write-Host "  All Chocolatey packages are up to date." -ForegroundColor Green
                 }
             } catch {
-                Write-Host "  Could not check Chocolatey outdated: $_" -ForegroundColor Yellow
+                Write-Host "  Could not check Chocolatey outdated: $_" -ForegroundColor $ThemeAccent
             }
         }
     }
 
     Write-Host ""
-    Write-Host "  Tip: '.\run.ps1 status --tools' / '--models' to filter; '--no-choco' to skip outdated check." -ForegroundColor DarkGray
-    Write-Host "  Aliases: status, list-installed, installed" -ForegroundColor DarkGray
+    Write-Host "  Tip: '.\run.ps1 status --tools' / '--models' to filter; '--no-choco' to skip outdated check." -ForegroundColor $ThemeMuted
+    Write-Host "  Aliases: status, list-installed, installed" -ForegroundColor $ThemeMuted
     Write-Host ""
 }
 
@@ -2168,8 +2573,8 @@ function Invoke-DoctorCommand {
     #>
 
     Write-Host ""
-    Write-Host "  Project Doctor" -ForegroundColor Cyan
-    Write-Host "  ==============" -ForegroundColor DarkGray
+    Write-Host "  Project Doctor" -ForegroundColor $ThemeSecondary
+    Write-Host "  ==============" -ForegroundColor $ThemeMuted
     Write-Host ""
 
     $passCount = 0
@@ -2178,24 +2583,39 @@ function Invoke-DoctorCommand {
 
     # Helper to print check results
     function Write-Check {
-        param([string]$Label, [string]$Status, [string]$Detail = "")
+        $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param([string]$Label, [string]$Status, [string]$Detail = "")
         switch ($Status) {
             "pass" {
                 Write-Host "    [PASS] " -ForegroundColor Green -NoNewline
                 Write-Host $Label -NoNewline
-                if ($Detail) { Write-Host " -- $Detail" -ForegroundColor DarkGray } else { Write-Host "" }
+                if ($Detail) { Write-Host " -- $Detail" -ForegroundColor $ThemeMuted } else { Write-Host "" }
                 $script:passCount++
             }
             "fail" {
-                Write-Host "    [FAIL] " -ForegroundColor Red -NoNewline
+                Write-Host "    [FAIL] " -ForegroundColor $ThemeError -NoNewline
                 Write-Host $Label -NoNewline
-                if ($Detail) { Write-Host " -- $Detail" -ForegroundColor DarkGray } else { Write-Host "" }
+                if ($Detail) { Write-Host " -- $Detail" -ForegroundColor $ThemeMuted } else { Write-Host "" }
                 $script:failCount++
             }
             "warn" {
-                Write-Host "    [WARN] " -ForegroundColor Yellow -NoNewline
+                Write-Host "    [WARN] " -ForegroundColor $ThemeAccent -NoNewline
                 Write-Host $Label -NoNewline
-                if ($Detail) { Write-Host " -- $Detail" -ForegroundColor DarkGray } else { Write-Host "" }
+                if ($Detail) { Write-Host " -- $Detail" -ForegroundColor $ThemeMuted } else { Write-Host "" }
                 $script:warnCount++
             }
         }
@@ -2335,24 +2755,24 @@ function Invoke-DoctorCommand {
 
     # Summary
     Write-Host ""
-    Write-Host "  Summary: " -NoNewline -ForegroundColor DarkGray
+    Write-Host "  Summary: " -NoNewline -ForegroundColor $ThemeMuted
     Write-Host "$passCount passed" -ForegroundColor Green -NoNewline
     $hasWarns = $warnCount -gt 0
     if ($hasWarns) {
-        Write-Host ", $warnCount warning(s)" -ForegroundColor Yellow -NoNewline
+        Write-Host ", $warnCount warning(s)" -ForegroundColor $ThemeAccent -NoNewline
     }
     $hasFails = $failCount -gt 0
     if ($hasFails) {
-        Write-Host ", $failCount failed" -ForegroundColor Red -NoNewline
+        Write-Host ", $failCount failed" -ForegroundColor $ThemeError -NoNewline
     }
     Write-Host ""
 
     if ($hasFails) {
         Write-Host ""
-        Write-Host "  Some checks failed. Fix the issues above for a healthy setup." -ForegroundColor Red
+        Write-Host "  Some checks failed. Fix the issues above for a healthy setup." -ForegroundColor $ThemeError
     } elseif ($hasWarns) {
         Write-Host ""
-        Write-Host "  Project looks good with minor warnings." -ForegroundColor Yellow
+        Write-Host "  Project looks good with minor warnings." -ForegroundColor $ThemeAccent
     } else {
         Write-Host ""
         Write-Host "  All checks passed. Project is healthy!" -ForegroundColor Green
@@ -2378,13 +2798,28 @@ function Invoke-DoctorSelfCheck {
         (e.g. on an air-gapped CI runner or when offline). Sections (a)-(c) always run.
         Prints a green/red table per row + per-section summaries + final tally.
     #>
-    param([switch]$SkipNetwork)
+    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param([switch]$SkipNetwork)
 
     Write-Host ""
-    Write-Host "  Doctor -- Self-Check (deep audit)" -ForegroundColor Cyan
-    Write-Host "  =================================" -ForegroundColor DarkGray
+    Write-Host "  Doctor -- Self-Check (deep audit)" -ForegroundColor $ThemeSecondary
+    Write-Host "  =================================" -ForegroundColor $ThemeMuted
     if ($SkipNetwork) {
-        Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
+        Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
         Write-Host "--skip-network: sections (d) and (e) will be skipped (offline mode)"
     }
     Write-Host ""
@@ -2393,23 +2828,53 @@ function Invoke-DoctorSelfCheck {
     $script:scFail = 0
 
     function Write-SCRow {
-        param([string]$Section, [string]$Item, [bool]$Ok, [string]$Detail = "")
+        $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param([string]$Section, [string]$Item, [bool]$Ok, [string]$Detail = "")
         if ($Ok) {
             Write-Host "    [ OK ] " -ForegroundColor Green -NoNewline
             $script:scPass++
         } else {
-            Write-Host "    [FAIL] " -ForegroundColor Red -NoNewline
+            Write-Host "    [FAIL] " -ForegroundColor $ThemeError -NoNewline
             $script:scFail++
         }
         $line = "{0,-10} {1,-40}" -f $Section, $Item
         Write-Host $line -NoNewline
-        if ($Detail) { Write-Host " $Detail" -ForegroundColor DarkGray } else { Write-Host "" }
+        if ($Detail) { Write-Host " $Detail" -ForegroundColor $ThemeMuted } else { Write-Host "" }
     }
 
     function Write-SCHeader {
-        param([string]$Title)
+        $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param([string]$Title)
         Write-Host ""
-        Write-Host "  -- $Title" -ForegroundColor Yellow
+        Write-Host "  -- $Title" -ForegroundColor $ThemeAccent
     }
 
     $scriptsRoot = Join-Path $RootDir "scripts"
@@ -2753,12 +3218,12 @@ function Invoke-DoctorSelfCheck {
     # ============================================================
     $total = $script:scPass + $script:scFail
     Write-Host ""
-    Write-Host "  Self-Check Summary: " -NoNewline -ForegroundColor DarkGray
+    Write-Host "  Self-Check Summary: " -NoNewline -ForegroundColor $ThemeMuted
     Write-Host "$($script:scPass)/$total OK" -ForegroundColor Green -NoNewline
     if ($script:scFail -gt 0) {
-        Write-Host ", $($script:scFail) FAIL" -ForegroundColor Red
+        Write-Host ", $($script:scFail) FAIL" -ForegroundColor $ThemeError
         Write-Host ""
-        Write-Host "  Self-check found inconsistencies. Fix the rows marked [FAIL] above." -ForegroundColor Red
+        Write-Host "  Self-check found inconsistencies. Fix the rows marked [FAIL] above." -ForegroundColor $ThemeError
     } else {
         Write-Host ""
         Write-Host ""
@@ -2768,13 +3233,28 @@ function Invoke-DoctorSelfCheck {
 }
 
 function Invoke-PathCommand {
-    param([string[]]$Args)
+    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param([string[]]$Args)
 
     # Load dev-dir helper
     $devDirHelper = Join-Path $RootDir "scripts\shared\dev-dir.ps1"
     $isHelperMissing = -not (Test-Path $devDirHelper)
     if ($isHelperMissing) {
-        Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+        Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
         Write-Host "Shared helper not found: $devDirHelper"
         return
     }
@@ -2798,16 +3278,16 @@ function Invoke-PathCommand {
         $hasSavedPath = $null -ne $savedPath
         Write-Host ""
         if ($hasSavedPath) {
-            Write-Host "  Current dev directory: " -NoNewline -ForegroundColor DarkGray
+            Write-Host "  Current dev directory: " -NoNewline -ForegroundColor $ThemeMuted
             Write-Host "$savedPath" -ForegroundColor White
         } else {
-            Write-Host "  No saved dev directory. Using smart detection (E:\dev-tool > D:\dev-tool > best drive)." -ForegroundColor Yellow
+            Write-Host "  No saved dev directory. Using smart detection (E:\dev-tool > D:\dev-tool > best drive)." -ForegroundColor $ThemeAccent
         }
         Write-Host ""
-        Write-Host "  Usage:" -ForegroundColor Yellow
-        Write-Host "    .\run.ps1 path D:\dev-tool          " -NoNewline; Write-Host "Set default dev directory" -ForegroundColor DarkGray
-        Write-Host "    .\run.ps1 path                      " -NoNewline; Write-Host "Show current dev directory" -ForegroundColor DarkGray
-        Write-Host "    .\run.ps1 path --reset              " -NoNewline; Write-Host "Clear saved path, use smart detection" -ForegroundColor DarkGray
+        Write-Host "  Usage:" -ForegroundColor $ThemeAccent
+        Write-Host "    .\run.ps1 path D:\dev-tool          " -NoNewline; Write-Host "Set default dev directory" -ForegroundColor $ThemeMuted
+        Write-Host "    .\run.ps1 path                      " -NoNewline; Write-Host "Show current dev directory" -ForegroundColor $ThemeMuted
+        Write-Host "    .\run.ps1 path --reset              " -NoNewline; Write-Host "Clear saved path, use smart detection" -ForegroundColor $ThemeMuted
         Write-Host ""
         return
     }
@@ -2817,7 +3297,7 @@ function Invoke-PathCommand {
     $isValidFormat = $targetPath -match '^[A-Za-z]:\\'
     if (-not $isValidFormat) {
         Write-Host ""
-        Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+        Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
         Write-Host "Invalid path format. Use a full path like D:\dev-tool or F:\dev-tool"
         Write-Host ""
         return
@@ -2828,7 +3308,7 @@ function Invoke-PathCommand {
     Write-Host "  [  OK  ] " -ForegroundColor Green -NoNewline
     Write-Host "Default dev directory set to: $targetPath"
     Write-Host ""
-    Write-Host "  All scripts will now use this path. Use '.\run.ps1 path --reset' to revert to smart detection." -ForegroundColor DarkGray
+    Write-Host "  All scripts will now use this path. Use '.\run.ps1 path --reset' to revert to smart detection." -ForegroundColor $ThemeMuted
     Write-Host ""
 }
 
@@ -2932,7 +3412,7 @@ if ($_isEarlyHelp) {
             @{ K = "mongodb";       D = "MongoDB installer" },
             @{ K = "redis";         D = "Redis installer" },
             @{ K = "sqlite";        D = "SQLite installer" },
-            @{ K = "node";          D = "Node.js + Yarn + Bun" },
+            @{ K = "node";          D = "nodejs" },
             @{ K = "python";        D = "Python + libraries" },
             @{ K = "docker";        D = "Docker Desktop installer" },
             @{ K = "kubernetes";    D = "Kubernetes / kubeadm installer" },
@@ -2960,18 +3440,18 @@ if ($_isEarlyHelp) {
         )
 
         Write-Host ""
-        Write-Host "  Recommended help-filter keywords" -ForegroundColor Cyan
-        Write-Host "  ================================" -ForegroundColor DarkGray
+        Write-Host "  Recommended help-filter keywords" -ForegroundColor $ThemeSecondary
+        Write-Host "  ================================" -ForegroundColor $ThemeMuted
         Write-Host "  Use any of these with: " -NoNewline
-        Write-Host ".\run.ps1 help <keyword>" -ForegroundColor Yellow
-        Write-Host "  (combine 2+ for AND match, e.g. " -ForegroundColor DarkGray -NoNewline
-        Write-Host "help chrome ext" -ForegroundColor Yellow -NoNewline
-        Write-Host ")" -ForegroundColor DarkGray
+        Write-Host ".\run.ps1 help <keyword>" -ForegroundColor $ThemeAccent
+        Write-Host "  (combine 2+ for AND match, e.g. " -ForegroundColor $ThemeMuted -NoNewline
+        Write-Host "help chrome ext" -ForegroundColor $ThemeAccent -NoNewline
+        Write-Host ")" -ForegroundColor $ThemeMuted
         Write-Host ""
 
         $_kCol = 18; $_hCol = 7
-        Write-Host ("    {0}{1}{2}" -f "Keyword".PadRight($_kCol), "Lines".PadRight($_hCol), "Description") -ForegroundColor DarkGray
-        Write-Host ("    {0}{1}{2}" -f ("".PadRight($_kCol,'-')), ("".PadRight($_hCol,'-')), "-----------") -ForegroundColor DarkGray
+        Write-Host ("    {0}{1}{2}" -f "Keyword".PadRight($_kCol), "Lines".PadRight($_hCol), "Description") -ForegroundColor $ThemeMuted
+        Write-Host ("    {0}{1}{2}" -f ("".PadRight($_kCol,'-')), ("".PadRight($_hCol,'-')), "-----------") -ForegroundColor $ThemeMuted
 
         $_shown = 0; $_hidden = 0
         foreach ($f in $_filters) {
@@ -2982,16 +3462,16 @@ if ($_isEarlyHelp) {
             $color = if ($hits -ge 5) { "Green" } elseif ($hits -ge 2) { "Cyan" } else { "DarkYellow" }
             Write-Host ("    {0}" -f $f.K.PadRight($_kCol)) -ForegroundColor White -NoNewline
             Write-Host ("{0}" -f $hitsStr.PadRight($_hCol)) -ForegroundColor $color -NoNewline
-            Write-Host $f.D -ForegroundColor DarkGray
+            Write-Host $f.D -ForegroundColor $ThemeMuted
             $_shown++
         }
 
         Write-Host ""
         Write-Host "  $_shown filter(s) shown" -ForegroundColor Green -NoNewline
         if ($_hidden -gt 0) {
-            Write-Host " ($_hidden hidden -- 0 matches against current help)" -ForegroundColor DarkGray
+            Write-Host " ($_hidden hidden -- 0 matches against current help)" -ForegroundColor $ThemeMuted
         } else { Write-Host "" }
-        Write-Host "  Tip: every keyword that appears in '.\run.ps1 -List' is also a valid filter." -ForegroundColor DarkGray
+        Write-Host "  Tip: every keyword that appears in '.\run.ps1 -List' is also a valid filter." -ForegroundColor $ThemeMuted
         Write-Host ""
         exit 0
     }
@@ -3011,8 +3491,8 @@ if ($_isEarlyHelp) {
     }
     if ($_isSelfTest) {
         Write-Host ""
-        Write-Host "  Help filter -- case-insensitivity self-test" -ForegroundColor Cyan
-        Write-Host "  ===========================================" -ForegroundColor DarkGray
+        Write-Host "  Help filter -- case-insensitivity self-test" -ForegroundColor $ThemeSecondary
+        Write-Host "  ===========================================" -ForegroundColor $ThemeMuted
 
         # Capture the full help screen once (Information stream, ID 6).
         $_records = & { Show-RootHelpRaw } 6>&1
@@ -3020,7 +3500,22 @@ if ($_isEarlyHelp) {
         # Reconstruct logical lines (one string per line) the same way
         # Show-RootHelp does, so the test matches real runtime behavior.
         function _Get-HelpLines {
-            param($Records)
+            $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param($Records)
             $buf = New-Object System.Collections.Generic.List[string]
             $cur = New-Object System.Text.StringBuilder
             foreach ($rec in $Records) {
@@ -3039,7 +3534,22 @@ if ($_isEarlyHelp) {
             return ,$buf.ToArray()
         }
         function _Count-Matches {
-            param([string[]]$Lines, [string[]]$Needles)
+            $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param([string[]]$Lines, [string[]]$Needles)
             $low = $Needles | ForEach-Object { $_.ToLower() }
             $n = 0
             foreach ($ln in $Lines) {
@@ -3078,9 +3588,9 @@ if ($_isEarlyHelp) {
             } else {
                 $_fail++
                 Write-Host ("  [ FAIL ] {0,-18} -> counts: [{1}] (variants: {2})" -f `
-                    $c.Label, ($counts -join ', '), ($c.Variants -join ' | ')) -ForegroundColor Red
-                if (-not $allEqual) { Write-Host "          Reason: case variants produced different match counts" -ForegroundColor DarkGray }
-                if (-not $minOk)    { Write-Host "          Reason: expected >= $($c.Min) match(es), got $($counts[0])" -ForegroundColor DarkGray }
+                    $c.Label, ($counts -join ', '), ($c.Variants -join ' | ')) -ForegroundColor $ThemeError
+                if (-not $allEqual) { Write-Host "          Reason: case variants produced different match counts" -ForegroundColor $ThemeMuted }
+                if (-not $minOk)    { Write-Host "          Reason: expected >= $($c.Min) match(es), got $($counts[0])" -ForegroundColor $ThemeMuted }
             }
         }
 
@@ -3089,7 +3599,7 @@ if ($_isEarlyHelp) {
             Write-Host "  [  OK  ] " -ForegroundColor Green -NoNewline
             Write-Host "All $_pass case(s) passed -- filter IS case-insensitive."
         } else {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "$_fail of $($_pass + $_fail) case(s) failed."
             exit 1
         }
@@ -3102,7 +3612,22 @@ if ($_isEarlyHelp) {
     # subsequent REPL iterations introduced by the multi-search loop.
 
     function script:_Parse-HelpOutFlags {
-        param([string]$Filter)
+        $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param([string]$Filter)
         $outFile = $null; $format = $null
         if (-not $Filter) { return [pscustomobject]@{ Filter=""; OutFile=$null; Format=$null } }
         $termsRaw = @($Filter -split '[\s]+' | Where-Object { $_ })
@@ -3139,7 +3664,22 @@ if ($_isEarlyHelp) {
     }
 
     function script:_Read-HelpKeywordLine {
-        param(
+        $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param(
             [string[]]$Pool,
             [string]$LastKw,
             [string]$PromptText = "  keyword(s)> "
@@ -3148,15 +3688,15 @@ if ($_isEarlyHelp) {
         try { $null = $Host.UI.RawUI.KeyAvailable } catch { $useRaw = $false }
 
         if (-not $useRaw) {
-            Write-Host $PromptText -ForegroundColor Yellow -NoNewline
-            if ($LastKw) { Write-Host "[default: $LastKw] " -ForegroundColor DarkGray -NoNewline }
+            Write-Host $PromptText -ForegroundColor $ThemeAccent -NoNewline
+            if ($LastKw) { Write-Host "[default: $LastKw] " -ForegroundColor $ThemeMuted -NoNewline }
             $typed = $null
             try { $typed = Read-Host } catch { $typed = $null }
             if ((-not $typed) -and $LastKw) { $typed = $LastKw }
             return $typed
         }
 
-        Write-Host $PromptText -ForegroundColor Yellow -NoNewline
+        Write-Host $PromptText -ForegroundColor $ThemeAccent -NoNewline
         $buf = New-Object System.Text.StringBuilder
         $script:_compMatches = @(); $script:_compIndex = -1; $script:_compPrefix = $null; $script:_compTokenStart = 0
         $reset = { $script:_compMatches=@(); $script:_compIndex=-1; $script:_compPrefix=$null }
@@ -3177,7 +3717,7 @@ if ($_isEarlyHelp) {
             if ($vk -eq 27) {
                 $buf.Clear() | Out-Null; & $reset
                 [Console]::Write("`r" + (' ' * ([Console]::WindowWidth - 1)) + "`r")
-                Write-Host $PromptText -ForegroundColor Yellow -NoNewline
+                Write-Host $PromptText -ForegroundColor $ThemeAccent -NoNewline
                 continue
             }
             if ($ctrl -and ($vk -eq 67)) { Write-Host ""; $buf.Clear() | Out-Null; [void]$buf.Append("exit"); break }
@@ -3211,11 +3751,11 @@ if ($_isEarlyHelp) {
                 [void]$buf.Append($head + $pick)
                 $line = $PromptText + $buf.ToString()
                 [Console]::Write("`r" + (' ' * ([Math]::Max([Console]::WindowWidth - 1, $line.Length + 1))) + "`r")
-                Write-Host $PromptText -ForegroundColor Yellow -NoNewline
+                Write-Host $PromptText -ForegroundColor $ThemeAccent -NoNewline
                 Write-Host $buf.ToString() -NoNewline
                 if ($script:_compMatches.Count -gt 1) {
                     $hint = "   [$($script:_compIndex + 1)/$($script:_compMatches.Count)]"
-                    Write-Host $hint -ForegroundColor DarkGray -NoNewline
+                    Write-Host $hint -ForegroundColor $ThemeMuted -NoNewline
                     [Console]::Write(("`b" * $hint.Length))
                 }
                 continue
@@ -3229,11 +3769,11 @@ if ($_isEarlyHelp) {
                 $matches = @($Pool | Where-Object { $_.ToLower().StartsWith($pfx) })
                 Write-Host ""
                 if ($matches.Count -eq 0) {
-                    Write-Host "    (no completions for '$pfx')" -ForegroundColor DarkGray
+                    Write-Host "    (no completions for '$pfx')" -ForegroundColor $ThemeMuted
                 } else {
                     Write-Host ("    " + ($matches -join '  ')) -ForegroundColor DarkCyan
                 }
-                Write-Host $PromptText -ForegroundColor Yellow -NoNewline
+                Write-Host $PromptText -ForegroundColor $ThemeAccent -NoNewline
                 Write-Host $buf.ToString() -NoNewline
                 continue
             }
@@ -3282,7 +3822,22 @@ if ($_isEarlyHelp) {
     ) | Sort-Object -Unique
 
     function script:_Save-LastKeyword {
-        param([string]$Filter)
+        $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param([string]$Filter)
         if ([string]::IsNullOrWhiteSpace($Filter)) { return }
         try {
             $f = Join-Path $RootDir ".resolved\help-last-keyword.json"
@@ -3298,19 +3853,19 @@ if ($_isEarlyHelp) {
     # ── If no CLI keyword AND interactive: prompt for first one ──────
     if ([string]::IsNullOrWhiteSpace($_earlyHelpFilter) -and $_isInteractive) {
         Write-Host ""
-        Write-Host "  Interactive help filter (multi-search loop)" -ForegroundColor Cyan
-        Write-Host "  ===========================================" -ForegroundColor DarkGray
-        Write-Host "  Enter one or more keywords (space/comma separated) to filter the help." -ForegroundColor DarkGray
-        Write-Host "  Examples: chrome | chrome ext | vscode uninstall | conemu menu" -ForegroundColor DarkGray
-        Write-Host "  Append --out <path> / --json <path> to also save the matches." -ForegroundColor DarkGray
-        Write-Host "  TAB cycles completions (Shift+TAB reverse). ? lists matches." -ForegroundColor DarkGray
-        Write-Host "  Type " -ForegroundColor DarkGray -NoNewline
-        Write-Host "exit" -ForegroundColor Yellow -NoNewline
-        Write-Host " (or quit / q) to leave the loop. Empty input -> full help." -ForegroundColor DarkGray
+        Write-Host "  Interactive help filter (multi-search loop)" -ForegroundColor $ThemeSecondary
+        Write-Host "  ===========================================" -ForegroundColor $ThemeMuted
+        Write-Host "  Enter one or more keywords (space/comma separated) to filter the help." -ForegroundColor $ThemeMuted
+        Write-Host "  Examples: chrome | chrome ext | vscode uninstall | conemu menu" -ForegroundColor $ThemeMuted
+        Write-Host "  Append --out <path> / --json <path> to also save the matches." -ForegroundColor $ThemeMuted
+        Write-Host "  TAB cycles completions (Shift+TAB reverse). ? lists matches." -ForegroundColor $ThemeMuted
+        Write-Host "  Type " -ForegroundColor $ThemeMuted -NoNewline
+        Write-Host "exit" -ForegroundColor $ThemeAccent -NoNewline
+        Write-Host " (or quit / q) to leave the loop. Empty input -> full help." -ForegroundColor $ThemeMuted
         if ($_lastKw) {
-            Write-Host "  Last used: " -ForegroundColor DarkGray -NoNewline
-            Write-Host $_lastKw -ForegroundColor Cyan -NoNewline
-            Write-Host "  (pre-filled -- press ENTER to reuse, Esc to clear)" -ForegroundColor DarkGray
+            Write-Host "  Last used: " -ForegroundColor $ThemeMuted -NoNewline
+            Write-Host $_lastKw -ForegroundColor $ThemeSecondary -NoNewline
+            Write-Host "  (pre-filled -- press ENTER to reuse, Esc to clear)" -ForegroundColor $ThemeMuted
         }
         Write-Host ""
 
@@ -3341,12 +3896,12 @@ if ($_isEarlyHelp) {
     if ($_isInteractive) {
         while ($true) {
             Write-Host ""
-            Write-Host "  ----------------------------------------------------------" -ForegroundColor DarkGray
-            Write-Host "  Refine the search. Type " -ForegroundColor DarkGray -NoNewline
-            Write-Host "exit" -ForegroundColor Yellow -NoNewline
-            Write-Host " (quit / q) to leave, ENTER for full help, " -ForegroundColor DarkGray -NoNewline
-            Write-Host "TAB" -ForegroundColor Yellow -NoNewline
-            Write-Host " to complete." -ForegroundColor DarkGray
+            Write-Host "  ----------------------------------------------------------" -ForegroundColor $ThemeMuted
+            Write-Host "  Refine the search. Type " -ForegroundColor $ThemeMuted -NoNewline
+            Write-Host "exit" -ForegroundColor $ThemeAccent -NoNewline
+            Write-Host " (quit / q) to leave, ENTER for full help, " -ForegroundColor $ThemeMuted -NoNewline
+            Write-Host "TAB" -ForegroundColor $ThemeAccent -NoNewline
+            Write-Host " to complete." -ForegroundColor $ThemeMuted
 
             $_lastKw = $_earlyHelpFilter   # pre-seed prompt with the just-used filter
             $typed = _Read-HelpKeywordLine -Pool $_completionPool -LastKw $_lastKw
@@ -3361,7 +3916,7 @@ if ($_isEarlyHelp) {
             }
             $tl = $typed.ToLower()
             if ($tl -in @('exit','quit','q',':q','bye','done')) {
-                Write-Host "  Goodbye." -ForegroundColor DarkGray
+                Write-Host "  Goodbye." -ForegroundColor $ThemeMuted
                 break
             }
 
@@ -3422,14 +3977,14 @@ if ($hasCommand) {
         $dirtyTag = if ($isDirty) { " (dirty)" } else { "" }
 
         Write-Host ""
-        Write-Host "  scripts-fixer v$ver" -ForegroundColor Magenta
-        Write-Host "  ===============================================" -ForegroundColor DarkGray
-        Write-Host ("  Commit  : {0}{1}" -f $shortSha, $dirtyTag) -ForegroundColor Cyan
-        Write-Host ("  Full SHA: {0}" -f $longSha)               -ForegroundColor DarkGray
-        Write-Host ("  Branch  : {0}" -f $branch)                -ForegroundColor Cyan
-        Write-Host ("  Root    : {0}" -f $RootDir)               -ForegroundColor DarkGray
+        Write-Host "  scripts-fixer v$ver" -ForegroundColor $ThemePrimary
+        Write-Host "  ===============================================" -ForegroundColor $ThemeMuted
+        Write-Host ("  Commit  : {0}{1}" -f $shortSha, $dirtyTag) -ForegroundColor $ThemeSecondary
+        Write-Host ("  Full SHA: {0}" -f $longSha)               -ForegroundColor $ThemeMuted
+        Write-Host ("  Branch  : {0}" -f $branch)                -ForegroundColor $ThemeSecondary
+        Write-Host ("  Root    : {0}" -f $RootDir)               -ForegroundColor $ThemeMuted
         Write-Host ""
-        Write-Host "  Readme  : https://github.com/alimtvnetwork/gitmap-v6/blob/main/readme.md" -ForegroundColor Yellow
+        Write-Host "  Readme  : https://github.com/alimtvnetwork/gitmap-v6/blob/main/readme.md" -ForegroundColor $ThemeAccent
         Write-Host ""
         Write-Host "  Disclaimer: This project is provided AS IS, no warranty." -ForegroundColor DarkYellow
         Write-Host "  Made for fun to save time on OS setup. You are responsible" -ForegroundColor DarkYellow
@@ -3455,7 +4010,22 @@ if ($hasCommand) {
         $isErrorsOnly = $false
 
         function Convert-DurationToSpan {
-            param([string]$Raw)
+            $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+$ThemePrimary = "Magenta"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+if (Test-Path $ThemePath) {
+    $themeData = Get-Content $ThemePath | ConvertFrom-Json
+    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
+    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
+    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
+    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
+    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
+}
+
+param([string]$Raw)
             if ([string]::IsNullOrWhiteSpace($Raw)) { return $null }
             $r = $Raw.Trim().ToLower()
             if ($r -match '^(\d+)\s*(s|sec|secs|second|seconds)$')          { return [TimeSpan]::FromSeconds([int]$Matches[1]) }
@@ -3515,17 +4085,17 @@ if ($hasCommand) {
             $isHelp = $aLower -in @("--help", "-h", "help")
             if ($isHelp) {
                 Write-Host ""
-                Write-Host "  Usage: .\run.ps1 logs [--tail N] [--grep <pattern>] [--since <duration>] [--errors] [--case-sensitive]" -ForegroundColor Cyan
+                Write-Host "  Usage: .\run.ps1 logs [--tail N] [--grep <pattern>] [--since <duration>] [--errors] [--case-sensitive]" -ForegroundColor $ThemeSecondary
                 Write-Host ""
-                Write-Host "  Flags:" -ForegroundColor Yellow
-                Write-Host "    --tail N            Last N events (default 20)" -ForegroundColor DarkGray
-                Write-Host "    --grep <pattern>    Filter events whose .message matches regex (case-insensitive by default)" -ForegroundColor DarkGray
-                Write-Host "    --since <duration>  Only events newer than the window. Examples: 30m, 1h, 2d, 1w" -ForegroundColor DarkGray
-                Write-Host "    --errors            Only level=fail and level=warn (also reads .logs/*-error.json)" -ForegroundColor DarkGray
-                Write-Host "    --case-sensitive    Make --grep case-sensitive" -ForegroundColor DarkGray
-                Write-Host "    --help              Show this help and exit" -ForegroundColor DarkGray
+                Write-Host "  Flags:" -ForegroundColor $ThemeAccent
+                Write-Host "    --tail N            Last N events (default 20)" -ForegroundColor $ThemeMuted
+                Write-Host "    --grep <pattern>    Filter events whose .message matches regex (case-insensitive by default)" -ForegroundColor $ThemeMuted
+                Write-Host "    --since <duration>  Only events newer than the window. Examples: 30m, 1h, 2d, 1w" -ForegroundColor $ThemeMuted
+                Write-Host "    --errors            Only level=fail and level=warn (also reads .logs/*-error.json)" -ForegroundColor $ThemeMuted
+                Write-Host "    --case-sensitive    Make --grep case-sensitive" -ForegroundColor $ThemeMuted
+                Write-Host "    --help              Show this help and exit" -ForegroundColor $ThemeMuted
                 Write-Host ""
-                Write-Host "  All filters compose. Output is grouped by invokedFrom and color-coded by level." -ForegroundColor DarkGray
+                Write-Host "  All filters compose. Output is grouped by invokedFrom and color-coded by level." -ForegroundColor $ThemeMuted
                 Write-Host ""
                 exit 0
             }
@@ -3537,7 +4107,7 @@ if ($hasCommand) {
             $isSpanInvalid = $null -eq $span
             if ($isSpanInvalid) {
                 Write-Host ""
-                Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+                Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
                 Write-Host "--since '$sinceLabel' is not a recognised duration. Use formats like 30m, 1h, 2d, 1w."
                 exit 1
             }
@@ -3552,7 +4122,7 @@ if ($hasCommand) {
                 $grepRegex = New-Object System.Text.RegularExpressions.Regex($grepPattern, $opts)
             } catch {
                 Write-Host ""
-                Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+                Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
                 Write-Host "--grep '$grepPattern' is not a valid regex: $($_.Exception.Message)"
                 exit 1
             }
@@ -3562,9 +4132,9 @@ if ($hasCommand) {
         $isLogsDirMissing = -not (Test-Path -LiteralPath $logsDir)
         if ($isLogsDirMissing) {
             Write-Host ""
-            Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
+            Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
             Write-Host "No .logs/ directory found at: $logsDir"
-            Write-Host "  Run any script first to generate logs." -ForegroundColor DarkGray
+            Write-Host "  Run any script first to generate logs." -ForegroundColor $ThemeMuted
             Write-Host ""
             exit 0
         }
@@ -3577,7 +4147,7 @@ if ($hasCommand) {
         $hasNoLogFiles = $logFiles.Count -eq 0
         if ($hasNoLogFiles) {
             Write-Host ""
-            Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
+            Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
             Write-Host "No .logs/*.json files found in: $logsDir"
             Write-Host ""
             exit 0
@@ -3587,7 +4157,7 @@ if ($hasCommand) {
             try {
                 $payload = Get-Content -LiteralPath $lf.FullName -Raw | ConvertFrom-Json
             } catch {
-                Write-Host "  [ WARN ] " -ForegroundColor Yellow -NoNewline
+                Write-Host "  [ WARN ] " -ForegroundColor $ThemeAccent -NoNewline
                 Write-Host "Could not parse log file: $($lf.FullName) -- Reason: $($_.Exception.Message)"
                 continue
             }
@@ -3648,7 +4218,7 @@ if ($hasCommand) {
         $totalEvents = $allEvents.Count
         if ($totalEvents -eq 0) {
             Write-Host ""
-            Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
+            Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
             $reason = "Found $($logFiles.Count) log file(s) but zero events match the active filters."
             Write-Host $reason
             $appliedFilters = @()
@@ -3656,7 +4226,7 @@ if ($hasCommand) {
             if ($null -ne $grepRegex) { $appliedFilters += "--grep '$grepPattern'" }
             if ($null -ne $sinceCutoff) { $appliedFilters += "--since $sinceLabel" }
             if ($appliedFilters.Count -gt 0) {
-                Write-Host "  Active filters: $($appliedFilters -join ', ')" -ForegroundColor DarkGray
+                Write-Host "  Active filters: $($appliedFilters -join ', ')" -ForegroundColor $ThemeMuted
             }
             Write-Host ""
             exit 0
@@ -3673,8 +4243,8 @@ if ($hasCommand) {
         $headerLabel = "logs " + ($headerParts -join " ")
 
         Write-Host ""
-        Write-Host "  $headerLabel  --  showing $($tail.Count) of $totalEvents event(s) across $($logFiles.Count) file(s)" -ForegroundColor Magenta
-        Write-Host "  ===============================================================" -ForegroundColor DarkGray
+        Write-Host "  $headerLabel  --  showing $($tail.Count) of $totalEvents event(s) across $($logFiles.Count) file(s)" -ForegroundColor $ThemePrimary
+        Write-Host "  ===============================================================" -ForegroundColor $ThemeMuted
 
         $levelColors = @{ ok = "Green"; fail = "Red"; warn = "Yellow"; error = "Red"; skip = "DarkGray"; info = "Cyan" }
         foreach ($g in $groups) {
@@ -3686,7 +4256,7 @@ if ($hasCommand) {
                 "v$primaryVersion"
             }
             Write-Host ""
-            Write-Host "  invokedFrom: $($g.Name)  [$versionLabel]  --  $($g.Group.Count) event(s)" -ForegroundColor Yellow
+            Write-Host "  invokedFrom: $($g.Name)  [$versionLabel]  --  $($g.Group.Count) event(s)" -ForegroundColor $ThemeAccent
             $sorted = $g.Group | Sort-Object SortKey
             foreach ($e in $sorted) {
                 $color = if ($levelColors.ContainsKey($e.Level)) { $levelColors[$e.Level] } else { "Gray" }
@@ -3698,9 +4268,9 @@ if ($hasCommand) {
         }
 
         Write-Host ""
-        Write-Host "  Source files scanned:" -ForegroundColor DarkGray
+        Write-Host "  Source files scanned:" -ForegroundColor $ThemeMuted
         foreach ($lf in ($logFiles | Sort-Object Name)) {
-            Write-Host "    - $($lf.Name)" -ForegroundColor DarkGray
+            Write-Host "    - $($lf.Name)" -ForegroundColor $ThemeMuted
         }
         Write-Host ""
         exit 0
@@ -3758,11 +4328,11 @@ if ($hasCommand) {
     }
     if ($commandAliasMap.ContainsKey($normalizedCommand)) {
         $redirectTo = $commandAliasMap[$normalizedCommand]
-        Write-Host "  [REDIRECT] '" -ForegroundColor Cyan -NoNewline
-        Write-Host "$normalizedCommand" -ForegroundColor Yellow -NoNewline
-        Write-Host "' -> '" -ForegroundColor Cyan -NoNewline
+        Write-Host "  [REDIRECT] '" -ForegroundColor $ThemeSecondary -NoNewline
+        Write-Host "$normalizedCommand" -ForegroundColor $ThemeAccent -NoNewline
+        Write-Host "' -> '" -ForegroundColor $ThemeSecondary -NoNewline
         Write-Host "$redirectTo" -ForegroundColor Green -NoNewline
-        Write-Host "' (auto-discovery alias)" -ForegroundColor Cyan
+        Write-Host "' (auto-discovery alias)" -ForegroundColor $ThemeSecondary
         $normalizedCommand = $redirectTo
         $Command           = $redirectTo
     }
@@ -3790,11 +4360,11 @@ if ($hasCommand) {
                             ($normalizedCommand.StartsWith($best)) -or `
                             ([Math]::Abs($best.Length - $normalizedCommand.Length) -le 2)
             if ($isTightMatch) {
-                Write-Host "  [REDIRECT] '" -ForegroundColor Cyan -NoNewline
-                Write-Host "$normalizedCommand" -ForegroundColor Yellow -NoNewline
-                Write-Host "' -> '" -ForegroundColor Cyan -NoNewline
+                Write-Host "  [REDIRECT] '" -ForegroundColor $ThemeSecondary -NoNewline
+                Write-Host "$normalizedCommand" -ForegroundColor $ThemeAccent -NoNewline
+                Write-Host "' -> '" -ForegroundColor $ThemeSecondary -NoNewline
                 Write-Host "$best" -ForegroundColor Green -NoNewline
-                Write-Host "' (auto-discovery fuzzy match)" -ForegroundColor Cyan
+                Write-Host "' (auto-discovery fuzzy match)" -ForegroundColor $ThemeSecondary
                 $normalizedCommand = $best
                 $Command           = $best
             }
@@ -3874,13 +4444,13 @@ if ($hasCommand) {
         $isEarlyPullHelperPresent = Test-Path $sharedGitPullEarly
         if ($isEarlyPullHelperPresent) {
             . $sharedGitPullEarly
-            Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
+            Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
             Write-Host "Refreshing repo before '$normalizedCommand' subcommand: " -NoNewline
             Write-Host $RootDir -ForegroundColor White
             Invoke-GitPull -RepoRoot $RootDir
             $env:SCRIPTS_ROOT_RUN = "1"
         } else {
-            Write-Host "  [ WARN ] " -ForegroundColor Yellow -NoNewline
+            Write-Host "  [ WARN ] " -ForegroundColor $ThemeAccent -NoNewline
             Write-Host "Skipping pre-subcommand pull -- helper missing: $sharedGitPullEarly"
         }
     }
@@ -3911,7 +4481,7 @@ if ($hasCommand) {
         if (-not $keepInstalled) { $targets += @{ Name = ".installed"; Path = (Join-Path $RootDir ".installed") } }
 
         Write-Host ""
-        Write-Host "  ===== reset: wipe state for fresh start =====" -ForegroundColor Cyan
+        Write-Host "  ===== reset: wipe state for fresh start =====" -ForegroundColor $ThemeSecondary
         Write-Host "  Repo root: " -NoNewline; Write-Host $RootDir -ForegroundColor White
         Write-Host ""
         $hasAnything = $false
@@ -3928,9 +4498,9 @@ if ($hasCommand) {
                     $sizeInfo = ("{0} item(s), {1:N1} KB" -f $count, ($bytes / 1KB))
                     $hasAnything = $true
                 } catch { $sizeInfo = "unreadable" }
-                Write-Host ("  [{0}] {1,-12} -> {2}  ({3})" -f "WIPE", $t.Name, $t.Path, $sizeInfo) -ForegroundColor Yellow
+                Write-Host ("  [{0}] {1,-12} -> {2}  ({3})" -f "WIPE", $t.Name, $t.Path, $sizeInfo) -ForegroundColor $ThemeAccent
             } else {
-                Write-Host ("  [{0}] {1,-12} -> {2}  (does not exist)" -f "SKIP", $t.Name, $t.Path) -ForegroundColor DarkGray
+                Write-Host ("  [{0}] {1,-12} -> {2}  (does not exist)" -f "SKIP", $t.Name, $t.Path) -ForegroundColor $ThemeMuted
             }
         }
         Write-Host ""
@@ -3939,14 +4509,14 @@ if ($hasCommand) {
             exit 0
         }
         if ($isDryRun) {
-            Write-Host "  [DRY-RUN] No files were removed. Re-run without --dry-run to apply." -ForegroundColor Cyan
+            Write-Host "  [DRY-RUN] No files were removed. Re-run without --dry-run to apply." -ForegroundColor $ThemeSecondary
             exit 0
         }
         if (-not $isAssumeYes) {
-            Write-Host "  Type 'yes' to wipe the folders listed above, anything else to abort: " -NoNewline -ForegroundColor Yellow
+            Write-Host "  Type 'yes' to wipe the folders listed above, anything else to abort: " -NoNewline -ForegroundColor $ThemeAccent
             $reply = Read-Host
             if ($reply -notin @("y","Y","yes","YES","Yes")) {
-                Write-Host "  Aborted by operator (reply='$reply'). No changes made." -ForegroundColor Yellow
+                Write-Host "  Aborted by operator (reply='$reply'). No changes made." -ForegroundColor $ThemeAccent
                 exit 1
             }
         }
@@ -3958,12 +4528,12 @@ if ($hasCommand) {
                 Write-Host ("  [ OK ] removed {0}" -f $t.Path) -ForegroundColor Green
             } catch {
                 $hadFailure = $true
-                Write-Host ("  [FAIL] could not remove {0} -- {1}" -f $t.Path, $_.Exception.Message) -ForegroundColor Red
+                Write-Host ("  [FAIL] could not remove {0} -- {1}" -f $t.Path, $_.Exception.Message) -ForegroundColor $ThemeError
             }
         }
         Write-Host ""
         if ($hadFailure) {
-            Write-Host "  reset finished with errors. See messages above." -ForegroundColor Red
+            Write-Host "  reset finished with errors. See messages above." -ForegroundColor $ThemeError
             exit 1
         }
         Write-Host "  reset complete -- next run starts fresh." -ForegroundColor Green
@@ -3975,7 +4545,7 @@ if ($hasCommand) {
         $osScript = Join-Path $RootDir "scripts\os\run.ps1"
         $isOsScriptPresent = Test-Path $osScript
         if (-not $isOsScriptPresent) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "OS dispatcher missing at: $osScript"
             exit 1
         }
@@ -4013,7 +4583,7 @@ if ($hasCommand) {
         Show-VersionHeader
         $osScript = Join-Path $RootDir "scripts\os\run.ps1"
         if (-not (Test-Path $osScript)) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "OS dispatcher missing at: $osScript (failure: required for 'ssh' subcommand)"
             exit 1
         }
@@ -4025,42 +4595,42 @@ if ($hasCommand) {
         $needHelp = ($h -or $Help -or $verb -in @("","help","--help","-help","-h","/?","?"))
         if ($needHelp) {
             Write-Host ""
-            Write-Host "  ssh -- SSH key management shortcut" -ForegroundColor Cyan
-            Write-Host "  ==================================" -ForegroundColor DarkGray
-            Write-Host "  USAGE: " -ForegroundColor Yellow -NoNewline
+            Write-Host "  ssh -- SSH key management shortcut" -ForegroundColor $ThemeSecondary
+            Write-Host "  ==================================" -ForegroundColor $ThemeMuted
+            Write-Host "  USAGE: " -ForegroundColor $ThemeAccent -NoNewline
             Write-Host ".\run.ps1 ssh <verb> [flags]" -ForegroundColor White
             Write-Host ""
-            Write-Host "  VERBS:" -ForegroundColor Yellow
+            Write-Host "  VERBS:" -ForegroundColor $ThemeAccent
             Write-Host "    gen      [<name>] [--type ed25519|rsa] [--out PATH] [--ask] [--dry-run]" -ForegroundColor Green
-            Write-Host "             Aliases: generate, keygen, ssh-keygen, new, create" -ForegroundColor DarkGray
-            Write-Host "             <name> -> file id_<type>_<name> + comment suffix" -ForegroundColor DarkGray
-            Write-Host "             -> os gen-key" -ForegroundColor DarkGray
+            Write-Host "             Aliases: generate, keygen, ssh-keygen, new, create" -ForegroundColor $ThemeMuted
+            Write-Host "             <name> -> file id_<type>_<name> + comment suffix" -ForegroundColor $ThemeMuted
+            Write-Host "             -> os gen-key" -ForegroundColor $ThemeMuted
             Write-Host ""
             Write-Host "    view     [--name P] [--search P] [--show-private] [--ledger]" -ForegroundColor Green
-            Write-Host "             Aliases: read, cat, show" -ForegroundColor DarkGray
-            Write-Host "             Pretty-print every file in ~/.ssh. Private bodies MASKED" -ForegroundColor DarkGray
-            Write-Host "             unless --show-private (interactive only)." -ForegroundColor DarkGray
-            Write-Host "             -> os view-key" -ForegroundColor DarkGray
+            Write-Host "             Aliases: read, cat, show" -ForegroundColor $ThemeMuted
+            Write-Host "             Pretty-print every file in ~/.ssh. Private bodies MASKED" -ForegroundColor $ThemeMuted
+            Write-Host "             unless --show-private (interactive only)." -ForegroundColor $ThemeMuted
+            Write-Host "             -> os view-key" -ForegroundColor $ThemeMuted
             Write-Host ""
             Write-Host "    search <pattern>" -ForegroundColor Green
-            Write-Host "             Aliases: find, grep" -ForegroundColor DarkGray
-            Write-Host "             Substring/regex search across ~/.ssh files AND the" -ForegroundColor DarkGray
-            Write-Host "             cross-OS ledger (~/.lovable/ssh-keys-state.json)." -ForegroundColor DarkGray
-            Write-Host "             -> os view-key --search <pattern> --ledger" -ForegroundColor DarkGray
+            Write-Host "             Aliases: find, grep" -ForegroundColor $ThemeMuted
+            Write-Host "             Substring/regex search across ~/.ssh files AND the" -ForegroundColor $ThemeMuted
+            Write-Host "             cross-OS ledger (~/.lovable/ssh-keys-state.json)." -ForegroundColor $ThemeMuted
+            Write-Host "             -> os view-key --search <pattern> --ledger" -ForegroundColor $ThemeMuted
             Write-Host ""
             Write-Host "    install  --key '...' | --key-file PATH [--user N] [--dry-run]" -ForegroundColor Green
-            Write-Host "             Aliases: add" -ForegroundColor DarkGray
-            Write-Host "             -> os install-key" -ForegroundColor DarkGray
+            Write-Host "             Aliases: add" -ForegroundColor $ThemeMuted
+            Write-Host "             -> os install-key" -ForegroundColor $ThemeMuted
             Write-Host ""
             Write-Host "    revoke   --fingerprint SHA256:... | --comment X [--user N]" -ForegroundColor Green
-            Write-Host "             Aliases: remove, rm" -ForegroundColor DarkGray
-            Write-Host "             -> os revoke-key" -ForegroundColor DarkGray
+            Write-Host "             Aliases: remove, rm" -ForegroundColor $ThemeMuted
+            Write-Host "             -> os revoke-key" -ForegroundColor $ThemeMuted
             Write-Host ""
             Write-Host "    ledger   List every ledger entry (generate/install/revoke)" -ForegroundColor Green
-            Write-Host "             Aliases: list, ls" -ForegroundColor DarkGray
-            Write-Host "             -> os view-key --ledger" -ForegroundColor DarkGray
+            Write-Host "             Aliases: list, ls" -ForegroundColor $ThemeMuted
+            Write-Host "             -> os view-key --ledger" -ForegroundColor $ThemeMuted
             Write-Host ""
-            Write-Host "  EXAMPLES:" -ForegroundColor Yellow
+            Write-Host "  EXAMPLES:" -ForegroundColor $ThemeAccent
             Write-Host "    .\run.ps1 ssh create erfan.v2          # -> ~\.ssh\id_ed25519_erfan.v2" -ForegroundColor Green
             Write-Host "    .\run.ps1 ssh gen --type ed25519 --ask" -ForegroundColor Green
             Write-Host "    .\run.ps1 ssh view" -ForegroundColor Green
@@ -4071,7 +4641,7 @@ if ($hasCommand) {
             Write-Host "    .\run.ps1 ssh revoke --fingerprint SHA256:abc..." -ForegroundColor Green
             Write-Host "    .\run.ps1 ssh ledger" -ForegroundColor Green
             Write-Host ""
-            Write-Host "  State ledger: " -ForegroundColor DarkGray -NoNewline
+            Write-Host "  State ledger: " -ForegroundColor $ThemeMuted -NoNewline
             Write-Host "%USERPROFILE%\.lovable\ssh-keys-state.json" -ForegroundColor White
             Write-Host ""
             exit 0
@@ -4086,7 +4656,7 @@ if ($hasCommand) {
             { $_ -in @("revoke","remove","rm","revoke-key","remove-key") }             { ,(@("revoke-key")  + $rest); break }
             { $_ -in @("ledger","list","ls","state") }                                 { ,(@("view-key","--ledger") + $rest); break }
             default {
-                Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+                Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
                 Write-Host "Unknown ssh verb: '$verb'. Run '.\run.ps1 ssh help' for the list."
                 exit 2
             }
@@ -4101,7 +4671,7 @@ if ($hasCommand) {
         $vscodeFolderScript = Join-Path $RootDir "scripts\52-vscode-folder-repair\run.ps1"
         $isVscodeFolderScriptPresent = Test-Path $vscodeFolderScript
         if (-not $isVscodeFolderScriptPresent) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "VS Code folder repair dispatcher missing at: $vscodeFolderScript"
             exit 1
         }
@@ -4113,9 +4683,9 @@ if ($hasCommand) {
         Show-VersionHeader
         $chromeScript = Join-Path $RootDir "scripts\58-install-chrome\run.ps1"
         if (-not (Test-Path $chromeScript)) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "Chrome dispatcher missing at: $chromeScript"
-            Write-Host "          Reason: expected scripts\58-install-chrome\run.ps1 to exist relative to repo root: $RootDir" -ForegroundColor DarkGray
+            Write-Host "          Reason: expected scripts\58-install-chrome\run.ps1 to exist relative to repo root: $RootDir" -ForegroundColor $ThemeMuted
             exit 1
         }
         $chromeArgs = @()
@@ -4124,11 +4694,11 @@ if ($hasCommand) {
             $chromeArgs += '-Yes'
         }
         if ($chromeArgs.Count -eq 0) {
-            Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
-            Write-Host "Usage: .\run.ps1 chrome <fix-ai|install|uninstall|with-ext|ext|ext-all|ext-url>" -ForegroundColor DarkGray
+            Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
+            Write-Host "Usage: .\run.ps1 chrome <fix-ai|install|uninstall|with-ext|ext|ext-all|ext-url>" -ForegroundColor $ThemeMuted
             exit 0
         }
-        Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
+        Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
         Write-Host "Routing 'chrome $($chromeArgs -join ' ')' to: " -NoNewline
         Write-Host $chromeScript -ForegroundColor White
         & $chromeScript @chromeArgs
@@ -4139,9 +4709,9 @@ if ($hasCommand) {
         Show-VersionHeader
         $chromeScript = Join-Path $RootDir "scripts\58-install-chrome\run.ps1"
         if (-not (Test-Path $chromeScript)) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "Chrome dispatcher missing at: $chromeScript"
-            Write-Host "          Reason: expected scripts\58-install-chrome\run.ps1 to exist relative to repo root: $RootDir" -ForegroundColor DarkGray
+            Write-Host "          Reason: expected scripts\58-install-chrome\run.ps1 to exist relative to repo root: $RootDir" -ForegroundColor $ThemeMuted
             exit 1
         }
         $chromeArgs = @('fix-ai')
@@ -4149,7 +4719,7 @@ if ($hasCommand) {
         if ($Y -and -not ($chromeArgs | Where-Object { "$_".Trim().ToLower() -in @('-y','--yes','-yes') })) {
             $chromeArgs += '-Yes'
         }
-        Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
+        Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
         Write-Host "Routing 'chrome-fix-ai $($Install -join ' ')' to: " -NoNewline
         Write-Host $chromeScript -ForegroundColor White
         & $chromeScript @chromeArgs
@@ -4160,9 +4730,9 @@ if ($hasCommand) {
         Show-VersionHeader
         $chromeScript = Join-Path $RootDir "scripts\58-install-chrome\run.ps1"
         if (-not (Test-Path $chromeScript)) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "Chrome dispatcher missing at: $chromeScript"
-            Write-Host "          Reason: expected scripts\58-install-chrome\run.ps1 to exist relative to repo root: $RootDir" -ForegroundColor DarkGray
+            Write-Host "          Reason: expected scripts\58-install-chrome\run.ps1 to exist relative to repo root: $RootDir" -ForegroundColor $ThemeMuted
             exit 1
         }
         $sub = if ($isBareChromeProfileCopyCommand)   { 'profile-copy' }
@@ -4179,7 +4749,7 @@ if ($hasCommand) {
         if ($Y -and -not ($chromeArgs | Where-Object { "$_".Trim().ToLower() -in @('-y','--yes','-yes') })) {
             $chromeArgs += '-Yes'
         }
-        Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
+        Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
         Write-Host "Routing '$normalizedCommand $($Install -join ' ')' to: " -NoNewline
         Write-Host "$chromeScript $sub" -ForegroundColor White
         & $chromeScript @chromeArgs
@@ -4195,7 +4765,7 @@ if ($hasCommand) {
         $vscodeCtxScript = Join-Path $RootDir "scripts\52-vscode-folder-repair\run.ps1"
         $isVscodeCtxScriptPresent = Test-Path $vscodeCtxScript
         if (-not $isVscodeCtxScriptPresent) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "VS Code context-menu dispatcher missing at: $vscodeCtxScript"
             exit 1
         }
@@ -4235,7 +4805,7 @@ if ($hasCommand) {
         $profileScript = Join-Path $RootDir "scripts\profile\run.ps1"
         $isProfileScriptPresent = Test-Path $profileScript
         if (-not $isProfileScriptPresent) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "Profile dispatcher missing at: $profileScript"
             exit 1
         }
@@ -4248,7 +4818,7 @@ if ($hasCommand) {
         $gitToolsScript = Join-Path $RootDir "scripts\git-tools\run.ps1"
         $isGitToolsScriptPresent = Test-Path $gitToolsScript
         if (-not $isGitToolsScriptPresent) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "Git-tools dispatcher missing at: $gitToolsScript"
             exit 1
         }
@@ -4262,7 +4832,7 @@ if ($hasCommand) {
         $gitToolsScript = Join-Path $RootDir "scripts\git-tools\run.ps1"
         $isGitToolsScriptPresent = Test-Path $gitToolsScript
         if (-not $isGitToolsScriptPresent) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "Git-tools dispatcher missing at: $gitToolsScript"
             exit 1
         }
@@ -4276,10 +4846,10 @@ if ($hasCommand) {
         $hasRemainingArgs = $null -ne $Install -and $Install.Count -gt 0
         $isNoRemainingArgs = -not $hasRemainingArgs
         if ($isNoRemainingArgs) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "No keywords provided after 'install'. Usage: .\run.ps1 install <keywords>"
             Write-Host ""
-            Write-Host "  Run .\run.ps1 -Help to see all available keywords" -ForegroundColor Cyan
+            Write-Host "  Run .\run.ps1 -Help to see all available keywords" -ForegroundColor $ThemeSecondary
             exit 1
         }
 
@@ -4293,7 +4863,7 @@ if ($hasCommand) {
             $modelsScript = Join-Path $RootDir "scripts\models\run.ps1"
             $isModelsScriptPresent = Test-Path $modelsScript
             if (-not $isModelsScriptPresent) {
-                Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+                Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
                 Write-Host "Models dispatcher missing at: $modelsScript"
                 exit 1
             }
@@ -4303,8 +4873,8 @@ if ($hasCommand) {
                     if ($null -ne $mdArg -and "$mdArg".Length -gt 0) { $mdArgs += "$mdArg" }
                 }
             }
-            Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
-            Write-Host "Routing 'install $modelInstallFirst' to models dispatcher (download mode)" -ForegroundColor DarkGray
+            Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
+            Write-Host "Routing 'install $modelInstallFirst' to models dispatcher (download mode)" -ForegroundColor $ThemeMuted
             & $modelsScript @mdArgs
             exit $LASTEXITCODE
         }
@@ -4348,7 +4918,7 @@ if ($hasCommand) {
             $profileScript = Join-Path $RootDir "scripts\profile\run.ps1"
             $isProfileScriptPresent = Test-Path $profileScript
             if (-not $isProfileScriptPresent) {
-                Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+                Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
                 Write-Host "Profile dispatcher missing at: $profileScript"
                 exit 1
             }
@@ -4361,8 +4931,8 @@ if ($hasCommand) {
             if ($Y -and -not ($forwardArgs | Where-Object { "$_".Trim().ToLower() -in @('-y','--yes','-yes') })) {
                 $forwardArgs += '-y'
             }
-            Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
-            Write-Host "Routing 'install $firstToken' to profile dispatcher (profile '$strippedToken')" -ForegroundColor DarkGray
+            Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
+            Write-Host "Routing 'install $firstToken' to profile dispatcher (profile '$strippedToken')" -ForegroundColor $ThemeMuted
             & $profileScript @forwardArgs
             exit $LASTEXITCODE
         }
@@ -4391,9 +4961,9 @@ if ($hasCommand) {
             Show-VersionHeader
             $chromeScript = Join-Path $RootDir "scripts\58-install-chrome\run.ps1"
             if (-not (Test-Path $chromeScript)) {
-                Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+                Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
                 Write-Host "Chrome dispatcher missing at: $chromeScript"
-                Write-Host "          Reason: expected scripts\58-install-chrome\run.ps1 to exist relative to repo root: $RootDir" -ForegroundColor DarkGray
+                Write-Host "          Reason: expected scripts\58-install-chrome\run.ps1 to exist relative to repo root: $RootDir" -ForegroundColor $ThemeMuted
                 exit 1
             }
             $chromeSub  = "$($Install[1])".Trim()
@@ -4403,7 +4973,7 @@ if ($hasCommand) {
             if ($Y -and -not ($chromeRest | Where-Object { "$_".Trim().ToLower() -in @('-y','--yes','-yes') })) {
                 $chromeRest += '-Yes'
             }
-            Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
+            Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
             Write-Host "Routing 'install chrome $chromeSub' to: " -NoNewline
             Write-Host $chromeScript -ForegroundColor White
             & $chromeScript $chromeSub @chromeRest
@@ -4431,7 +5001,7 @@ if ($hasCommand) {
         $scanScript = Join-Path $RootDir "scripts\scan\run.ps1"
         $isScanScriptPresent = Test-Path $scanScript
         if (-not $isScanScriptPresent) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "Scan dispatcher missing at: $scanScript"
             exit 1
         }
@@ -4533,7 +5103,7 @@ if ($hasCommand) {
 
         if ($menuVerb -eq "list") {
             Write-Host ""
-            Write-Host "  Context-menu targets" -ForegroundColor Cyan
+            Write-Host "  Context-menu targets" -ForegroundColor $ThemeSecondary
             Write-Host "  --------------------"
             Write-Host "    all      All of the below (uses bundle dispatcher script 57)"
             Write-Host "    pwsh     PowerShell 7 submenu (script 31)"
@@ -4546,13 +5116,13 @@ if ($hasCommand) {
         }
 
         if ($menuVerb -notin @("install","uninstall","remove","rollback")) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "menu: unknown verb '$menuVerb'. Try 'menu help'."
             exit 64
         }
 
         if (-not $menuTargetMap.ContainsKey($menuTarget)) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "menu: unknown target '$menuTarget'. Valid: $menuTargetsList"
             exit 64
         }
@@ -4569,7 +5139,7 @@ if ($hasCommand) {
             $bundleScript = Join-Path $RootDir "scripts\57-context-menu-bundle\run.ps1"
             $isBundlePresent = Test-Path $bundleScript
             if (-not $isBundlePresent) {
-                Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+                Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
                 Write-Host "menu: bundle dispatcher missing at: $bundleScript"
                 exit 1
             }
@@ -4583,14 +5153,14 @@ if ($hasCommand) {
             Where-Object { $_.Name -like "$targetIdPadded-*" } |
             Select-Object -First 1
         if (-not $targetDir) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "menu: script directory for id $targetIdPadded not found under $RootDir\scripts"
             exit 1
         }
         $targetScript = Join-Path $targetDir.FullName "run.ps1"
         $isTargetScriptPresent = Test-Path $targetScript
         if (-not $isTargetScriptPresent) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "menu: run.ps1 missing for target '$menuTarget'. Path: $targetScript"
             exit 1
         }
@@ -4621,18 +5191,18 @@ if ($hasCommand) {
                 Write-Host "Defaults: splits=16, piece=1M, dir=current directory."
                 exit 0
             } elseif ($a.StartsWith("-")) {
-                Write-Host "  [ WARN ] " -ForegroundColor Yellow -NoNewline
+                Write-Host "  [ WARN ] " -ForegroundColor $ThemeAccent -NoNewline
                 Write-Host "fast-download: unknown flag '$a'"
             } else {
                 if ($fdPos -eq 0) { $fdUrl = $a }
                 elseif ($fdPos -eq 1) { $fdDir = $a }
-                else { Write-Host "fast-download: extra positional '$a' ignored" -ForegroundColor DarkGray }
+                else { Write-Host "fast-download: extra positional '$a' ignored" -ForegroundColor $ThemeMuted }
                 $fdPos++
             }
             $fi++
         }
         if ([string]::IsNullOrWhiteSpace($fdUrl)) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "fast-download: <url> is required."
             Write-Host "Usage: .\run.ps1 download <url> [<dir>] [-s N] [-p SIZE]"
             exit 64
@@ -4673,18 +5243,18 @@ if ($hasCommand) {
         $isHelperAvailable = Test-Path -LiteralPath $sharedGitPull
         if (-not $isHelperAvailable) {
             Write-Host ""
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
-            Write-Host "Self-update helper not found." -ForegroundColor Red
-            Write-Host "          File   : " -NoNewline -ForegroundColor DarkGray
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
+            Write-Host "Self-update helper not found." -ForegroundColor $ThemeError
+            Write-Host "          File   : " -NoNewline -ForegroundColor $ThemeMuted
             Write-Host $sharedGitPull -ForegroundColor White
-            Write-Host "          Reason : Missing scripts/shared/git-pull.ps1 -- repo may be incomplete." -ForegroundColor DarkGray
+            Write-Host "          Reason : Missing scripts/shared/git-pull.ps1 -- repo may be incomplete." -ForegroundColor $ThemeMuted
             exit 1
         }
         . $sharedGitPull
 
         if ($isCheckOnly) {
             Write-Host ""
-            Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
+            Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
             Write-Host "Checking for upstream changes (no pull)..."
             try {
                 Push-Location $RootDir
@@ -4697,42 +5267,42 @@ if ($hasCommand) {
                 $hasLocal  = -not [string]::IsNullOrWhiteSpace($local)
                 $hasRemote = -not [string]::IsNullOrWhiteSpace($remote)
                 if (-not ($hasLocal -and $hasRemote)) {
-                    Write-Host "  [ WARN ] " -ForegroundColor Yellow -NoNewline
-                    Write-Host "Could not determine upstream tracking branch." -ForegroundColor Yellow
+                    Write-Host "  [ WARN ] " -ForegroundColor $ThemeAccent -NoNewline
+                    Write-Host "Could not determine upstream tracking branch." -ForegroundColor $ThemeAccent
                     exit 2
                 }
                 $isUpToDate = $local -eq $remote
                 $isBehind   = (-not $isUpToDate) -and ($local -eq $base)
                 $isAhead    = (-not $isUpToDate) -and ($remote -eq $base)
                 Write-Host ""
-                Write-Host "  Local  : $local" -ForegroundColor DarkGray
-                Write-Host "  Remote : $remote" -ForegroundColor DarkGray
+                Write-Host "  Local  : $local" -ForegroundColor $ThemeMuted
+                Write-Host "  Remote : $remote" -ForegroundColor $ThemeMuted
                 if ($isUpToDate) {
                     Write-Host "  [  OK  ] " -ForegroundColor Green -NoNewline
                     Write-Host "Already up to date." -ForegroundColor Green
                 } elseif ($isBehind) {
-                    Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
-                    Write-Host "Behind upstream -- run '.\run.ps1 self-update' to pull." -ForegroundColor Cyan
+                    Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
+                    Write-Host "Behind upstream -- run '.\run.ps1 self-update' to pull." -ForegroundColor $ThemeSecondary
                 } elseif ($isAhead) {
-                    Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
-                    Write-Host "Ahead of upstream (local commits not pushed)." -ForegroundColor Cyan
+                    Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
+                    Write-Host "Ahead of upstream (local commits not pushed)." -ForegroundColor $ThemeSecondary
                 } else {
-                    Write-Host "  [ WARN ] " -ForegroundColor Yellow -NoNewline
-                    Write-Host "Diverged from upstream." -ForegroundColor Yellow
+                    Write-Host "  [ WARN ] " -ForegroundColor $ThemeAccent -NoNewline
+                    Write-Host "Diverged from upstream." -ForegroundColor $ThemeAccent
                 }
             } catch {
                 Pop-Location -ErrorAction SilentlyContinue
-                Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
-                Write-Host "git check failed: $($_.Exception.Message)" -ForegroundColor Red
+                Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
+                Write-Host "git check failed: $($_.Exception.Message)" -ForegroundColor $ThemeError
                 exit 1
             }
             exit 0
         }
 
         Write-Host ""
-        Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
+        Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
         Write-Host "Self-updating local scripts-fixer copy..."
-        Write-Host "          Repo   : " -NoNewline -ForegroundColor DarkGray
+        Write-Host "          Repo   : " -NoNewline -ForegroundColor $ThemeMuted
         Write-Host $RootDir -ForegroundColor White
 
         Invoke-GitPull -RepoRoot $RootDir
@@ -4741,13 +5311,13 @@ if ($hasCommand) {
             $installScript = Join-Path $RootDir "install.ps1"
             $hasInstaller  = Test-Path -LiteralPath $installScript
             if (-not $hasInstaller) {
-                Write-Host "  [ WARN ] " -ForegroundColor Yellow -NoNewline
-                Write-Host "Cannot --reinstall: install.ps1 not found." -ForegroundColor Yellow
-                Write-Host "          File   : " -NoNewline -ForegroundColor DarkGray
+                Write-Host "  [ WARN ] " -ForegroundColor $ThemeAccent -NoNewline
+                Write-Host "Cannot --reinstall: install.ps1 not found." -ForegroundColor $ThemeAccent
+                Write-Host "          File   : " -NoNewline -ForegroundColor $ThemeMuted
                 Write-Host $installScript -ForegroundColor White
             } else {
                 Write-Host ""
-                Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
+                Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
                 Write-Host "Re-running install.ps1 to refresh shims/PATH..."
                 & $installScript
             }
@@ -4762,7 +5332,7 @@ if ($hasCommand) {
 
         $hasArgs = $null -ne $Install -and $Install.Count -gt 0
         if (-not $hasArgs) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "No target provided. Usage: .\run.ps1 $normalizedCommand <chrome|...>"
             exit 1
         }
@@ -4776,13 +5346,13 @@ if ($hasCommand) {
         if ($targetRaw -in @("model","models")) {
             $modelsScript = Join-Path $RootDir "scripts\models\run.ps1"
             if (-not (Test-Path $modelsScript)) {
-                Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+                Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
                 Write-Host "Models dispatcher missing at: $modelsScript"
                 exit 1
             }
             $muArgs = @("uninstall") + $passthrough + @("-Force")
-            Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
-            Write-Host "Routing 'uninstall $targetRaw' to models dispatcher (uninstall mode, -Force)" -ForegroundColor DarkGray
+            Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
+            Write-Host "Routing 'uninstall $targetRaw' to models dispatcher (uninstall mode, -Force)" -ForegroundColor $ThemeMuted
             & $modelsScript @muArgs
             exit $LASTEXITCODE
         }
@@ -4804,23 +5374,23 @@ if ($hasCommand) {
         }
 
         if (-not $uninstallTargets.ContainsKey($targetRaw)) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "Unknown $normalizedCommand target '$targetRaw'. Supported: $($uninstallTargets.Keys -join ', ')"
-            Write-Host "  Tip: for other tools, use  .\run.ps1 -I <NN> uninstall" -ForegroundColor DarkGray
+            Write-Host "  Tip: for other tools, use  .\run.ps1 -I <NN> uninstall" -ForegroundColor $ThemeMuted
             exit 1
         }
 
         $entry      = $uninstallTargets[$targetRaw]
         $targetRun  = Join-Path $RootDir ("scripts\" + $entry.Folder + "\run.ps1")
         if (-not (Test-Path $targetRun)) {
-            Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "Dispatcher missing for $($entry.Display) at: $targetRun"
             exit 1
         }
 
         # ── Uninstall step ────────────────────────────────────────────────
-        Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
-        Write-Host "Uninstalling $($entry.Display) via Chocolatey ($($entry.Folder))..." -ForegroundColor DarkGray
+        Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
+        Write-Host "Uninstalling $($entry.Display) via Chocolatey ($($entry.Folder))..." -ForegroundColor $ThemeMuted
         & $targetRun "uninstall" @passthrough
         $uninstallExit = $LASTEXITCODE
 
@@ -4830,8 +5400,8 @@ if ($hasCommand) {
 
         # ── Reinstall: install step ───────────────────────────────────────
         Write-Host ""
-        Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
-        Write-Host "Reinstalling $($entry.Display) via Chocolatey..." -ForegroundColor DarkGray
+        Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
+        Write-Host "Reinstalling $($entry.Display) via Chocolatey..." -ForegroundColor $ThemeMuted
         & $targetRun "install" @passthrough
         exit $LASTEXITCODE
     } elseif ($isBareUpdateCommand) {
@@ -4954,7 +5524,7 @@ if ($CleanOnly) {
         Write-Host "  [ CLEAN ] " -ForegroundColor Green -NoNewline
         Write-Host "All .resolved/ data wiped"
     } else {
-        Write-Host "  [ SKIP  ] " -ForegroundColor DarkGray -NoNewline
+        Write-Host "  [ SKIP  ] " -ForegroundColor $ThemeMuted -NoNewline
         Write-Host "Nothing to clean -- .resolved/ does not exist"
     }
     exit 0
@@ -4968,7 +5538,7 @@ if ($Clean) {
         Write-Host "  [ CLEAN ] " -ForegroundColor Green -NoNewline
         Write-Host "All .resolved/ data wiped -- fresh detection will run"
     } else {
-        Write-Host "  [ SKIP  ] " -ForegroundColor DarkGray -NoNewline
+        Write-Host "  [ SKIP  ] " -ForegroundColor $ThemeMuted -NoNewline
         Write-Host "Nothing to clean -- .resolved/ does not exist"
     }
     Write-Host ""
@@ -4978,7 +5548,7 @@ if ($Clean) {
 $sharedGitPull = Join-Path $RootDir "scripts\shared\git-pull.ps1"
 $isHelperMissing = -not (Test-Path $sharedGitPull)
 if ($isHelperMissing) {
-    Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+    Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
     Write-Host "Shared helper not found: $sharedGitPull"
     exit 1
 }
@@ -5022,7 +5592,7 @@ if ($hasInstallKeywords) {
         }
     }) -join ', '
     Write-Host ""
-    Write-Host "  [ INFO ] " -ForegroundColor Cyan -NoNewline
+    Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
     Write-Host "Installing $totalSteps tool(s): $idList"
     Write-Host ""
 
@@ -5052,13 +5622,13 @@ if ($hasInstallKeywords) {
             $isDispatcherPresent = Test-Path $dispatcherScript
             if (-not $isDispatcherPresent) {
                 Write-Host ""
-                Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+                Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
                 Write-Host "Subcommand dispatcher not found: $dispatcherScript"
                 $failCount++
                 continue
             }
             Write-Host ""
-            Write-Host "  ----- Subcommand: $($entry.Dispatcher) $($entry.Action) -----" -ForegroundColor Cyan
+            Write-Host "  ----- Subcommand: $($entry.Dispatcher) $($entry.Action) -----" -ForegroundColor $ThemeSecondary
             $actionParts = @($entry.Action -split '\s+' | Where-Object { $_.Length -gt 0 })
             $canForwardYes = (Get-Command Add-YesFlagToArgs -ErrorAction SilentlyContinue) -and (Get-Command Test-YesActive -ErrorAction SilentlyContinue)
             if ($canForwardYes -and (Test-YesActive)) {
@@ -5089,12 +5659,12 @@ if ($hasInstallKeywords) {
             $commandHint       = if ($hasLocal) { "Get-Content '$localPath' -Raw | iex" } else { "irm $url | iex" }
 
             Write-Host ""
-            Write-Host "  ----- Remote: $($entry.Key) -----" -ForegroundColor Cyan
-            Write-Host "  $displayLabel" -ForegroundColor DarkGray
-            Write-Host "  Source : $sourceDescription" -ForegroundColor DarkGray
-            Write-Host "  Command: $commandHint" -ForegroundColor DarkGray
+            Write-Host "  ----- Remote: $($entry.Key) -----" -ForegroundColor $ThemeSecondary
+            Write-Host "  $displayLabel" -ForegroundColor $ThemeMuted
+            Write-Host "  Source : $sourceDescription" -ForegroundColor $ThemeMuted
+            Write-Host "  Command: $commandHint" -ForegroundColor $ThemeMuted
             if ($hasExpectedSha) {
-                Write-Host "  SHA256 : $expectedSha (pinned -- verified before exec)" -ForegroundColor DarkGray
+                Write-Host "  SHA256 : $expectedSha (pinned -- verified before exec)" -ForegroundColor $ThemeMuted
             } else {
                 Write-Host "  SHA256 : (not pinned -- add 'sha256' to remote.$($entry.Key) in install-keywords.json to enable integrity check)" -ForegroundColor DarkYellow
             }
@@ -5166,10 +5736,10 @@ if ($hasInstallKeywords) {
 
             if ($remoteFailed) {
                 Write-Host ""
-                Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+                Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
                 Write-Host "Remote installer '$($entry.Key)' failed."
-                Write-Host "          Source : $sourceDescription" -ForegroundColor DarkGray
-                Write-Host "          Reason : $remoteError" -ForegroundColor DarkGray
+                Write-Host "          Source : $sourceDescription" -ForegroundColor $ThemeMuted
+                Write-Host "          Reason : $remoteError" -ForegroundColor $ThemeMuted
                 $failCount++
             } else {
                 Write-Host ""
@@ -5200,11 +5770,11 @@ if ($hasInstallKeywords) {
     }
 
     Write-Host ""
-    Write-Host "  ======================================" -ForegroundColor DarkGray
+    Write-Host "  ======================================" -ForegroundColor $ThemeMuted
     Write-Host "  [ DONE ] " -ForegroundColor Green -NoNewline
     Write-Host "$successCount of $totalSteps completed successfully"
     if ($failCount -gt 0) {
-        Write-Host "  [ WARN ] " -ForegroundColor Yellow -NoNewline
+        Write-Host "  [ WARN ] " -ForegroundColor $ThemeAccent -NoNewline
         Write-Host "$failCount script(s) failed"
     }
 
@@ -5235,10 +5805,10 @@ if ($Defaults -and -not $I) { $I = 12 }
 # ── Validate -I is provided ──────────────────────────────────────────
 $isMissingParam = -not $I
 if ($isMissingParam) {
-    Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+    Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
     Write-Host "Missing -I parameter. Usage: .\run.ps1 -I <number>"
     Write-Host ""
-    Write-Host "  Run .\run.ps1 -Help to see all available scripts" -ForegroundColor Cyan
+    Write-Host "  Run .\run.ps1 -Help to see all available scripts" -ForegroundColor $ThemeSecondary
     exit 1
 }
 
@@ -5251,17 +5821,17 @@ if ($Defaults) { $scriptArgs["Defaults"] = $true }
 # ── -Defaults -Y confirmation logic ──────────────────────────────────
 if ($Defaults -and -not $Y) {
     Write-Host ""
-    Write-Host "  Defaults Mode" -ForegroundColor Cyan
-    Write-Host "  =============" -ForegroundColor DarkGray
+    Write-Host "  Defaults Mode" -ForegroundColor $ThemeSecondary
+    Write-Host "  =============" -ForegroundColor $ThemeMuted
     Write-Host ""
-    Write-Host "    Dev directory     : " -NoNewline -ForegroundColor DarkGray; Write-Host "auto (E:\dev-tool -- smart detection)" -ForegroundColor White
-    Write-Host "    VS Code edition   : " -NoNewline -ForegroundColor DarkGray; Write-Host "Stable" -ForegroundColor White
-    Write-Host "    Settings sync     : " -NoNewline -ForegroundColor DarkGray; Write-Host "Overwrite" -ForegroundColor White
+    Write-Host "    Dev directory     : " -NoNewline -ForegroundColor $ThemeMuted; Write-Host "auto (E:\dev-tool -- smart detection)" -ForegroundColor White
+    Write-Host "    VS Code edition   : " -NoNewline -ForegroundColor $ThemeMuted; Write-Host "Stable" -ForegroundColor White
+    Write-Host "    Settings sync     : " -NoNewline -ForegroundColor $ThemeMuted; Write-Host "Overwrite" -ForegroundColor White
     Write-Host ""
     $confirm = Read-Host "  Proceed with these defaults? [Y/n]"
     $isAborted = $confirm.Trim().ToUpper() -eq "N"
     if ($isAborted) {
-        Write-Host "  [ SKIP ] Aborted by user." -ForegroundColor Yellow
+        Write-Host "  [ SKIP ] Aborted by user." -ForegroundColor $ThemeAccent
         exit 0
     }
 }

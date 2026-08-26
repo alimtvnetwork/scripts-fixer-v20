@@ -1,4 +1,6 @@
-#!/bin/bash
+import os
+
+run_sh_code = r"""#!/bin/bash
 
 # Default ANSI Color codes
 PRIMARY='\033[0;35m'   # Magenta
@@ -255,3 +257,13 @@ case "$COMMAND" in
 esac
 
 show_footer
+"""
+
+with open("scripts/run.sh", "w", encoding="utf-8", newline='\n') as f:
+    f.write(run_sh_code)
+
+import subprocess
+subprocess.run(["git", "add", "."], check=True)
+subprocess.run(["git", "commit", "-m", "feat: apply JSON-based UI theming, lowercase aliases, and refine UX spacing"], check=True)
+subprocess.run(["git", "push"], check=True)
+print("Updated run.sh UI layout successfully!")
