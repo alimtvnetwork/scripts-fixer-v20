@@ -56,21 +56,6 @@
     Version: 7.3.0
 #>
 
-$ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
 param(
     [Parameter(Position = 0)]
     [string]$Command,
@@ -111,6 +96,43 @@ param(
 
 $ErrorActionPreference = "Stop"
 $RootDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
+
+function ConvertTo-ConsoleColor([string]$ColorName, [string]$Fallback = "White") {
+    if ([string]::IsNullOrWhiteSpace($ColorName)) { return $Fallback }
+    switch ($ColorName.ToLower()) {
+        "lightgreen" { return "Green" }
+        "lightcyan"  { return "Cyan" }
+        "lightblue"  { return "Cyan" }
+        "lightgray"  { return "Gray" }
+        "lightyellow"{ return "Yellow" }
+        "lightred"   { return "Red" }
+        default {
+            try {
+                $parsed = [System.Enum]::Parse([System.ConsoleColor], $ColorName, $true)
+                return $parsed.ToString()
+            } catch {
+                return $Fallback
+            }
+        }
+    }
+}
+
+$ThemePrimary = "Green"
+$ThemeSecondary = "Cyan"
+$ThemeAccent = "Yellow"
+$ThemeMuted = "Gray"
+$ThemeError = "Red"
+$ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
+if (Test-Path $ThemePath) {
+    try {
+        $themeData = Get-Content $ThemePath -Raw | ConvertFrom-Json
+        if ($themeData.colors.primary) { $ThemePrimary = ConvertTo-ConsoleColor $themeData.colors.primary "Green" }
+        if ($themeData.colors.secondary) { $ThemeSecondary = ConvertTo-ConsoleColor $themeData.colors.secondary "Cyan" }
+        if ($themeData.colors.accent) { $ThemeAccent = ConvertTo-ConsoleColor $themeData.colors.accent "Yellow" }
+        if ($themeData.colors.muted) { $ThemeMuted = ConvertTo-ConsoleColor $themeData.colors.muted "Gray" }
+        if ($themeData.colors.error) { $ThemeError = ConvertTo-ConsoleColor $themeData.colors.error "Red" }
+    } catch { }
+}
 
 # ── Dispatcher arg validation (paths-with-spaces detection) ───────────
 # Loaded early so the very first thing we do is sanity-check the user's argv.
@@ -203,22 +225,7 @@ function Show-VersionFooter {
 
 # ── Detect installed tool version (quick, no install) ────────────────
 function Get-InstalledTag {
-    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param([string]$ToolCmd, [string]$Flag = "--version", [scriptblock]$Parse)
+    param([string]$ToolCmd, [string]$Flag = "--version", [scriptblock]$Parse)
     $cmd = Get-Command $ToolCmd -ErrorAction SilentlyContinue
     $isMissing = -not $cmd
     if ($isMissing) { return $null }
@@ -234,246 +241,21 @@ param([string]$ToolCmd, [string]$Flag = "--version", [scriptblock]$Parse)
 function Get-VersionMap {
     $map = @{}
     $tools = @(
-        @{ Id = "01"; Cmd = "code";      Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param($r) ($r -split '\s+')[1] } },
-        @{ Id = "02"; Cmd = "choco";     Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
-        @{ Id = "03"; Cmd = "node";      Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param($r) $r -replace 'v','' } },
-        @{ Id = "04"; Cmd = "pnpm";      Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param($r) $r.Trim() } },
-        @{ Id = "05"; Cmd = "python";    Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param($r) ($r -replace 'Python\s*','').Trim() } },
-        @{ Id = "06"; Cmd = "go";        Flag = "version"; Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param($r) if ($r -match 'go(\d[\d.]+)') { $Matches[1] } else { $r } } },
-        @{ Id = "07"; Cmd = "git";       Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
-        @{ Id = "08"; Cmd = "github";    Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
-        @{ Id = "09"; Cmd = "g++";       Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
-        @{ Id = "16"; Cmd = "php";       Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
-        @{ Id = "17"; Cmd = "pwsh";      Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param($r) ($r -replace 'PowerShell\s*','').Trim() } },
-        @{ Id = "38"; Cmd = "flutter";   Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
-        @{ Id = "39"; Cmd = "dotnet";    Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param($r) $r.Trim() } },
-        @{ Id = "40"; Cmd = "java";      Flag = "-version"; Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param($r) if ($r -match '(\d[\d._]+)') { $Matches[1] } else { $r } } },
-        @{ Id = "42"; Cmd = "ollama";    Parse = { $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } }
+        @{ Id = "01"; Cmd = "code";      Parse = { param($r) ($r -split '\s+')[1] } },
+        @{ Id = "02"; Cmd = "choco";     Parse = { param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
+        @{ Id = "03"; Cmd = "node";      Parse = { param($r) $r -replace 'v','' } },
+        @{ Id = "04"; Cmd = "pnpm";      Parse = { param($r) $r.Trim() } },
+        @{ Id = "05"; Cmd = "python";    Parse = { param($r) ($r -replace 'Python\s*','').Trim() } },
+        @{ Id = "06"; Cmd = "go";        Flag = "version"; Parse = { param($r) if ($r -match 'go(\d[\d.]+)') { $Matches[1] } else { $r } } },
+        @{ Id = "07"; Cmd = "git";       Parse = { param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
+        @{ Id = "08"; Cmd = "github";    Parse = { param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
+        @{ Id = "09"; Cmd = "g++";       Parse = { param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
+        @{ Id = "16"; Cmd = "php";       Parse = { param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
+        @{ Id = "17"; Cmd = "pwsh";      Parse = { param($r) ($r -replace 'PowerShell\s*','').Trim() } },
+        @{ Id = "38"; Cmd = "flutter";   Parse = { param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } },
+        @{ Id = "39"; Cmd = "dotnet";    Parse = { param($r) $r.Trim() } },
+        @{ Id = "40"; Cmd = "java";      Flag = "-version"; Parse = { param($r) if ($r -match '(\d[\d._]+)') { $Matches[1] } else { $r } } },
+        @{ Id = "42"; Cmd = "ollama";    Parse = { param($r) if ($r -match '(\d[\d.]+)') { $Matches[1] } else { $r } } }
     )
     foreach ($t in $tools) {
         $flag = if ($t.Flag) { $t.Flag } else { "--version" }
@@ -1025,22 +807,7 @@ function Show-RootHelpRaw {
     $nc = 30
 
     $printRow = {
-        $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param([string]$id, [string]$name, [string]$desc)
+        param([string]$id, [string]$name, [string]$desc)
         $ver = $vMap[$id]
         $hasVer = -not [string]::IsNullOrWhiteSpace($ver)
         Write-Host "    $id  $($name.PadRight($nc)) " -NoNewline
@@ -1232,22 +999,7 @@ param([string]$id, [string]$name, [string]$desc)
 #   Show-RootHelp -Filter "chrome" -OutFile out.txt     -> also save plain text
 #   Show-RootHelp -Filter "chrome" -OutFile out.json -Format json
 function Show-RootHelp {
-    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param(
+    param(
         [string]$Filter,
         [string]$OutFile,
         [ValidateSet("text", "json")]
@@ -1444,22 +1196,7 @@ param(
 
 # ── Keyword table (compact view) ────────────────────────────────────
 function Show-KeywordTable {
-    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param([switch]$Inline)
+    param([switch]$Inline)
 
     $isStandalone = -not $Inline
     if ($isStandalone) {
@@ -1631,22 +1368,7 @@ param([switch]$Inline)
 # Levenshtein distance -- used to rank "did you mean" suggestions for unknown
 # --exclude tokens. Pure PowerShell, no external deps. O(len(a) * len(b)).
 function Get-LevenshteinDistance {
-    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param([string]$A, [string]$B)
+    param([string]$A, [string]$B)
     if ([string]::IsNullOrEmpty($A)) { return [int]$B.Length }
     if ([string]::IsNullOrEmpty($B)) { return [int]$A.Length }
     $la = $A.Length; $lb = $B.Length
@@ -1672,22 +1394,7 @@ param([string]$A, [string]$B)
 # return the top N closest matches. Filters by a length-aware cutoff so wildly
 # different tokens do not surface noisy suggestions.
 function Get-DidYouMean {
-    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param(
+    param(
         [string]   $Token,
         [string[]] $Candidates,
         [int]      $Top = 3
@@ -1718,22 +1425,7 @@ param(
 
 
 function Resolve-InstallKeywords {
-    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param(
+    param(
         [string[]]$Keywords
     )
 
@@ -2062,22 +1754,7 @@ param(
 
 # ── Run a single script by ID ───────────────────────────────────────
 function Invoke-ScriptById {
-    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param(
+    param(
         [int]$ScriptId,
         [hashtable]$ExtraArgs = @{}
     )
@@ -2267,22 +1944,7 @@ param(
 
 # ── Export command function ────────────────────────────────────────────
 function Invoke-ExportCommand {
-    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param([string[]]$Args)
+    param([string[]]$Args)
 
     Write-Host ""
     Write-Host "  Export Settings" -ForegroundColor $ThemeSecondary
@@ -2382,22 +2044,7 @@ param([string[]]$Args)
 
 # ── Status command function ────────────────────────────────────────────
 function Invoke-StatusCommand {
-    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param([string[]]$Args)
+    param([string[]]$Args)
 
     Write-Host ""
     Write-Host "  Tool Status Dashboard" -ForegroundColor $ThemeSecondary
@@ -2446,22 +2093,7 @@ param([string[]]$Args)
     $unknownCount = 0
 
     function Write-StatusGroup {
-        $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param([string]$Title, $Files, [int]$NameCol, [int]$VerCol, [int]$StatusCol, [int]$MethodCol)
+        param([string]$Title, $Files, [int]$NameCol, [int]$VerCol, [int]$StatusCol, [int]$MethodCol)
 
         $hasFiles = @($Files).Count -gt 0
         if (-not $hasFiles) {
@@ -2583,22 +2215,7 @@ function Invoke-DoctorCommand {
 
     # Helper to print check results
     function Write-Check {
-        $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param([string]$Label, [string]$Status, [string]$Detail = "")
+        param([string]$Label, [string]$Status, [string]$Detail = "")
         switch ($Status) {
             "pass" {
                 Write-Host "    [PASS] " -ForegroundColor Green -NoNewline
@@ -2798,22 +2415,7 @@ function Invoke-DoctorSelfCheck {
         (e.g. on an air-gapped CI runner or when offline). Sections (a)-(c) always run.
         Prints a green/red table per row + per-section summaries + final tally.
     #>
-    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param([switch]$SkipNetwork)
+    param([switch]$SkipNetwork)
 
     Write-Host ""
     Write-Host "  Doctor -- Self-Check (deep audit)" -ForegroundColor $ThemeSecondary
@@ -2828,22 +2430,7 @@ param([switch]$SkipNetwork)
     $script:scFail = 0
 
     function Write-SCRow {
-        $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param([string]$Section, [string]$Item, [bool]$Ok, [string]$Detail = "")
+        param([string]$Section, [string]$Item, [bool]$Ok, [string]$Detail = "")
         if ($Ok) {
             Write-Host "    [ OK ] " -ForegroundColor Green -NoNewline
             $script:scPass++
@@ -2857,22 +2444,7 @@ param([string]$Section, [string]$Item, [bool]$Ok, [string]$Detail = "")
     }
 
     function Write-SCHeader {
-        $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param([string]$Title)
+        param([string]$Title)
         Write-Host ""
         Write-Host "  -- $Title" -ForegroundColor $ThemeAccent
     }
@@ -3233,22 +2805,7 @@ param([string]$Title)
 }
 
 function Invoke-PathCommand {
-    $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param([string[]]$Args)
+    param([string[]]$Args)
 
     # Load dev-dir helper
     $devDirHelper = Join-Path $RootDir "scripts\shared\dev-dir.ps1"
@@ -3500,22 +3057,7 @@ if ($_isEarlyHelp) {
         # Reconstruct logical lines (one string per line) the same way
         # Show-RootHelp does, so the test matches real runtime behavior.
         function _Get-HelpLines {
-            $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param($Records)
+            param($Records)
             $buf = New-Object System.Collections.Generic.List[string]
             $cur = New-Object System.Text.StringBuilder
             foreach ($rec in $Records) {
@@ -3534,22 +3076,7 @@ param($Records)
             return ,$buf.ToArray()
         }
         function _Count-Matches {
-            $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param([string[]]$Lines, [string[]]$Needles)
+            param([string[]]$Lines, [string[]]$Needles)
             $low = $Needles | ForEach-Object { $_.ToLower() }
             $n = 0
             foreach ($ln in $Lines) {
@@ -3612,22 +3139,7 @@ param([string[]]$Lines, [string[]]$Needles)
     # subsequent REPL iterations introduced by the multi-search loop.
 
     function script:_Parse-HelpOutFlags {
-        $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param([string]$Filter)
+        param([string]$Filter)
         $outFile = $null; $format = $null
         if (-not $Filter) { return [pscustomobject]@{ Filter=""; OutFile=$null; Format=$null } }
         $termsRaw = @($Filter -split '[\s]+' | Where-Object { $_ })
@@ -3664,22 +3176,7 @@ param([string]$Filter)
     }
 
     function script:_Read-HelpKeywordLine {
-        $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param(
+        param(
             [string[]]$Pool,
             [string]$LastKw,
             [string]$PromptText = "  keyword(s)> "
@@ -3822,22 +3319,7 @@ param(
     ) | Sort-Object -Unique
 
     function script:_Save-LastKeyword {
-        $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param([string]$Filter)
+        param([string]$Filter)
         if ([string]::IsNullOrWhiteSpace($Filter)) { return }
         try {
             $f = Join-Path $RootDir ".resolved\help-last-keyword.json"
@@ -4010,22 +3492,7 @@ if ($hasCommand) {
         $isErrorsOnly = $false
 
         function Convert-DurationToSpan {
-            $ThemePath = Join-Path $RootDir "scripts\shared\theme.json"
-$ThemePrimary = "Green"
-$ThemeSecondary = "Cyan"
-$ThemeAccent = "Yellow"
-$ThemeMuted = "Gray"
-$ThemeError = "Red"
-if (Test-Path $ThemePath) {
-    $themeData = Get-Content $ThemePath | ConvertFrom-Json
-    if ($themeData.colors.primary) { $ThemePrimary = $themeData.colors.primary }
-    if ($themeData.colors.secondary) { $ThemeSecondary = $themeData.colors.secondary }
-    if ($themeData.colors.accent) { $ThemeAccent = $themeData.colors.accent }
-    if ($themeData.colors.muted) { $ThemeMuted = $themeData.colors.muted }
-    if ($themeData.colors.error) { $ThemeError = $themeData.colors.error }
-}
-
-param([string]$Raw)
+            param([string]$Raw)
             if ([string]::IsNullOrWhiteSpace($Raw)) { return $null }
             $r = $Raw.Trim().ToLower()
             if ($r -match '^(\d+)\s*(s|sec|secs|second|seconds)$')          { return [TimeSpan]::FromSeconds([int]$Matches[1]) }
@@ -4801,6 +4268,19 @@ param([string]$Raw)
     }
 
     if ($isBareProfileCommand) {
+        if ($Install -and $Install.Count -gt 0) {
+            $firstProfArg = "$($Install[0])".Trim().ToLower()
+            if ($firstProfArg -in @("help", "--help", "-help", "-h", "/?")) {
+                Show-VersionHeader
+                $treePy = Join-Path $RootDir "scripts\shared\profile_tree.py"
+                if (Test-Path $treePy) {
+                    python $treePy "all"
+                }
+                Show-VersionFooter
+                exit 0
+            }
+        }
+
         Show-VersionHeader
         $profileScript = Join-Path $RootDir "scripts\profile\run.ps1"
         $isProfileScriptPresent = Test-Path $profileScript
@@ -4842,6 +4322,22 @@ param([string]$Raw)
 
 
     if ($isBareInstallCommand) {
+        # Intercept 'install ls' / 'install list' for SQLite install history
+        if ($Install -and $Install.Count -gt 0) {
+            $firstSub = "$($Install[0])".Trim().ToLower()
+            if ($firstSub -in @("ls", "list", "history")) {
+                Show-VersionHeader
+                $listPy = Join-Path $RootDir "scripts\shared\list_installs.py"
+                if (Test-Path $listPy) {
+                    python $listPy
+                } else {
+                    Write-Host "  [ INFO ] No install log helper found." -ForegroundColor $ThemeMuted
+                }
+                Show-VersionFooter
+                exit 0
+            }
+        }
+
         # Merge positional remaining args into $Install
         $hasRemainingArgs = $null -ne $Install -and $Install.Count -gt 0
         $isNoRemainingArgs = -not $hasRemainingArgs
