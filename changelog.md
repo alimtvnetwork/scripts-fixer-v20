@@ -2,6 +2,26 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.18.0] 2026-08-27 VS Code Combo Shortcuts, Settings Visibility, Beyond Compare, Ollama LLM & Arch Suite
+
+### Install Prompt Architect v1.18.0
+To pin your repository to this exact version, run the following one-liner:
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.18.0/install.sh | bash -s -- ".lovable/prompts" "v1.18.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.18.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.18.0"`
+
+### Added
+- **VS Code Settings Visibility & Combo Shortcuts**: `scripts/run.sh` now features the complete `Combo Shortcuts` section in main help, exposing `vscode+settings`, `vscode+s`, `vms`, `vscode-settings`, `bcompare`, `ollama`, `clean`, and `fastfetch`.
+- **Ubuntu VS Code Settings Sync Pipeline**: `scripts/os/ubuntu/dep-vscode-settings.sh` deploys `settings.json`, `keybindings.json`, and installs curated extensions across `ubuntu+vscode` and `ubuntu+small-dev`.
+- **Beyond Compare Integration**: `scripts/os/ubuntu/install-bcompare.sh` deploys Beyond Compare and configures Git diff (`bc`) and merge (`bc4`) tooling.
+- **Linux Local LLM Suite**: `scripts/os/ubuntu/install-ollama.sh` configures Ollama service with default models (`qwen2.5-coder`, `glm4:9b`, `kimi-k2:8b`).
+- **Arch Linux Compatibility Suite**: Added `scripts/os/arch/install-arch-tools.sh` supporting `pacman` and `yay` AUR helper setups.
+- **System Deep Cleanup**: Added `scripts/os/ubuntu/clean.sh` for purging cache and vacuuming systemd journal logs.
+
+### Changed
+- Updated `scripts/shared/profile_tree.py` so `ubuntu+small-dev` and `ubuntu+vscode` display nested `vscode-settings` in their hierarchy tree.
+- Updated `scripts/shared/list_installs.py` with expanded metadata descriptions for all combinations.
+- Updated `.lovable/memory/release-architecture-map.md` to reflect release v1.18.0.
+
 ## [v1.17.0] 2026-08-27 VS Code Settings Binding, Beyond Compare, Ollama LLM & System Cleanup
 
 ### Install Prompt Architect v1.17.0

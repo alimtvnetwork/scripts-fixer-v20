@@ -50,7 +50,7 @@ show_main_help() {
     show_header
     echo -e "  ${ACCENT}Usage:${TEXT}"
     echo -e ""
-    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install <keywords>" "Install by keyword / ID (bare command)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install <keywords>" "Install by keyword / ID / combination"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install ls" "List all previously installed items"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh os <action>" "OS level actions (update, update-all)"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh <command> -h" "Show detailed help for a command"
@@ -59,18 +59,37 @@ show_main_help() {
     echo -e "  ${ACCENT}Profiles:${TEXT}"
     echo -e ""
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu-basic" "Git, ZSH, aria2c, vim, curl, wget, build-essential"
-    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+vscode" "ubuntu-basic + VS Code snap"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+vscode" "ubuntu-basic + VS Code snap + settings sync"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+simple-dev" "ubuntu+vscode + Golang, Rust, PHP, Python3"
-    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+small-dev" "Alias for ubuntu+simple-dev"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+small-dev" "Alias for ubuntu+simple-dev (small everyday dev box)"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+dev" "ubuntu+simple-dev + Node.js, PNPM, Yarn"
+    echo -e ""
+
+    echo -e "  ${ACCENT}Combo Shortcuts:${TEXT}"
+    echo -e ""
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "vscode+settings, vscode+s" "VSCode + Settings Sync" "01, 11"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "vscode+menu+settings, vms" "VSCode + Menu Fix + Sync" "01, 10, 11"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "vscode-settings, sync" "VSCode Settings Sync standalone" "11"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "bcompare, bc" "Beyond Compare Diff & Merge Tool" "27"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "ollama, llm, models" "Local LLM Suite (Ollama, GLM, Kimi)" "42"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "clean, cleanup" "System Deep Cleanup (APT cache & logs)" "28"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "fastfetch, tools" "Fastfetch + bat + eza + ripgrep" "29"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "arch, arch-tools, pacman" "Arch Linux dev stack & yay AUR helper" "45"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "git+desktop, git+gh" "Git + GitHub Desktop GUI + CLI" "07, 33"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "node+pnpm" "Node.js LTS + pnpm package manager" "03, 04"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "frontend" "VSCode + Settings + Node + pnpm + Git" "01, 11, 03, 04, 07"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "backend" "Python3 + Golang + PHP + Rust" "05, 06, 16, 20"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "full-stack, fullstack" "Complete Web & Systems Dev Stack" "01, 11, 03-07, 16, 20, 47"
     echo -e ""
     
     echo -e "  ${ACCENT}Available Scripts:${TEXT}"
     echo -e "    ${MUTED}ID  Name                            Description${TEXT}"
     echo -e "    ${MUTED}--  ------------------------------  --------------------------------------------------${TEXT}"
     echo -e ""
-    echo -e "    ${PRIMARY}Core Tools${TEXT}"
-    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "01" "vscode" "Install Visual Studio Code (snap)"
+    echo -e "    ${PRIMARY}Core Tools & Editors${TEXT}"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "01" "vscode" "Install Visual Studio Code (snap classic)"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "11" "vscode-settings" "Sync settings.json, keybindings & curated extensions"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "27" "bcompare" "Install Beyond Compare & configure Git diff/merge"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "03" "nodejs" "Install Node.js LTS, Yarn"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "04" "pnpm" "Install pnpm globally"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "05" "python3" "Install Python 3, pip, venv"
@@ -78,7 +97,7 @@ show_main_help() {
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "07" "git" "Install Git, Git LFS, GitHub CLI"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "16" "php" "Install PHP, CLI, FPM"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "20" "rust" "Install Rust (cargo, rustup)"
-    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "21" "build-essential" "Install build dev tool chain"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "21" "build-essential" "Install build dev tool chain (gcc, g++, make)"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "22" "curl" "Install curl network tool"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "23" "wget" "Install wget downloader"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "24" "vim" "Install vim text editor"
@@ -86,30 +105,39 @@ show_main_help() {
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "26" "aria2c" "Install aria2c downloader"
     echo -e ""
     
-    echo -e "    ${PRIMARY}System & Orchestration${TEXT}"
+    echo -e "    ${PRIMARY}Local AI & LLM Models${TEXT}"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "42" "ollama" "Install Ollama LLM Runner & pull default models"
+    echo -e ""
+
+    echo -e "    ${PRIMARY}System, Maintenance & Package Managers${TEXT}"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "10" "os-update" "Run apt update && apt upgrade"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "11" "os-update-all" "Run update + release-upgrade"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "28" "clean" "Deep clean APT cache, vacuum journal logs & /tmp"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "29" "fastfetch" "Install Fastfetch, bat, eza, ripgrep, and fzf"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "45" "arch-tools" "Arch Linux pacman / yay AUR bootstrap suite"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "46" "kubernetes" "Install Kubernetes CLI (kubectl)"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "47" "docker" "Install Docker and Docker Compose"
     echo -e ""
     
-    echo -e "    ${PRIMARY}Desktop Tools${TEXT}"
-    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "32" "dbeaver" "Install DBeaver via snap"
+    echo -e "    ${PRIMARY}Desktop GUI Tools${TEXT}"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "32" "dbeaver" "Install DBeaver universal database GUI"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "33" "github-desktop" "Install GitHub Desktop GUI"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "34" "sticky-notes" "Install Sticky Notes GUI utility"
     echo -e ""
     
-    echo -e "    ${PRIMARY}ZSH Environment${TEXT}"
+    echo -e "    ${PRIMARY}ZSH Modern Shell${TEXT}"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "50" "zsh" "Install ZSH shell"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "51" "zsh+config" "Install ZSH, Oh-My-Zsh & plugins"
     echo -e ""
-    echo -e ""
     
     echo -e "  ${ACCENT}Usage Examples:${TEXT}"
-    echo -e "    ./run.sh install docker"
+    echo -e "    ./run.sh install vscode+settings"
+    echo -e "    ./run.sh install bcompare"
+    echo -e "    ./run.sh install ollama"
+    echo -e "    ./run.sh install clean"
     echo -e "    ./run.sh install profile ubuntu+small-dev"
     echo -e "    ./run.sh install profile ubuntu+dev"
-    echo -e "    ./run.sh install 01,03,06,20"
+    echo -e "    ./run.sh install 01,11,03,04,27,42"
     echo -e "    ./run.sh os update-all"
     echo -e "    ./run.sh install ls"
     echo -e "    ./run.sh install profile help"
@@ -127,7 +155,10 @@ show_install_help() {
     echo -e "    ./run.sh install ls"
     echo -e ""
     echo -e "  ${ACCENT}Examples:${TEXT}"
-    echo -e "    ./run.sh install docker"
+    echo -e "    ./run.sh install vscode+settings"
+    echo -e "    ./run.sh install bcompare"
+    echo -e "    ./run.sh install ollama"
+    echo -e "    ./run.sh install clean"
     echo -e "    ./run.sh install 01,05,golang,rust"
     echo -e "    ./run.sh install profile ubuntu+small-dev"
     echo -e "    ./run.sh install profile ubuntu+dev"
@@ -234,7 +265,57 @@ case "$COMMAND" in
             elif [[ "$ITEM" == *"profile ubuntu-basic"* ]]; then
                 bash scripts/os/ubuntu/profile-ubuntu-basic.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu-basic"
             
-            # Tools
+            # Combos & Multi-stack
+            elif [[ "$ITEM" == *"vscode+menu+settings"* || "$ITEM" == *"vms"* ]]; then
+                bash scripts/os/ubuntu/profile-ubuntu-vscode.sh
+                bash scripts/os/ubuntu/dep-vscode-settings.sh
+                SUCCESS=true
+            elif [[ "$ITEM" == *"vscode+settings"* || "$ITEM" == *"vscode+s"* ]]; then
+                bash scripts/os/ubuntu/profile-ubuntu-vscode.sh
+                bash scripts/os/ubuntu/dep-vscode-settings.sh
+                SUCCESS=true
+            elif [[ "$ITEM" == *"vscode-settings"* || "$ITEM" == *"settings"* || "$ITEM" == *"11"* ]]; then
+                bash scripts/os/ubuntu/dep-vscode-settings.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"vscode"* || "$ITEM" == *"01"* ]]; then 
+                bash scripts/os/ubuntu/profile-ubuntu-vscode.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"bcompare"* || "$ITEM" == *"beyondcompare"* || "$ITEM" == *"bc"* || "$ITEM" == *"27"* ]]; then
+                bash scripts/os/ubuntu/install-bcompare.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"ollama"* || "$ITEM" == *"llm"* || "$ITEM" == *"models"* || "$ITEM" == *"42"* ]]; then
+                bash scripts/os/ubuntu/install-ollama.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"clean"* || "$ITEM" == *"cleanup"* || "$ITEM" == *"28"* ]]; then
+                bash scripts/os/ubuntu/clean.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"fastfetch"* || "$ITEM" == *"tools"* || "$ITEM" == *"cli-tools"* || "$ITEM" == *"29"* ]]; then
+                bash scripts/os/ubuntu/install-modern-tools.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"arch"* || "$ITEM" == *"arch-tools"* || "$ITEM" == *"pacman"* || "$ITEM" == *"45"* ]]; then
+                bash scripts/os/arch/install-arch-tools.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"git+desktop"* || "$ITEM" == *"git+gh"* ]]; then
+                bash scripts/os/ubuntu/install-git-lfs.sh
+                bash scripts/os/ubuntu/install-gh.sh
+                bash scripts/os/ubuntu/install-github-desktop.sh
+                SUCCESS=true
+            elif [[ "$ITEM" == *"node+pnpm"* ]]; then
+                bash scripts/os/ubuntu/install-node.sh
+                bash scripts/os/ubuntu/install-pnpm.sh
+                SUCCESS=true
+            elif [[ "$ITEM" == *"frontend"* ]]; then
+                bash scripts/os/ubuntu/profile-ubuntu-vscode.sh
+                bash scripts/os/ubuntu/dep-vscode-settings.sh
+                bash scripts/os/ubuntu/install-node.sh
+                bash scripts/os/ubuntu/install-pnpm.sh
+                bash scripts/os/ubuntu/install-git-lfs.sh
+                SUCCESS=true
+            elif [[ "$ITEM" == *"backend"* ]]; then
+                bash scripts/os/ubuntu/install-python3.sh
+                bash scripts/os/ubuntu/install-golang.sh
+                bash scripts/os/ubuntu/install-php.sh
+                bash scripts/os/ubuntu/install-rust.sh
+                SUCCESS=true
+            elif [[ "$ITEM" == *"full-stack"* || "$ITEM" == *"fullstack"* ]]; then
+                bash scripts/os/ubuntu/profile-ubuntu-dev.sh
+                bash scripts/os/ubuntu/install-docker.sh
+                SUCCESS=true
+
+            # Standalone Tools
             elif [[ "$ITEM" == *"docker"* || "$ITEM" == *"47"* ]]; then bash scripts/os/ubuntu/install-docker.sh && SUCCESS=true
             elif [[ "$ITEM" == *"kubernetes"* || "$ITEM" == *"46"* ]]; then bash scripts/os/ubuntu/install-kubernetes.sh && SUCCESS=true
             elif [[ "$ITEM" == *"python2"* ]]; then bash scripts/os/ubuntu/install-python2.sh && SUCCESS=true
@@ -250,26 +331,6 @@ case "$COMMAND" in
             elif [[ "$ITEM" == *"dbeaver"* || "$ITEM" == *"32"* ]]; then bash scripts/os/ubuntu/install-dbeaver.sh && SUCCESS=true
             elif [[ "$ITEM" == *"github-desktop"* || "$ITEM" == *"33"* ]]; then bash scripts/os/ubuntu/install-github-desktop.sh && SUCCESS=true
             elif [[ "$ITEM" == *"sticky-notes"* || "$ITEM" == *"34"* ]]; then bash scripts/os/ubuntu/install-sticky-notes.sh && SUCCESS=true
-            elif [[ "$ITEM" == *"vscode+menu+settings"* || "$ITEM" == *"vms"* ]]; then
-                bash scripts/os/ubuntu/profile-ubuntu-vscode.sh
-                bash scripts/os/ubuntu/dep-vscode-settings.sh
-                SUCCESS=true
-            elif [[ "$ITEM" == *"vscode+settings"* || "$ITEM" == *"vscode+s"* ]]; then
-                bash scripts/os/ubuntu/profile-ubuntu-vscode.sh
-                bash scripts/os/ubuntu/dep-vscode-settings.sh
-                SUCCESS=true
-            elif [[ "$ITEM" == *"vscode-settings"* || "$ITEM" == *"settings"* || "$ITEM" == *"11"* ]]; then
-                bash scripts/os/ubuntu/dep-vscode-settings.sh && SUCCESS=true
-            elif [[ "$ITEM" == *"vscode"* || "$ITEM" == *"01"* ]]; then 
-                bash scripts/os/ubuntu/profile-ubuntu-vscode.sh && SUCCESS=true
-            elif [[ "$ITEM" == *"bcompare"* || "$ITEM" == *"beyondcompare"* || "$ITEM" == *"bc"* ]]; then
-                bash scripts/os/ubuntu/install-bcompare.sh && SUCCESS=true
-            elif [[ "$ITEM" == *"ollama"* || "$ITEM" == *"llm"* || "$ITEM" == *"models"* || "$ITEM" == *"42"* ]]; then
-                bash scripts/os/ubuntu/install-ollama.sh && SUCCESS=true
-            elif [[ "$ITEM" == *"clean"* || "$ITEM" == *"cleanup"* ]]; then
-                bash scripts/os/ubuntu/clean.sh && SUCCESS=true
-            elif [[ "$ITEM" == *"fastfetch"* || "$ITEM" == *"tools"* || "$ITEM" == *"cli-tools"* ]]; then
-                bash scripts/os/ubuntu/install-modern-tools.sh && SUCCESS=true
             elif [[ "$ITEM" == *"zsh,zsh+config"* || "$ITEM" == *"zsh+config"* || "$ITEM" == *"51"* ]]; then
                 bash scripts/os/ubuntu/dep-omyzsh.sh
                 bash scripts/os/ubuntu/dep-zsh-autosuggestions.sh
