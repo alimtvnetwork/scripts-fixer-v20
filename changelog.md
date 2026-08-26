@@ -4,7 +4,16 @@ All notable changes to this project are documented in this file.
 
 
 
-## [v1.25.0] 2026-08-27 Fix: models section wired + ubuntu+small-dev VS Code explicit
+
+## [v1.26.0] 2026-08-27 feat: antigravity installer + ubuntu+dev+ai profile
+
+### Added
+- **`./run install antigravity`** (`ag`, `43`): New standalone installer that downloads and configures the Antigravity (agy) AI coding assistant CLI on Ubuntu using the official installer.
+- **`ubuntu+dev+ai` profile**: New full-stack AI dev profile that installs ubuntu+dev (VS Code + Golang + Rust + PHP + Python3 + Node + pnpm) then Ollama LLM runner and finally Antigravity (agy) in one command:
+  `./run install profile ubuntu+dev+ai`
+- **`43 antigravity, ag`** entry added to Available Scripts and Combo Shortcuts help sections.
+
+# [v1.25.0] 2026-08-27 Fix: models section wired + ubuntu+small-dev VS Code explicit
 
 ### Fixed
 - **install models now shows LLM list**: `./run install models` and `./run install ollama` now correctly dispatch to `install-models.sh` (which shows the full model catalogue and pulls a selected model) instead of the bare `install-ollama.sh` runner.

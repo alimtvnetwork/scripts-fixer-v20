@@ -63,6 +63,7 @@ show_main_help() {
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+simple-dev" "ubuntu+vscode + Golang, Rust, PHP, Python3"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+small-dev" "Alias: same as ubuntu+simple-dev (VS Code included)"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+dev" "ubuntu+simple-dev + Node.js, PNPM, Yarn"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+dev+ai" "ubuntu+dev + Ollama LLM + Antigravity (agy)"
     echo -e ""
 
     echo -e "  ${ACCENT}Combo Shortcuts:${TEXT}"
@@ -72,6 +73,7 @@ show_main_help() {
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "vscode-settings, sync" "VSCode Settings Sync standalone" "11"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "bcompare, bc" "Beyond Compare Diff & Merge Tool" "27"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "ollama, llm, models" "Local LLM Suite (Ollama, GLM, Kimi)" "42"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "antigravity, ag" "Antigravity (agy) AI coding assistant" "43"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "clean, cleanup" "System Deep Cleanup (APT cache & logs)" "28"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "fastfetch, tools" "Fastfetch + bat + eza + ripgrep" "29"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "arch, arch-tools, pacman" "Arch Linux dev stack & yay AUR helper" "45"
@@ -110,6 +112,7 @@ show_main_help() {
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "42" "models" "List all available local models (Ollama required)"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "42" "models <name>" "Pull a specific model (e.g. models glm4:9b)"
     echo -e "    ${MUTED}      Available: qwen2.5-coder:7b  glm4:9b  glm-edge:4b  kimi-k2:8b  deepseek-r1:8b  llama3.2:3b${TEXT}"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "43" "antigravity, ag" "Install Antigravity (agy) AI coding assistant"
     echo -e ""
 
     echo -e "    ${PRIMARY}System, Maintenance & Package Managers${TEXT}"
@@ -264,7 +267,9 @@ case "$COMMAND" in
             echo -e "  ${SECONDARY}Processing: $ITEM${TEXT}"
 
             # Profile installation
-            if [[ "$ITEM" == *"profile ubuntu+dev"* ]]; then
+            if [[ "$ITEM" == *"profile ubuntu+dev+ai"* ]]; then
+                bash scripts/os/ubuntu/profile-ubuntu-dev-ai.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+dev+ai"
+            elif [[ "$ITEM" == *"profile ubuntu+dev"* ]]; then
                 bash scripts/os/ubuntu/profile-ubuntu-dev.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+dev"
             elif [[ "$ITEM" == *"profile ubuntu+small-dev"* || "$ITEM" == *"profile ubuntu+simple-dev"* ]]; then
                 bash scripts/os/ubuntu/profile-ubuntu-simple-dev.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+simple-dev"
@@ -290,6 +295,8 @@ case "$COMMAND" in
                 bash scripts/os/ubuntu/install-bcompare.sh && SUCCESS=true
             elif [[ "$ITEM" == *"ollama"* || "$ITEM" == *"llm"* || "$ITEM" == *"models"* || "$ITEM" == *"42"* ]]; then
                 bash scripts/os/ubuntu/install-models.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"antigravity"* || "$ITEM" == *" ag"* || "$ITEM" == "ag" || "$ITEM" == *"43"* ]]; then
+                bash scripts/os/ubuntu/install-antigravity.sh && SUCCESS=true
             elif [[ "$ITEM" == *"clean"* || "$ITEM" == *"cleanup"* || "$ITEM" == *"28"* ]]; then
                 bash scripts/os/ubuntu/clean.sh && SUCCESS=true
             elif [[ "$ITEM" == *"fastfetch"* || "$ITEM" == *"tools"* || "$ITEM" == *"cli-tools"* || "$ITEM" == *"29"* ]]; then
