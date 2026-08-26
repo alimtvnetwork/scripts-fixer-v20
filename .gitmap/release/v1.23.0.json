@@ -1,0 +1,18 @@
+{
+  "version": "1.23.0",
+  "branch": "release/v1.23.0",
+  "sourceBranch": "main",
+  "commit": "06b5da2189e9a8ad2a4b91e57df68cdb434efc58",
+  "tag": "v1.23.0",
+  "assets": [],
+  "changelog": [
+    "**Markdown Case Conflict Resolution**: Removed duplicated uppercase `CHANGELOG.md` and `README.md` from the Git index which were causing endless Git modifications on Windows due to case-insensitivity collisions with `changelog.md` and `readme.md`.",
+    "**Global Markdown Lowercasing**: Renamed all remaining uppercase markdown files (e.g., `README.md` -\u003e `readme.md`) across the repository to enforce the lowercase convention strictly.",
+    "**Git State Repair Tool**: Added `tools/fix-git-crlf-and-case.ps1` to automatically run `git add --renormalize .` and `git checkout .`. This allows Windows/WSL users to instantly fix their local physical files when their local Git working tree gets stuck with CRLF line endings or case-collision ghosts.",
+    "Updated `.lovable/memory/release-architecture-map.md`."
+  ],
+  "isDraft": false,
+  "isPreRelease": false,
+  "createdAt": "2026-08-26T19:12:44Z",
+  "isLatest": false
+}
