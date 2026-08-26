@@ -20,10 +20,11 @@ if [ -n "$SYNC_SOURCE_DIR" ] && [ -d "$SYNC_SOURCE_DIR" ]; then
     fi
 fi
 
-# If code command is available, install essential developer extensions
+# If code CLI is available, install extensions dynamically from extensions.json + language extensions
 if command -v code &>/dev/null; then
     echo -e "  \033[1;36m[  ..  ] Installing curated VS Code extensions...\033[0m"
-    EXTENSIONS=(
+    
+    EXTS=(
         "golang.Go"
         "rust-lang.rust-analyzer"
         "ms-python.python"
@@ -32,9 +33,22 @@ if command -v code &>/dev/null; then
         "eamodio.gitlens"
         "tamasfe.even-better-toml"
         "timonwong.shellcheck"
+        "redhat.vscode-yaml"
+        "streetsidesoftware.code-spell-checker"
     )
-    for EXT in "${EXTENSIONS[@]}"; do
+
+    # Read from extensions.json if exists
+    if [ -f "$SYNC_SOURCE_DIR/extensions.json" ]; then
+        JSON_EXTS=$(grep -o '"[^"]*"' "$SYNC_SOURCE_DIR/extensions.json" | grep -v 'extensions' | grep -v 'disabled' | tr -d '"' || echo "")
+        for JE in $JSON_EXTS; do
+            EXTS+=("$JE")
+        done
+    fi
+
+    # Deduplicate and install
+    for EXT in $(printf "%s\n" "${EXTS[@]}" | sort -u); do
+        echo -e "    \033[0;37m-> Installing extension: $EXT\033[0m"
         code --install-extension "$EXT" --force 2>/dev/null || true
     done
-    echo -e "  \033[1;32m[  OK  ] VS Code extensions installed and active.\033[0m"
+    echo -e "  \033[1;32m[  OK  ] VS Code extensions installed and configured.\033[0m"
 fi

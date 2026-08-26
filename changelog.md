@@ -2,6 +2,25 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.19.0] 2026-08-27 Dynamic Extension Sync, Linux Models CLI, Beyond Compare & Arch Suite
+
+### Install Prompt Architect v1.19.0
+To pin your repository to this exact version, run the following one-liner:
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.19.0/install.sh | bash -s -- ".lovable/prompts" "v1.19.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.19.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.19.0"`
+
+### Added
+- **Dynamic Extension Sync for Ubuntu**: `scripts/os/ubuntu/dep-vscode-settings.sh` parses `scripts/11-vscode-settings-sync/extensions.json` to automatically install all enabled extensions and language servers for Go, Rust, Python, PHP, TypeScript, YAML, and Git.
+- **Linux Local Models Dispatcher (`./run.sh models`)**: Added `scripts/os/ubuntu/install-models.sh` providing interactive listing and download of AI models (GLM-4 9B, GLM-Edge 4B, Kimi K2 8B, Kimi Coder 8B, Qwen 2.5 Coder 7B, DeepSeek R1 8B).
+- **Beyond Compare Tooling (`bcompare` / `bc`)**: Configures Git global `diff.tool` and `merge.tool` with `/usr/bin/bcompare`.
+- **Arch Linux Compatibility Suite**: `scripts/os/arch/install-arch-tools.sh` bootstraps `pacman` and `yay` AUR helper environments.
+- **System Deep Cleanup (`clean`)**: Integrated APT package purging and systemd journal log vacuuming.
+
+### Changed
+- Refactored `scripts/shared/profile_tree.py` to display the full nested VS Code settings hierarchy in `ubuntu+small-dev`.
+- Updated `scripts/shared/list_installs.py` with comprehensive metadata descriptions.
+- Synchronized release architecture map in `.lovable/memory/release-architecture-map.md`.
+
 ## [v1.18.0] 2026-08-27 VS Code Combo Shortcuts, Settings Visibility, Beyond Compare, Ollama LLM & Arch Suite
 
 ### Install Prompt Architect v1.18.0

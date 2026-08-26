@@ -210,6 +210,11 @@ if [[ "$COMMAND" == "help" || "$COMMAND" == "-h" || "$COMMAND" == "--help" ]]; t
 fi
 
 case "$COMMAND" in
+    "models"|"llm"|"ollama")
+        bash scripts/os/ubuntu/install-models.sh "$ARGS"
+        show_footer
+        exit 0
+        ;;
     "os")
         if [[ "$ARGS" == *"help"* || "$ARGS" == *"-h"* || "$ARGS" == *"--help"* ]]; then
             echo -e "  ${ACCENT}OS Command Help:${TEXT}"

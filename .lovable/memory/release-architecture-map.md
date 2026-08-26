@@ -1,16 +1,15 @@
 # Release Architecture Map
 
 ## Current Release
-- **Version**: 1.18.0
-- **Previous Version**: 1.17.0
+- **Version**: 1.19.0
+- **Previous Version**: 1.18.0
 - **Source of Truth**: `version.json`
 - **Synchronized Mirror**: `scripts/version.json`
 - **Dynamic Readers**: `run.ps1` (PowerShell), `scripts/run.sh` (Linux Bash)
 
-## Features in v1.18.0
-- **Combo Shortcuts**: Full terminal visibility for combinations (`vscode+settings`, `vms`, `frontend`, `backend`, `full-stack`, `ollama`, `bcompare`, `clean`).
-- **Ubuntu VS Code Settings Sync**: Automatic keybinding, setting, and extension installation for `ubuntu+vscode` and `ubuntu+small-dev`.
-- **Beyond Compare Installer**: Linux package deployment and Git diff/merge integration.
-- **Ollama / LLM Runner**: Autonomous Ollama installer with GLM-4, Kimi K2, and Qwen models.
-- **Arch Linux Suite**: `scripts/os/arch/install-arch-tools.sh` for pacman and yay AUR helper environments.
-- **System Deep Cleanup**: Automated APT and journal cache maintenance.
+## Features in v1.19.0
+- **Linux Models CLI**: `./run.sh models` and `./run.sh models <slug>` to manage and pull local LLMs.
+- **Ubuntu Dynamic Extension Sync**: Reads `extensions.json` and syncs VS Code settings and language tools.
+- **Beyond Compare Git Integration**: Auto-configures Git diff and merge tools.
+- **Arch Linux Suite**: Arch package manager and yay AUR helper bootstrap.
+- **System Deep Cleanup**: Complete APT cache and journal log vacuuming.
