@@ -2,7 +2,14 @@
 
 All notable changes to this project are documented in this file.
 
-## [v1.23.0] 2026-08-27 Hotfix: Case-Sensitivity & File Deduplication
+
+## [v1.24.0] 2026-08-27 Root run self-healing CRLF fix
+
+### Fixed
+- **Permanent CRLF Auto-Heal**: Root 
+un script now silently strips Windows carriage returns (\\r) from every shell script under scripts/ using ind + sed before executing on Linux/WSL. This resolves the persistent \$'\\r': command not found error permanently, even when Git does not rewrite the physical files after a git pull.
+
+# [v1.23.0] 2026-08-27 Hotfix: Case-Sensitivity & File Deduplication
 
 ### Install Prompt Architect v1.23.0
 To pin your repository to this exact version, run the following one-liner:
