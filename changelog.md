@@ -2,6 +2,23 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.23.0] 2026-08-27 Hotfix: Case-Sensitivity & File Deduplication
+
+### Install Prompt Architect v1.23.0
+To pin your repository to this exact version, run the following one-liner:
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.23.0/install.sh | bash -s -- ".lovable/prompts" "v1.23.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.23.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.23.0"`
+
+### Fixed
+- **Markdown Case Conflict Resolution**: Removed duplicated uppercase `CHANGELOG.md` and `README.md` from the Git index which were causing endless Git modifications on Windows due to case-insensitivity collisions with `changelog.md` and `readme.md`.
+- **Global Markdown Lowercasing**: Renamed all remaining uppercase markdown files (e.g., `README.md` -> `readme.md`) across the repository to enforce the lowercase convention strictly.
+
+### Added
+- **Git State Repair Tool**: Added `tools/fix-git-crlf-and-case.ps1` to automatically run `git add --renormalize .` and `git checkout .`. This allows Windows/WSL users to instantly fix their local physical files when their local Git working tree gets stuck with CRLF line endings or case-collision ghosts.
+
+### Changed
+- Updated `.lovable/memory/release-architecture-map.md`.
+
 ## [v1.22.0] 2026-08-27 Hotfix: Global Unix LF Line Ending Normalization & Git Attributes Enforcement
 
 ### Install Prompt Architect v1.22.0
