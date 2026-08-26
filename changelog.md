@@ -2,6 +2,23 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.16.0] 2026-08-26 UI Parity, Tree Hierarchy, Model Integrations & Theme System
+
+### Install Prompt Architect v1.16.0
+To pin your repository to this exact version, run the following one-liner:
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.16.0/install.sh | bash -s -- ".lovable/prompts" "v1.16.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.16.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.16.0"`
+
+### Added
+- **Under-the-Hood Profile Hierarchy Trees**: `scripts/shared/profile_tree.py` dynamically resolves both Windows and Ubuntu profiles (`ubuntu-basic`, `ubuntu+vscode`, `ubuntu+small-dev`, `ubuntu+dev`, `minimal`, `base`, `dev`, `small-dev`, etc.) into ASCII tree diagrams with step-by-step breakdowns.
+- **Expanded `install ls` / `install list`**: Displays full component trees and single-tool descriptions from the SQLite ledger (`~/.scripts-fixer/install_log.db`) across both Linux (`run.sh`) and Windows (`run.ps1`).
+- **GLM & Kimi Models Integration**: Added Zhipu AI GLM-4 (9B), GLM-Edge (4B), Moonshot AI Kimi K2 (8B), and Kimi Coder (8B) to both Ollama (`scripts/42-install-ollama/config.json`) and GGUF (`scripts/43-install-llama-cpp/models-catalog.json`) catalogs.
+- **Cross-Platform High-Contrast Theming**: Replaced dark magenta colors with vibrant `LightGreen`, `Cyan`, and `LightGray` in `scripts/shared/theme.json`, `run.sh`, `run.ps1`, and `list_installs.py`.
+
+### Changed
+- Synchronized Windows (`run.ps1`) and Linux (`scripts/run.sh`) installation summary and logging pipelines.
+- Updated `.lovable/memory/release-architecture-map.md` to reflect release v1.16.0.
+
 ## [v1.9.0] -- 2026-08-06
 
 ### Fixed
