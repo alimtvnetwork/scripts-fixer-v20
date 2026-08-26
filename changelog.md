@@ -3,7 +3,15 @@
 All notable changes to this project are documented in this file.
 
 
-## [v1.24.0] 2026-08-27 Root run self-healing CRLF fix
+
+## [v1.25.0] 2026-08-27 Fix: models section wired + ubuntu+small-dev VS Code explicit
+
+### Fixed
+- **install models now shows LLM list**: `./run install models` and `./run install ollama` now correctly dispatch to `install-models.sh` (which shows the full model catalogue and pulls a selected model) instead of the bare `install-ollama.sh` runner.
+- **ubuntu+small-dev VS Code included**: Clarified in help text that `ubuntu+small-dev` / `ubuntu+simple-dev` already includes VS Code + settings sync (via `profile-ubuntu-vscode.sh`).
+- **LLM help section expanded**: Available models now listed inline in the help output (qwen2.5-coder, glm4, glm-edge, kimi-k2, deepseek-r1, llama3.2).
+
+# [v1.24.0] 2026-08-27 Root run self-healing CRLF fix
 
 ### Fixed
 - **Permanent CRLF Auto-Heal**: Root 

@@ -61,7 +61,7 @@ show_main_help() {
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu-basic" "Git, ZSH, aria2c, vim, curl, wget, build-essential"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+vscode" "ubuntu-basic + VS Code snap + settings sync"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+simple-dev" "ubuntu+vscode + Golang, Rust, PHP, Python3"
-    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+small-dev" "Alias for ubuntu+simple-dev (small everyday dev box)"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+small-dev" "Alias: same as ubuntu+simple-dev (VS Code included)"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+dev" "ubuntu+simple-dev + Node.js, PNPM, Yarn"
     echo -e ""
 
@@ -106,7 +106,10 @@ show_main_help() {
     echo -e ""
     
     echo -e "    ${PRIMARY}Local AI & LLM Models${TEXT}"
-    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "42" "ollama" "Install Ollama LLM Runner & pull default models"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "42" "ollama" "Install Ollama LLM Runner"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "42" "models" "List all available local models (Ollama required)"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "42" "models <name>" "Pull a specific model (e.g. models glm4:9b)"
+    echo -e "    ${MUTED}      Available: qwen2.5-coder:7b  glm4:9b  glm-edge:4b  kimi-k2:8b  deepseek-r1:8b  llama3.2:3b${TEXT}"
     echo -e ""
 
     echo -e "    ${PRIMARY}System, Maintenance & Package Managers${TEXT}"
@@ -286,7 +289,7 @@ case "$COMMAND" in
             elif [[ "$ITEM" == *"bcompare"* || "$ITEM" == *"beyondcompare"* || "$ITEM" == *"bc"* || "$ITEM" == *"27"* ]]; then
                 bash scripts/os/ubuntu/install-bcompare.sh && SUCCESS=true
             elif [[ "$ITEM" == *"ollama"* || "$ITEM" == *"llm"* || "$ITEM" == *"models"* || "$ITEM" == *"42"* ]]; then
-                bash scripts/os/ubuntu/install-ollama.sh && SUCCESS=true
+                bash scripts/os/ubuntu/install-models.sh && SUCCESS=true
             elif [[ "$ITEM" == *"clean"* || "$ITEM" == *"cleanup"* || "$ITEM" == *"28"* ]]; then
                 bash scripts/os/ubuntu/clean.sh && SUCCESS=true
             elif [[ "$ITEM" == *"fastfetch"* || "$ITEM" == *"tools"* || "$ITEM" == *"cli-tools"* || "$ITEM" == *"29"* ]]; then
