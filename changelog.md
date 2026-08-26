@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.22.0] 2026-08-27 Hotfix: Global Unix LF Line Ending Normalization & Git Attributes Enforcement
+
+### Install Prompt Architect v1.22.0
+To pin your repository to this exact version, run the following one-liner:
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.22.0/install.sh | bash -s -- ".lovable/prompts" "v1.22.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.22.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.22.0"`
+
+### Fixed
+- **Root Cause Analysis (RCA) - CRLF Syntax Errors on Linux**: Resolved carriage return (`\r`) syntax errors in `scripts/run.sh` and all sub-scripts by converting all 479 shell script files to strict Unix LF line endings.
+- **Git Attributes Enforcement**: Added `.gitattributes` configuring `*.sh text eol=lf` and `run text eol=lf` to prevent automatic CRLF conversion upon Git checkouts on Windows workstations.
+
+### Changed
+- Captured screenshot in `.lovable/assets/screenshots/06-crlf-syntax-error.png`.
+- Updated release architecture map in `.lovable/memory/release-architecture-map.md`.
+
 ## [v1.21.0] 2026-08-27 Unified AI Ecosystem, VS Code Settings Sync, Beyond Compare & Arch Suite
 
 ### Install Prompt Architect v1.21.0
