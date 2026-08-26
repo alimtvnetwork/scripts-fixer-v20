@@ -570,6 +570,16 @@ Write-Host ""
 if ($isDryRun) {
     Write-Host "  [DRYRUN] No steps will be executed." -ForegroundColor Magenta
     Save-LogFile -Status "ok"
+    try {
+        $loggerPy = Join-Path $sharedDirProf "logger.py"
+        if (Test-Path $loggerPy) {
+            python $loggerPy "profile $Action"
+        }
+        $treePy = Join-Path $sharedDirProf "profile_tree.py"
+        if (Test-Path $treePy) {
+            python $treePy "$Action"
+        }
+    } catch { }
     exit 0
 }
 

@@ -5259,7 +5259,15 @@ if ($hasInstallKeywords) {
         if ($hasModeOverride -and $hasEnvVar) {
             Remove-Item "Env:\$envVarName" -ErrorAction SilentlyContinue
         }
-        if ($result) { $successCount++ } else { $failCount++ }
+        if ($result) {
+            $successCount++
+            try {
+                $loggerPy = Join-Path $RootDir "scripts\shared\logger.py"
+                if (Test-Path $loggerPy) {
+                    python $loggerPy "$id"
+                }
+            } catch { }
+        } else { $failCount++ }
 
         # Refresh PATH between chained scripts so newly installed tools are discoverable
         Refresh-EnvPath
@@ -5272,6 +5280,14 @@ if ($hasInstallKeywords) {
     if ($failCount -gt 0) {
         Write-Host "  [ WARN ] " -ForegroundColor $ThemeAccent -NoNewline
         Write-Host "$failCount script(s) failed"
+    }
+
+    if ($successCount -gt 0) {
+        Write-Host ""
+        Write-Host "  Installation Summary:" -ForegroundColor $ThemePrimary
+        foreach ($entry in $orderedSequence) {
+            Write-Host "    ✔ $($entry.Id)" -ForegroundColor $ThemeSecondary
+        }
     }
 
     Remove-Item Env:\SCRIPTS_ROOT_RUN -ErrorAction SilentlyContinue
