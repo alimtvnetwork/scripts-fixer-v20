@@ -5,7 +5,13 @@ All notable changes to this project are documented in this file.
 
 
 
-## [v1.26.0] 2026-08-27 feat: antigravity installer + ubuntu+dev+ai profile
+
+## [v1.27.0] 2026-08-27 fix: root run auto-pulls latest on every launch
+
+### Fixed
+- **Auto-pull on launch**: Root `run` script now silently runs `git pull --quiet` on every execution before delegating to `scripts/run.sh`. This ensures Linux users always get the latest version of all scripts without needing to manually run `git pull`. The CRLF strip is applied both before and after the pull so freshly downloaded files are also normalized.
+
+# [v1.26.0] 2026-08-27 feat: antigravity installer + ubuntu+dev+ai profile
 
 ### Added
 - **`./run install antigravity`** (`ag`, `43`): New standalone installer that downloads and configures the Antigravity (agy) AI coding assistant CLI on Ubuntu using the official installer.

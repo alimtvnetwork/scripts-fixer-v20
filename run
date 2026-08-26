@@ -1,7 +1,18 @@
 #!/bin/bash
-# Self-healing CRLF normalization: strip Windows \r from all shell scripts
-# before executing. This runs silently and fixes any stale checkout issues.
+# Self-healing: strip CRLF from scripts, pull latest from git,
+# then re-strip in case any pulled files still have \r, then execute.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Step 1: strip any stale \r from all .sh files (so git can run)
 find "$SCRIPT_DIR/scripts" -name "*.sh" -exec sed -i 's/\r$//' {} + 2>/dev/null
 sed -i 's/\r$//' "$SCRIPT_DIR/scripts/run.sh" 2>/dev/null
+
+# Step 2: pull latest (silent unless there are real changes)
+cd "$SCRIPT_DIR" && git pull --quiet 2>/dev/null
+
+# Step 3: strip again in case pull brought in any new files with \r
+find "$SCRIPT_DIR/scripts" -name "*.sh" -exec sed -i 's/\r$//' {} + 2>/dev/null
+sed -i 's/\r$//' "$SCRIPT_DIR/scripts/run.sh" 2>/dev/null
+
+# Step 4: execute the main script
 bash "$SCRIPT_DIR/scripts/run.sh" "$@"
