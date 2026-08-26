@@ -2,6 +2,25 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.21.0] 2026-08-27 Unified AI Ecosystem, VS Code Settings Sync, Beyond Compare & Arch Suite
+
+### Install Prompt Architect v1.21.0
+To pin your repository to this exact version, run the following one-liner:
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.21.0/install.sh | bash -s -- ".lovable/prompts" "v1.21.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.21.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.21.0"`
+
+### Added
+- **Ubuntu Dynamic VS Code Settings & Extension Sync**: `scripts/os/ubuntu/dep-vscode-settings.sh` parses `extensions.json` to deploy `settings.json`, `keybindings.json`, and all project extensions across `ubuntu+vscode` and `ubuntu+small-dev`.
+- **Linux Local Models Management (`./run.sh models`)**: Interactive CLI in `scripts/os/ubuntu/install-models.sh` for listing and pulling models (GLM-4 9B, GLM-Edge 4B, Kimi K2 8B, Kimi Coder 8B, Qwen 2.5 Coder 7B, DeepSeek R1 8B).
+- **Beyond Compare Tooling (`bcompare` / `bc`)**: `scripts/os/ubuntu/install-bcompare.sh` installs Beyond Compare on Linux and configures Git diff (`bc`) and merge (`bc4`) tooling for VS Code.
+- **Arch Linux Compatibility Suite**: `scripts/os/arch/install-arch-tools.sh` bootstraps `pacman` and `yay` AUR environments.
+- **System Deep Cleanup (`clean`)**: Integrated APT package purging and systemd journal log vacuuming.
+
+### Changed
+- **Combo Shortcuts Visibility**: Fully visible in `./run.sh` help screen and case dispatchers (`vscode+settings`, `vms`, `frontend`, `backend`, `full-stack`, `ollama`, `bcompare`, `clean`).
+- **Under-the-Hood Tree View**: `scripts/shared/profile_tree.py` and `scripts/shared/list_installs.py` expanded with detailed nested components.
+- **Release Map Synchronized**: Updated `.lovable/memory/release-architecture-map.md` to reflect release v1.21.0.
+
 ## [v1.20.0] 2026-08-27 Production Release: Full Ubuntu/Windows Feature Parity & AI Ecosystem
 
 ### Install Prompt Architect v1.20.0
