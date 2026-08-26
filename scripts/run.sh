@@ -206,54 +206,82 @@ case "$COMMAND" in
             exit 0
         fi
 
-        # Profile installation
-        if [[ "$ARGS" == *"profile ubuntu+dev"* ]]; then
-            bash scripts/os/ubuntu/profile-ubuntu-dev.sh
-        elif [[ "$ARGS" == *"profile ubuntu+small-dev"* || "$ARGS" == *"profile ubuntu+simple-dev"* ]]; then
-            bash scripts/os/ubuntu/profile-ubuntu-simple-dev.sh
-        elif [[ "$ARGS" == *"profile ubuntu+vscode"* ]]; then
-            bash scripts/os/ubuntu/profile-ubuntu-vscode.sh
-        elif [[ "$ARGS" == *"profile ubuntu-basic"* ]]; then
-            bash scripts/os/ubuntu/profile-ubuntu-basic.sh
-        
-        # Tools
-        elif [[ "$ARGS" == *"docker"* || "$ARGS" == *"47"* ]]; then bash scripts/os/ubuntu/install-docker.sh
-        elif [[ "$ARGS" == *"kubernetes"* || "$ARGS" == *"46"* ]]; then bash scripts/os/ubuntu/install-kubernetes.sh
-        elif [[ "$ARGS" == *"python2"* ]]; then bash scripts/os/ubuntu/install-python2.sh
-        elif [[ "$ARGS" == *"python3"* || "$ARGS" == *"python"* || "$ARGS" == *"05"* ]]; then bash scripts/os/ubuntu/install-python3.sh
-        elif [[ "$ARGS" == *"rust"* || "$ARGS" == *"20"* ]]; then bash scripts/os/ubuntu/install-rust.sh
-        elif [[ "$ARGS" == *"golang"* || "$ARGS" == *"06"* ]]; then bash scripts/os/ubuntu/install-golang.sh
-        elif [[ "$ARGS" == *"node"* || "$ARGS" == *"nodejs"* || "$ARGS" == *"03"* ]]; then bash scripts/os/ubuntu/install-node.sh
-        elif [[ "$ARGS" == *"pnpm"* || "$ARGS" == *"04"* ]]; then bash scripts/os/ubuntu/install-pnpm.sh
-        elif [[ "$ARGS" == *"yarn"* ]]; then bash scripts/os/ubuntu/install-yarn.sh
-        elif [[ "$ARGS" == *"php"* || "$ARGS" == *"16"* ]]; then bash scripts/os/ubuntu/install-php.sh
-        elif [[ "$ARGS" == *"git-lfs"* || "$ARGS" == *"gh"* || "$ARGS" == *"git"* || "$ARGS" == *"07"* ]]; then bash scripts/os/ubuntu/install-git-lfs.sh; bash scripts/os/ubuntu/install-gh.sh
-        elif [[ "$ARGS" == *"dbeaver"* || "$ARGS" == *"32"* ]]; then bash scripts/os/ubuntu/install-dbeaver.sh
-        elif [[ "$ARGS" == *"github-desktop"* || "$ARGS" == *"33"* ]]; then bash scripts/os/ubuntu/install-github-desktop.sh
-        elif [[ "$ARGS" == *"sticky-notes"* || "$ARGS" == *"34"* ]]; then bash scripts/os/ubuntu/install-sticky-notes.sh
-        elif [[ "$ARGS" == *"vscode"* || "$ARGS" == *"01"* ]]; then bash scripts/os/ubuntu/profile-ubuntu-vscode.sh
-        elif [[ "$ARGS" == *"zsh,zsh+config"* || "$ARGS" == *"zsh+config"* || "$ARGS" == *"51"* ]]; then
-            bash scripts/os/ubuntu/dep-omyzsh.sh
-            bash scripts/os/ubuntu/dep-zsh-autosuggestions.sh
-        elif [[ "$ARGS" == *"zsh"* || "$ARGS" == *"50"* ]]; then
-            bash scripts/os/ubuntu/dep-omyzsh.sh
-        elif [[ "$ARGS" == *"build-essential"* || "$ARGS" == *"21"* ]]; then
-            bash scripts/os/ubuntu/dep-build-essential.sh
-        elif [[ "$ARGS" == *"curl"* || "$ARGS" == *"22"* ]]; then
-            bash scripts/os/ubuntu/dep-curl.sh
-        elif [[ "$ARGS" == *"wget"* || "$ARGS" == *"23"* ]]; then
-            bash scripts/os/ubuntu/dep-wget.sh
-        elif [[ "$ARGS" == *"vim"* || "$ARGS" == *"24"* ]]; then
-            bash scripts/os/ubuntu/dep-vim.sh
-        elif [[ "$ARGS" == *"ssh"* || "$ARGS" == *"25"* ]]; then
-            # Extract port if provided, e.g., './run.sh install ssh 2222'
-            PORT=$(echo "$ARGS" | grep -oE '[0-9]+' | head -n 1)
-            bash scripts/os/ubuntu/install-ssh.sh "$PORT"
-        elif [[ "$ARGS" == *"aria2c"* || "$ARGS" == *"26"* ]]; then
-            bash scripts/os/ubuntu/dep-aria2c.sh
-        else
-            echo -e "  ${ERROR}Unknown install argument: $ARGS${TEXT}"
-            echo -e "  Run './run.sh install help' for more details."
+        INSTALLED=()
+
+        # Split by comma
+        IFS=',' read -ra ITEMS <<< "$ARGS"
+        for ITEM in "${ITEMS[@]}"; do
+            # Trim spaces
+            ITEM=$(echo "$ITEM" | xargs)
+            
+            if [ -z "$ITEM" ]; then continue; fi
+            
+            SUCCESS=false
+            echo -e "  ${SECONDARY}Processing: $ITEM${TEXT}"
+
+            # Profile installation
+            if [[ "$ITEM" == *"profile ubuntu+dev"* ]]; then
+                bash scripts/os/ubuntu/profile-ubuntu-dev.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"profile ubuntu+small-dev"* || "$ITEM" == *"profile ubuntu+simple-dev"* ]]; then
+                bash scripts/os/ubuntu/profile-ubuntu-simple-dev.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"profile ubuntu+vscode"* ]]; then
+                bash scripts/os/ubuntu/profile-ubuntu-vscode.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"profile ubuntu-basic"* ]]; then
+                bash scripts/os/ubuntu/profile-ubuntu-basic.sh && SUCCESS=true
+            
+            # Tools
+            elif [[ "$ITEM" == *"docker"* || "$ITEM" == *"47"* ]]; then bash scripts/os/ubuntu/install-docker.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"kubernetes"* || "$ITEM" == *"46"* ]]; then bash scripts/os/ubuntu/install-kubernetes.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"python2"* ]]; then bash scripts/os/ubuntu/install-python2.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"python3"* || "$ITEM" == *"python"* || "$ITEM" == *"05"* ]]; then bash scripts/os/ubuntu/install-python3.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"rust"* || "$ITEM" == *"20"* ]]; then bash scripts/os/ubuntu/install-rust.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"golang"* || "$ITEM" == *"06"* ]]; then bash scripts/os/ubuntu/install-golang.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"node"* || "$ITEM" == *"nodejs"* || "$ITEM" == *"03"* ]]; then bash scripts/os/ubuntu/install-node.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"pnpm"* || "$ITEM" == *"04"* ]]; then bash scripts/os/ubuntu/install-pnpm.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"yarn"* ]]; then bash scripts/os/ubuntu/install-yarn.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"php"* || "$ITEM" == *"16"* ]]; then bash scripts/os/ubuntu/install-php.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"git-lfs"* || "$ITEM" == *"gh"* || "$ITEM" == *"git"* || "$ITEM" == *"07"* ]]; then 
+                bash scripts/os/ubuntu/install-git-lfs.sh && bash scripts/os/ubuntu/install-gh.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"dbeaver"* || "$ITEM" == *"32"* ]]; then bash scripts/os/ubuntu/install-dbeaver.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"github-desktop"* || "$ITEM" == *"33"* ]]; then bash scripts/os/ubuntu/install-github-desktop.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"sticky-notes"* || "$ITEM" == *"34"* ]]; then bash scripts/os/ubuntu/install-sticky-notes.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"vscode"* || "$ITEM" == *"01"* ]]; then bash scripts/os/ubuntu/profile-ubuntu-vscode.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"zsh,zsh+config"* || "$ITEM" == *"zsh+config"* || "$ITEM" == *"51"* ]]; then
+                bash scripts/os/ubuntu/dep-omyzsh.sh
+                bash scripts/os/ubuntu/dep-zsh-autosuggestions.sh
+                SUCCESS=true
+            elif [[ "$ITEM" == *"zsh"* || "$ITEM" == *"50"* ]]; then
+                bash scripts/os/ubuntu/dep-omyzsh.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"build-essential"* || "$ITEM" == *"21"* ]]; then
+                bash scripts/os/ubuntu/dep-build-essential.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"curl"* || "$ITEM" == *"22"* ]]; then
+                bash scripts/os/ubuntu/dep-curl.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"wget"* || "$ITEM" == *"23"* ]]; then
+                bash scripts/os/ubuntu/dep-wget.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"vim"* || "$ITEM" == *"24"* ]]; then
+                bash scripts/os/ubuntu/dep-vim.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"ssh"* || "$ITEM" == *"25"* ]]; then
+                PORT=$(echo "$ITEM" | grep -oE '[0-9]+' | head -n 1)
+                bash scripts/os/ubuntu/install-ssh.sh "$PORT" && SUCCESS=true
+            elif [[ "$ITEM" == *"aria2c"* || "$ITEM" == *"26"* ]]; then
+                bash scripts/os/ubuntu/dep-aria2c.sh && SUCCESS=true
+            else
+                echo -e "  ${ERROR}Unknown install argument: $ITEM${TEXT}"
+                echo -e "  Run './run.sh install help' for more details."
+            fi
+
+            if [ "$SUCCESS" = true ]; then
+                INSTALLED+=("$ITEM")
+                python3 scripts/shared/logger.py "$ITEM"
+            fi
+        done
+
+        if [ ${#INSTALLED[@]} -gt 0 ]; then
+            echo -e "
+  ${PRIMARY}Installation Summary:${TEXT}"
+            for p in "${INSTALLED[@]}"; do
+                echo -e "    ${SECONDARY}✔${TEXT} $p"
+            done
         fi
         ;;
     *)
