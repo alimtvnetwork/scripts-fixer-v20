@@ -12,7 +12,7 @@
 [![Tools Installed](https://img.shields.io/badge/Tools-46%2B-8b5cf6?logo=tools&logoColor=white)](#what-it-does)
 [![Databases](https://img.shields.io/badge/Databases-12-0ea5e9?logo=databricks&logoColor=white)](#databases-18-29)
 [![License](https://img.shields.io/badge/License-MIT-eab308)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-v1.3.0-f97316)](scripts/version.json)
+[![Version](https://img.shields.io/badge/Version-v1.22.0-f97316)](scripts/version.json)
 [![AI Models](https://img.shields.io/badge/AI%20Models-90-ef4444?logo=huggingface&logoColor=white)](scripts/43-install-llama-cpp/models-list.md)
 [![Changelog](https://img.shields.io/badge/Changelog-Latest-ec4899)](changelog.md)
 [![CI](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)](.github/workflows)
@@ -2635,8 +2635,6 @@ You may use, copy, modify, merge, publish, distribute, sublicense, and/or sell c
 - [Fedora Manage](ubuntu-installation-guide/03-fedora-manage.md)
 - [Debian Manage](ubuntu-installation-guide/04-debian-manage.md)
 
-## Installation Guides
-- [Ubuntu Manage](ubuntu-installation-guide/01-ubuntu-manage.md)
-- [CentOS Manage](ubuntu-installation-guide/02-centos-manage.md)
-- [Fedora Manage](ubuntu-installation-guide/03-fedora-manage.md)
-- [Debian Manage](ubuntu-installation-guide/04-debian-manage.md)
+## Architecture & Releases
+- [Release Architecture Map](.lovable/memory/release-architecture-map.md)
+

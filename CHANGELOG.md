@@ -2,6 +2,134 @@
 
 All notable changes to this project are documented in this file.
 
+## [v1.22.0] 2026-08-27 Hotfix: Global Unix LF Line Ending Normalization & Git Attributes Enforcement
+
+### Install Prompt Architect v1.22.0
+To pin your repository to this exact version, run the following one-liner:
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.22.0/install.sh | bash -s -- ".lovable/prompts" "v1.22.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.22.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.22.0"`
+
+### Fixed
+- **Root Cause Analysis (RCA) - CRLF Syntax Errors on Linux**: Resolved carriage return (`\r`) syntax errors in `scripts/run.sh` and all sub-scripts by converting all 479 shell script files to strict Unix LF line endings.
+- **Git Attributes Enforcement**: Added `.gitattributes` configuring `*.sh text eol=lf` and `run text eol=lf` to prevent automatic CRLF conversion upon Git checkouts on Windows workstations.
+
+### Changed
+- Captured screenshot in `.lovable/assets/screenshots/06-crlf-syntax-error.png`.
+- Updated release architecture map in `.lovable/memory/release-architecture-map.md`.
+
+## [v1.21.0] 2026-08-27 Unified AI Ecosystem, VS Code Settings Sync, Beyond Compare & Arch Suite
+
+### Install Prompt Architect v1.21.0
+To pin your repository to this exact version, run the following one-liner:
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.21.0/install.sh | bash -s -- ".lovable/prompts" "v1.21.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.21.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.21.0"`
+
+### Added
+- **Ubuntu Dynamic VS Code Settings & Extension Sync**: `scripts/os/ubuntu/dep-vscode-settings.sh` parses `extensions.json` to deploy `settings.json`, `keybindings.json`, and all project extensions across `ubuntu+vscode` and `ubuntu+small-dev`.
+- **Linux Local Models Management (`./run.sh models`)**: Interactive CLI in `scripts/os/ubuntu/install-models.sh` for listing and pulling models (GLM-4 9B, GLM-Edge 4B, Kimi K2 8B, Kimi Coder 8B, Qwen 2.5 Coder 7B, DeepSeek R1 8B).
+- **Beyond Compare Tooling (`bcompare` / `bc`)**: `scripts/os/ubuntu/install-bcompare.sh` installs Beyond Compare on Linux and configures Git diff (`bc`) and merge (`bc4`) tooling for VS Code.
+- **Arch Linux Compatibility Suite**: `scripts/os/arch/install-arch-tools.sh` bootstraps `pacman` and `yay` AUR environments.
+- **System Deep Cleanup (`clean`)**: Integrated APT package purging and systemd journal log vacuuming.
+
+### Changed
+- **Combo Shortcuts Visibility**: Fully visible in `./run.sh` help screen and case dispatchers (`vscode+settings`, `vms`, `frontend`, `backend`, `full-stack`, `ollama`, `bcompare`, `clean`).
+- **Under-the-Hood Tree View**: `scripts/shared/profile_tree.py` and `scripts/shared/list_installs.py` expanded with detailed nested components.
+- **Release Map Synchronized**: Updated `.lovable/memory/release-architecture-map.md` to reflect release v1.21.0.
+
+## [v1.20.0] 2026-08-27 Production Release: Full Ubuntu/Windows Feature Parity & AI Ecosystem
+
+### Install Prompt Architect v1.20.0
+To pin your repository to this exact version, run the following one-liner:
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.20.0/install.sh | bash -s -- ".lovable/prompts" "v1.20.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.20.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.20.0"`
+
+### Added
+- **Ubuntu Dynamic VS Code Settings Sync**: `scripts/os/ubuntu/dep-vscode-settings.sh` parses `extensions.json` to deploy `settings.json`, `keybindings.json`, and all project extensions across `ubuntu+vscode` and `ubuntu+small-dev`.
+- **Linux Local Models Management (`./run.sh models`)**: Interactive CLI in `scripts/os/ubuntu/install-models.sh` for listing and pulling models (GLM-4, GLM-Edge, Kimi K2, Kimi Coder, Qwen 2.5 Coder, DeepSeek R1).
+- **Beyond Compare Tooling (`bcompare` / `bc`)**: `scripts/os/ubuntu/install-bcompare.sh` installs Beyond Compare on Linux and configures Git diff (`bc`) and merge (`bc4`) tooling for VS Code.
+- **Arch Linux Compatibility Suite**: `scripts/os/arch/install-arch-tools.sh` bootstraps `pacman` and `yay` AUR environments.
+- **System Deep Cleanup (`clean`)**: Integrated APT package purging and systemd journal log vacuuming.
+
+### Changed
+- **Combo Shortcuts Visibility**: Fully visible in `./run.sh` help screen and case dispatchers.
+- **Under-the-Hood Tree View**: `scripts/shared/profile_tree.py` and `scripts/shared/list_installs.py` expanded with detailed nested components.
+- **Release Map Synchronized**: Updated `.lovable/memory/release-architecture-map.md` to reflect release v1.20.0.
+
+## [v1.19.0] 2026-08-27 Dynamic Extension Sync, Linux Models CLI, Beyond Compare & Arch Suite
+
+### Install Prompt Architect v1.19.0
+To pin your repository to this exact version, run the following one-liner:
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.19.0/install.sh | bash -s -- ".lovable/prompts" "v1.19.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.19.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.19.0"`
+
+### Added
+- **Dynamic Extension Sync for Ubuntu**: `scripts/os/ubuntu/dep-vscode-settings.sh` parses `scripts/11-vscode-settings-sync/extensions.json` to automatically install all enabled extensions and language servers for Go, Rust, Python, PHP, TypeScript, YAML, and Git.
+- **Linux Local Models Dispatcher (`./run.sh models`)**: Added `scripts/os/ubuntu/install-models.sh` providing interactive listing and download of AI models (GLM-4 9B, GLM-Edge 4B, Kimi K2 8B, Kimi Coder 8B, Qwen 2.5 Coder 7B, DeepSeek R1 8B).
+- **Beyond Compare Tooling (`bcompare` / `bc`)**: Configures Git global `diff.tool` and `merge.tool` with `/usr/bin/bcompare`.
+- **Arch Linux Compatibility Suite**: `scripts/os/arch/install-arch-tools.sh` bootstraps `pacman` and `yay` AUR helper environments.
+- **System Deep Cleanup (`clean`)**: Integrated APT package purging and systemd journal log vacuuming.
+
+### Changed
+- Refactored `scripts/shared/profile_tree.py` to display the full nested VS Code settings hierarchy in `ubuntu+small-dev`.
+- Updated `scripts/shared/list_installs.py` with comprehensive metadata descriptions.
+- Synchronized release architecture map in `.lovable/memory/release-architecture-map.md`.
+
+## [v1.18.0] 2026-08-27 VS Code Combo Shortcuts, Settings Visibility, Beyond Compare, Ollama LLM & Arch Suite
+
+### Install Prompt Architect v1.18.0
+To pin your repository to this exact version, run the following one-liner:
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.18.0/install.sh | bash -s -- ".lovable/prompts" "v1.18.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.18.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.18.0"`
+
+### Added
+- **VS Code Settings Visibility & Combo Shortcuts**: `scripts/run.sh` now features the complete `Combo Shortcuts` section in main help, exposing `vscode+settings`, `vscode+s`, `vms`, `vscode-settings`, `bcompare`, `ollama`, `clean`, and `fastfetch`.
+- **Ubuntu VS Code Settings Sync Pipeline**: `scripts/os/ubuntu/dep-vscode-settings.sh` deploys `settings.json`, `keybindings.json`, and installs curated extensions across `ubuntu+vscode` and `ubuntu+small-dev`.
+- **Beyond Compare Integration**: `scripts/os/ubuntu/install-bcompare.sh` deploys Beyond Compare and configures Git diff (`bc`) and merge (`bc4`) tooling.
+- **Linux Local LLM Suite**: `scripts/os/ubuntu/install-ollama.sh` configures Ollama service with default models (`qwen2.5-coder`, `glm4:9b`, `kimi-k2:8b`).
+- **Arch Linux Compatibility Suite**: Added `scripts/os/arch/install-arch-tools.sh` supporting `pacman` and `yay` AUR helper setups.
+- **System Deep Cleanup**: Added `scripts/os/ubuntu/clean.sh` for purging cache and vacuuming systemd journal logs.
+
+### Changed
+- Updated `scripts/shared/profile_tree.py` so `ubuntu+small-dev` and `ubuntu+vscode` display nested `vscode-settings` in their hierarchy tree.
+- Updated `scripts/shared/list_installs.py` with expanded metadata descriptions for all combinations.
+- Updated `.lovable/memory/release-architecture-map.md` to reflect release v1.18.0.
+
+## [v1.17.0] 2026-08-27 VS Code Settings Binding, Beyond Compare, Ollama LLM & System Cleanup
+
+### Install Prompt Architect v1.17.0
+To pin your repository to this exact version, run the following one-liner:
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.17.0/install.sh | bash -s -- ".lovable/prompts" "v1.17.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.17.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.17.0"`
+
+### Added
+- **Ubuntu VS Code Settings Sync**: `scripts/os/ubuntu/dep-vscode-settings.sh` synchronizes `settings.json`, `keybindings.json`, and installs curated extensions (Go, Rust Analyzer, Python, Intelephense, Prettier, GitLens) directly during `ubuntu+vscode` and `ubuntu+small-dev` installations.
+- **Beyond Compare Integration**: Added `scripts/os/ubuntu/install-bcompare.sh` installing Beyond Compare for Linux and automatically configuring Git `diff.tool` and `merge.tool` (`bc`/`bc4`).
+- **Linux Local LLM Suite**: Added `scripts/os/ubuntu/install-ollama.sh` installing the Ollama service and pulling default coding & reasoning models (`qwen2.5-coder:7b`, `glm4:9b`, `kimi-k2:8b`).
+- **System Deep Cleanup**: Added `scripts/os/ubuntu/clean.sh` for purging obsolete packages, vacuuming systemd journal logs, and clearing temporary disk caches.
+- **Modern CLI Dev Tools**: Added `scripts/os/ubuntu/install-modern-tools.sh` deploying `fastfetch`, `bat`, `eza`, `ripgrep`, and `fzf`.
+- **Combo Shortcuts Parity**: `scripts/run.sh` now supports `vscode+settings`, `vscode+s`, `vms`, `bcompare`, `ollama`, `llm`, `clean`, and `fastfetch`.
+
+### Changed
+- Refactored `scripts/shared/profile_tree.py` so `ubuntu+small-dev` and `ubuntu+vscode` explicitly render `vscode-settings` in their hierarchy tree.
+- Updated `scripts/shared/list_installs.py` with expanded metadata descriptions for all newly added tools.
+
+## [v1.16.0] 2026-08-26 UI Parity, Tree Hierarchy, Model Integrations & Theme System
+
+### Install Prompt Architect v1.16.0
+To pin your repository to this exact version, run the following one-liner:
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.16.0/install.sh | bash -s -- ".lovable/prompts" "v1.16.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.16.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.16.0"`
+
+### Added
+- **Under-the-Hood Profile Hierarchy Trees**: `scripts/shared/profile_tree.py` dynamically resolves both Windows and Ubuntu profiles (`ubuntu-basic`, `ubuntu+vscode`, `ubuntu+small-dev`, `ubuntu+dev`, `minimal`, `base`, `dev`, `small-dev`, etc.) into ASCII tree diagrams with step-by-step breakdowns.
+- **Expanded `install ls` / `install list`**: Displays full component trees and single-tool descriptions from the SQLite ledger (`~/.scripts-fixer/install_log.db`) across both Linux (`run.sh`) and Windows (`run.ps1`).
+- **GLM & Kimi Models Integration**: Added Zhipu AI GLM-4 (9B), GLM-Edge (4B), Moonshot AI Kimi K2 (8B), and Kimi Coder (8B) to both Ollama (`scripts/42-install-ollama/config.json`) and GGUF (`scripts/43-install-llama-cpp/models-catalog.json`) catalogs.
+- **Cross-Platform High-Contrast Theming**: Replaced dark magenta colors with vibrant `LightGreen`, `Cyan`, and `LightGray` in `scripts/shared/theme.json`, `run.sh`, `run.ps1`, and `list_installs.py`.
+
+### Changed
+- Synchronized Windows (`run.ps1`) and Linux (`scripts/run.sh`) installation summary and logging pipelines.
+- Updated `.lovable/memory/release-architecture-map.md` to reflect release v1.16.0.
+
 ## [v1.9.0] -- 2026-08-06
 
 ### Fixed
