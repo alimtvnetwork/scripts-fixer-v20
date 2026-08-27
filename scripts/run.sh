@@ -137,8 +137,8 @@ show_main_help() {
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "28" "clean" "Deep clean APT cache, vacuum journal logs & /tmp"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "29" "fastfetch" "Install Fastfetch, bat, eza, ripgrep, and fzf"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "45" "arch-tools" "Arch Linux pacman / yay AUR bootstrap suite"
-    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "46" "kubernetes" "Install Kubernetes CLI (kubectl)"
-    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "47" "docker" "Install Docker and Docker Compose"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "46" "kubernetes" "Install Kubernetes CLI (kubectl) & Helm"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "47" "docker" "Install Docker and Docker Compose plugin"
     echo -e ""
     
     echo -e "    ${PRIMARY}Desktop GUI Tools${TEXT}"

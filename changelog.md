@@ -6,6 +6,13 @@ All notable changes to this project are documented in this file.
 
 
 
+## [v1.30.0] - 2026-08-27
+
+### Added
+- Created complete `install-docker.sh` setup (adds official docker apt repo, docker-compose-plugin, and docker group injection)
+- Created complete `install-kubernetes.sh` setup (installs `kubectl` v1.29 and `helm` from official repos)
+- Updated `run.sh` help menus to reflect Docker and Kubernetes tooling
+
 ## [v1.29.0] - 2026-08-27
 
 ### Added
