@@ -146,6 +146,7 @@ show_main_help() {
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "32" "dbeaver" "Install DBeaver universal database GUI"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "33" "github-desktop" "Install GitHub Desktop GUI"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "34" "sticky-notes" "Install Sticky Notes GUI utility"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "35" "chrome" "Install Google Chrome Stable"
     echo -e ""
     
     echo -e "    ${PRIMARY}ZSH Modern Shell${TEXT}"
@@ -391,6 +392,7 @@ case "$COMMAND" in
             elif [[ "$ITEM" == *"dbeaver"* || "$ITEM" == *"32"* ]]; then bash scripts/os/ubuntu/install-dbeaver.sh && SUCCESS=true
             elif [[ "$ITEM" == *"github-desktop"* || "$ITEM" == *"33"* ]]; then bash scripts/os/ubuntu/install-github-desktop.sh && SUCCESS=true
             elif [[ "$ITEM" == *"sticky-notes"* || "$ITEM" == *"34"* ]]; then bash scripts/os/ubuntu/install-sticky-notes.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"chrome"* || "$ITEM" == *"35"* ]]; then bash scripts/os/ubuntu/install-chrome.sh && SUCCESS=true
             elif [[ "$ITEM" == *"zsh,zsh+config"* || "$ITEM" == *"zsh+config"* || "$ITEM" == *"51"* ]]; then
                 bash scripts/os/ubuntu/dep-omyzsh.sh
                 bash scripts/os/ubuntu/dep-zsh-autosuggestions.sh

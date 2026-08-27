@@ -6,6 +6,12 @@ All notable changes to this project are documented in this file.
 
 
 
+## [v1.32.0] - 2026-08-27
+
+### Added
+- Created `scripts/os/ubuntu/install-chrome.sh` to download and install Google Chrome Stable via official .deb package.
+- Registered `chrome` (ID 35) in the `run.sh` CLI dispatcher and help menu.
+
 ## [v1.31.0] - 2026-08-27
 
 ### Added
