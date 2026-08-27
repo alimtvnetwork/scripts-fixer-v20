@@ -65,7 +65,15 @@ show_main_help() {
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+dev" "ubuntu+simple-dev + Node.js, PNPM, Yarn"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+dev+ai" "ubuntu+dev + Ollama LLM + Antigravity (agy)"
     echo -e ""
-
+    
+    echo -e "  ${ACCENT}Generic Profiles (Auto-detects OS):${TEXT}"
+    echo -e ""
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "profile basic" "Delegates to <os>-basic"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "profile simple-dev" "Delegates to <os>+simple-dev"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "profile small-dev" "Delegates to <os>+small-dev"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "profile dev" "Delegates to <os>+dev"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "profile dev+ai" "Delegates to <os>+dev+ai"
+    echo -e ""
     echo -e "  ${ACCENT}Combo Shortcuts:${TEXT}"
     echo -e ""
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "vscode+settings, vscode+s" "VSCode + Settings Sync" "01, 11"
@@ -105,19 +113,27 @@ show_main_help() {
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "24" "vim" "Install vim text editor"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "25" "ssh" "Install SSH & configure port"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "26" "aria2c" "Install aria2c downloader"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "39" "dotnet, csharp" "Install .NET 8.0 SDK"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "40" "java, jdk" "Install Java OpenJDK 21"
     echo -e ""
     
     echo -e "    ${PRIMARY}Local AI & LLM Models${TEXT}"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "42" "ollama" "Install Ollama LLM Runner"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "42" "models" "List all available local models (Ollama required)"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "42" "models <name>" "Pull a specific model (e.g. models glm4:9b)"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "42" "models-menu, ai-models" "Interactive model download picker"
     echo -e "    ${MUTED}      Available: qwen2.5-coder:7b  glm4:9b  glm-edge:4b  kimi-k2:8b  deepseek-r1:8b  llama3.2:3b${TEXT}"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "43" "antigravity, ag" "Install Antigravity (agy) AI coding assistant"
+    echo -e ""
+
+    echo -e "    ${PRIMARY}Databases${TEXT}"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "30" "databases, db" "Interactive database installer (Postgres, MySQL, Redis, Mongo)"
     echo -e ""
 
     echo -e "    ${PRIMARY}System, Maintenance & Package Managers${TEXT}"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "10" "os-update" "Run apt update && apt upgrade"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "11" "os-update-all" "Run update + release-upgrade"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "12" "workspace" "Setup default workspace directory (e.g. ~/work)"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "28" "clean" "Deep clean APT cache, vacuum journal logs & /tmp"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "29" "fastfetch" "Install Fastfetch, bat, eza, ripgrep, and fzf"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "45" "arch-tools" "Arch Linux pacman / yay AUR bootstrap suite"
@@ -255,6 +271,13 @@ case "$COMMAND" in
         INSTALLED=()
         PROFILE_INSTALLED=""
 
+        # Detect OS for generic profile delegation
+        OS_ID="ubuntu"
+        if [ -f /etc/os-release ]; then
+            . /etc/os-release
+            OS_ID=$ID
+        fi
+
         # Split by comma
         IFS=',' read -ra ITEMS <<< "$ARGS"
         for ITEM in "${ITEMS[@]}"; do
@@ -262,6 +285,13 @@ case "$COMMAND" in
             ITEM=$(echo "$ITEM" | xargs)
             
             if [ -z "$ITEM" ]; then continue; fi
+            
+            # Resolve generic OS-agnostic profiles
+            if [[ "$ITEM" == "profile basic" ]]; then ITEM="profile ${OS_ID}-basic"; fi
+            if [[ "$ITEM" == "profile simple-dev" ]]; then ITEM="profile ${OS_ID}+simple-dev"; fi
+            if [[ "$ITEM" == "profile small-dev" ]]; then ITEM="profile ${OS_ID}+small-dev"; fi
+            if [[ "$ITEM" == "profile dev" ]]; then ITEM="profile ${OS_ID}+dev"; fi
+            if [[ "$ITEM" == "profile dev+ai" ]]; then ITEM="profile ${OS_ID}+dev+ai"; fi
             
             SUCCESS=false
             echo -e "  ${SECONDARY}Processing: $ITEM${TEXT}"
@@ -293,10 +323,20 @@ case "$COMMAND" in
                 bash scripts/os/ubuntu/profile-ubuntu-vscode.sh && SUCCESS=true
             elif [[ "$ITEM" == *"bcompare"* || "$ITEM" == *"beyondcompare"* || "$ITEM" == *"bc"* || "$ITEM" == *"27"* ]]; then
                 bash scripts/os/ubuntu/install-bcompare.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"models "* ]]; then
+                # Extract the model name and pass it
+                MODEL_NAME=$(echo "$ITEM" | sed 's/models //')
+                bash scripts/os/ubuntu/install-models.sh "$MODEL_NAME" && SUCCESS=true
+            elif [[ "$ITEM" == *"models-menu"* || "$ITEM" == *"ai-models"* ]]; then
+                bash scripts/os/ubuntu/install-model-picker.sh && SUCCESS=true
             elif [[ "$ITEM" == *"ollama"* || "$ITEM" == *"llm"* || "$ITEM" == *"models"* || "$ITEM" == *"42"* ]]; then
                 bash scripts/os/ubuntu/install-models.sh && SUCCESS=true
             elif [[ "$ITEM" == *"antigravity"* || "$ITEM" == *" ag"* || "$ITEM" == "ag" || "$ITEM" == *"43"* ]]; then
                 bash scripts/os/ubuntu/install-antigravity.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"workspace"* || "$ITEM" == *"12"* ]]; then
+                bash scripts/os/ubuntu/setup-workspace.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"databases"* || "$ITEM" == *"db"* || "$ITEM" == *"30"* ]]; then
+                bash scripts/os/ubuntu/install-databases-menu.sh && SUCCESS=true
             elif [[ "$ITEM" == *"clean"* || "$ITEM" == *"cleanup"* || "$ITEM" == *"28"* ]]; then
                 bash scripts/os/ubuntu/clean.sh && SUCCESS=true
             elif [[ "$ITEM" == *"fastfetch"* || "$ITEM" == *"tools"* || "$ITEM" == *"cli-tools"* || "$ITEM" == *"29"* ]]; then
@@ -341,6 +381,8 @@ case "$COMMAND" in
             elif [[ "$ITEM" == *"pnpm"* || "$ITEM" == *"04"* ]]; then bash scripts/os/ubuntu/install-pnpm.sh && SUCCESS=true
             elif [[ "$ITEM" == *"yarn"* ]]; then bash scripts/os/ubuntu/install-yarn.sh && SUCCESS=true
             elif [[ "$ITEM" == *"php"* || "$ITEM" == *"16"* ]]; then bash scripts/os/ubuntu/install-php.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"dotnet"* || "$ITEM" == *"csharp"* || "$ITEM" == *"39"* ]]; then bash scripts/os/ubuntu/install-dotnet.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"java"* || "$ITEM" == *"jdk"* || "$ITEM" == *"40"* ]]; then bash scripts/os/ubuntu/install-java.sh && SUCCESS=true
             elif [[ "$ITEM" == *"git-lfs"* || "$ITEM" == *"gh"* || "$ITEM" == *"git"* || "$ITEM" == *"07"* ]]; then 
                 bash scripts/os/ubuntu/install-git-lfs.sh && bash scripts/os/ubuntu/install-gh.sh && SUCCESS=true
             elif [[ "$ITEM" == *"dbeaver"* || "$ITEM" == *"32"* ]]; then bash scripts/os/ubuntu/install-dbeaver.sh && SUCCESS=true

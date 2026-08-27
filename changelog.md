@@ -6,6 +6,16 @@ All notable changes to this project are documented in this file.
 
 
 
+## [v1.29.0] - 2026-08-27
+
+### Added
+- Added OS-agnostic generic profile support (`profile dev`, `profile basic`) detecting OS in Linux run.sh
+- Scaffolded workspace directory setup script (`scripts/os/ubuntu/setup-workspace.sh`)
+- Scaffolded interactive database installer menu (`scripts/os/ubuntu/install-databases-menu.sh`)
+- Scaffolded Java (OpenJDK) and .NET SDK installers for Ubuntu
+- Scaffolded interactive local AI model picker (`scripts/os/ubuntu/install-model-picker.sh`)
+- Updated `run.sh` help text and dispatchers to match Windows `run.ps1` parity
+
 ## [v1.28.0] - 2026-08-27
 
 ### Added
