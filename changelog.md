@@ -6,6 +6,11 @@ All notable changes to this project are documented in this file.
 
 
 
+## [v1.28.0] - 2026-08-27
+
+### Added
+- Authored a comprehensive, generic AI Instruction Specification (`ssh-commands.md`) outlining the data model, terminal rendering contract, and command tree for implementing a cross-platform SSH and Profile Management system.
+
 ## [v1.27.0] 2026-08-27 fix: root run auto-pulls latest on every launch
 
 ### Fixed
