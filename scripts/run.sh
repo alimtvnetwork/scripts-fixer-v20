@@ -131,8 +131,8 @@ show_main_help() {
     echo -e ""
 
     echo -e "    ${PRIMARY}System, Maintenance & Package Managers${TEXT}"
-    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "10" "os-update" "Run apt update && apt upgrade"
-    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "11" "os-update-all" "Run update + release-upgrade"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "90" "os-update" "Run apt update && apt upgrade"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "91" "os-update-all" "Run update + release-upgrade"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "12" "workspace" "Setup default workspace directory (e.g. ~/work)"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "28" "clean" "Deep clean APT cache, vacuum journal logs & /tmp"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "29" "fastfetch" "Install Fastfetch, bat, eza, ripgrep, and fzf"
@@ -141,7 +141,8 @@ show_main_help() {
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "47" "docker" "Install Docker and Docker Compose plugin"
     echo -e ""
     
-    echo -e "    ${PRIMARY}Desktop GUI Tools${TEXT}"
+    echo -e "    ${PRIMARY}Desktop GUI Tools & OS Menus${TEXT}"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "10" "context-menu, menu" "Add Nautilus Right-Click Context Menus (VS Code, Admin)"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "32" "dbeaver" "Install DBeaver universal database GUI"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "33" "github-desktop" "Install GitHub Desktop GUI"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "34" "sticky-notes" "Install Sticky Notes GUI utility"
@@ -244,9 +245,9 @@ case "$COMMAND" in
             echo -e "    update-all  - Run update and release-upgrade"
             show_footer
             exit 0
-        elif [ "$ARGS" = "update-all" ] || [ "$ARGS" = "11" ]; then
+        elif [ "$ARGS" = "update-all" ] || [ "$ARGS" = "91" ]; then
             bash scripts/os/ubuntu/update-all.sh
-        elif [ "$ARGS" = "update" ] || [ "$ARGS" = "10" ]; then
+        elif [ "$ARGS" = "update" ] || [ "$ARGS" = "90" ]; then
             bash scripts/os/ubuntu/update.sh
         else
             echo -e "  ${ERROR}Unknown OS argument: $ARGS${TEXT}"
@@ -341,6 +342,8 @@ case "$COMMAND" in
                 bash scripts/os/ubuntu/clean.sh && SUCCESS=true
             elif [[ "$ITEM" == *"fastfetch"* || "$ITEM" == *"tools"* || "$ITEM" == *"cli-tools"* || "$ITEM" == *"29"* ]]; then
                 bash scripts/os/ubuntu/install-modern-tools.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"context-menu"* || "$ITEM" == *"menu"* || "$ITEM" == *"10"* ]]; then
+                bash scripts/os/ubuntu/install-context-menu.sh && SUCCESS=true
             elif [[ "$ITEM" == *"arch"* || "$ITEM" == *"arch-tools"* || "$ITEM" == *"pacman"* || "$ITEM" == *"45"* ]]; then
                 bash scripts/os/arch/install-arch-tools.sh && SUCCESS=true
             elif [[ "$ITEM" == *"git+desktop"* || "$ITEM" == *"git+gh"* ]]; then

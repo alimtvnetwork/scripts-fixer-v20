@@ -6,6 +6,13 @@ All notable changes to this project are documented in this file.
 
 
 
+## [v1.31.0] - 2026-08-27
+
+### Added
+- Created `scripts/os/ubuntu/install-context-menu.sh` to inject Windows-like right-click context menus into Ubuntu (Nautilus). Features include: Open in VS Code, Open in Terminal, Open as Root, Open in Text Editor.
+- Registered `context-menu` (ID 10) in the `run.sh` dispatcher.
+- Remapped `os-update` to ID 90 and `os-update-all` to ID 91 to prevent ID conflicts with the new context menu feature.
+
 ## [v1.30.0] - 2026-08-27
 
 ### Added
