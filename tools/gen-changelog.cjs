@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 /**
- * Generate CHANGELOG.md from git tags + version.json bumps.
+ * Generate changelog.md from git tags + version.json bumps.
  * Groups commits by tag/version. Falls back to "Unreleased" for HEAD.
  *
- *   --check    fail if CHANGELOG.md is stale
+ *   --check    fail if changelog.md is stale
  */
 const fs = require("fs");
 const path = require("path");
 const cp = require("child_process");
 
 const ROOT = path.resolve(__dirname, "..");
-const OUT = path.join(ROOT, "CHANGELOG.md");
+const OUT = path.join(ROOT, "changelog.md");
 
 function sh(cmd) {
   try { return cp.execSync(cmd, { cwd: ROOT, encoding: "utf8" }).trim(); }
@@ -38,12 +38,11 @@ for (const r of ranges) {
 }
 
 const body = sections.join("\n");
-const check = process.argv.includes("--check");
-const existing = fs.existsSync(OUT) ? fs.readFileSync(OUT, "utf8") : "";
-if (check) {
-  if (existing !== body) { console.error("[DRIFT] CHANGELOG.md stale. Run: node tools/gen-changelog.cjs"); process.exit(1); }
-  console.log("[OK] CHANGELOG.md in sync");
+if (process.argv.includes("--check")) {
+  let existing = fs.existsSync(OUT) ? fs.readFileSync(OUT, "utf8") : "";
+  if (existing !== body) { console.error("[DRIFT] changelog.md stale. Run: node tools/gen-changelog.cjs"); process.exit(1); }
+  console.log("[OK] changelog.md in sync");
 } else {
-  fs.writeFileSync(OUT, body);
+  fs.writeFileSync(OUT, body, "utf8");
   console.log(`[OK] wrote ${path.relative(ROOT, OUT)} (${ranges.length} sections)`);
 }

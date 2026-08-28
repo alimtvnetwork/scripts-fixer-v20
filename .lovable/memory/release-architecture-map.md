@@ -10,6 +10,6 @@
 - **Dynamic Readers**: `run.ps1` (PowerShell), `scripts/run.sh` (Linux Bash)
 
 ## Features in v1.23.0
-- **Case Conflict Deduplication**: Ghost `CHANGELOG.md` and `README.md` removed from Git index.
+- **Case Conflict Deduplication**: Ghost `changelog.md` and `readme.md` removed from Git index.
 - **Git Normalizer Tool**: `tools/fix-git-crlf-and-case.ps1` added for one-click working tree repair.
 - **Unix LF Normalization**: Universal fix across all 479 shell scripts preventing `\r` parsing failures.

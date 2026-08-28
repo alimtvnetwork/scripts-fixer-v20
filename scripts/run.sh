@@ -176,16 +176,13 @@ show_install_help() {
     echo -e "    ./run.sh install <tool|ID>"
     echo -e "    ./run.sh install <tool1,tool2,tool3>"
     echo -e "    ./run.sh install profile <name>"
-    echo -e "    ./run.sh install ls"
+    echo -e "    ./run.sh os <update|update-all|fix-link <path>>"
     echo -e ""
     echo -e "  ${ACCENT}Examples:${TEXT}"
     echo -e "    ./run.sh install vscode+settings"
-    echo -e "    ./run.sh install bcompare"
-    echo -e "    ./run.sh install ollama"
-    echo -e "    ./run.sh install clean"
     echo -e "    ./run.sh install 01,05,golang,rust"
-    echo -e "    ./run.sh install profile ubuntu+small-dev"
-    echo -e "    ./run.sh install profile ubuntu+dev"
+    echo -e "    ./run.sh install profile dev"
+    echo -e "    ./run.sh os fix-link ./scripts/my-script.sh"
     echo -e ""
 }
 
@@ -240,18 +237,24 @@ case "$COMMAND" in
         exit 0
         ;;
     "os")
-        if [[ "$ARGS" == *"help"* || "$ARGS" == *"-h"* || "$ARGS" == *"--help"* ]]; then
+        OS_CMD=$(echo "$ARGS" | awk '{print $1}')
+        OS_ARG=$(echo "$ARGS" | awk '{$1=""; print $0}' | sed -e 's/^[[:space:]]*//')
+
+        if [[ "$OS_CMD" == "help" || "$OS_CMD" == "-h" || "$OS_CMD" == "--help" ]]; then
             echo -e "  ${ACCENT}OS Command Help:${TEXT}"
-            echo -e "    update      - Run apt update and upgrade"
-            echo -e "    update-all  - Run update and release-upgrade"
+            echo -e "    update               - Run apt update and upgrade"
+            echo -e "    update-all           - Run update and release-upgrade"
+            echo -e "    fix-link <path>      - Create global symlink or fix broken git symlink"
             show_footer
             exit 0
-        elif [ "$ARGS" = "update-all" ] || [ "$ARGS" = "91" ]; then
+        elif [[ "$OS_CMD" == "update-all" || "$OS_CMD" == "91" ]]; then
             bash scripts/os/ubuntu/update-all.sh
-        elif [ "$ARGS" = "update" ] || [ "$ARGS" = "90" ]; then
+        elif [[ "$OS_CMD" == "update" || "$OS_CMD" == "90" ]]; then
             bash scripts/os/ubuntu/update.sh
+        elif [[ "$OS_CMD" == "fix-link" ]]; then
+            bash scripts/os/ubuntu/fix-link.sh "$OS_ARG"
         else
-            echo -e "  ${ERROR}Unknown OS argument: $ARGS${TEXT}"
+            echo -e "  ${ERROR}Unknown OS argument: $OS_CMD${TEXT}"
         fi
         ;;
     "install")
