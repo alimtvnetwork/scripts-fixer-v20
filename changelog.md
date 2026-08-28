@@ -6,6 +6,11 @@ All notable changes to this project are documented in this file.
 
 
 
+## [v1.33.0] - 2026-08-28
+
+### Fixed
+- Replaced all uppercase `CHANGELOG.md` references with lowercase `changelog.md` throughout the codebase, including in the `gen-changelog.cjs` tool and markdown files.
+
 ## [v1.32.0] - 2026-08-27
 
 ### Added
@@ -75,7 +80,7 @@ To pin your repository to this exact version, run the following one-liner:
 **PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.23.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.23.0"`
 
 ### Fixed
-- **Markdown Case Conflict Resolution**: Removed duplicated uppercase `CHANGELOG.md` and `README.md` from the Git index which were causing endless Git modifications on Windows due to case-insensitivity collisions with `changelog.md` and `readme.md`.
+- **Markdown Case Conflict Resolution**: Removed duplicated uppercase `changelog.md` and `readme.md` from the Git index which were causing endless Git modifications on Windows due to case-insensitivity collisions with `changelog.md` and `readme.md`.
 - **Global Markdown Lowercasing**: Renamed all remaining uppercase markdown files (e.g., `README.md` -> `readme.md`) across the repository to enforce the lowercase convention strictly.
 
 ### Added
