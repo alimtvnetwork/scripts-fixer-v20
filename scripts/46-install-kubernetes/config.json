@@ -10,6 +10,16 @@
     "chocoPackageName": "minikube",
     "alwaysUpgradeToLatest": true
   },
+  "kind": {
+    "enabled": true,
+    "chocoPackageName": "kind",
+    "alwaysUpgradeToLatest": true
+  },
+  "k9s": {
+    "enabled": true,
+    "chocoPackageName": "k9s",
+    "alwaysUpgradeToLatest": true
+  },
   "helm": {
     "enabled": true,
     "chocoPackageName": "kubernetes-helm",

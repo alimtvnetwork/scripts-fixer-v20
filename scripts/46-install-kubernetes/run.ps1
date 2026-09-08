@@ -81,6 +81,8 @@ switch ($Command.ToLower()) {
         Install-Kubectl -Config $config -LogMessages $logMessages
         Install-Minikube -Config $config -LogMessages $logMessages
         Install-Helm -Config $config -LogMessages $logMessages
+        Install-Kind -Config $config -LogMessages $logMessages
+        Install-K9s -Config $config -LogMessages $logMessages
         Install-Lens -Config $config -LogMessages $logMessages
         Update-KubePath -Config $config -LogMessages $logMessages
     }
@@ -88,6 +90,8 @@ switch ($Command.ToLower()) {
         Install-Kubectl -Config $config -LogMessages $logMessages
         Install-Minikube -Config $config -LogMessages $logMessages
         Install-Helm -Config $config -LogMessages $logMessages
+        Install-Kind -Config $config -LogMessages $logMessages
+        Install-K9s -Config $config -LogMessages $logMessages
         Install-Lens -Config $config -LogMessages $logMessages
     }
     "uninstall" {
@@ -105,11 +109,15 @@ Write-Log $logMessages.messages.savingResolved -Level "info"
 $kubectlVersion  = try { & kubectl version --client --short 2>$null } catch { $null }
 $minikubeVersion = try { & minikube version --short 2>$null } catch { $null }
 $helmVersion     = try { & helm version --short 2>$null } catch { $null }
+$kindVersion     = try { & kind version 2>$null } catch { $null }
+$k9sVersion      = try { & k9s version -s 2>$null } catch { $null }
 
 Save-ResolvedData -ScriptFolder "46-install-kubernetes" -Data @{
     kubectlVersion  = $kubectlVersion
     minikubeVersion = $minikubeVersion
     helmVersion     = $helmVersion
+    kindVersion     = $kindVersion
+    k9sVersion      = $k9sVersion
     timestamp       = (Get-Date -Format "o")
 }
 
