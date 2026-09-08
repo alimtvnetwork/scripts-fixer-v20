@@ -1315,6 +1315,33 @@
         ],
         "pin-chrome": [
             "62-pin-taskbar:chrome"
+        ],
+        "cloud-clis": [
+            67
+        ],
+        "aws": [
+            67
+        ],
+        "gcp": [
+            67
+        ],
+        "azure": [
+            67
+        ],
+        "iac": [
+            68
+        ],
+        "terraform": [
+            68
+        ],
+        "vagrant": [
+            68
+        ],
+        "virtualbox": [
+            68
+        ],
+        "ansible": [
+            68
         ]
     },
     "modes": {
