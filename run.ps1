@@ -3863,6 +3863,8 @@ if ($hasCommand) {
     $isBareChromeProfileCopyCommand   = $normalizedCommand -in @("chrome-profile-copy","chromeprofilecopy","chrome-clone-profile","clone-chrome-profile")
     $isBareChromeProfileExportCommand = $normalizedCommand -in @("chrome-profile-export","chrome-export-profile","chrome-profile-to-json","chrome-profile-to-csv")
     $isBareChromeProfileImportCommand = $normalizedCommand -in @("chrome-profile-import","chrome-import-profile")
+    $isBareTerminalTasksCommand = $normalizedCommand -eq "terminal-tasks"
+    $isBareDbMenuCommand = $normalizedCommand -eq "db-menu"
     $isBareProfileCommand = $normalizedCommand -eq "profile" -or $normalizedCommand -eq "profiles"
     $isBareGitToolsCommand = $normalizedCommand -eq "git-tools" -or $normalizedCommand -eq "gittools"
     $isBareGsaCommand     = $normalizedCommand -eq "gsa" -or $normalizedCommand -eq "git-safe-all" -or $normalizedCommand -eq "gitsafeall"
@@ -3891,7 +3893,7 @@ if ($hasCommand) {
     #   - any of $Install contains --no-pull / -no-pull / --offline
     #   - command is read-only (status/path/scan/export/doctor)
     $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand
-    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand
+    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareTerminalTasksCommand -or $isBareDbMenuCommand
     $isNoPullEnv = $env:SCRIPTS_FIXER_NO_PULL -eq "1"
     $isNoPullFlag = $false
     if ($null -ne $Install) {
@@ -4223,9 +4225,24 @@ if ($hasCommand) {
         exit $LASTEXITCODE
     }
 
+    if ($isBareTerminalTasksCommand) {
+        Show-VersionHeader
+        . (Join-Path $RootDir "scripts\shared\windows-tasks-and-db.ps1")
+        Install-Jq
+        Install-Yq
+        Install-Zellij
+        Install-Fnm
+        Install-Uv
+        Install-Rustup
+        exit 0
+    }
 
-
-
+    if ($isBareDbMenuCommand) {
+        Show-VersionHeader
+        . (Join-Path $RootDir "scripts\shared\windows-tasks-and-db.ps1")
+        Show-DatabaseMenu
+        exit 0
+    }
 
     if ($isBareVscodeContextMenuCommand) {
         Show-VersionHeader
