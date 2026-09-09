@@ -17,8 +17,23 @@ if ! command -v curl &>/dev/null; then
 fi
 
 # ── Download & run the official Antigravity installer ─────────────────────────
-echo -e "  ${MUTED}[step 2/4] Fetching the official Antigravity installer...${TEXT}"
-curl -fsSL https://get.antigravity.dev | bash
+echo -e "  ${MUTED}[step 2/4] Fetching the latest Antigravity installer from GitHub...${TEXT}"
+DOWNLOAD_URL=$(curl -s https://api.github.com/repos/google-antigravity/antigravity-cli/releases/latest | grep "browser_download_url.*agy_cli_linux_x64.tar.gz" | cut -d '"' -f 4)
+
+if [ -z "$DOWNLOAD_URL" ]; then
+    echo -e "  ${ERROR}[ERROR] Failed to fetch latest release URL.${TEXT}"
+    exit 1
+fi
+
+TMP_DIR=$(mktemp -d)
+curl -fsSL "$DOWNLOAD_URL" -o "$TMP_DIR/agy_cli_linux_x64.tar.gz"
+tar -xzf "$TMP_DIR/agy_cli_linux_x64.tar.gz" -C "$TMP_DIR"
+
+INSTALL_DIR="$HOME/.antigravity/bin"
+mkdir -p "$INSTALL_DIR"
+mv "$TMP_DIR/agy" "$INSTALL_DIR/agy"
+chmod +x "$INSTALL_DIR/agy"
+rm -rf "$TMP_DIR"
 
 # ── Verify installation ───────────────────────────────────────────────────────
 echo -e "  ${MUTED}[step 3/4] Verifying agy binary is available...${TEXT}"
@@ -44,8 +59,9 @@ if [[ "$SHELL" == *"zsh"* ]]; then
     SHELL_RC="$HOME/.zshrc"
 fi
 
-if ! grep -q "antigravity" "$SHELL_RC" 2>/dev/null; then
-    echo -e "  ${MUTED}  -> Shell profile ($SHELL_RC) has no antigravity entry; the installer should have added it.${TEXT}"
+if ! grep -q "$INSTALL_DIR" "$SHELL_RC" 2>/dev/null; then
+    echo "export PATH=\"$INSTALL_DIR:\$PATH\"" >> "$SHELL_RC"
+    echo -e "  ${MUTED}  -> Added $INSTALL_DIR to $SHELL_RC${TEXT}"
 fi
 
 echo -e "\n  ${PRIMARY}[DONE ] Antigravity (agy) setup complete.${TEXT}"
