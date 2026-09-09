@@ -168,6 +168,7 @@ show_main_help() {
     echo -e "    ./run.sh install clean"
     echo -e "    ./run.sh install profile ubuntu+small-dev"
     echo -e "    ./run.sh install profile ubuntu+dev"
+    echo -e "    ./run.sh profile tree ubuntu+dev"
     echo -e "    ./run.sh install 01,11,03,04,27,42"
     echo -e "    ./run.sh os update-all"
     echo -e "    ./run.sh install ls"
@@ -183,12 +184,14 @@ show_install_help() {
     echo -e "    ./run.sh install <tool|ID>"
     echo -e "    ./run.sh install <tool1,tool2,tool3>"
     echo -e "    ./run.sh install profile <name>"
+    echo -e "    ./run.sh profile tree <name>"
     echo -e "    ./run.sh os <update|update-all|fix-link <path>>"
     echo -e ""
     echo -e "  ${ACCENT}Examples:${TEXT}"
     echo -e "    ./run.sh install vscode+settings"
     echo -e "    ./run.sh install 01,05,golang,rust"
     echo -e "    ./run.sh install profile dev"
+    echo -e "    ./run.sh profile tree dev"
     echo -e "    ./run.sh os fix-link ./scripts/my-script.sh"
     echo -e ""
 }
@@ -278,6 +281,20 @@ case "$COMMAND" in
             bash scripts/os/ubuntu/fix-link.sh "$OS_ARG"
         else
             echo -e "  ${ERROR}Unknown OS argument: $OS_CMD${TEXT}"
+        fi
+        ;;
+    "profile")
+        PROF_CMD=$(echo "$ARGS" | awk '{print $1}')
+        PROF_ARG=$(echo "$ARGS" | awk '{$1=""; print $0}' | sed -e 's/^[[:space:]]*//')
+        if [[ "$PROF_CMD" == "tree" ]]; then
+            python3 scripts/shared/profile_tree.py tree "$PROF_ARG"
+            show_footer
+            exit 0
+        else
+            echo -e "  ${ERROR}Unknown profile command: $PROF_CMD${TEXT}"
+            echo -e "  Only 'tree' is supported via this top-level command. Use 'install profile <name>' to install."
+            show_footer
+            exit 1
         fi
         ;;
     "install")

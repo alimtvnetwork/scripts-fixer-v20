@@ -6,6 +6,12 @@ All notable changes to this project are documented in this file.
 
 
 
+## [v1.37.0] - 2026-09-09
+
+### Added
+- Removed `ollama` from the `ubuntu+dev+ai` profiles entirely.
+- Added `profile tree <name>` preview support to `run.ps1` and `run.sh` to preview full installation hierarchies before installing. Added install examples to help text.
+
 ## [v1.36.0] - 2026-09-09
 
 ### Added

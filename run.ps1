@@ -394,6 +394,7 @@ function Show-RootHelpRaw {
     Write-Host "    $(".\run.ps1 vscode-folder <action>".PadRight($col))" -NoNewline; Write-Host "VS Code folder-only context-menu repair ('vscode-folder help')" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 vscode-context-menu install".PadRight($col))" -NoNewline; Write-Host "Legacy alias for 'menu install vscode' (kept for back-compat)" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 profile <name>".PadRight($col))" -NoNewline; Write-Host "Run a profile recipe (see 'Profiles' section below for list)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 profile tree <name>".PadRight($col))" -NoNewline; Write-Host "View the full installation tree of a profile" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 install <profile>".PadRight($col))" -NoNewline; Write-Host "Same as above -- 'install minimal' == 'profile minimal'" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 profile list".PadRight($col))" -NoNewline; Write-Host "Show all available profiles with descriptions" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 gsa".PadRight($col))" -NoNewline; Write-Host "git safe.directory='*' (wildcard, idempotent)" -ForegroundColor $ThemeMuted
@@ -554,6 +555,7 @@ function Show-RootHelpRaw {
     Write-Host "    .\run.ps1 profile list                  " -NoNewline; Write-Host "# list all profiles with full descriptions" -ForegroundColor $ThemeMuted
     if ($profileNamesForExamples.Count -gt 0) {
         $sample = $profileNamesForExamples[0]
+        Write-Host "    .\run.ps1 profile tree $sample".PadRight(44)      -NoNewline; Write-Host "# view full installation tree" -ForegroundColor $ThemeMuted
         Write-Host "    .\run.ps1 profile $sample --dry-run".PadRight(44) -NoNewline; Write-Host "# preview steps, do not execute" -ForegroundColor $ThemeMuted
         Write-Host "    .\run.ps1 profile $sample -y".PadRight(44)        -NoNewline; Write-Host "# skip confirmation prompts" -ForegroundColor $ThemeMuted
         Write-Host "    .\run.ps1 install $sample -y".PadRight(44)        -NoNewline; Write-Host "# install shortcut + auto-confirm" -ForegroundColor $ThemeMuted
@@ -4334,6 +4336,20 @@ if ($hasCommand) {
                 $treePy = Join-Path $RootDir "scripts\shared\profile_tree.py"
                 if (Test-Path $treePy) {
                     python $treePy "all"
+                }
+                Show-VersionFooter
+                exit 0
+            }
+            if ($firstProfArg -eq "tree") {
+                $profName = if ($Install.Count -gt 1) { "$($Install[1])".Trim() } else { "" }
+                Show-VersionHeader
+                $treePy = Join-Path $RootDir "scripts\shared\profile_tree.py"
+                if (Test-Path $treePy) {
+                    if ($profName) {
+                        python $treePy "tree" $profName
+                    } else {
+                        python $treePy "all"
+                    }
                 }
                 Show-VersionFooter
                 exit 0
