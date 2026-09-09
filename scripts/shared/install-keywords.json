@@ -773,6 +773,15 @@
         "chrome": [
             58
         ],
+        "qtorrent": [
+            76
+        ],
+        "qbittorrent": [
+            76
+        ],
+        "utorrent": [
+            77
+        ],
         "google-chrome": [
             58
         ],

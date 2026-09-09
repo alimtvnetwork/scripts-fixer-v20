@@ -144,6 +144,8 @@ show_main_help() {
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "45" "arch-tools" "Arch Linux pacman / yay AUR bootstrap suite"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "46" "kubernetes" "Install Kubernetes CLI (kubectl) & Helm"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "47" "docker" "Install Docker and Docker Compose plugin"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "76" "qtorrent" "Install qBittorrent"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "77" "utorrent" "Install uTorrent"
     echo -e ""
     
     echo -e "    ${PRIMARY}Desktop GUI Tools & OS Menus${TEXT}"
@@ -438,6 +440,10 @@ case "$COMMAND" in
                 bash scripts/os/ubuntu/install-ssh.sh "$PORT" && SUCCESS=true
             elif [[ "$ITEM" == *"aria2c"* || "$ITEM" == *"26"* ]]; then
                 bash scripts/os/ubuntu/dep-aria2c.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"qtorrent"* || "$ITEM" == *"76"* ]]; then
+                apt install -y qbittorrent && SUCCESS=true
+            elif [[ "$ITEM" == *"utorrent"* || "$ITEM" == *"77"* ]]; then
+                snap install utorrent && SUCCESS=true
             else
                 echo -e "  ${ERROR}Unknown install argument: $ITEM${TEXT}"
                 echo -e "  Run './run.sh install help' for more details."

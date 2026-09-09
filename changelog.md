@@ -6,6 +6,12 @@ All notable changes to this project are documented in this file.
 
 
 
+## [v1.36.0] - 2026-09-09
+
+### Added
+- Added installers for `qtorrent` (qBittorrent) and `utorrent` for Windows and Ubuntu.
+- Added new `export-config` and `import-config` CLI commands globally for VSCode, qtorrent, and utorrent.
+
 ## [v1.35.0] - 2026-09-09
 
 ### Added

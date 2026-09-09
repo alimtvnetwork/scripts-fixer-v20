@@ -60,6 +60,8 @@
     "68": "68-install-antigravity-manager",
     "69": "69-install-antigravity",
     "71": "71-install-git-compact",
+    "76": "76-install-qtorrent",
+    "77": "77-install-utorrent",
     "01": "01-install-vscode",
     "02": "02-install-package-managers",
     "03": "03-install-nodejs",

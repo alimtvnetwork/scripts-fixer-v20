@@ -593,6 +593,8 @@ function Show-RootHelpRaw {
     Write-Host "    $("install antigravity-manager".PadRight($kc))" -NoNewline; Write-Host "Install Antigravity Manager [68]" -ForegroundColor $ThemeMuted
     Write-Host "    $("uninstall antigravity-manager".PadRight($kc))" -NoNewline; Write-Host "Uninstall Antigravity Manager [68]" -ForegroundColor $ThemeMuted
     Write-Host "    $("install antigravity".PadRight($kc))" -NoNewline; Write-Host "Install Antigravity CLI (agy) [69]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install qtorrent".PadRight($kc))" -NoNewline; Write-Host "Install qBittorrent [76]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install utorrent".PadRight($kc))" -NoNewline; Write-Host "Install uTorrent [77]" -ForegroundColor $ThemeMuted
     Write-Host ""
     # ----- Dedicated Chrome & extensions cheatsheet ---------------------------
     # Surfaces every extension install mode (single, comma-list, all, raw URL,
