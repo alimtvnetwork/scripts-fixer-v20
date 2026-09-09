@@ -363,6 +363,8 @@ function Show-RootHelpRaw {
     Write-Host "    $(".\run.ps1 self-update --reinstall".PadRight($col))" -NoNewline; Write-Host "Pull, then re-run install.ps1 (refresh shims/PATH)" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 export".PadRight($col))" -NoNewline; Write-Host "Export all app settings to repo" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 export npp,obs".PadRight($col))" -NoNewline; Write-Host "Export specific app settings" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 export-config <app>".PadRight($col))" -NoNewline; Write-Host "Export app config (qtorrent, utorrent, vscode)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 import-config <app>".PadRight($col))" -NoNewline; Write-Host "Import app config (qtorrent, utorrent, vscode)" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 status".PadRight($col))" -NoNewline; Write-Host "Show dashboard of all installed tools" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 status --no-choco".PadRight($col))" -NoNewline; Write-Host "Status without outdated package check" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 report [--since=24h] [--open]".PadRight($col))" -NoNewline; Write-Host "Timestamped JSON+HTML report of install/uninstall actions" -ForegroundColor $ThemeMuted
