@@ -76,14 +76,23 @@
     },
     "dev": {
       "label": "Dev",
-      "description": "small-dev + Python/pip + Node.js (incl. Yarn + Bun) + pnpm + Rust + PHP. Polyglot daily-driver dev box.",
+      "description": "small-dev + Python/pip + Node.js (incl. Yarn + Bun) + pnpm + Rust + PHP + Antigravity CLI. Polyglot daily-driver dev box.",
       "steps": [
         { "kind": "profile",    "name": "small-dev" },
         { "kind": "script",     "id": 5,  "label": "Python + pip" },
         { "kind": "script",     "id": 3,  "label": "Node.js + Yarn + Bun" },
         { "kind": "script",     "id": 4,  "label": "pnpm" },
         { "kind": "script",     "id": 44, "label": "Rust (rustup + cargo)" },
-        { "kind": "script",     "id": 16, "label": "PHP" }
+        { "kind": "script",     "id": 16, "label": "PHP" },
+        { "kind": "script",     "id": 69, "label": "Antigravity CLI (agy)" }
+      ]
+    },
+    "dev+ai": {
+      "label": "Dev + AI",
+      "description": "dev + Antigravity Manager. AI-assisted polyglot dev box.",
+      "steps": [
+        { "kind": "profile",    "name": "dev" },
+        { "kind": "script",     "id": 68, "label": "Antigravity Manager" }
       ]
     },
     "dev-advance": {

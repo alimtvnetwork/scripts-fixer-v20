@@ -561,6 +561,8 @@ scripts:
       phase: '12'
       title: Linux/Ubuntu VS Code uninstaller (detects apt|snap|deb|tarball|user-config and removes only matching artifacts)
   - id: '68'
+    windows:
+      folder: 68-install-antigravity-manager
     linux:
       folder: 68-user-mgmt
       phase: '13'
@@ -569,6 +571,9 @@ scripts:
       folder: 68-user-mgmt
       phase: '13'
       title: Cross-OS user/group management (Linux useradd|macOS dscl; CLI + JSON object/array auto-detect; mirrors Windows 'os add-user')
+  - id: '69'
+    windows:
+      folder: 69-install-antigravity
   - id: '70'
     linux:
       folder: 70-install-wordpress-ubuntu

@@ -1342,6 +1342,15 @@
         ],
         "ansible": [
             68
+        ],
+        "antigravity-manager": [
+            68
+        ],
+        "antigravity": [
+            69
+        ],
+        "agy": [
+            69
         ]
     },
     "modes": {

@@ -25,7 +25,8 @@ echo -e "\n  ${ACCENT}[Phase 2] Installing Ollama LLM runner...${TEXT}"
 bash scripts/os/ubuntu/install-models.sh
 
 # ── Phase 3: Antigravity agy CLI ──────────────────────────────────────────────
-echo -e "\n  ${ACCENT}[Phase 3] Installing Antigravity (agy)...${TEXT}"
+echo -e "\n  ${ACCENT}[Phase 3] Installing Antigravity tools...${TEXT}"
+bash scripts/os/ubuntu/install-antigravity-manager.sh
 bash scripts/os/ubuntu/install-antigravity.sh
 
 echo -e "\n  ${PRIMARY}ubuntu+dev+ai profile complete!${TEXT}"

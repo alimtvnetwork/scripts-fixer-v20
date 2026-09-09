@@ -82,6 +82,7 @@ show_main_help() {
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "bcompare, bc" "Beyond Compare Diff & Merge Tool" "27"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "ollama, llm, models" "Local LLM Suite (Ollama, GLM, Kimi)" "42"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "antigravity, ag" "Antigravity (agy) AI coding assistant" "43"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "antigravity-manager, agm" "Antigravity Manager GUI" "44"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "clean, cleanup" "System Deep Cleanup (APT cache & logs)" "28"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "fastfetch, tools" "Fastfetch + bat + eza + ripgrep" "29"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "arch, arch-tools, pacman" "Arch Linux dev stack & yay AUR helper" "45"
@@ -124,6 +125,7 @@ show_main_help() {
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "42" "models-menu, ai-models" "Interactive model download picker"
     echo -e "    ${MUTED}      Available: qwen2.5-coder:7b  glm4:9b  glm-edge:4b  kimi-k2:8b  deepseek-r1:8b  llama3.2:3b${TEXT}"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "43" "antigravity, ag" "Install Antigravity (agy) AI coding assistant"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "44" "antigravity-manager, agm" "Install Antigravity Manager GUI"
     echo -e ""
 
     echo -e "    ${PRIMARY}Databases${TEXT}"
@@ -336,6 +338,8 @@ case "$COMMAND" in
                 bash scripts/os/ubuntu/install-model-picker.sh && SUCCESS=true
             elif [[ "$ITEM" == *"ollama"* || "$ITEM" == *"llm"* || "$ITEM" == *"models"* || "$ITEM" == *"42"* ]]; then
                 bash scripts/os/ubuntu/install-models.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"antigravity-manager"* || "$ITEM" == *"agm"* || "$ITEM" == *"44"* ]]; then
+                bash scripts/os/ubuntu/install-antigravity-manager.sh && SUCCESS=true
             elif [[ "$ITEM" == *"antigravity"* || "$ITEM" == *" ag"* || "$ITEM" == "ag" || "$ITEM" == *"43"* ]]; then
                 bash scripts/os/ubuntu/install-antigravity.sh && SUCCESS=true
             elif [[ "$ITEM" == *"workspace"* || "$ITEM" == *"12"* ]]; then
