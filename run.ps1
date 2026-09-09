@@ -1945,6 +1945,41 @@ function Invoke-ScriptById {
 . (Join-Path $RootDir "scripts\shared\choco-update.ps1")
 
 # ── Export command function ────────────────────────────────────────────
+
+function Invoke-ExportConfigCommand {
+    param([string[]]$Args)
+    $hasApp = $null -ne $Args -and $Args.Count -gt 0
+    if (-not $hasApp) { Write-Host "Usage: export-config <app>"; return }
+    $app = $Args[0]
+    $backupDir = Join-Path $RootDir "configs"
+    $hasBackup = Test-Path $backupDir
+    if (-not $hasBackup) { New-Item -ItemType Directory -Path $backupDir | Out-Null }
+    if ($app -eq "qtorrent") { Copy-Config (Join-Path $env:APPDATA "qBittorrent") (Join-Path $backupDir "qtorrent") }
+    if ($app -eq "utorrent") { Copy-Config (Join-Path $env:APPDATA "uTorrent") (Join-Path $backupDir "utorrent") }
+    if ($app -eq "vscode") { Copy-Config (Join-Path $env:APPDATA "Code\User") (Join-Path $backupDir "vscode") }
+}
+
+function Invoke-ImportConfigCommand {
+    param([string[]]$Args)
+    $hasApp = $null -ne $Args -and $Args.Count -gt 0
+    if (-not $hasApp) { Write-Host "Usage: import-config <app>"; return }
+    $app = $Args[0]
+    $backupDir = Join-Path $RootDir "configs"
+    if ($app -eq "qtorrent") { Copy-Config (Join-Path $backupDir "qtorrent") (Join-Path $env:APPDATA "qBittorrent") }
+    if ($app -eq "utorrent") { Copy-Config (Join-Path $backupDir "utorrent") (Join-Path $env:APPDATA "uTorrent") }
+    if ($app -eq "vscode") { Copy-Config (Join-Path $backupDir "vscode") (Join-Path $env:APPDATA "Code\User") }
+}
+
+function Copy-Config {
+    param([string]$Src, [string]$Dest)
+    $hasSrc = Test-Path $Src
+    if (-not $hasSrc) { Write-Host "Source not found: $Src"; return }
+    $hasDest = Test-Path $Dest
+    if (-not $hasDest) { New-Item -ItemType Directory -Path $Dest -Force | Out-Null }
+    Copy-Item -Path "$Src\*" -Destination $Dest -Recurse -Force
+    Write-Host "Copied config to $Dest"
+}
+
 function Invoke-ExportCommand {
     param([string[]]$Args)
 
@@ -3849,6 +3884,9 @@ if ($hasCommand) {
     $isBarePathCommand    = $normalizedCommand -eq "path"
     $isBareScanCommand    = $normalizedCommand -eq "scan"
     $isBareExportCommand  = $normalizedCommand -eq "export"
+    $isBareExportConfigCommand = $normalizedCommand -eq "export-config"
+    $isBareImportConfigCommand = $normalizedCommand -eq "import-config"
+
     $isBareStatusCommand  = $normalizedCommand -in @("status", "list-installed", "listinstalled", "installed")
     $isBareDoctorCommand  = $normalizedCommand -eq "doctor"
     $isBareReportCommand  = $normalizedCommand -in @("report", "install-report", "installreport", "reports")
@@ -3894,7 +3932,7 @@ if ($hasCommand) {
     #   - SCRIPTS_FIXER_NO_PULL=1 env var is set
     #   - any of $Install contains --no-pull / -no-pull / --offline
     #   - command is read-only (status/path/scan/export/doctor)
-    $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand
+    $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareExportConfigCommand -or $isBareImportConfigCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand -or $isBareExportConfigCommand
     $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareTerminalTasksCommand -or $isBareDbMenuCommand
     $isNoPullEnv = $env:SCRIPTS_FIXER_NO_PULL -eq "1"
     $isNoPullFlag = $false
@@ -4494,6 +4532,14 @@ if ($hasCommand) {
             & $chromeScript $chromeSub @chromeRest
             exit $LASTEXITCODE
         }
+    } elseif ($isBareExportConfigCommand) {
+        Show-VersionHeader
+        Invoke-ExportConfigCommand -Args $Install
+        exit 0
+    } elseif ($isBareImportConfigCommand) {
+        Show-VersionHeader
+        Invoke-ImportConfigCommand -Args $Install
+        exit 0
     } elseif ($isBareExportCommand) {
         Show-VersionHeader
         Invoke-ExportCommand -Args $Install

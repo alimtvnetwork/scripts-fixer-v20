@@ -54,6 +54,9 @@ show_main_help() {
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install ls" "List all previously installed items"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh os <action>" "OS level actions (update, update-all)"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh <command> -h" "Show detailed help for a command"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh export-config <app>" "Export app config (qtorrent, utorrent, vscode)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh import-config <app>" "Import app config (qtorrent, utorrent, vscode)"
+
     echo -e ""
     
     echo -e "  ${ACCENT}Profiles:${TEXT}"
@@ -233,6 +236,22 @@ if [[ "$COMMAND" == "help" || "$COMMAND" == "-h" || "$COMMAND" == "--help" ]]; t
 fi
 
 case "$COMMAND" in
+    "export-config")
+        APP=$1
+        mkdir -p ./configs
+        if [ "$APP" = "qtorrent" ]; then cp -r ~/.config/qBittorrent ./configs/qtorrent; fi
+        if [ "$APP" = "utorrent" ]; then cp -r ~/.config/uTorrent ./configs/utorrent 2>/dev/null || cp -r ~/.utorrent ./configs/utorrent 2>/dev/null; fi
+        if [ "$APP" = "vscode" ]; then cp -r ~/.config/Code/User ./configs/vscode; fi
+        echo "Exported config for $APP"
+        ;;
+    "import-config")
+        APP=$1
+        if [ "$APP" = "qtorrent" ]; then cp -r ./configs/qtorrent ~/.config/qBittorrent; fi
+        if [ "$APP" = "utorrent" ]; then cp -r ./configs/utorrent ~/.config/uTorrent; fi
+        if [ "$APP" = "vscode" ]; then cp -r ./configs/vscode ~/.config/Code/User; fi
+        echo "Imported config for $APP"
+        ;;
+
     "models"|"llm"|"ollama")
         bash scripts/os/ubuntu/install-models.sh "$ARGS"
         show_footer
