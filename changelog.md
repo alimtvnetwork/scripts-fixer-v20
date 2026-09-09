@@ -6,6 +6,13 @@ All notable changes to this project are documented in this file.
 
 
 
+## [v1.35.0] - 2026-09-09
+
+### Added
+- Cross-platform IaC & Cloud Tools (Kubernetes Suite, VMware, AWS CLI v2, gcloud, az, Terraform, VirtualBox, Vagrant, Ansible).
+- Antigravity Manager & Antigravity CLI native dynamic installers & profiles.
+- Modern dev tools (Zellij, uv, fnm, jq, yq) & Databases (PostgreSQL, MongoDB, DBeaver, Compass, pgAdmin).
+
 ## [v1.34.0] - 2026-09-07
 
 ### Added
