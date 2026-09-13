@@ -476,11 +476,11 @@ case "$COMMAND" in
             if [ -z "$ITEM" ]; then continue; fi
             
             # Resolve generic OS-agnostic profiles
-            if [[ "$ITEM" == "profile basic" ]]; then ITEM="profile ${OS_ID}-basic"; fi
-            if [[ "$ITEM" == "profile simple-dev" ]]; then ITEM="profile ${OS_ID}+simple-dev"; fi
-            if [[ "$ITEM" == "profile small-dev" ]]; then ITEM="profile ${OS_ID}+small-dev"; fi
-            if [[ "$ITEM" == "profile dev" ]]; then ITEM="profile ${OS_ID}+dev"; fi
-            if [[ "$ITEM" == "profile dev+ai" ]]; then ITEM="profile ${OS_ID}+dev+ai"; fi
+            if [[ "$ITEM" == "profile basic" || "$ITEM" == "basic" || "$ITEM" == "${OS_ID}-basic" ]]; then ITEM="profile ${OS_ID}-basic"; fi
+            if [[ "$ITEM" == "profile simple-dev" || "$ITEM" == "simple-dev" ]]; then ITEM="profile ${OS_ID}+simple-dev"; fi
+            if [[ "$ITEM" == "profile small-dev" || "$ITEM" == "small-dev" || "$ITEM" == "smalldev" ]]; then ITEM="profile ${OS_ID}+small-dev"; fi
+            if [[ "$ITEM" == "profile dev" || "$ITEM" == "dev" ]]; then ITEM="profile ${OS_ID}+dev"; fi
+            if [[ "$ITEM" == "profile dev+ai" || "$ITEM" == "dev+ai" ]]; then ITEM="profile ${OS_ID}+dev+ai"; fi
             if [[ "$ITEM" == "ai-tools" || "$ITEM" == "all-ai" || "$ITEM" == "profile ai-tools" || "$ITEM" == "profile all-ai" || "$ITEM" == "profile ai" ]]; then ITEM="profile ${OS_ID}+ai-tools"; fi
             if [[ "$ITEM" == "antigravity-suite" || "$ITEM" == "ag-suite" || "$ITEM" == "profile antigravity-suite" || "$ITEM" == "profile antigravity" ]]; then ITEM="profile ${OS_ID}+antigravity-suite"; fi
             
@@ -488,19 +488,19 @@ case "$COMMAND" in
             echo -e "  ${SECONDARY}Processing: $ITEM${TEXT}"
 
             # Profile installation
-            if [[ "$ITEM" == *"profile ubuntu+dev+ai"* ]]; then
+            if [[ "$ITEM" == *"profile ubuntu+dev+ai"* || "$ITEM" == *"ubuntu+dev+ai"* ]]; then
                 bash scripts/os/ubuntu/profile-ubuntu-dev-ai.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+dev+ai"
-            elif [[ "$ITEM" == *"profile ubuntu+ai-tools"* || "$ITEM" == *"profile ubuntu+all-ai"* || "$ITEM" == *"profile ubuntu+ai"* ]]; then
+            elif [[ "$ITEM" == *"profile ubuntu+ai-tools"* || "$ITEM" == *"profile ubuntu+all-ai"* || "$ITEM" == *"profile ubuntu+ai"* || "$ITEM" == *"ubuntu+ai-tools"* ]]; then
                 bash scripts/os/ubuntu/profile-ubuntu-ai-tools.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+ai-tools"
-            elif [[ "$ITEM" == *"profile ubuntu+antigravity-suite"* || "$ITEM" == *"profile ubuntu+antigravity"* ]]; then
+            elif [[ "$ITEM" == *"profile ubuntu+antigravity-suite"* || "$ITEM" == *"profile ubuntu+antigravity"* || "$ITEM" == *"ubuntu+antigravity"* ]]; then
                 bash scripts/os/ubuntu/profile-ubuntu-antigravity-suite.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+antigravity-suite"
-            elif [[ "$ITEM" == *"profile ubuntu+dev"* ]]; then
+            elif [[ "$ITEM" == *"profile ubuntu+dev"* || "$ITEM" == *"ubuntu+dev"* ]]; then
                 bash scripts/os/ubuntu/profile-ubuntu-dev.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+dev"
-            elif [[ "$ITEM" == *"profile ubuntu+small-dev"* || "$ITEM" == *"profile ubuntu+simple-dev"* ]]; then
+            elif [[ "$ITEM" == *"profile ubuntu+small-dev"* || "$ITEM" == *"profile ubuntu+simple-dev"* || "$ITEM" == *"ubuntu+small-dev"* || "$ITEM" == *"ubuntu+simple-dev"* ]]; then
                 bash scripts/os/ubuntu/profile-ubuntu-simple-dev.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+simple-dev"
-            elif [[ "$ITEM" == *"profile ubuntu+vscode"* ]]; then
+            elif [[ "$ITEM" == *"profile ubuntu+vscode"* || "$ITEM" == *"ubuntu+vscode"* ]]; then
                 bash scripts/os/ubuntu/profile-ubuntu-vscode.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+vscode"
-            elif [[ "$ITEM" == *"profile ubuntu-basic"* ]]; then
+            elif [[ "$ITEM" == *"profile ubuntu-basic"* || "$ITEM" == *"ubuntu-basic"* ]]; then
                 bash scripts/os/ubuntu/profile-ubuntu-basic.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu-basic"
             
             # Combos & Multi-stack

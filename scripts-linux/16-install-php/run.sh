@@ -93,6 +93,13 @@ verb_install() {
         mkdir -p "$ROOT/.installed"; touch "$INSTALLED_MARK"
         return 0
     fi
+    log_warn "[16] Initial install failed, retrying with apt-get update and --fix-missing..."
+    sudo apt-get update -y >/dev/null 2>&1 || true
+    if sudo apt-get install -y --fix-missing $APT_PKG; then
+        log_ok "[16] Installed"
+        mkdir -p "$ROOT/.installed"; touch "$INSTALLED_MARK"
+        return 0
+    fi
     log_err "[16] apt install failed"; return 1
 }
 verb_check()     { if verify_installed; then log_ok "[16] Verify OK"; return 0; fi; log_warn "[16] Verify FAILED"; return 1; }
