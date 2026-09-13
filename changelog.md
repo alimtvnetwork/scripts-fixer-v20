@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.42.0] - 2026-09-13
+
+### Added
+- intelligent linux archive installer for tar, gz, and zip packages
+
+
 All notable changes to this project are documented in this file.
 
 
