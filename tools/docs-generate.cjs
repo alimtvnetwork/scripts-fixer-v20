@@ -95,6 +95,22 @@ function buildParity() {
     lines.push(`| ${s.id} | ${title} | ${w} | ${l} | ${m} |`);
   }
   lines.push("", `**Coverage:** ${all} on all three OSes · ${wOnly} Windows-only · ${lOnly} Linux/macOS-only · ${doc.scripts.length} total.`, "");
+  lines.push(
+    "## Orchestrator playbooks (Linux/macOS fan-out over SSH)",
+    "",
+    "Fan-out wrappers under `scripts-orchestrator/playbooks/` that ship the matching",
+    "`scripts-linux/` modules to every host in an inventory group. Windows targets",
+    "are out of scope for the orchestrator.",
+    "",
+    "| Playbook | Ships | Purpose |",
+    "| --- | --- | --- |",
+    "| `zsh-fanout` | `60-install-zsh` + `61-install-zsh-theme-switcher` + `62-install-zsh-clear` | Install zsh + Oh-My-Zsh + curated `.zshrc` on every host. Honours `TARGET_USER`, `THEME`, `SKIP_THEME_SWITCHER`, `DRY_RUN`. |",
+    "| `users-fanout` | `68-user-mgmt` | Cross-OS user/group provisioning from a JSON payload. |",
+    "| `ssh-keys-fanout` | `_shared/ssh-key-ledger.sh` | Distribute + record authorized_keys and merge ledgers on the controller. |",
+    "| `groups-fanout` | `68-user-mgmt` group verbs | Group membership sync. |",
+    "| `k8s-kubeadm` | `kubernetes/02-05` | kubeadm v1.31 + CRI-O + Weave + Helm bring-up. |",
+    ""
+  );
   return lines.join("\n");
 }
 

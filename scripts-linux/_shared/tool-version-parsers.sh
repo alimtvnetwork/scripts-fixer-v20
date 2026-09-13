@@ -53,14 +53,16 @@ declare -gA __TOOL_PARSERS=(
 
 register_tool_parser() {
   # Args: <name> <function-name>
-  local name="${1,,}"
+  local name
+  name="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"
   local fn="$2"
   __TOOL_PARSERS[$name]="$fn"
 }
 
 parse_tool_version() {
   # Args: <name> <raw>
-  local name="${1,,}"
+  local name
+  name="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"
   local raw="$2"
   local fn="${__TOOL_PARSERS[$name]:-}"
   local out=""

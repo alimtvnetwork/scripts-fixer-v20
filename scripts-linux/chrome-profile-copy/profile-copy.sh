@@ -22,8 +22,11 @@ __SHARED_DIR="$(cd "$__SELF_DIR/../_shared" && pwd 2>/dev/null || echo "$__SELF_
 command -v info  >/dev/null 2>&1 || info()  { printf '[INFO]  %s\n' "$*"; }
 command -v warn  >/dev/null 2>&1 || warn()  { printf '[WARN]  %s\n' "$*" >&2; }
 command -v error >/dev/null 2>&1 || error() { printf '[ERROR] %s\n' "$*" >&2; }
-# shellcheck disable=SC1091
 [ -f "$__SHARED_DIR/file-error.sh" ] && . "$__SHARED_DIR/file-error.sh"
+
+_to_lower() {
+  printf '%s' "$1" | tr '[:upper:]' '[:lower:]'
+}
 
 file_err() {
   # $1=path  $2=reason
@@ -164,12 +167,13 @@ profile_not_found_help() {
 resolve_profile_dir() {
   local ud="$1" name="$2"
   [ -z "$name" ] && { file_err "<empty>" "profile name is empty"; return 1; }
-  local want_lc="${name,,}"
+  local want_lc; want_lc="$(_to_lower "$name")"
   # 1. case-insensitive directory match
   local d
   while IFS= read -r d; do
     [ -z "$d" ] && continue
-    if [ "${d,,}" = "$want_lc" ] && [ -d "$ud/$d" ]; then
+    local d_lc; d_lc="$(_to_lower "$d")"
+    if [ "$d_lc" = "$want_lc" ] && [ -d "$ud/$d" ]; then
       printf '%s\n' "$ud/$d"; return 0
     fi
   done < <(ls -1 "$ud" 2>/dev/null)
@@ -219,12 +223,14 @@ PY
 # ---- "to" keyword stripper --------------------------------------------------
 # `copy <from> to <to>`  OR  `copy <from> <to>`
 normalize_copy_args() {
-  if [ "${ARG2,,}" = "to" ] && [ -n "$ARG3" ]; then
+  local arg2_lc; arg2_lc="$(_to_lower "$ARG2")"
+  if [ "$arg2_lc" = "to" ] && [ -n "$ARG3" ]; then
     ARG2="$ARG3"; ARG3=""
   fi
 }
 normalize_import_args() {
-  if [ "${ARG2,,}" = "to" ] && [ -n "$ARG3" ]; then
+  local arg2_lc; arg2_lc="$(_to_lower "$ARG2")"
+  if [ "$arg2_lc" = "to" ] && [ -n "$ARG3" ]; then
     ARG2="$ARG3"; ARG3=""
   fi
 }
@@ -582,10 +588,11 @@ PY
 }
 
 # ---- dispatch ---------------------------------------------------------------
-case "${SUBCMD,,}" in
+subcmd_lc="$(_to_lower "$SUBCMD")"
+case "$subcmd_lc" in
   copy|profile-copy)            cmd_copy ;;
   export|profile-export|profile-to-json|profile-to-csv)
-    case "${SUBCMD,,}" in
+    case "$subcmd_lc" in
       profile-to-json) EXPORT_FORMAT="json" ;;
       profile-to-csv)  EXPORT_FORMAT="csv" ;;
     esac

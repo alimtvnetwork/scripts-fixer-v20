@@ -79,8 +79,12 @@ def update_json_version(file_path: Path, next_version: str, release_date: str) -
     with open(file_path, "r", encoding="utf-8") as file_handle:
         payload = json.load(file_handle)
     payload["version"] = next_version
+    if "Version" in payload:
+        payload["Version"] = next_version
     if "releaseDate" in payload or file_path.name == "version.json":
         payload["releaseDate"] = release_date
+    if "updated" in payload:
+        payload["updated"] = release_date
     with open(file_path, "w", encoding="utf-8", newline="\n") as file_handle:
         json.dump(payload, file_handle, indent=2)
         file_handle.write("\n")

@@ -72,8 +72,11 @@ Auto-generated from `registry.yaml`. Legend: ✅ supported, ⬜ not implemented.
 | 65 | 65-os-clean | ✅ | ✅ | ✅ |
 | 66 | macOS VS Code 'context-menu' cleanup (Services workflows, LaunchAgents/Daemons, Login Items, code/code-insiders shims, vscode:// URL handlers) | ⬜ | ✅ | ✅ |
 | 67 | Linux/Ubuntu VS Code uninstaller (detects apt|snap|deb|tarball|user-config and removes only matching artifacts) | ⬜ | ✅ | ✅ |
-| 68 | Cross-OS user/group management (Linux useradd|macOS dscl; CLI + JSON object/array auto-detect; mirrors Windows 'os add-user') | ⬜ | ✅ | ✅ |
+| 68 | 68-install-antigravity-manager | ✅ | ✅ | ✅ |
+| 69 | 69-install-antigravity | ✅ | ⬜ | ⬜ |
 | 70 | Ubuntu WordPress installer (Nginx + PHP-FPM + MySQL/MariaDB + latest WordPress; modular components with --interactive prompts) | ⬜ | ✅ | ✅ |
+| 76 | 76-install-qtorrent | ✅ | ✅ | ✅ |
+| 77 | 77-install-utorrent | ✅ | ✅ | ✅ |
 | 80 | Change OpenSSH listening port (backup+validate+prompt+ufw) | ⬜ | ✅ | ✅ |
 | 81 | Change MySQL listening port (backup+prompt+ufw) | ⬜ | ✅ | ✅ |
 | 82 | Change PostgreSQL listening port (backup+prompt+ufw) | ⬜ | ✅ | ✅ |
@@ -98,4 +101,18 @@ Auto-generated from `registry.yaml`. Legend: ✅ supported, ⬜ not implemented.
 | 108 | Install NSD (NLnet authoritative-only DNS) | ⬜ | ✅ | ✅ |
 | 109 | Interactive DNS-install menu (dispatches to 100-108) | ⬜ | ✅ | ✅ |
 
-**Coverage:** 44 on all three OSes · 22 Windows-only · 26 Linux/macOS-only · 92 total.
+**Coverage:** 47 on all three OSes · 23 Windows-only · 25 Linux/macOS-only · 95 total.
+
+## Orchestrator playbooks (Linux/macOS fan-out over SSH)
+
+Fan-out wrappers under `scripts-orchestrator/playbooks/` that ship the matching
+`scripts-linux/` modules to every host in an inventory group. Windows targets
+are out of scope for the orchestrator.
+
+| Playbook | Ships | Purpose |
+| --- | --- | --- |
+| `zsh-fanout` | `60-install-zsh` + `61-install-zsh-theme-switcher` + `62-install-zsh-clear` | Install zsh + Oh-My-Zsh + curated `.zshrc` on every host. Honours `TARGET_USER`, `THEME`, `SKIP_THEME_SWITCHER`, `DRY_RUN`. |
+| `users-fanout` | `68-user-mgmt` | Cross-OS user/group provisioning from a JSON payload. |
+| `ssh-keys-fanout` | `_shared/ssh-key-ledger.sh` | Distribute + record authorized_keys and merge ledgers on the controller. |
+| `groups-fanout` | `68-user-mgmt` group verbs | Group membership sync. |
+| `k8s-kubeadm` | `kubernetes/02-05` | kubeadm v1.31 + CRI-O + Weave + Helm bring-up. |

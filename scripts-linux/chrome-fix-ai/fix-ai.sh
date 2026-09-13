@@ -97,9 +97,12 @@ if ! command -v jq >/dev/null 2>&1; then
 fi
 
 # Read scalars + arrays once.
-mapfile -t POLICY_NAMES  < <(jq -r '.policyNames[]'   "$__CFG" 2>/dev/null)
-mapfile -t FLAG_NAMES    < <(jq -r '.flagNames[]'     "$__CFG" 2>/dev/null)
-mapfile -t CACHE_SUBDIRS < <(jq -r '.cacheSubdirs[]'  "$__CFG" 2>/dev/null)
+POLICY_NAMES=()
+while IFS= read -r line; do [ -n "$line" ] && POLICY_NAMES+=("$line"); done < <(jq -r '.policyNames[]' "$__CFG" 2>/dev/null)
+FLAG_NAMES=()
+while IFS= read -r line; do [ -n "$line" ] && FLAG_NAMES+=("$line"); done < <(jq -r '.flagNames[]' "$__CFG" 2>/dev/null)
+CACHE_SUBDIRS=()
+while IFS= read -r line; do [ -n "$line" ] && CACHE_SUBDIRS+=("$line"); done < <(jq -r '.cacheSubdirs[]' "$__CFG" 2>/dev/null)
 DISABLED_SLOT="$(jq -r '.disabledSlot // 2'           "$__CFG" 2>/dev/null)"
 BACKUP_SUFFIX="$(jq -r '.backupSuffix // "bak-fixai"' "$__CFG" 2>/dev/null)"
 
