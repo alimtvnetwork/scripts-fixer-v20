@@ -54,6 +54,9 @@ show_main_help() {
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install ls" "List all previously installed items"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh os <action>" "OS level actions (update, update-all)"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh <command> -h" "Show detailed help for a command"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh export-config <app>" "Export app config (qtorrent, utorrent, vscode)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh import-config <app>" "Import app config (qtorrent, utorrent, vscode)"
+
     echo -e ""
     
     echo -e "  ${ACCENT}Profiles:${TEXT}"
@@ -73,15 +76,20 @@ show_main_help() {
     printf "    %-28s ${MUTED}%s${TEXT}\n" "profile small-dev" "Delegates to <os>+small-dev"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "profile dev" "Delegates to <os>+dev"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "profile dev+ai" "Delegates to <os>+dev+ai"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "profile ai-tools" "Delegates to <os>+ai-tools (All AI Suite)"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "profile antigravity" "Delegates to <os>+antigravity-suite"
     echo -e ""
     echo -e "  ${ACCENT}Combo Shortcuts:${TEXT}"
     echo -e ""
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "ai-tools, all-ai" "All AI Suite (Antigravity, Codex, Claude)" "69, 78, 80"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "antigravity-suite, ag-suite" "Antigravity + Manager Profile" "68, 69"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "vscode+settings, vscode+s" "VSCode + Settings Sync" "01, 11"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "vscode+menu+settings, vms" "VSCode + Menu Fix + Sync" "01, 10, 11"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "vscode-settings, sync" "VSCode Settings Sync standalone" "11"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "bcompare, bc" "Beyond Compare Diff & Merge Tool" "27"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "ollama, llm, models" "Local LLM Suite (Ollama, GLM, Kimi)" "42"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "antigravity, ag" "Antigravity (agy) AI coding assistant" "43"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "antigravity-manager, agm" "Antigravity Manager GUI" "44"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "clean, cleanup" "System Deep Cleanup (APT cache & logs)" "28"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "fastfetch, tools" "Fastfetch + bat + eza + ripgrep" "29"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "arch, arch-tools, pacman" "Arch Linux dev stack & yay AUR helper" "45"
@@ -124,6 +132,10 @@ show_main_help() {
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "42" "models-menu, ai-models" "Interactive model download picker"
     echo -e "    ${MUTED}      Available: qwen2.5-coder:7b  glm4:9b  glm-edge:4b  kimi-k2:8b  deepseek-r1:8b  llama3.2:3b${TEXT}"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "43" "antigravity, ag" "Install Antigravity (agy) AI coding assistant"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "44" "antigravity-manager, agm" "Install Antigravity Manager GUI"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "78" "codex" "Install Codex UI"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "79" "plotcode" "Install PlotCode UI"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "80" "claude-code, claude" "Install Claude Code (UI & CLI)"
     echo -e ""
 
     echo -e "    ${PRIMARY}Databases${TEXT}"
@@ -139,6 +151,8 @@ show_main_help() {
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "45" "arch-tools" "Arch Linux pacman / yay AUR bootstrap suite"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "46" "kubernetes" "Install Kubernetes CLI (kubectl) & Helm"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "47" "docker" "Install Docker and Docker Compose plugin"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "76" "qtorrent" "Install qBittorrent"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "77" "utorrent" "Install uTorrent"
     echo -e ""
     
     echo -e "    ${PRIMARY}Desktop GUI Tools & OS Menus${TEXT}"
@@ -161,6 +175,7 @@ show_main_help() {
     echo -e "    ./run.sh install clean"
     echo -e "    ./run.sh install profile ubuntu+small-dev"
     echo -e "    ./run.sh install profile ubuntu+dev"
+    echo -e "    ./run.sh profile tree ubuntu+dev"
     echo -e "    ./run.sh install 01,11,03,04,27,42"
     echo -e "    ./run.sh os update-all"
     echo -e "    ./run.sh install ls"
@@ -176,16 +191,15 @@ show_install_help() {
     echo -e "    ./run.sh install <tool|ID>"
     echo -e "    ./run.sh install <tool1,tool2,tool3>"
     echo -e "    ./run.sh install profile <name>"
-    echo -e "    ./run.sh install ls"
+    echo -e "    ./run.sh profile tree <name>"
+    echo -e "    ./run.sh os <update|update-all|fix-link <path>>"
     echo -e ""
     echo -e "  ${ACCENT}Examples:${TEXT}"
     echo -e "    ./run.sh install vscode+settings"
-    echo -e "    ./run.sh install bcompare"
-    echo -e "    ./run.sh install ollama"
-    echo -e "    ./run.sh install clean"
     echo -e "    ./run.sh install 01,05,golang,rust"
-    echo -e "    ./run.sh install profile ubuntu+small-dev"
-    echo -e "    ./run.sh install profile ubuntu+dev"
+    echo -e "    ./run.sh install profile dev"
+    echo -e "    ./run.sh profile tree dev"
+    echo -e "    ./run.sh os fix-link ./scripts/my-script.sh"
     echo -e ""
 }
 
@@ -234,29 +248,69 @@ if [[ "$COMMAND" == "help" || "$COMMAND" == "-h" || "$COMMAND" == "--help" ]]; t
 fi
 
 case "$COMMAND" in
+    "export-config")
+        APP=$1
+        mkdir -p ./configs
+        if [ "$APP" = "qtorrent" ]; then cp -r ~/.config/qBittorrent ./configs/qtorrent; fi
+        if [ "$APP" = "utorrent" ]; then cp -r ~/.config/uTorrent ./configs/utorrent 2>/dev/null || cp -r ~/.utorrent ./configs/utorrent 2>/dev/null; fi
+        if [ "$APP" = "vscode" ]; then cp -r ~/.config/Code/User ./configs/vscode; fi
+        echo "Exported config for $APP"
+        ;;
+    "import-config")
+        APP=$1
+        if [ "$APP" = "qtorrent" ]; then cp -r ./configs/qtorrent ~/.config/qBittorrent; fi
+        if [ "$APP" = "utorrent" ]; then cp -r ./configs/utorrent ~/.config/uTorrent; fi
+        if [ "$APP" = "vscode" ]; then cp -r ./configs/vscode ~/.config/Code/User; fi
+        echo "Imported config for $APP"
+        ;;
+
     "models"|"llm"|"ollama")
         bash scripts/os/ubuntu/install-models.sh "$ARGS"
         show_footer
         exit 0
         ;;
     "os")
-        if [[ "$ARGS" == *"help"* || "$ARGS" == *"-h"* || "$ARGS" == *"--help"* ]]; then
+        OS_CMD=$(echo "$ARGS" | awk '{print $1}')
+        OS_ARG=$(echo "$ARGS" | awk '{$1=""; print $0}' | sed -e 's/^[[:space:]]*//')
+
+        if [[ "$OS_CMD" == "help" || "$OS_CMD" == "-h" || "$OS_CMD" == "--help" ]]; then
             echo -e "  ${ACCENT}OS Command Help:${TEXT}"
-            echo -e "    update      - Run apt update and upgrade"
-            echo -e "    update-all  - Run update and release-upgrade"
+            echo -e "    update               - Run apt update and upgrade"
+            echo -e "    update-all           - Run update and release-upgrade"
+            echo -e "    fix-link <path>      - Create global symlink or fix broken git symlink"
             show_footer
             exit 0
-        elif [ "$ARGS" = "update-all" ] || [ "$ARGS" = "91" ]; then
+        elif [[ "$OS_CMD" == "update-all" || "$OS_CMD" == "91" ]]; then
             bash scripts/os/ubuntu/update-all.sh
-        elif [ "$ARGS" = "update" ] || [ "$ARGS" = "90" ]; then
+        elif [[ "$OS_CMD" == "update" || "$OS_CMD" == "90" ]]; then
             bash scripts/os/ubuntu/update.sh
+        elif [[ "$OS_CMD" == "fix-link" ]]; then
+            bash scripts/os/ubuntu/fix-link.sh "$OS_ARG"
         else
-            echo -e "  ${ERROR}Unknown OS argument: $ARGS${TEXT}"
+            echo -e "  ${ERROR}Unknown OS argument: $OS_CMD${TEXT}"
+        fi
+        ;;
+    "profile")
+        PROF_CMD=$(echo "$ARGS" | awk '{print $1}')
+        PROF_ARG=$(echo "$ARGS" | awk '{$1=""; print $0}' | sed -e 's/^[[:space:]]*//')
+        if [[ "$PROF_CMD" == "tree" ]]; then
+            python3 scripts/shared/profile_tree.py tree "$PROF_ARG"
+            show_footer
+            exit 0
+        else
+            echo -e "  ${ERROR}Unknown profile command: $PROF_CMD${TEXT}"
+            echo -e "  Only 'tree' is supported via this top-level command. Use 'install profile <name>' to install."
+            show_footer
+            exit 1
         fi
         ;;
     "install")
         # Sub-help handling
-        if [[ "$ARGS" == *"profile help"* || "$ARGS" == *"profile -h"* || "$ARGS" == *"profile --help"* || "$ARGS" == *"profile -help"* ]]; then
+        if [[ -z "$(echo "$ARGS" | xargs)" ]]; then
+            show_main_help
+            show_footer
+            exit 0
+        elif [[ "$ARGS" == *"profile help"* || "$ARGS" == *"profile -h"* || "$ARGS" == *"profile --help"* || "$ARGS" == *"profile -help"* ]]; then
             show_profile_help
             show_footer
             exit 0
@@ -265,6 +319,7 @@ case "$COMMAND" in
             show_footer
             exit 0
         elif [[ "$ARGS" == "ls" || "$ARGS" == "list" ]]; then
+            show_main_help
             python3 scripts/shared/list_installs.py
             show_footer
             exit 0
@@ -294,6 +349,8 @@ case "$COMMAND" in
             if [[ "$ITEM" == "profile small-dev" ]]; then ITEM="profile ${OS_ID}+small-dev"; fi
             if [[ "$ITEM" == "profile dev" ]]; then ITEM="profile ${OS_ID}+dev"; fi
             if [[ "$ITEM" == "profile dev+ai" ]]; then ITEM="profile ${OS_ID}+dev+ai"; fi
+            if [[ "$ITEM" == "profile ai-tools" || "$ITEM" == "profile all-ai" || "$ITEM" == "profile ai" ]]; then ITEM="profile ${OS_ID}+ai-tools"; fi
+            if [[ "$ITEM" == "profile antigravity-suite" || "$ITEM" == "profile antigravity" ]]; then ITEM="profile ${OS_ID}+antigravity-suite"; fi
             
             SUCCESS=false
             echo -e "  ${SECONDARY}Processing: $ITEM${TEXT}"
@@ -301,6 +358,10 @@ case "$COMMAND" in
             # Profile installation
             if [[ "$ITEM" == *"profile ubuntu+dev+ai"* ]]; then
                 bash scripts/os/ubuntu/profile-ubuntu-dev-ai.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+dev+ai"
+            elif [[ "$ITEM" == *"profile ubuntu+ai-tools"* || "$ITEM" == *"profile ubuntu+all-ai"* || "$ITEM" == *"profile ubuntu+ai"* ]]; then
+                bash scripts/os/ubuntu/profile-ubuntu-ai-tools.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+ai-tools"
+            elif [[ "$ITEM" == *"profile ubuntu+antigravity-suite"* || "$ITEM" == *"profile ubuntu+antigravity"* ]]; then
+                bash scripts/os/ubuntu/profile-ubuntu-antigravity-suite.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+antigravity-suite"
             elif [[ "$ITEM" == *"profile ubuntu+dev"* ]]; then
                 bash scripts/os/ubuntu/profile-ubuntu-dev.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+dev"
             elif [[ "$ITEM" == *"profile ubuntu+small-dev"* || "$ITEM" == *"profile ubuntu+simple-dev"* ]]; then
@@ -333,6 +394,8 @@ case "$COMMAND" in
                 bash scripts/os/ubuntu/install-model-picker.sh && SUCCESS=true
             elif [[ "$ITEM" == *"ollama"* || "$ITEM" == *"llm"* || "$ITEM" == *"models"* || "$ITEM" == *"42"* ]]; then
                 bash scripts/os/ubuntu/install-models.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"antigravity-manager"* || "$ITEM" == *"agm"* || "$ITEM" == *"44"* ]]; then
+                bash scripts/os/ubuntu/install-antigravity-manager.sh && SUCCESS=true
             elif [[ "$ITEM" == *"antigravity"* || "$ITEM" == *" ag"* || "$ITEM" == "ag" || "$ITEM" == *"43"* ]]; then
                 bash scripts/os/ubuntu/install-antigravity.sh && SUCCESS=true
             elif [[ "$ITEM" == *"workspace"* || "$ITEM" == *"12"* ]]; then
@@ -375,6 +438,10 @@ case "$COMMAND" in
                 SUCCESS=true
 
             # Standalone Tools
+            elif [[ "$ITEM" == *"codex"* || "$ITEM" == *"78"* ]]; then bash scripts/os/ubuntu/install-codex.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"plotcode"* || "$ITEM" == *"79"* ]]; then bash scripts/os/ubuntu/install-plotcode.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"claude-code"* || "$ITEM" == *"claudecode"* || "$ITEM" == *"claude"* || "$ITEM" == *"80"* ]]; then bash scripts/os/ubuntu/install-claude-code.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"antigravity"* || "$ITEM" == *"agy"* || "$ITEM" == *"69"* ]]; then bash scripts/os/ubuntu/install-antigravity.sh && SUCCESS=true
             elif [[ "$ITEM" == *"docker"* || "$ITEM" == *"47"* ]]; then bash scripts/os/ubuntu/install-docker.sh && SUCCESS=true
             elif [[ "$ITEM" == *"kubernetes"* || "$ITEM" == *"46"* ]]; then bash scripts/os/ubuntu/install-kubernetes.sh && SUCCESS=true
             elif [[ "$ITEM" == *"python2"* ]]; then bash scripts/os/ubuntu/install-python2.sh && SUCCESS=true
@@ -412,6 +479,10 @@ case "$COMMAND" in
                 bash scripts/os/ubuntu/install-ssh.sh "$PORT" && SUCCESS=true
             elif [[ "$ITEM" == *"aria2c"* || "$ITEM" == *"26"* ]]; then
                 bash scripts/os/ubuntu/dep-aria2c.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"qtorrent"* || "$ITEM" == *"76"* ]]; then
+                apt install -y qbittorrent && SUCCESS=true
+            elif [[ "$ITEM" == *"utorrent"* || "$ITEM" == *"77"* ]]; then
+                snap install utorrent && SUCCESS=true
             else
                 echo -e "  ${ERROR}Unknown install argument: $ITEM${TEXT}"
                 echo -e "  Run './run.sh install help' for more details."

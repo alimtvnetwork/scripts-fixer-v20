@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to Antigravity Dev</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+	padding:20px;
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+</style>
+</head>
+<body>
+<h1>Welcome to <br/>antigravity-dev site!</h1>
+<div style="padding:10px"> 
+<p>Page <strong id="url"></strong>
+<h2>Not Found!</h2></p>
+Redirecting to https://antigravity.id in <span id="sec" style="text-decoration:underline">5</span>
+</div>
+<script>
+ document.getElementById("url").innerHTML = window.location.href;
+let sec = 5;
+timeInterval = setInterval(()=>{
+ sec -=1;
+ if(sec > 1){
+     document.getElementById("sec").innerHTML = sec;
+ }
+ if(sec==1){
+   clearInterval(timeInterval);
+   window.location.href ="https://antigravity.id"
+ }
+    
+},1000)
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"a586a0116eb24d21bed98d1f535f586e","r":1,"spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>
+

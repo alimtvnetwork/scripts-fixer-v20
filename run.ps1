@@ -363,6 +363,8 @@ function Show-RootHelpRaw {
     Write-Host "    $(".\run.ps1 self-update --reinstall".PadRight($col))" -NoNewline; Write-Host "Pull, then re-run install.ps1 (refresh shims/PATH)" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 export".PadRight($col))" -NoNewline; Write-Host "Export all app settings to repo" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 export npp,obs".PadRight($col))" -NoNewline; Write-Host "Export specific app settings" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 export-config <app>".PadRight($col))" -NoNewline; Write-Host "Export app config (qtorrent, utorrent, vscode)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 import-config <app>".PadRight($col))" -NoNewline; Write-Host "Import app config (qtorrent, utorrent, vscode)" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 status".PadRight($col))" -NoNewline; Write-Host "Show dashboard of all installed tools" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 status --no-choco".PadRight($col))" -NoNewline; Write-Host "Status without outdated package check" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 report [--since=24h] [--open]".PadRight($col))" -NoNewline; Write-Host "Timestamped JSON+HTML report of install/uninstall actions" -ForegroundColor $ThemeMuted
@@ -394,6 +396,7 @@ function Show-RootHelpRaw {
     Write-Host "    $(".\run.ps1 vscode-folder <action>".PadRight($col))" -NoNewline; Write-Host "VS Code folder-only context-menu repair ('vscode-folder help')" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 vscode-context-menu install".PadRight($col))" -NoNewline; Write-Host "Legacy alias for 'menu install vscode' (kept for back-compat)" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 profile <name>".PadRight($col))" -NoNewline; Write-Host "Run a profile recipe (see 'Profiles' section below for list)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 profile tree <name>".PadRight($col))" -NoNewline; Write-Host "View the full installation tree of a profile" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 install <profile>".PadRight($col))" -NoNewline; Write-Host "Same as above -- 'install minimal' == 'profile minimal'" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 profile list".PadRight($col))" -NoNewline; Write-Host "Show all available profiles with descriptions" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 gsa".PadRight($col))" -NoNewline; Write-Host "git safe.directory='*' (wildcard, idempotent)" -ForegroundColor $ThemeMuted
@@ -554,6 +557,7 @@ function Show-RootHelpRaw {
     Write-Host "    .\run.ps1 profile list                  " -NoNewline; Write-Host "# list all profiles with full descriptions" -ForegroundColor $ThemeMuted
     if ($profileNamesForExamples.Count -gt 0) {
         $sample = $profileNamesForExamples[0]
+        Write-Host "    .\run.ps1 profile tree $sample".PadRight(44)      -NoNewline; Write-Host "# view full installation tree" -ForegroundColor $ThemeMuted
         Write-Host "    .\run.ps1 profile $sample --dry-run".PadRight(44) -NoNewline; Write-Host "# preview steps, do not execute" -ForegroundColor $ThemeMuted
         Write-Host "    .\run.ps1 profile $sample -y".PadRight(44)        -NoNewline; Write-Host "# skip confirmation prompts" -ForegroundColor $ThemeMuted
         Write-Host "    .\run.ps1 install $sample -y".PadRight(44)        -NoNewline; Write-Host "# install shortcut + auto-confirm" -ForegroundColor $ThemeMuted
@@ -590,9 +594,16 @@ function Show-RootHelpRaw {
     Write-Host "    $("uninstall protonvpn".PadRight($kc))" -NoNewline; Write-Host "Uninstall Proton VPN + clean .installed/protonvpn.json record [60]" -ForegroundColor $ThemeMuted
     Write-Host "    $("install jumpjump-vpn".PadRight($kc))" -NoNewline; Write-Host "Install JumpJump VPN via direct download (aliases: jumpjump, jumpjumpvpn, jjvpn) [61]" -ForegroundColor $ThemeMuted
     Write-Host "    $("uninstall jumpjump-vpn".PadRight($kc))" -NoNewline; Write-Host "Uninstall JumpJump VPN + clean .installed/jumpjump-vpn.json record [61]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install antigravity-manager".PadRight($kc))" -NoNewline; Write-Host "Install Antigravity Manager [68]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("uninstall antigravity-manager".PadRight($kc))" -NoNewline; Write-Host "Uninstall Antigravity Manager [68]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install antigravity".PadRight($kc))" -NoNewline; Write-Host "Install Antigravity (agy) [69]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install codex".PadRight($kc))" -NoNewline; Write-Host "Install Codex UI [78]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install plotcode".PadRight($kc))" -NoNewline; Write-Host "Install PlotCode UI [79]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install claude-code".PadRight($kc))" -NoNewline; Write-Host "Install Claude Code (UI & CLI) [80]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install qtorrent".PadRight($kc))" -NoNewline; Write-Host "Install qBittorrent [76]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install utorrent".PadRight($kc))" -NoNewline; Write-Host "Install uTorrent [77]" -ForegroundColor $ThemeMuted
     Write-Host ""
-
-    Write-Host "    Nginx Web Server & Domain Manager (script 76):" -ForegroundColor $ThemePrimary
+    Write-Host "    Nginx Web Server & Domain Manager:" -ForegroundColor $ThemePrimary
     Write-Host "      Management & Virtual Hosts:" -ForegroundColor DarkYellow
     Write-Host "        .\run.ps1 nginx install".PadRight(60) -NoNewline; Write-Host "# Install Nginx Web Server via Chocolatey" -ForegroundColor $ThemeMuted
     Write-Host "        .\run.ps1 nginx help".PadRight(60) -NoNewline; Write-Host "# Show domain manager command help" -ForegroundColor $ThemeMuted
@@ -602,8 +613,6 @@ function Show-RootHelpRaw {
     Write-Host "        .\run.ps1 nginx ini --sync".PadRight(60) -NoNewline; Write-Host "# Bidirectional sync between SQLite and domains.ini" -ForegroundColor $ThemeMuted
     Write-Host "        .\run.ps1 nginx showcase".PadRight(60) -NoNewline; Write-Host "# 5-phase showcase of SQLite and INI synchronization" -ForegroundColor $ThemeMuted
     Write-Host ""
-
-
     # ----- Dedicated Chrome & extensions cheatsheet ---------------------------
     # Surfaces every extension install mode (single, comma-list, all, raw URL,
     # file-of-URLs) with copy-paste examples so users do not have to grep the
@@ -1955,6 +1964,41 @@ function Invoke-ScriptById {
 . (Join-Path $RootDir "scripts\shared\choco-update.ps1")
 
 # ── Export command function ────────────────────────────────────────────
+
+function Invoke-ExportConfigCommand {
+    param([string[]]$Args)
+    $hasApp = $null -ne $Args -and $Args.Count -gt 0
+    if (-not $hasApp) { Write-Host "Usage: export-config <app>"; return }
+    $app = $Args[0]
+    $backupDir = Join-Path $RootDir "configs"
+    $hasBackup = Test-Path $backupDir
+    if (-not $hasBackup) { New-Item -ItemType Directory -Path $backupDir | Out-Null }
+    if ($app -eq "qtorrent") { Copy-Config (Join-Path $env:APPDATA "qBittorrent") (Join-Path $backupDir "qtorrent") }
+    if ($app -eq "utorrent") { Copy-Config (Join-Path $env:APPDATA "uTorrent") (Join-Path $backupDir "utorrent") }
+    if ($app -eq "vscode") { Copy-Config (Join-Path $env:APPDATA "Code\User") (Join-Path $backupDir "vscode") }
+}
+
+function Invoke-ImportConfigCommand {
+    param([string[]]$Args)
+    $hasApp = $null -ne $Args -and $Args.Count -gt 0
+    if (-not $hasApp) { Write-Host "Usage: import-config <app>"; return }
+    $app = $Args[0]
+    $backupDir = Join-Path $RootDir "configs"
+    if ($app -eq "qtorrent") { Copy-Config (Join-Path $backupDir "qtorrent") (Join-Path $env:APPDATA "qBittorrent") }
+    if ($app -eq "utorrent") { Copy-Config (Join-Path $backupDir "utorrent") (Join-Path $env:APPDATA "uTorrent") }
+    if ($app -eq "vscode") { Copy-Config (Join-Path $backupDir "vscode") (Join-Path $env:APPDATA "Code\User") }
+}
+
+function Copy-Config {
+    param([string]$Src, [string]$Dest)
+    $hasSrc = Test-Path $Src
+    if (-not $hasSrc) { Write-Host "Source not found: $Src"; return }
+    $hasDest = Test-Path $Dest
+    if (-not $hasDest) { New-Item -ItemType Directory -Path $Dest -Force | Out-Null }
+    Copy-Item -Path "$Src\*" -Destination $Dest -Recurse -Force
+    Write-Host "Copied config to $Dest"
+}
+
 function Invoke-ExportCommand {
     param([string[]]$Args)
 
@@ -3873,6 +3917,9 @@ if ($hasCommand) {
     $isBarePathCommand    = $normalizedCommand -eq "path"
     $isBareScanCommand    = $normalizedCommand -eq "scan"
     $isBareExportCommand  = $normalizedCommand -eq "export"
+    $isBareExportConfigCommand = $normalizedCommand -eq "export-config"
+    $isBareImportConfigCommand = $normalizedCommand -eq "import-config"
+
     $isBareStatusCommand  = $normalizedCommand -in @("status", "list-installed", "listinstalled", "installed")
     $isBareDoctorCommand  = $normalizedCommand -eq "doctor"
     $isBareReportCommand  = $normalizedCommand -in @("report", "install-report", "installreport", "reports")
@@ -3890,6 +3937,8 @@ if ($hasCommand) {
     $isBareChromeProfileCopyCommand   = $normalizedCommand -in @("chrome-profile-copy","chromeprofilecopy","chrome-clone-profile","clone-chrome-profile")
     $isBareChromeProfileExportCommand = $normalizedCommand -in @("chrome-profile-export","chrome-export-profile","chrome-profile-to-json","chrome-profile-to-csv")
     $isBareChromeProfileImportCommand = $normalizedCommand -in @("chrome-profile-import","chrome-import-profile")
+    $isBareTerminalTasksCommand = $normalizedCommand -eq "terminal-tasks"
+    $isBareDbMenuCommand = $normalizedCommand -eq "db-menu"
     $isBareProfileCommand = $normalizedCommand -eq "profile" -or $normalizedCommand -eq "profiles"
     $isBareGitToolsCommand = $normalizedCommand -eq "git-tools" -or $normalizedCommand -eq "gittools"
     $isBareGsaCommand     = $normalizedCommand -eq "gsa" -or $normalizedCommand -eq "git-safe-all" -or $normalizedCommand -eq "gitsafeall"
@@ -3917,8 +3966,8 @@ if ($hasCommand) {
     #   - SCRIPTS_FIXER_NO_PULL=1 env var is set
     #   - any of $Install contains --no-pull / -no-pull / --offline
     #   - command is read-only (status/path/scan/export/doctor)
-    $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand
-    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareNginxCommand
+    $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareExportConfigCommand -or $isBareImportConfigCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand
+    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareTerminalTasksCommand -or $isBareDbMenuCommand -or $isBareNginxCommand
     $isNoPullEnv = $env:SCRIPTS_FIXER_NO_PULL -eq "1"
     $isNoPullFlag = $false
     if ($null -ne $Install) {
@@ -4276,9 +4325,24 @@ if ($hasCommand) {
         exit $LASTEXITCODE
     }
 
+    if ($isBareTerminalTasksCommand) {
+        Show-VersionHeader
+        . (Join-Path $RootDir "scripts\shared\windows-tasks-and-db.ps1")
+        Install-Jq
+        Install-Yq
+        Install-Zellij
+        Install-Fnm
+        Install-Uv
+        Install-Rustup
+        exit 0
+    }
 
-
-
+    if ($isBareDbMenuCommand) {
+        Show-VersionHeader
+        . (Join-Path $RootDir "scripts\shared\windows-tasks-and-db.ps1")
+        Show-DatabaseMenu
+        exit 0
+    }
 
     if ($isBareVscodeContextMenuCommand) {
         Show-VersionHeader
@@ -4332,6 +4396,20 @@ if ($hasCommand) {
                 Show-VersionFooter
                 exit 0
             }
+            if ($firstProfArg -eq "tree") {
+                $profName = if ($Install.Count -gt 1) { "$($Install[1])".Trim() } else { "" }
+                Show-VersionHeader
+                $treePy = Join-Path $RootDir "scripts\shared\profile_tree.py"
+                if (Test-Path $treePy) {
+                    if ($profName) {
+                        python $treePy "tree" $profName
+                    } else {
+                        python $treePy "all"
+                    }
+                }
+                Show-VersionFooter
+                exit 0
+            }
         }
 
         Show-VersionHeader
@@ -4379,14 +4457,13 @@ if ($hasCommand) {
         if ($Install -and $Install.Count -gt 0) {
             $firstSub = "$($Install[0])".Trim().ToLower()
             if ($firstSub -in @("ls", "list", "history")) {
-                Show-VersionHeader
+                Show-RootHelp
                 $listPy = Join-Path $RootDir "scripts\shared\list_installs.py"
                 if (Test-Path $listPy) {
                     python $listPy
                 } else {
                     Write-Host "  [ INFO ] No install log helper found." -ForegroundColor $ThemeMuted
                 }
-                Show-VersionFooter
                 exit 0
             }
         }
@@ -4395,11 +4472,8 @@ if ($hasCommand) {
         $hasRemainingArgs = $null -ne $Install -and $Install.Count -gt 0
         $isNoRemainingArgs = -not $hasRemainingArgs
         if ($isNoRemainingArgs) {
-            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
-            Write-Host "No keywords provided after 'install'. Usage: .\run.ps1 install <keywords>"
-            Write-Host ""
-            Write-Host "  Run .\run.ps1 -Help to see all available keywords" -ForegroundColor $ThemeSecondary
-            exit 1
+            Show-RootHelp
+            exit 0
         }
 
         # ── 'install model <ids>' shortcut ──────────────────────────────
@@ -4528,6 +4602,14 @@ if ($hasCommand) {
             & $chromeScript $chromeSub @chromeRest
             exit $LASTEXITCODE
         }
+    } elseif ($isBareExportConfigCommand) {
+        Show-VersionHeader
+        Invoke-ExportConfigCommand -Args $Install
+        exit 0
+    } elseif ($isBareImportConfigCommand) {
+        Show-VersionHeader
+        Invoke-ImportConfigCommand -Args $Install
+        exit 0
     } elseif ($isBareExportCommand) {
         Show-VersionHeader
         Invoke-ExportCommand -Args $Install
@@ -4920,6 +5002,14 @@ if ($hasCommand) {
             "jumpjumpvpn"   = @{ Folder = "61-install-jumpjump-vpn"; Display = "JumpJump VPN" }
             "jumpjump"      = @{ Folder = "61-install-jumpjump-vpn"; Display = "JumpJump VPN" }
             "jjvpn"         = @{ Folder = "61-install-jumpjump-vpn"; Display = "JumpJump VPN" }
+            "antigravity-manager" = @{ Folder = "68-install-antigravity-manager"; Display = "Antigravity Manager" }
+            "antigravity"   = @{ Folder = "69-install-antigravity"; Display = "Antigravity (agy)" }
+            "agy"           = @{ Folder = "69-install-antigravity"; Display = "Antigravity (agy)" }
+            "codex"         = @{ Folder = "78-install-codex"; Display = "Codex UI" }
+            "plotcode"      = @{ Folder = "79-install-plotcode"; Display = "PlotCode UI" }
+            "claude-code"   = @{ Folder = "80-install-claude-code"; Display = "Claude Code" }
+            "claudecode"    = @{ Folder = "80-install-claude-code"; Display = "Claude Code" }
+            "claude"        = @{ Folder = "80-install-claude-code"; Display = "Claude Code" }
         }
 
         if (-not $uninstallTargets.ContainsKey($targetRaw)) {

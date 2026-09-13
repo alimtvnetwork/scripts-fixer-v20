@@ -14,6 +14,14 @@
     "helmInstallSuccess": "Helm installed successfully: {version}",
     "helmUpgradeSuccess": "Helm upgraded successfully: {version}",
     "helmNotFound": "Helm not found, installing via Chocolatey...",
+    "kindAlreadyInstalled": "kind is already installed: {version}",
+    "kindInstallSuccess": "kind installed successfully: {version}",
+    "kindUpgradeSuccess": "kind upgraded successfully: {version}",
+    "kindNotFound": "kind not found, installing via Chocolatey...",
+    "k9sAlreadyInstalled": "k9s is already installed: {version}",
+    "k9sInstallSuccess": "k9s installed successfully: {version}",
+    "k9sUpgradeSuccess": "k9s upgraded successfully: {version}",
+    "k9sNotFound": "k9s not found, installing via Chocolatey...",
     "lensAlreadyInstalled": "Lens is already installed.",
     "lensNotFound": "Lens not found, installing via Chocolatey...",
     "lensInstallSuccess": "Lens installed successfully.",
@@ -32,7 +40,9 @@
   "versionDetect": [
     { "command": "kubectl",  "flag": "version --client --short", "label": "kubectl" },
     { "command": "minikube", "flag": "version --short",          "label": "minikube" },
-    { "command": "helm",     "flag": "version --short",          "label": "helm" }
+    { "command": "helm",     "flag": "version --short",          "label": "helm" },
+    { "command": "kind",     "flag": "version",                  "label": "kind" },
+    { "command": "k9s",      "flag": "version -s",               "label": "k9s" }
   ],
   "help": {
     "commands": {

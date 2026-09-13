@@ -285,6 +285,18 @@
       "title": "Ubuntu WordPress installer (Nginx + PHP-FPM + MySQL/MariaDB + latest WordPress; modular components with --interactive prompts)"
     },
     {
+      "id": "76",
+      "folder": "76-install-qtorrent",
+      "phase": "04",
+      "title": "qBittorrent (apt)"
+    },
+    {
+      "id": "77",
+      "folder": "77-install-utorrent",
+      "phase": "04",
+      "title": "uTorrent (snap)"
+    },
+    {
       "id": "80",
       "folder": "80-change-port-ssh",
       "phase": "15",

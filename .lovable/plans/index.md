@@ -1,6 +1,6 @@
 # Plans Index: index.md
 
-> **Updated:** 2026-09-09  
+> **Updated:** 2026-09-13  
 > **Status:** Single Source of Truth for Project Plans
 
 ---
@@ -14,8 +14,11 @@
 - [04-databases](completed/04-databases/) — Database Engines (SQL, NoSQL, Cache, Graph)
 - [05-cloud-clis](completed/05-cloud-clis/) — Cloud Provider CLIs (AWS, Azure, GCP)
 - [06-iac-virt](completed/06-iac-virt/) — IaC & Virtualization (Terraform, Vagrant, Ansible)
+- [18-fix-install-help-and-naming](completed/18-fix-install-help-and-naming.md) — Fix install help and naming
 - [18-nginx-wordpress-laravel](completed/18-nginx-wordpress-laravel.md) — Nginx, WordPress, and Laravel Web Stacks
+- [19-ai-tools-installers](completed/19-ai-tools-installers.md) — AI Tools installers
 - [19-nginx-domain-manager-sqlite](completed/19-nginx-domain-manager-sqlite.md) — Nginx Domain Manager, SQLite DB & INI Sync
+- [20-codex-claude-code-ai-profiles](completed/20-codex-claude-code-ai-profiles.md) — Codex, Claude Code & AI Profiles
 
 ---
 

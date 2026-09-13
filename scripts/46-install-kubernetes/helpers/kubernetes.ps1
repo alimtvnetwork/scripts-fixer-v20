@@ -181,6 +181,120 @@ function Install-Helm {
     }
 }
 
+function Install-Kind {
+    param(
+        $Config,
+        $LogMessages
+    )
+
+    $kindConfig = $Config.kind
+    $isDisabled = -not $kindConfig.enabled
+    if ($isDisabled) { return }
+
+    $packageName = $kindConfig.chocoPackageName
+
+    $existing = Get-Command kind -ErrorAction SilentlyContinue
+    if ($existing) {
+        $currentVersion = try { & kind version 2>$null } catch { $null }
+        $hasVersion = -not [string]::IsNullOrWhiteSpace($currentVersion)
+
+        if ($hasVersion) {
+            $isAlreadyTracked = Test-AlreadyInstalled -Name "kind" -CurrentVersion $currentVersion
+            if ($isAlreadyTracked) {
+                Write-Log ($LogMessages.messages.kindAlreadyInstalled -replace '\{version\}', $currentVersion) -Level "info"
+                return
+            }
+        }
+
+        Write-Log ($LogMessages.messages.kindAlreadyInstalled -replace '\{version\}', $currentVersion) -Level "info"
+
+        if ($kindConfig.alwaysUpgradeToLatest) {
+            try {
+                Upgrade-ChocoPackage -PackageName $packageName
+                $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+                $newVersion = try { & kind version 2>$null } catch { $null }
+                $isVersionEmpty = [string]::IsNullOrWhiteSpace($newVersion)
+                if ($isVersionEmpty) { $newVersion = "(version pending)" }
+                Write-Log ($LogMessages.messages.kindUpgradeSuccess -replace '\{version\}', $newVersion) -Level "success"
+                Save-InstalledRecord -Name "kind" -Version "$newVersion".Trim()
+            } catch {
+                Write-Log "kind upgrade failed: $_" -Level "error"
+                Save-InstalledError -Name "kind" -ErrorMessage "$_"
+            }
+        }
+    }
+    else {
+        Write-Log $LogMessages.messages.kindNotFound -Level "info"
+        try {
+            Install-ChocoPackage -PackageName $packageName
+            $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+            $installedVersion = & kind version 2>$null
+            Write-Log ($LogMessages.messages.kindInstallSuccess -replace '\{version\}', $installedVersion) -Level "success"
+            Save-InstalledRecord -Name "kind" -Version $installedVersion
+        } catch {
+            Write-Log "kind install failed: $_" -Level "error"
+            Save-InstalledError -Name "kind" -ErrorMessage "$_"
+        }
+    }
+}
+
+function Install-K9s {
+    param(
+        $Config,
+        $LogMessages
+    )
+
+    $k9sConfig = $Config.k9s
+    $isDisabled = -not $k9sConfig.enabled
+    if ($isDisabled) { return }
+
+    $packageName = $k9sConfig.chocoPackageName
+
+    $existing = Get-Command k9s -ErrorAction SilentlyContinue
+    if ($existing) {
+        $currentVersion = try { & k9s version -s 2>$null } catch { $null }
+        $hasVersion = -not [string]::IsNullOrWhiteSpace($currentVersion)
+
+        if ($hasVersion) {
+            $isAlreadyTracked = Test-AlreadyInstalled -Name "k9s" -CurrentVersion $currentVersion
+            if ($isAlreadyTracked) {
+                Write-Log ($LogMessages.messages.k9sAlreadyInstalled -replace '\{version\}', $currentVersion) -Level "info"
+                return
+            }
+        }
+
+        Write-Log ($LogMessages.messages.k9sAlreadyInstalled -replace '\{version\}', $currentVersion) -Level "info"
+
+        if ($k9sConfig.alwaysUpgradeToLatest) {
+            try {
+                Upgrade-ChocoPackage -PackageName $packageName
+                $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+                $newVersion = try { & k9s version -s 2>$null } catch { $null }
+                $isVersionEmpty = [string]::IsNullOrWhiteSpace($newVersion)
+                if ($isVersionEmpty) { $newVersion = "(version pending)" }
+                Write-Log ($LogMessages.messages.k9sUpgradeSuccess -replace '\{version\}', $newVersion) -Level "success"
+                Save-InstalledRecord -Name "k9s" -Version "$newVersion".Trim()
+            } catch {
+                Write-Log "k9s upgrade failed: $_" -Level "error"
+                Save-InstalledError -Name "k9s" -ErrorMessage "$_"
+            }
+        }
+    }
+    else {
+        Write-Log $LogMessages.messages.k9sNotFound -Level "info"
+        try {
+            Install-ChocoPackage -PackageName $packageName
+            $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+            $installedVersion = & k9s version -s 2>$null
+            Write-Log ($LogMessages.messages.k9sInstallSuccess -replace '\{version\}', $installedVersion) -Level "success"
+            Save-InstalledRecord -Name "k9s" -Version $installedVersion
+        } catch {
+            Write-Log "k9s install failed: $_" -Level "error"
+            Save-InstalledError -Name "k9s" -ErrorMessage "$_"
+        }
+    }
+}
+
 function Install-Lens {
     param(
         $Config,
@@ -219,7 +333,7 @@ function Update-KubePath {
     $isPathUpdateDisabled = -not $Config.path.updateUserPath
     if ($isPathUpdateDisabled) { return }
 
-    foreach ($tool in @("kubectl", "minikube", "helm")) {
+    foreach ($tool in @("kubectl", "minikube", "helm", "kind", "k9s")) {
         $exe = Get-Command $tool -ErrorAction SilentlyContinue
         $isMissing = -not $exe
         if ($isMissing) { continue }
@@ -275,6 +389,28 @@ function Uninstall-KubeTools {
         }
     }
 
+    # kind
+    if ($Config.kind.enabled) {
+        Write-Log ($LogMessages.messages.uninstalling -replace '\{name\}', "kind") -Level "info"
+        $isOk = Uninstall-ChocoPackage -PackageName $Config.kind.chocoPackageName
+        if ($isOk) {
+            Write-Log ($LogMessages.messages.uninstallSuccess -replace '\{name\}', "kind") -Level "success"
+        } else {
+            Write-Log ($LogMessages.messages.uninstallFailed -replace '\{name\}', "kind") -Level "error"
+        }
+    }
+
+    # k9s
+    if ($Config.k9s.enabled) {
+        Write-Log ($LogMessages.messages.uninstalling -replace '\{name\}', "k9s") -Level "info"
+        $isOk = Uninstall-ChocoPackage -PackageName $Config.k9s.chocoPackageName
+        if ($isOk) {
+            Write-Log ($LogMessages.messages.uninstallSuccess -replace '\{name\}', "k9s") -Level "success"
+        } else {
+            Write-Log ($LogMessages.messages.uninstallFailed -replace '\{name\}', "k9s") -Level "error"
+        }
+    }
+
     # Lens
     if ($Config.lens.enabled) {
         Write-Log ($LogMessages.messages.uninstalling -replace '\{name\}', "Lens") -Level "info"
@@ -284,6 +420,8 @@ function Uninstall-KubeTools {
     Remove-InstalledRecord -Name "kubectl"
     Remove-InstalledRecord -Name "minikube"
     Remove-InstalledRecord -Name "helm"
+    Remove-InstalledRecord -Name "kind"
+    Remove-InstalledRecord -Name "k9s"
     Remove-InstalledRecord -Name "lens"
     Remove-ResolvedData -ScriptFolder "46-install-kubernetes"
 

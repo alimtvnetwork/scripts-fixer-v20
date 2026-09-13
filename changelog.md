@@ -6,10 +6,60 @@ All notable changes to this project are documented in this file.
 
 
 
+## [v1.39.0] - 2026-09-13
+
+### Added
+- Added cross-platform **Nginx Domain Manager** with zero-dependency SQLite database persistence (`nginx-domains.sqlite3`), multi-vhost compiler, and automated 5-phase showcase (`run.ps1` and `run.sh` verbs: `nginx install`, `nginx help`, `nginx add <domain>`, `nginx rm <domain>`, `nginx list`, `nginx ini`, `nginx showcase`).
+- Added tri-state bidirectional INI sync engine (`domains.ini` on Windows, `/etc/nginx/sites.ini` on Linux) with drift reconciliation.
+- Added automated WordPress and Laravel deployment suites with FastCGI caching and security hardening.
+- Added high-performance cached repository exploration tool `03-ai-scripts/17-fast-file-reader.py` (<15ms).
+- Added canonical `.lovable/folder-structure.md`, `.lovable/coding-guidelines.md`, and command specs.
+
+## [v1.38.0] - 2026-09-10
+
+### Added
+- Added cross-platform UI-based and CLI installers for **Codex UI** (`scripts/78-install-codex/` and `scripts/os/ubuntu/install-codex.sh`).
+- Added cross-platform UI-based and CLI installers for **PlotCode UI** (`scripts/79-install-plotcode/` and `scripts/os/ubuntu/install-plotcode.sh`).
+- Added cross-platform UI-based and CLI installers for **Claude Code** (`scripts/80-install-claude-code/` and `scripts/os/ubuntu/install-claude-code.sh`).
+- Added unified all-in-one AI profile (`ai-tools` / `all-ai`) installing Antigravity, Antigravity Manager, Codex, PlotCode, and Claude Code.
+- Added dedicated Antigravity profile (`antigravity` / `antigravity-suite`) installing Antigravity and Antigravity Manager on Windows and Ubuntu.
+- Added visual hierarchy and tree rendering for all new profiles in `scripts/shared/profile_tree.py`.
+- Enhanced `run.ps1` and `run.sh` help menus and dispatchers for `install list`, `install codex`, `install claude-code`, `install plotcode`, and `install antigravity`.
+
+### Fixed
+- Fixed "Antigravity CLI" typo across all repository scripts and configurations.
+- Fixed empty `install` and `install ls` / `install list` to show all available commands and scripts.
+
+## [v1.37.0] - 2026-09-09
+
+### Added
+- Removed `ollama` from the `ubuntu+dev+ai` profiles entirely.
+- Added `profile tree <name>` preview support to `run.ps1` and `run.sh` to preview full installation hierarchies before installing. Added install examples to help text.
+
+## [v1.36.0] - 2026-09-09
+
+### Added
+- Added installers for `qtorrent` (qBittorrent) and `utorrent` for Windows and Ubuntu.
+- Added new `export-config` and `import-config` CLI commands globally for VSCode, qtorrent, and utorrent.
+
+## [v1.35.0] - 2026-09-09
+
+### Added
+- Cross-platform IaC & Cloud Tools (Kubernetes Suite, VMware, AWS CLI v2, gcloud, az, Terraform, VirtualBox, Vagrant, Ansible).
+- Antigravity Manager & Antigravity native dynamic installers & profiles.
+- Modern dev tools (Zellij, uv, fnm, jq, yq) & Databases (PostgreSQL, MongoDB, DBeaver, Compass, pgAdmin).
+
+## [v1.34.0] - 2026-09-07
+
+### Added
+- Added OS command `./run.sh os fix-link <path>` for Ubuntu. This utility performs two functions: it repairs broken Git plain-text symlinks (which occur when `core.symlinks` is false on Windows checkouts), and it automatically creates a global executable symlink in `~/.local/bin` for any provided script.
+- Updated the CLI help menu and usage examples to document the `os fix-link` functionality.
+
 ## [v1.33.0] - 2026-08-28
 
 ### Fixed
-- Replaced all uppercase `CHANGELOG.md` references with lowercase `changelog.md` throughout the codebase, including in the `gen-changelog.cjs` tool and markdown files.
+- Replaced all uppercase `changelog.md` references (which caused case-drift issues) with lowercase throughout the codebase, including in the `gen-changelog.cjs` tool.
+>>>>>>> github/main
 
 ## [v1.32.0] - 2026-08-27
 

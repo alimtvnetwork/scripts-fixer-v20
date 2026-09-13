@@ -9,6 +9,10 @@
     "gitcompact":  { "kind": "exact",    "target": "git-compact" },
     "cppdx":       { "kind": "exact",    "target": "cpp-dx" },
     "smalldev":    { "kind": "exact",    "target": "small-dev" },
+    "antigravity-profile": { "kind": "exact", "target": "antigravity" },
+    "all-ai":      { "kind": "exact",    "target": "ai-tools" },
+    "ai":          { "kind": "exact",    "target": "ai-tools" },
+    "ai-suite":    { "kind": "exact",    "target": "ai-tools" },
 
     "dev":         { "kind": "fallback", "target": "base",    "reason": "'dev' profile not present locally; closest match is 'base' (full Windows dev setup)." },
     "dev-advance": { "kind": "fallback", "target": "advance", "reason": "'dev-advance' profile not present locally; closest match is 'advance' (extended dev tooling)." },
