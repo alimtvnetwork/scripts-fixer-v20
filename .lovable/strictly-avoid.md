@@ -17,3 +17,4 @@ Content here.
 - NEVER allow root help interceptors to swallow subcommand help flags (e.g. nginx help, ssh help); route help to the child dispatcher.
 - NEVER use Windows backslashes (\) in Nginx virtual host configuration paths; normalize strictly to forward slashes (/).
 - NEVER disable, comment out, or bypass CI/CD validation workflows or unit tests to force pass.
+- NEVER attempt git checkout/reset/pull over files missing DELETE ACL rights (0x10000) on Windows; if git unlinking fails with "Invalid argument" (ERROR_ACCESS_DENIED), perform merge in clean workspace and synchronize with in-place overwrites or set proper ACLs.
