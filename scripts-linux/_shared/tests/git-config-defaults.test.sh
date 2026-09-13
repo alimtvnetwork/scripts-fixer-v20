@@ -44,8 +44,12 @@ assert_eq "true"  "$(git config --global --get fetch.prune)"          "fetch.pru
 assert_eq "false" "$(git config --global --get pull.rebase)"          "pull.rebase=false"
 # safe.directory uses --add semantics; expect '*'.
 assert_eq "*"     "$(git config --global --get safe.directory)"       "safe.directory=*"
-# credential.helper has Linux override.
-assert_contains "cache" "$(git config --global --get credential.helper)" "credential.helper has 'cache' (Linux override)"
+# credential.helper has per-OS override.
+if [ "$(uname -s)" = "Darwin" ]; then
+  assert_contains "osxkeychain" "$(git config --global --get credential.helper)" "credential.helper has 'osxkeychain' (Darwin override)"
+else
+  assert_contains "cache" "$(git config --global --get credential.helper)" "credential.helper has 'cache' (Linux override)"
+fi
 
 # 2. Idempotent: running again should NOT duplicate safe.directory entries.
 apply_default_git_config >/dev/null 2>&1

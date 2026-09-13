@@ -1,1 +1,22 @@
-{}
+{
+  "git-compact": {
+    "id": "71",
+    "folder": "71-install-git-compact"
+  },
+  "gitcompact": {
+    "id": "71",
+    "folder": "71-install-git-compact"
+  },
+  "install-nginx": {
+    "id": "76",
+    "folder": "76-install-nginx"
+  },
+  "laravel": {
+    "id": "77",
+    "folder": "77-install-laravel-ubuntu"
+  },
+  "nginx": {
+    "id": "76",
+    "folder": "76-install-nginx"
+  }
+}

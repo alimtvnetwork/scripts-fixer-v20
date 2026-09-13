@@ -1,1 +1,46 @@
-{}
+{
+  "artisan": {
+    "id": "77",
+    "folder": "77-install-laravel"
+  },
+  "git-compact": {
+    "id": "71",
+    "folder": "71-install-git-compact"
+  },
+  "gitcompact": {
+    "id": "71",
+    "folder": "71-install-git-compact"
+  },
+  "install-laravel": {
+    "id": "77",
+    "folder": "77-install-laravel"
+  },
+  "install-wordpress": {
+    "id": "70",
+    "folder": "70-install-wordpress"
+  },
+  "install-wp": {
+    "id": "70",
+    "folder": "70-install-wordpress"
+  },
+  "laravel": {
+    "id": "77",
+    "folder": "77-install-laravel"
+  },
+  "nginx": {
+    "id": "76",
+    "folder": "76-install-nginx"
+  },
+  "web-server": {
+    "id": "76",
+    "folder": "76-install-nginx"
+  },
+  "wordpress": {
+    "id": "70",
+    "folder": "70-install-wordpress"
+  },
+  "wp": {
+    "id": "70",
+    "folder": "70-install-wordpress"
+  }
+}
