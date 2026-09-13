@@ -30,6 +30,8 @@
 - [01-execute-batched-loop](learned/01-execute-batched-loop.md) — Multi-agent orchestration, locking matrix, and artifact sanitation.
 - [02-execute-batched-loop-k8s](learned/02-execute-batched-loop-k8s.md) — Kubernetes orchestration and batched task tracking.
 - [03-nginx-domain-manager-sqlite-ini](learned/03-nginx-domain-manager-sqlite-ini.md) — Permanent institutional knowledge: Nginx Domain Manager, SQLite persistence, BOM decoding, and INI synchronization.
+- [04-windows-git-unlink-acl-resolution](learned/04-windows-git-unlink-acl-resolution.md) — Windows Git unlink permission ACL resolution pattern.
+- [05-project-context-and-subsystems](learned/05-project-context-and-subsystems.md) — Subsystem contracts, split DB conventions, and recent commit history.
 
 ### 4. Constraints & Prohibitions
 - [Strictly prohibited (SP-N HARD STOP)](constraints/strictly-prohibited.md) — Numbered hard-stop rules; load on first read, refuse triggering requests with rule number cited.
