@@ -111,6 +111,7 @@ user_data_dir() {
   local candidates=()
   if [ "$os" = "Darwin" ]; then
     candidates+=("$HOME/Library/Application Support/$mac_sub")
+    candidates+=("$HOME/.config/$linux_sub")
   else
     candidates+=("$HOME/.config/$linux_sub")
     candidates+=("$HOME/.var/app/com.google.Chrome/config/google-chrome")        # flatpak

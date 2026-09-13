@@ -60,7 +60,11 @@ fi
 # Sandbox HOME so every patch lands under mktemp.
 SANDBOX="$(mktemp -d -t fixai-XXXXXX)"
 export HOME="$SANDBOX"
-UD="$SANDBOX/.config/google-chrome"
+if [ "$(uname -s)" = "Darwin" ]; then
+  UD="$SANDBOX/Library/Application Support/Google/Chrome"
+else
+  UD="$SANDBOX/.config/google-chrome"
+fi
 mkdir -p "$UD"
 LS="$UD/Local State"
 

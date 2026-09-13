@@ -24,14 +24,15 @@ if (!canonical) {
 
 const today = new Date().toISOString().slice(0, 10);
 const root = JSON.parse(fs.readFileSync(DST, "utf8"));
-const updated = { ...root, Version: canonical, version: canonical, updated: today };
+delete root.Version;
+const updated = { ...root, version: canonical, updated: today };
 const out = JSON.stringify(updated, null, 2) + "\n";
 
 if (process.argv.includes("--check")) {
   const onDisk = fs.readFileSync(DST, "utf8");
-  // Compare only Version/version fields to avoid date churn on read-only checks.
+  // Compare only version field to avoid date churn on read-only checks.
   const onDiskParsed = JSON.parse(onDisk);
-  if (onDiskParsed.Version !== canonical || onDiskParsed.version !== canonical) {
+  if (onDiskParsed.version !== canonical || onDiskParsed.Version !== undefined) {
     console.error(
       `[DRIFT] root version.json (${onDiskParsed.version}) != scripts/version.json (${canonical}).`
     );

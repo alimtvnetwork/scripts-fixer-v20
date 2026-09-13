@@ -78,9 +78,9 @@ def update_json_version(file_path: Path, next_version: str, release_date: str) -
         return False
     with open(file_path, "r", encoding="utf-8") as file_handle:
         payload = json.load(file_handle)
-    payload["version"] = next_version
     if "Version" in payload:
-        payload["Version"] = next_version
+        del payload["Version"]
+    payload["version"] = next_version
     if "releaseDate" in payload or file_path.name == "version.json":
         payload["releaseDate"] = release_date
     if "updated" in payload:

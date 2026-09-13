@@ -18,7 +18,11 @@ bad()  { FAIL=$((FAIL+1)); printf '  [FAIL] %s\n' "$1" >&2; }
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 export HOME="$TMP"
-UD="$HOME/.config/google-chrome"
+if [ "$(uname -s)" = "Darwin" ]; then
+  UD="$HOME/Library/Application Support/Google/Chrome"
+else
+  UD="$HOME/.config/google-chrome"
+fi
 mkdir -p "$UD/Default/Extensions/abcd1234/1.0"
 cat >"$UD/Default/Preferences" <<'JSON'
 { "homepage":"https://example.com", "google":{"services":{"username":"x@y"}},
