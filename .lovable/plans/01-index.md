@@ -32,8 +32,7 @@
 | 21 | `21-macro-schedule-startup-storage.md` | Macro, Startup, Schedule (Crontab), Async Monitoring, Storage & Split Database Architecture | `completed` | 2026-09-13 |
 | 22 | `22-fix-agy-installation-ubuntu.md` | Fix Antigravity (agy) Installation on Ubuntu and Windows | `completed` | 2026-09-13 |
 | 23 | `23-fix-antigravity-installer-cross-platform.md` | Cross-Platform Official Google Antigravity Installation (IDE, CLI, Desktop Entry) | `completed` | 2026-09-13 |
-
-
+| 24 | `24-install-tar-gz-zip-linux.md` | Intelligent Linux Archive Installer (.tar.gz, .zip, .gz) | `completed` | 2026-09-13 |
 
 ---
 

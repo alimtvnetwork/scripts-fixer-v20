@@ -1839,5 +1839,32 @@
     "args": [
       "zsh+config"
     ]
+  },
+  "antigravity": {
+    "id": "69"
+  },
+  "agy": {
+    "id": "69"
+  },
+  "codex": {
+    "id": "78"
+  },
+  "plotcode": {
+    "id": "79"
+  },
+  "claude-code": {
+    "id": "80"
+  },
+  "tar": {
+    "id": "81"
+  },
+  "zip": {
+    "id": "81"
+  },
+  "gz": {
+    "id": "81"
+  },
+  "archive": {
+    "id": "81"
   }
 }

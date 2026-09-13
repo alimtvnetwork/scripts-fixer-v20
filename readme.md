@@ -12,7 +12,7 @@
 [![Tools Installed](https://img.shields.io/badge/Tools-46%2B-8b5cf6?logo=tools&logoColor=white)](#what-it-does)
 [![Databases](https://img.shields.io/badge/Databases-12-0ea5e9?logo=databricks&logoColor=white)](#databases-18-29)
 [![License](https://img.shields.io/badge/License-MIT-eab308)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-v1.40.0-f97316)](scripts/version.json)
+[![Version](https://img.shields.io/badge/Version-v1.41.0-f97316)](scripts/version.json)
 [![AI Models](https://img.shields.io/badge/AI%20Models-90-ef4444?logo=huggingface&logoColor=white)](scripts/43-install-llama-cpp/models-list.md)
 [![Changelog](https://img.shields.io/badge/Changelog-Latest-ec4899)](changelog.md)
 [![CI](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)](.github/workflows)
@@ -1847,6 +1847,11 @@ curl -fsSL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/mai
 
 # Run with sudo only when a script needs root access
 sudo bash scripts-linux/run.sh install <keyword>
+
+# Or use the Linux runner directly for intelligent archive installs (.tar.gz, .zip, .gz, etc.):
+./run install tar <path-or-url> [custom-app-name]
+./run install zip <path-or-url> [custom-app-name]
+./run install gz <path-or-url> [custom-app-name]
 ```
 
 To open the full toolkit menu instead, use `./run.ps1 -d` on Windows or `bash scripts-linux/run.sh --list` on Unix / macOS.

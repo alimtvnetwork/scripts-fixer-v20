@@ -6,6 +6,23 @@ All notable changes to this project are documented in this file.
 
 
 
+## [v1.41.0] - 2026-09-13
+
+### Added
+- **Intelligent Linux Archive Installer (`install tar`, `install zip`, `install gz`, `install archive`)**:
+  - Added new standalone backend script `scripts/os/ubuntu/install-archive.sh` and alias wrapper `scripts/os/ubuntu/install-tar.sh`.
+  - Supports `.tar.gz`, `.tgz`, `.tar.xz`, `.tar.bz2`, `.tar.zst`, `.tar`, `.zip`, and standalone `.gz` archives.
+  - Supports both local file paths (`./archive.tar.gz`, `~/Downloads/app.zip`, `/abs/path`) and remote HTTP / HTTPS / FTP URLs.
+  - Automatically installs missing extraction utilities (`tar`, `gzip`, `bzip2`, `xz-utils`, `unzip`, `file`).
+  - Isolated temporary directory extraction staging (`/tmp/archive-stage-XXXXXX`) prevents directory pollution and handles both flat and nested archive layouts.
+  - Automatic binary discovery with executable permission configuration (`chmod +x`), Electron `chrome-sandbox` SUID/permissions setup, and dynamic library wrapper generation (`LD_LIBRARY_PATH`).
+  - System and user symlinks created in `$HOME/.local/bin` and `/usr/local/bin`.
+  - Desktop integration: Auto-detects GUI applications, generates `.desktop` launchers in `~/.local/share/applications` and `~/Desktop`, and copies desktop icons.
+  - Shell PATH integration: Idempotently injects `~/.local/bin` to `~/.bashrc`, `~/.zshrc`, and `~/.profile`.
+  - 10-step fail-closed verification pipeline tests binary existence and execution smoke test before reporting success.
+  - Registered ID `81` and keyword aliases in `scripts/run.sh`, `scripts/shared/list_installs.py`, and `scripts/shared/install-keywords.json`.
+  - Linux-only fail-closed guard blocks non-Linux execution with clear WSL2 instructions.
+
 ## [v1.40.0] - 2026-09-13
 
 ### Added

@@ -67,7 +67,21 @@ TOOL_DESCRIPTIONS = {
     "50": "Z-Shell (ZSH) Interactive Shell",
     "zsh": "Z-Shell (ZSH) Interactive Shell",
     "51": "ZSH Shell + Oh-My-Zsh & Auto-suggestions",
-    "zsh+config": "ZSH Shell + Oh-My-Zsh & Auto-suggestions"
+    "zsh+config": "ZSH Shell + Oh-My-Zsh & Auto-suggestions",
+    "69": "Google Antigravity IDE & Autonomous AI Coding Companion",
+    "antigravity": "Google Antigravity IDE & Autonomous AI Coding Companion",
+    "agy": "Google Antigravity IDE & Autonomous AI Coding Companion",
+    "78": "Codex AI Coding Agent & Terminal Assistant",
+    "codex": "Codex AI Coding Agent & Terminal Assistant",
+    "79": "PlotCode Terminal Plotting & Data Visualization Suite",
+    "plotcode": "PlotCode Terminal Plotting & Data Visualization Suite",
+    "80": "Claude Code Anthropic Agentic CLI Assistant",
+    "claude-code": "Claude Code Anthropic Agentic CLI Assistant",
+    "81": "Universal Linux Archive Installer (.tar.gz, .tar.xz, .tar.bz2, .tar, .zip, .gz)",
+    "tar": "Universal Linux Archive Installer (.tar.gz, .tar.xz, .tar.bz2, .tar, .zip, .gz)",
+    "zip": "Universal Linux Archive Installer (.tar.gz, .tar.xz, .tar.bz2, .tar, .zip, .gz)",
+    "gz": "Universal Linux Archive Installer (.tar.gz, .tar.xz, .tar.bz2, .tar, .zip, .gz)",
+    "archive": "Universal Linux Archive Installer (.tar.gz, .tar.xz, .tar.bz2, .tar, .zip, .gz)"
 }
 
 def resolve_profile_tree(item_str):

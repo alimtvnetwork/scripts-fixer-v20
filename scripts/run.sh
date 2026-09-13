@@ -59,6 +59,7 @@ show_main_help() {
     echo -e ""
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install <keywords>" "Install by keyword / ID / combination"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install ls" "List all previously installed items"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install tar <file|url>" "Intelligent archive installer (.tar.gz, .zip, .gz)"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh os <action>" "OS level actions (update, update-all)"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh <command> -h" "Show detailed help for a command"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh export-config <app>" "Export app config (qtorrent, utorrent, vscode)"
@@ -166,6 +167,7 @@ show_main_help() {
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "47" "docker" "Install Docker and Docker Compose plugin"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "76" "qtorrent" "Install qBittorrent"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "77" "utorrent" "Install uTorrent"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "81" "tar, zip, gz, archive" "Intelligent archive installer (.tar.gz, .zip, .gz)"
     echo -e ""
     
     echo -e "    ${PRIMARY}Desktop GUI Tools & OS Menus${TEXT}"
@@ -184,6 +186,8 @@ show_main_help() {
     echo -e "  ${ACCENT}Usage Examples:${TEXT}"
     echo -e "    ./run.sh install vscode+settings"
     echo -e "    ./run.sh install bcompare"
+    echo -e "    ./run.sh install tar https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz"
+    echo -e "    ./run.sh install zip ./package.zip"
     echo -e "    ./run.sh install ollama"
     echo -e "    ./run.sh install clean"
     echo -e "    ./run.sh install profile ubuntu+small-dev"
@@ -198,17 +202,23 @@ show_main_help() {
 
 show_install_help() {
     echo -e "  ${ACCENT}Install Command Help:${TEXT}"
-    echo -e "    Installs specified tools, keywords, or profiles on the Ubuntu system."
+    echo -e "    Installs specified tools, keywords, archives, or profiles on the Ubuntu system."
     echo -e ""
     echo -e "  ${ACCENT}Usage:${TEXT}"
     echo -e "    ./run.sh install <tool|ID>"
     echo -e "    ./run.sh install <tool1,tool2,tool3>"
+    echo -e "    ./run.sh install tar <path-or-url> [app-name]"
+    echo -e "    ./run.sh install zip <path-or-url> [app-name]"
+    echo -e "    ./run.sh install gz <path-or-url> [app-name]"
+    echo -e "    ./run.sh install archive <path-or-url> [app-name]"
     echo -e "    ./run.sh install profile <name>"
     echo -e "    ./run.sh profile tree <name>"
     echo -e "    ./run.sh os <update|update-all|fix-link <path>>"
     echo -e ""
     echo -e "  ${ACCENT}Examples:${TEXT}"
     echo -e "    ./run.sh install vscode+settings"
+    echo -e "    ./run.sh install tar https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz"
+    echo -e "    ./run.sh install zip ./my-app.zip"
     echo -e "    ./run.sh install 01,05,golang,rust"
     echo -e "    ./run.sh install profile dev"
     echo -e "    ./run.sh profile tree dev"
@@ -218,6 +228,10 @@ show_install_help() {
 
 show_profile_help() {
     python3 scripts/shared/profile_tree.py all
+}
+
+show_tar_install_help() {
+    bash scripts/os/ubuntu/install-archive.sh -h
 }
 
 show_footer() {
@@ -363,7 +377,66 @@ case "$COMMAND" in
         show_footer
         exit 0
         ;;
+    "install-tar"|"install-zip"|"install-gz"|"install-archive")
+        if [[ -z "$(echo "$ARGS" | xargs)" || "$ARGS" == "-h" || "$ARGS" == "--help" || "$ARGS" == "help" ]]; then
+            show_tar_install_help
+            show_footer
+            exit 0
+        fi
+        if [ "$(uname -s)" != "Linux" ]; then
+            echo -e "  ${ERROR}[FAIL ] Archive installation is supported on Linux / Ubuntu only.${TEXT}"
+            echo -e "  ${ACCENT}For Windows, use run.ps1 or run in WSL2.${TEXT}"
+            show_footer
+            exit 1
+        fi
+        bash scripts/os/ubuntu/install-archive.sh $ARGS
+        EXIT_CODE=$?
+        show_footer
+        exit $EXIT_CODE
+        ;;
     "install")
+        FIRST_WORD=$(echo "$ARGS" | awk '{print $1}')
+        REST_WORDS=$(echo "$ARGS" | awk '{$1=""; print $0}' | sed -e 's/^[[:space:]]*//')
+
+        # Handle tar-specific help: ./run.sh install tar -h or ./run.sh install tar help
+        if [[ "$FIRST_WORD" == "tar" || "$FIRST_WORD" == "zip" || "$FIRST_WORD" == "gz" || "$FIRST_WORD" == "archive" ]]; then
+            if [[ -z "$REST_WORDS" || "$REST_WORDS" == "-h" || "$REST_WORDS" == "--help" || "$REST_WORDS" == "help" ]]; then
+                show_tar_install_help
+                show_footer
+                exit 0
+            fi
+            if [ "$(uname -s)" != "Linux" ]; then
+                echo -e "  ${ERROR}[FAIL ] Archive installation is supported on Linux / Ubuntu only.${TEXT}"
+                echo -e "  ${ACCENT}For Windows, use run.ps1 or run in WSL2.${TEXT}"
+                show_footer
+                exit 1
+            fi
+            bash scripts/os/ubuntu/install-archive.sh $REST_WORDS
+            EXIT_CODE=$?
+            if [ $EXIT_CODE -eq 0 ]; then
+                $PYTHON_BIN scripts/shared/logger.py "archive:${REST_WORDS%% *}" 2>/dev/null || true
+            fi
+            show_footer
+            exit $EXIT_CODE
+        fi
+
+        # Direct archive detection: ./run.sh install /path/to/archive.tar.gz or URL
+        if [[ "$FIRST_WORD" == *.tar.gz || "$FIRST_WORD" == *.tgz || "$FIRST_WORD" == *.tar.xz || "$FIRST_WORD" == *.tar.bz2 || "$FIRST_WORD" == *.tar.zst || "$FIRST_WORD" == *.tar || "$FIRST_WORD" == *.zip || "$FIRST_WORD" == *.gz ]]; then
+            if [ "$(uname -s)" != "Linux" ]; then
+                echo -e "  ${ERROR}[FAIL ] Archive installation is supported on Linux / Ubuntu only.${TEXT}"
+                echo -e "  ${ACCENT}For Windows, use run.ps1 or run in WSL2.${TEXT}"
+                show_footer
+                exit 1
+            fi
+            bash scripts/os/ubuntu/install-archive.sh $ARGS
+            EXIT_CODE=$?
+            if [ $EXIT_CODE -eq 0 ]; then
+                $PYTHON_BIN scripts/shared/logger.py "archive:${FIRST_WORD}" 2>/dev/null || true
+            fi
+            show_footer
+            exit $EXIT_CODE
+        fi
+
         # Sub-help handling
         if [[ -z "$(echo "$ARGS" | xargs)" ]]; then
             show_main_help
@@ -373,7 +446,7 @@ case "$COMMAND" in
             show_profile_help
             show_footer
             exit 0
-        elif [[ "$ARGS" == *"help"* || "$ARGS" == *"-h"* || "$ARGS" == *"--help"* || "$ARGS" == *"-help"* ]]; then
+        elif [[ "$ARGS" == "help" || "$ARGS" == "-h" || "$ARGS" == "--help" || "$ARGS" == "-help" ]]; then
             show_install_help
             show_footer
             exit 0
@@ -542,6 +615,12 @@ case "$COMMAND" in
                 apt install -y qbittorrent && SUCCESS=true
             elif [[ "$ITEM" == *"utorrent"* || "$ITEM" == *"77"* ]]; then
                 snap install utorrent && SUCCESS=true
+            elif [[ "$ITEM" == "tar "* || "$ITEM" == "zip "* || "$ITEM" == "gz "* || "$ITEM" == "archive "* ]]; then
+                ARCHIVE_TARGET=$(echo "$ITEM" | sed -E 's/^(tar|zip|gz|archive)[[:space:]]+//')
+                bash scripts/os/ubuntu/install-archive.sh "$ARCHIVE_TARGET" && SUCCESS=true
+            elif [[ "$ITEM" == "tar" || "$ITEM" == "zip" || "$ITEM" == "gz" || "$ITEM" == "archive" || "$ITEM" == "81" ]]; then
+                echo -e "  ${ACCENT}Usage: ./run.sh install tar <path-or-url> [app-name]${TEXT}"
+                echo -e "  ${MUTED}Example: ./run.sh install tar https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz${TEXT}"
             else
                 echo -e "  ${ERROR}Unknown install argument: $ITEM${TEXT}"
                 echo -e "  Run './run.sh install help' for more details."
