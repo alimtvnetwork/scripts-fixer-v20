@@ -101,8 +101,8 @@ show_main_help() {
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "vscode-settings, sync" "VSCode Settings Sync standalone" "11"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "bcompare, bc" "Beyond Compare Diff & Merge Tool" "27"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "ollama, llm, models" "Local LLM Suite (Ollama, GLM, Kimi)" "42"
-    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "antigravity, ag" "Antigravity (agy) AI coding assistant" "43"
-    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "antigravity-manager, agm" "Antigravity Manager GUI" "44"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "antigravity, ag" "Antigravity (agy) AI coding assistant" "69, 43"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "antigravity-manager, agm" "Antigravity Manager GUI" "68, 44"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "clean, cleanup" "System Deep Cleanup (APT cache & logs)" "28"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "fastfetch, tools" "Fastfetch + bat + eza + ripgrep" "29"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "arch, arch-tools, pacman" "Arch Linux dev stack & yay AUR helper" "45"
@@ -144,8 +144,8 @@ show_main_help() {
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "42" "models <name>" "Pull a specific model (e.g. models glm4:9b)"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "42" "models-menu, ai-models" "Interactive model download picker"
     echo -e "    ${MUTED}      Available: qwen2.5-coder:7b  glm4:9b  glm-edge:4b  kimi-k2:8b  deepseek-r1:8b  llama3.2:3b${TEXT}"
-    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "43" "antigravity, ag" "Install Antigravity (agy) AI coding assistant"
-    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "44" "antigravity-manager, agm" "Install Antigravity Manager GUI"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "68" "antigravity-manager, agm" "Install Antigravity Manager GUI (legacy ID: 44)"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "69" "antigravity, ag" "Install Antigravity (agy) AI assistant & IDE (legacy ID: 43)"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "78" "codex" "Install Codex UI"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "79" "plotcode" "Install PlotCode UI"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "80" "claude-code, claude" "Install Claude Code (UI & CLI)"
@@ -408,8 +408,8 @@ case "$COMMAND" in
             if [[ "$ITEM" == "profile small-dev" ]]; then ITEM="profile ${OS_ID}+small-dev"; fi
             if [[ "$ITEM" == "profile dev" ]]; then ITEM="profile ${OS_ID}+dev"; fi
             if [[ "$ITEM" == "profile dev+ai" ]]; then ITEM="profile ${OS_ID}+dev+ai"; fi
-            if [[ "$ITEM" == "profile ai-tools" || "$ITEM" == "profile all-ai" || "$ITEM" == "profile ai" ]]; then ITEM="profile ${OS_ID}+ai-tools"; fi
-            if [[ "$ITEM" == "profile antigravity-suite" || "$ITEM" == "profile antigravity" ]]; then ITEM="profile ${OS_ID}+antigravity-suite"; fi
+            if [[ "$ITEM" == "ai-tools" || "$ITEM" == "all-ai" || "$ITEM" == "profile ai-tools" || "$ITEM" == "profile all-ai" || "$ITEM" == "profile ai" ]]; then ITEM="profile ${OS_ID}+ai-tools"; fi
+            if [[ "$ITEM" == "antigravity-suite" || "$ITEM" == "ag-suite" || "$ITEM" == "profile antigravity-suite" || "$ITEM" == "profile antigravity" ]]; then ITEM="profile ${OS_ID}+antigravity-suite"; fi
             
             SUCCESS=false
             echo -e "  ${SECONDARY}Processing: $ITEM${TEXT}"
@@ -453,9 +453,9 @@ case "$COMMAND" in
                 bash scripts/os/ubuntu/install-model-picker.sh && SUCCESS=true
             elif [[ "$ITEM" == *"ollama"* || "$ITEM" == *"llm"* || "$ITEM" == *"models"* || "$ITEM" == *"42"* ]]; then
                 bash scripts/os/ubuntu/install-models.sh && SUCCESS=true
-            elif [[ "$ITEM" == *"antigravity-manager"* || "$ITEM" == *"agm"* || "$ITEM" == *"44"* ]]; then
+            elif [[ "$ITEM" == *"antigravity-manager"* || "$ITEM" == *"agm"* || "$ITEM" == *"44"* || "$ITEM" == *"68"* ]]; then
                 bash scripts/os/ubuntu/install-antigravity-manager.sh && SUCCESS=true
-            elif [[ "$ITEM" == *"antigravity"* || "$ITEM" == *" ag"* || "$ITEM" == "ag" || "$ITEM" == *"43"* ]]; then
+            elif [[ "$ITEM" == *"antigravity"* || "$ITEM" == *"agy"* || "$ITEM" == *" ag"* || "$ITEM" == "ag" || "$ITEM" == *"43"* || "$ITEM" == *"69"* ]]; then
                 bash scripts/os/ubuntu/install-antigravity.sh && SUCCESS=true
             elif [[ "$ITEM" == *"workspace"* || "$ITEM" == *"12"* ]]; then
                 bash scripts/os/ubuntu/setup-workspace.sh && SUCCESS=true
@@ -545,6 +545,15 @@ case "$COMMAND" in
             else
                 echo -e "  ${ERROR}Unknown install argument: $ITEM${TEXT}"
                 echo -e "  Run './run.sh install help' for more details."
+            fi
+
+            if [ "$SUCCESS" = true ]; then
+                if [[ "$ITEM" == *"antigravity"* || "$ITEM" == *"agy"* || "$ITEM" == "ag" || "$ITEM" == "43" || "$ITEM" == "69" ]]; then
+                    if ! command -v antigravity &>/dev/null && [ ! -x "$HOME/.local/bin/antigravity" ] && [ ! -x "/usr/local/bin/antigravity" ] && [ ! -x "$HOME/.local/share/antigravity/antigravity" ] && [ ! -x "$HOME/.antigravity/bin/antigravity" ]; then
+                        echo -e "  ${ERROR}[FAIL ] Antigravity was not found in PATH or standard binary locations.${TEXT}"
+                        SUCCESS=false
+                    fi
+                fi
             fi
 
             if [ "$SUCCESS" = true ]; then

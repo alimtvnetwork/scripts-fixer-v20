@@ -6,6 +6,19 @@ All notable changes to this project are documented in this file.
 
 
 
+## [v1.40.0] - 2026-09-13
+
+### Added
+- **Official Google Antigravity Cross-Platform Installation Suite**: Integrated official Google Storage distribution packages for full Antigravity IDE and CLI:
+  - Linux x64: `https://storage.googleapis.com/antigravity-public/antigravity-hub/2.13.0-6362815968182272/linux-x64/Antigravity.tar.gz`
+  - Linux ARM: `https://storage.googleapis.com/antigravity-public/antigravity-hub/2.13.0-6362815968182272/linux-arm/Antigravity.tar.gz`
+  - Windows x64: `https://storage.googleapis.com/antigravity-public/antigravity-hub/2.13.0-6362815968182272/windows-x64/Antigravity-x64.exe`
+  - Windows ARM: `https://storage.googleapis.com/antigravity-public/antigravity-hub/2.13.0-6362815968182272/windows-arm/Antigravity-arm64.exe`
+- **Linux Desktop & System Integration**: Installs desktop application launcher (`~/.local/share/applications/antigravity.desktop`, `/usr/share/applications/`, and `~/Desktop/`), updates desktop database, and symlinks binaries to `/usr/local/bin/antigravity` and `/usr/local/bin/agy` for instant shell availability without restarting.
+- **Windows System Integration**: Installs silent NSIS/Inno packages, creates Desktop and Start Menu shortcuts, updates User and Process PATH, and broadcasts `WM_SETTINGCHANGE`.
+- **Fail-Closed Verification**: Rigorous execution smoke tests verify binary existence and execution before marking installation as successful in `scripts/run.sh` and `run.ps1`.
+- **Cross-Platform Forwarding**: `scripts/69-install-antigravity/run.ps1` detects Unix/Linux environments and forwards to `install-antigravity.sh`.
+
 ## [v1.39.0] - 2026-09-13
 
 ### Added
