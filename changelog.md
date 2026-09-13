@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.43.0] - 2026-09-13
+
+### Added
+- automated release orchestrator and branch lifecycle suite
+
+
 ## [v1.42.0] - 2026-09-13
 
 ### Added
