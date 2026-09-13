@@ -1315,6 +1315,58 @@
         ],
         "pin-chrome": [
             "62-pin-taskbar:chrome"
+        ],
+        "nginx": [
+            76
+        ],
+        "nginx-server": [
+            76
+        ],
+        "vhost": [
+            76
+        ],
+        "vhosts": [
+            76
+        ],
+        "domain-manager": [
+            76
+        ],
+        "wordpress": [
+            70
+        ],
+        "wp": [
+            70
+        ],
+        "wp-only": [
+            70
+        ],
+        "laravel": [
+            77
+        ],
+        "artisan": [
+            77
+        ],
+        "lemp": [
+            76,
+            16,
+            18
+        ],
+        "lnmp": [
+            76,
+            16,
+            18
+        ],
+        "wordpress-stack": [
+            76,
+            16,
+            18,
+            70
+        ],
+        "laravel-stack": [
+            76,
+            16,
+            18,
+            77
         ]
     },
     "modes": {

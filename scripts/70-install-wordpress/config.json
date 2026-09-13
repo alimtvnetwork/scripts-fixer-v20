@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "wordpress": {
+    "downloadUrl": "https://wordpress.org/latest.zip",
+    "defaultInstallPath": "dev-tool\\www\\wordpress",
+    "defaultDbName": "wordpress",
+    "defaultDbUser": "wp_user",
+    "defaultDbPort": 3306,
+    "defaultSitePort": 80
+  },
+  "minFreeGB": 2,
+  "_minFreeGB_note": "WordPress archive + extraction + MySQL database files.",
+  "validModes": ["full", "wp-only"]
+}

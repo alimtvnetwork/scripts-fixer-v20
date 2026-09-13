@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "id": "77",
+  "name": "Ubuntu Laravel installer (Nginx + PHP-FPM + Composer 2 + DB + Queue Worker + Cron)",
+  "summary": "Production-ready Laravel installer for Ubuntu: PHP 8.2/8.3 with extensions, Composer 2 with SHA-384 verification, Nginx vhost isolating /public, DB provisioning (MySQL/PgSQL/SQLite), systemd queue worker, and artisan crontab scheduler",
+  "aliases": [
+    "laravel"
+  ],
+  "platforms": {
+    "linux": {
+      "folder": "77-install-laravel-ubuntu",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install"
+  ],
+  "phase": "14",
+  "tags": [
+    "laravel",
+    "php",
+    "nginx",
+    "composer",
+    "framework"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1.0",
+  "id": "76",
+  "name": "Nginx standalone web server (HTTP/HTTPS, modular snippets, multi-site manager)",
+  "summary": "Nginx standalone web server (HTTP/HTTPS, modular snippets, multi-site manager)",
+  "aliases": [
+    "nginx",
+    "install-nginx"
+  ],
+  "platforms": {
+    "linux": {
+      "folder": "76-install-nginx",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "76-install-nginx",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install",
+    "check",
+    "repair",
+    "uninstall",
+    "status",
+    "test",
+    "reload",
+    "sites",
+    "enable-site",
+    "disable-site"
+  ],
+  "phase": "14",
+  "tags": [
+    "webserver",
+    "nginx",
+    "http",
+    "https"
+  ]
+}

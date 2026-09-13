@@ -30,6 +30,10 @@ release-assets
 /.reports
 /.state
 /scripts/.resolved
+.installed/
+.resolved/
+tmp/
+*.sqlite3
 
 # Generated
 artifacts/

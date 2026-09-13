@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0",
+  "id": "70",
+  "name": "WordPress (Windows)",
+  "summary": "WordPress on Windows with MySQL, PHP, and Nginx",
+  "aliases": ["wordpress", "wp", "install-wordpress", "install-wp"],
+  "platforms": {
+    "windows": {
+      "folder": "70-install-wordpress",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "70-install-wordpress-ubuntu",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "70-install-wordpress-ubuntu",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": ["16", "18", "76"],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install",
+    "check",
+    "repair",
+    "uninstall"
+  ],
+  "phase": "14",
+  "tags": ["wordpress", "cms", "lemp", "php", "mysql"]
+}

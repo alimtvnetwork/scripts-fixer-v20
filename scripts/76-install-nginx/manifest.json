@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "id": "76",
+  "name": "Nginx (choco)",
+  "summary": "Nginx web server and reverse proxy with SQLite database & INI domain manager (Windows Chocolatey + FastCGI)",
+  "aliases": ["nginx", "web-server"],
+  "platforms": {
+    "windows": {
+      "folder": "76-install-nginx",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "76-install-nginx",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "76-install-nginx",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install",
+    "help",
+    "add",
+    "rm",
+    "list",
+    "ini",
+    "showcase",
+    "check",
+    "repair",
+    "uninstall",
+    "start",
+    "stop",
+    "reload",
+    "status",
+    "test"
+  ],
+  "phase": "14",
+  "tags": ["web", "server", "proxy", "lemp"]
+}

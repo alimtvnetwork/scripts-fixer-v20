@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.0",
+  "id": "77",
+  "name": "Laravel (Windows)",
+  "summary": "Laravel ecosystem on Windows (Composer + Scaffolding + Artisan + Nginx)",
+  "aliases": ["laravel", "artisan", "install-laravel"],
+  "platforms": {
+    "windows": {
+      "folder": "77-install-laravel",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "77-install-laravel-ubuntu",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "77-install-laravel-ubuntu",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": ["16", "18", "76"],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install",
+    "check",
+    "repair",
+    "uninstall",
+    "scaffold"
+  ],
+  "phase": "14",
+  "tags": ["laravel", "php", "artisan", "composer", "framework"]
+}

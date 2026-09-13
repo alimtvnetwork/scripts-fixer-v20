@@ -24,6 +24,10 @@ export SCRIPT_ID="root"
 
 VERB=""; ONLY_ID=""; PARALLEL=1; JSON_OUT=0; ONLY_DRIFT=0
 
+if [ "${1:-}" = "/run" ] || [ "${1:-}" = "run" ] || [ "${1:-}" = "\run" ]; then
+  shift
+fi
+
 while [ $# -gt 0 ]; do
   case "$1" in
     install|check|repair|uninstall|health|repair-all) VERB="$1"; shift ;;
@@ -95,6 +99,16 @@ while [ $# -gt 0 ]; do
         VERB="wp-passthrough"; WP_SUB="install"; WP_COMP=""; shift; WP_REST=("$@"); break ;;
     wp-only)
         VERB="wp-passthrough"; WP_SUB="install"; WP_COMP="wp-only"; shift; WP_REST=("$@"); break ;;
+    # ---- top-level shortcuts to script 76 (Nginx & Virtual Host Domain Manager) ----
+    # ./run.sh nginx install
+    # ./run.sh nginx help
+    # ./run.sh nginx add <domain> [--type static|php|proxy] [--port 80] [--root path]
+    # ./run.sh nginx rm <domain> [--purge]
+    # ./run.sh nginx list
+    # ./run.sh nginx ini [--sync]
+    # ./run.sh nginx showcase
+    nginx|nginx-manager|vhost|vhosts)
+        VERB="nginx-passthrough"; shift; NGINX_REST=("$@"); break ;;
     # ---- top-level shortcuts to script 68 (group creation) ----
     # Two separate shell scripts in 68-user-mgmt/ that the root orchestrator
     # exposes directly so users don't need to remember the folder path:
@@ -219,6 +233,12 @@ while [ $# -gt 0 ]; do
             comp=""
             [ "$1" = "wp-only" ] && comp="wp-only"
             VERB="wp-passthrough"; WP_SUB="uninstall"; WP_COMP="$comp"; shift; WP_REST=("$@"); break
+        fi
+        if [ "$VERB" = "install" ] && { [ "$1" = "nginx" ] || [ "$1" = "nginx-server" ]; }; then
+            VERB="nginx-passthrough"; shift; NGINX_REST=("install" "$@"); break
+        fi
+        if [ "$VERB" = "uninstall" ] && { [ "$1" = "nginx" ] || [ "$1" = "nginx-server" ]; }; then
+            VERB="nginx-passthrough"; shift; NGINX_REST=("uninstall" "$@"); break
         fi
         log_warn "Unknown arg: $1"; shift ;;
   esac
@@ -354,6 +374,14 @@ Chrome profile copy / export / import (Linux/macOS port of script 58 helper):
   spec/58-install-chrome/profile-copy.md ; details:
   scripts-linux/chrome-profile-copy/readme.md
 
+Nginx Web Server & Virtual Host Domain Manager (script 76):
+  ./run.sh nginx install               Install Nginx via apt / pacman / dnf / brew
+  ./run.sh nginx help                  Display domain manager CLI help
+  ./run.sh nginx add <domain> [flags]  Register vhost, compile conf, sync SQLite & INI
+  ./run.sh nginx rm <domain> [--purge] Remove vhost, unlink conf, sync SQLite & INI
+  ./run.sh nginx list                  List all virtual hosts registered in SQLite DB
+  ./run.sh nginx ini [--sync]          View declarative INI or run two-way sync
+  ./run.sh nginx showcase              5-phase showcase of SQLite, INI, and vhost sync
 
 macOS VS Code menu cleanup (script 66 shortcuts; macOS only):
   vscode-mac-clean             Remove Finder Services workflows, LaunchAgents/
@@ -857,6 +885,15 @@ case "${VERB:-help}" in
     else
       bash "$ROOT/70-install-wordpress-ubuntu/run.sh" "$WP_SUB" "${_wp_filtered[@]}"
     fi
+    ;;
+  nginx-passthrough)
+    _nginx_filtered=()
+    for _a in "${NGINX_REST[@]:-}"; do [ -n "$_a" ] && _nginx_filtered+=("$_a"); done
+    if [ "${#_nginx_filtered[@]}" -eq 0 ]; then
+      _nginx_filtered=("help")
+    fi
+    bash "$ROOT/76-install-nginx/run.sh" "${_nginx_filtered[@]}"
+    exit $?
     ;;
   grp-passthrough)
     # Filter empties (some bash versions add a stray "" when "$@" was empty

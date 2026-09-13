@@ -1,24 +1,27 @@
 ---
 name: Current workflow status
-description: What is done and what is pending as of v0.36.0
-type: feature
+description: What is done and what is pending as of v1.27.0
+type: workflow
 ---
 
-# Workflow Status -- v0.36.0 (2026-04-18)
+# Workflow Status -- v1.27.0 (2026-09-13)
 
-## ✅ Done This Session (v0.34.0 → v0.36.0)
+## ✅ Done This Session (v1.27.0)
 
 | Task | Status | Details |
 |------|--------|---------|
-| `models search <query>` -- Ollama Hub live search | ✅ Done | `scripts/models/helpers/ollama-search.ps1`, x-test-* regex parser, CSV dispatch via `OLLAMA_PULL_MODELS` |
-| `models uninstall` orchestrator subcommand | ✅ Done | Multi-backend (llama.cpp + Ollama), multi-select, yes-confirm, `scripts/models/helpers/uninstall.ps1` |
-| `-Force` flag for `models uninstall` (v0.34.1) | ✅ Done | Skips confirm prompt for CI; logs `uninstallForceSkip` |
-| Bootstrap installer always re-clones (v0.35.0) | ✅ Done | `install.ps1` + `install.sh` remove existing folder, re-clone fresh; CODE RED file-path errors |
-| `-Version` / `--version` flag for installers (v0.36.0) | ✅ Done | Probes latest, prints `[VERSION]` `[SCAN]` `[FOUND]`/`[OK]` `[RESOLVED]`, exits without cloning |
-| Bumped probe range default 20 → 30 | ✅ Done | `install.ps1`, `install.sh`, `spec/install-bootstrap/readme.md` |
-| Resolved merge conflicts in `version.json` + `changelog.md` | ✅ Done | Picked v0.36.0; merged both v0.34.0 entries (search + uninstall) |
-| Created `.lovable/pending-issues/` folder | ✅ Done | Required by write-memory protocol |
-| Added `02-write-prompt.md` + updated `prompt.md` index | ✅ Done | Trigger words: "write memory", "end memory", "update memory" |
+| Standalone Nginx Installer & Suite | ✅ Done | `scripts-linux/76-install-nginx/`, `scripts/76-install-nginx/` with multi-vhost & snippets |
+| Nginx Port Changer Enhancement | ✅ Done | `scripts-linux/86-change-port-nginx/` with `--site` and multi-vhost editing |
+| WordPress Nginx Hardening | ✅ Done | `scripts-linux/70-install-wordpress-ubuntu/` with FastCGI cache, sensitive file block, and XML-RPC protection |
+| Laravel Stack Installer & Automation | ✅ Done | `scripts-linux/77-install-laravel-ubuntu/` and `scripts/77-install-laravel/` with DB & Nginx automation |
+| Nginx Domain Manager CLI verbs | ✅ Done | `install`, `help`, `add <domain>`, `rm <domain>`, `list`, `ini`, `showcase` across `run.ps1` and `run.sh` |
+| Zero-Dependency SQLite Persistence | ✅ Done | `nginx-domains.sqlite3` with native `sqlite3` CLI + `sqlite-bridge.py` fallback and UTF-8 BOM decoding |
+| Tri-State Bidirectional INI Sync | ✅ Done | `domains.ini` (Windows) & `/etc/nginx/sites.ini` (Linux) two-way reconciliation with SQLite & vhosts |
+| Automated 5-Phase Showcase | ✅ Done | Terminal demo showing Before -> Add Domains -> Mutated SQLite & INI -> Vhosts -> Rollback |
+| High-Performance Exploration Tool | ✅ Done | `03-ai-scripts/17-fast-file-reader.py` with directory mtime caching in `tmp/cache/` (<15ms) |
+| Canonical Governance & Spec Files | ✅ Done | `.lovable/folder-structure.md`, `.lovable/coding-guidelines.md`, `.lovable/spec/commands/02-nginx-domain-manager.md` |
+| AI Prompt & Rules Setup | ✅ Done | `01-prompts/`, `.agents/rules/`, `.lovable/prompts.md`, `.lovable/suggestions/01-index.md` |
+| Changes History & Transaction Logs | ✅ Done | `05-changes-history/01-index.md`, `18-nginx-wordpress-laravel/`, `19-nginx-domain-manager-sqlite/` |
 
 ## 🔄 In Progress
 
@@ -28,23 +31,16 @@ _None._
 
 | Task | Priority | Notes |
 |------|----------|-------|
-| Verify `-Version` flag end-to-end on real shell | Medium | Needs Windows + Linux smoke test |
-| Verify auto-discovery redirect with a real `vN+1` repo | Medium | Spec says fail-fast; only test path is creating a sibling repo |
-| Update changelog v0.26.0 entry to include speed filter | Low | Speed filter shipped after v0.26.0 bump (carryover from v0.27.0 plan) |
-| Verify 4-filter chain re-indexing end-to-end | Low | Carryover; user wanted manual run-through |
-| Verify catalog column alignment with Speed column | Low | Carryover |
+| Kubernetes multi-node cluster setup | Medium | Plan `01-kubernetes-suite.md` |
+| VMware Workstation Pro & Fusion Automation | Low | Plan `02-vmware-suite.md` |
+| Advanced Terminal Customization & ZSH Profiles | Low | Plan `03-terminal-and-langs.md` |
+| Database Clustering & Backup Tools | Low | Plan `04-databases.md` |
 
 ## 🚫 Blocked / Avoid
 
 | Item | Reason |
 |------|--------|
-| Refactor `spec/install-bootstrap/readme.md` into 5 sub-files | User did not approve the split suggestion (offered, not requested). Keep as single file. |
-| Touch `.gitmap/release/` folder | Hard rule from `strictly-avoid.md` #7 |
-
-## Architecture Snapshot
-
-- **Bootstrap chain:** `install.{ps1,sh}` → parse current `-vN` → parallel HEAD probe v(N+1)..v(N+30) → redirect to highest, or proceed → wipe `$HOME/scripts-fixer` → fresh `git clone` → `run.ps1`
-- **Bootstrap flags:** `-NoUpgrade` / `--no-upgrade`, `-Version` / `--version`, env: `SCRIPTS_FIXER_NO_UPGRADE`, `SCRIPTS_FIXER_PROBE_MAX`, `SCRIPTS_FIXER_REDIRECTED`
-- **Models orchestrator:** `scripts/models/run.ps1` → `picker.ps1` (interactive backend select) | `ollama-search.ps1` (live Hub search) | `uninstall.ps1` (multi-backend remove)
-- **Env-var handoff:** `LLAMA_CPP_INSTALL_IDS` (CSV) → script 43 ; `OLLAMA_PULL_MODELS` (CSV) → script 42
-- **Filter chain (model-picker):** RAM → Size → Speed → Capability → display
+| Disabling or bypassing CI/CD validation | Hard rule from `strictly-avoid.md` #19 |
+| Windows backslashes in Nginx vhost configs | Hard rule from `strictly-avoid.md` #18 |
+| Literal multibyte Unicode glyphs in PS 5.1 | Hard rule from `strictly-avoid.md` #16 |
+| Null-coalescing `??` operators in PS scripts | Hard rule from `strictly-avoid.md` #14 |

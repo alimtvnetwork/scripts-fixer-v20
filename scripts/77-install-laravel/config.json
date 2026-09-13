@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "laravel": {
+    "defaultAppName": "laravel-app",
+    "defaultInstallPath": "dev-tool\\www\\laravel-app",
+    "composerPackage": "laravel/laravel",
+    "defaultDbEngine": "mysql",
+    "defaultDbName": "laravel",
+    "defaultDbUser": "root",
+    "defaultDbPort": 3306,
+    "defaultSitePort": 8000
+  },
+  "minFreeGB": 2,
+  "_minFreeGB_note": "PHP extensions + Composer packages + vendor dependencies.",
+  "validModes": ["full", "cli-only", "scaffold-only"]
+}

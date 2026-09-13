@@ -1,0 +1,15 @@
+{
+  "enabled": true,
+  "nginx": {
+    "enabled": true,
+    "chocoPackage": "nginx",
+    "verifyCommand": "nginx",
+    "versionFlag": "-v",
+    "defaultPort": 80,
+    "defaultFastCgiPort": 9000,
+    "defaultInstallPath": "C:\\tools\\nginx"
+  },
+  "minFreeGB": 1,
+  "_minFreeGB_note": "Nginx on Windows is lightweight (<20MB). 1GB provides ample headroom for logs and cache.",
+  "validModes": ["default", "fastcgi"]
+}

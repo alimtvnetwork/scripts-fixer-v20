@@ -1,0 +1,50 @@
+{
+  "scriptName": "Install Nginx & Virtual Host Domain Manager",
+  "description": "Installs and configures Nginx web server with SQLite database persistence and declarative INI synchronization on Windows.",
+  "messages": {
+    "notAdmin": "This script must be run as Administrator.",
+    "scriptDisabled": "Nginx installation is disabled in config.",
+    "checking": "Checking for existing Nginx installation...",
+    "found": "Nginx found: {version}",
+    "installing": "Installing Nginx via Chocolatey...",
+    "installSuccess": "Nginx installed successfully: {version}",
+    "installFailed": "Failed to install Nginx: {error}",
+    "configTuning": "Configuring Nginx with FastCGI support on port {port}...",
+    "serviceStarting": "Starting Nginx service...",
+    "serviceStarted": "Nginx started successfully.",
+    "serviceStopped": "Nginx stopped successfully.",
+    "serviceReloaded": "Nginx reloaded successfully.",
+    "status": "Nginx Status: {status} on port {port}",
+    "uninstalling": "Uninstalling Nginx...",
+    "uninstallSuccess": "Nginx uninstalled successfully.",
+    "uninstallFailed": "Nginx uninstall failed."
+  },
+  "help": {
+    "commands": {
+      "install": "Install and configure Nginx (default)",
+      "check": "Verify Nginx installation and configuration",
+      "repair": "Reinstall and re-apply configuration",
+      "add": "Register virtual host domain (supports --type, --port, --root, --proxy, --ssl)",
+      "rm": "Remove virtual host domain, unlink config, and update SQLite/INI (--purge)",
+      "list": "List all registered domains in tabular format or JSON (--json)",
+      "ini": "Display domains.ini configuration ledger or synchronize with SQLite (--sync)",
+      "showcase": "Run interactive before/after showcase of SQLite DB and INI file mutations",
+      "start": "Start Nginx web server",
+      "stop": "Stop Nginx web server",
+      "reload": "Reload Nginx configuration (nginx -s reload)",
+      "status": "Show current Nginx running status and registered domains",
+      "test": "Test Nginx configuration syntax (nginx -t)",
+      "uninstall": "Uninstall Nginx and remove tracking"
+    },
+    "examples": [
+      ".\\run.ps1 nginx install",
+      ".\\run.ps1 nginx help",
+      ".\\run.ps1 nginx add example.com --type static --port 80",
+      ".\\run.ps1 nginx add api.example.com --type proxy --port 8080 --proxy http://127.0.0.1:3000",
+      ".\\run.ps1 nginx rm example.com",
+      ".\\run.ps1 nginx list",
+      ".\\run.ps1 nginx ini --sync",
+      ".\\run.ps1 nginx showcase"
+    ]
+  }
+}

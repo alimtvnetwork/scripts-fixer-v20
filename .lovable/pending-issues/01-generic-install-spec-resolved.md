@@ -1,6 +1,10 @@
-# Generic Install Spec — Awaiting Checklist Confirmation
+# Generic Install Spec — Resolved and Migrated
 
-**RESOLVED** 2026-04-23 — User confirmed defaults: probe v1..v20, HTTP HEAD, auto-redirect, log-only when no newer found. 7 spec files written under `spec/00-generic-install-script-behavior/`. Memory updated, version bumped 0.74.0 → 0.75.0.
+> **Status:** RESOLVED (Migrated to `.lovable/solved-issues/03-generic-install-spec.md`)  
+> **Resolved:** 2026-04-23  
+> **Active Pending Issues:** 0
+
+This issue was confirmed and resolved on 2026-04-23. See full documentation and post-mortem in [.lovable/solved-issues/03-generic-install-spec.md](../solved-issues/03-generic-install-spec.md).
 
 ## Description
 User asked for a generic, cross-repo install-script behavior spec covering strict release-tag mode, main-branch fallback, and versioned-repo discovery (v1..v20 parallel). A 15-item confirmation checklist was posted in chat covering naming, discovery range, probe mechanism, strict-mode triggers, and spec file layout. Implementation is **blocked** until the user replies with per-item confirmations.

@@ -10,8 +10,8 @@
 |---|------|-----|
 | 1 | `readme.md` | Product overview, commands, install one-liners |
 | 2 | `.lovable/overview.md` | Project shape and conventions |
-| 3 | `.lovable/memory/index.md` | Master index of every memory file |
-| 4 | `.lovable/plan.md` | Active roadmap and pending tasks |
+| 3 | `.lovable/memory/01-index.md` | Master index of every memory file |
+| 4 | `.lovable/plans/01-index.md` | Master index of all plans (pending & completed) |
 | 5 | `.lovable/strictly-avoid.md` | Hard prohibitions — do not violate |
 | 6 | `.lovable/suggestions.md` | Open and implemented suggestions |
 | 7 | `.lovable/cicd-index.md` | CI/CD issue index |
@@ -19,8 +19,10 @@
 | 9 | `.lovable/prompt.md` | Top-level pointer to prompts |
 | 10 | `.lovable/memory/workflow/` | Current workflow state and status markers |
 | 11 | `.lovable/memory/release-architecture-map.md` | Release architecture and versioning rules |
+| 12 | `03-ai-scripts/01-index.md` | AI Automation tools & fast cached exploration index |
 
-If any of the above is missing, **create it** using the templates in `.lovable/prompts/01-write-memory.md`.
+See `.lovable/plans/01-index.md` for the **Recent Completed Tasks Register** tracking the last 20 tasks.
+If any of the above is missing, **create it** using the templates in `.lovable/prompts/01-read-prompt.md`.
 
 ---
 
@@ -153,3 +155,9 @@ Run the **write-memory** prompt: `.lovable/prompts/01-write-memory.md`. It enfor
 | Track an OS-clean category | `scripts/os/helpers/simple-clean.ps1` + `Confirm-DestructiveCategory` |
 | Bump version | `bump-version.ps1`, `version.json`, `changelog.md`, root `readme.md` version badge |
 | Capture a Lovable suggestion | `.lovable/suggestions/<NN>-<slug>.md` + `.lovable/suggestions.md` tracker |
+
+---
+
+## Changelog
+
+- `2026-09-13T07:44:14Z` — Added `folder-structure.md`, `coding-guidelines.md`, and `spec/commands/02-nginx-domain-manager.md`. Pointed master memory and plans to `01-index.md`. Synchronized root `readme.md` AI onboarding table.

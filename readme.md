@@ -2637,4 +2637,24 @@ You may use, copy, modify, merge, publish, distribute, sublicense, and/or sell c
 
 ## Architecture & Releases
 - [Release Architecture Map](.lovable/memory/release-architecture-map.md)
+- [What to Read](.lovable/what-to-read.md)
+
+## What to Read (AI Agent Onboarding)
+
+| # | Path | Why |
+|---|------|-----|
+| 1 | `readme.md` | Product overview, commands, install one-liners |
+| 2 | `.lovable/overview.md` | Project shape and conventions |
+| 3 | `.lovable/memory/01-index.md` | Master index of every memory file |
+| 4 | `.lovable/plans/01-index.md` | Master index of all plans (pending & completed) |
+| 5 | `.lovable/strictly-avoid.md` | Hard prohibitions — do not violate |
+| 6 | `.lovable/suggestions.md` | Open and implemented suggestions |
+| 7 | `.lovable/cicd-index.md` | CI/CD issue index |
+| 8 | `.lovable/prompts/index.md` | Reusable prompt registry (incl. write-memory) |
+| 9 | `.lovable/prompt.md` | Top-level pointer to prompts |
+| 10 | `.lovable/memory/workflow/` | Current workflow state and status markers |
+| 11 | `.lovable/memory/release-architecture-map.md` | Release architecture and versioning rules |
+| 12 | `03-ai-scripts/01-index.md` | AI Automation tools & fast cached exploration index |
+
+See `.lovable/plans/01-index.md` for the **Recent Completed Tasks Register** tracking the last 20 tasks.
 

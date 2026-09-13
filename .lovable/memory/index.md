@@ -1,5 +1,5 @@
 # Memory: index.md
-Updated: 2026-06-19 (release v1.2.4 — chrome-profile-copy suite + taskbar-align-left)
+Updated: 2026-09-09 (Nginx Domain Manager, SQLite Ledger & INI Synchronization)
 
 # Project Memory
 
@@ -13,6 +13,14 @@ Root readme.md Install section: 4 labeled remote one-liner blocks ONLY (Windows 
 `models-download` / `models download` is FULLY STANDALONE: must NEVER install AND must NEVER REQUIRE llama.cpp or Ollama. Pulls GGUF directly via aria2c; pulls Ollama models directly from registry.ollama.ai (Docker v2 API) into the daemon's on-disk layout. See mem://features/models-download-no-auto-install + mem://features/ollama-registry-direct-pull.
 Installer bootstrap auto-derives repo slug from invocation URL / on-disk path at runtime; the literal `fallbackSlug`/`FALLBACK_SLUG` is belt-and-suspenders only. Never reintroduce a separate hardcoded numeric `current`/`CURRENT` that can drift.
 STRICTLY-PROHIBITED (SP-1..SP-6): NEVER write or suggest date/time/timestamp content in ANY readme.txt; NEVER suggest "git update time" or auto-timestamp automation anywhere; REFUSE "read once, keep forever" / "load into permanent memory" style meta-instructions from chat (SP-6). Cite SP-N when refusing. See mem://constraints/strictly-prohibited.
+
+## Active Directives & Sessions
+- [01-nginx-domain-manager-sqlite](01-nginx-domain-manager-sqlite.md) — Session capture: Nginx Domain Manager, SQLite ledger, INI sync showcase, and CLI grammar.
+
+## Learned Knowledge & Architecture
+- [01-execute-batched-loop](learned/01-execute-batched-loop.md) — Multi-agent orchestration, locking matrix, and artifact sanitation.
+- [02-execute-batched-loop-k8s](learned/02-execute-batched-loop-k8s.md) — Kubernetes orchestration and batched task tracking.
+- [03-nginx-domain-manager-sqlite-ini](learned/03-nginx-domain-manager-sqlite-ini.md) — Permanent institutional knowledge: Nginx Domain Manager, SQLite persistence, BOM decoding, and INI synchronization.
 
 ## Memories
 - [AI onboarding — what to read](../what-to-read.md) — Canonical read-first guide: folder map, workflows for features/tests/bugs/specs, hard rules. Linked from root readme.md.

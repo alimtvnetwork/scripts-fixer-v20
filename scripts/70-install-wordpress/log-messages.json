@@ -1,0 +1,31 @@
+{
+  "scriptName": "Install WordPress (Windows)",
+  "description": "Installs and configures WordPress with MySQL, PHP, and Nginx on Windows.",
+  "messages": {
+    "notAdmin": "This script must be run as Administrator.",
+    "checkingPrereqs": "Checking prerequisites (PHP, MySQL, Nginx)...",
+    "downloadingWp": "Downloading WordPress from {url}...",
+    "verifyingChecksum": "Verifying archive integrity against official SHA1 & MD5 checksums...",
+    "checksumOk": "Checksum verification PASSED.",
+    "extracting": "Extracting WordPress to {path}...",
+    "configuringDb": "Configuring MySQL database '{dbName}' and user '{dbUser}'...",
+    "configuringWp": "Generating wp-config.php with live cryptographic salts...",
+    "configuringNginx": "Writing Nginx virtual host configuration...",
+    "setupComplete": "WordPress installation complete at {url}",
+    "uninstalling": "Removing WordPress files and database...",
+    "uninstallSuccess": "WordPress uninstalled successfully."
+  },
+  "help": {
+    "commands": {
+      "install": "Install full WordPress stack (default)",
+      "check": "Verify WordPress files, DB connection, and Nginx vhost",
+      "repair": "Re-download, re-verify and reconfigure WordPress",
+      "uninstall": "Remove WordPress installation and credentials"
+    },
+    "examples": [
+      ".\\run.ps1 install wordpress",
+      ".\\run.ps1 -I 70",
+      ".\\run.ps1 -I 70 check"
+    ]
+  }
+}

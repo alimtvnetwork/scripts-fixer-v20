@@ -112,6 +112,10 @@
 - **Implemented:** v0.26.0 (2026-04-16)
 - **Notes:** WMI `Get-CimInstance` for system RAM detect, manual tier override available.
 
+### Nginx Domain Manager with SQLite & INI Architecture
+- **Implemented:** v1.27.0 (2026-09-09)
+- **Notes:** Full CLI domain manager (`add`, `rm`, `list`, `ini`, `showcase`) with SQLite persistence, WAL mode, BOM-safe Python bridge, and bidirectional INI sync across Linux and Windows.
+
 ---
 
 ## Script-Specific Suggestions

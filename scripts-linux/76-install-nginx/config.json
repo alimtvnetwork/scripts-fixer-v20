@@ -1,0 +1,14 @@
+{
+  "service": "nginx",
+  "defaultPort": "80",
+  "systemdUnit": "nginx",
+  "firewallProto": "tcp",
+  "clientMaxBodySize": "64M",
+  "workerProcesses": "auto",
+  "serverTokens": "off",
+  "gzip": "on",
+  "configPath": "/etc/nginx/nginx.conf",
+  "snippetsDir": "/etc/nginx/snippets",
+  "sitesAvailableDir": "/etc/nginx/sites-available",
+  "sitesEnabledDir": "/etc/nginx/sites-enabled"
+}

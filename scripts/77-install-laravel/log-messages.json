@@ -1,0 +1,32 @@
+{
+  "scriptName": "Install Laravel (Windows)",
+  "description": "Installs and configures Laravel application, Composer dependencies, and environment on Windows.",
+  "messages": {
+    "notAdmin": "This script must be run as Administrator.",
+    "checkingComposer": "Checking for Composer CLI...",
+    "composerFound": "Composer found: {version}",
+    "composerNotFound": "Composer not found -- installing via Chocolatey...",
+    "composerInstallSuccess": "Composer installed successfully.",
+    "scaffoldingApp": "Scaffolding new Laravel application at {path}...",
+    "appScaffolded": "Laravel application created successfully.",
+    "configuringEnv": "Configuring .env file and application encryption key...",
+    "storageLinking": "Linking public storage (php artisan storage:link)...",
+    "setupComplete": "Laravel setup complete at {path}",
+    "uninstalling": "Removing Laravel installation and tracking...",
+    "uninstallSuccess": "Laravel uninstalled successfully."
+  },
+  "help": {
+    "commands": {
+      "install": "Install Composer and scaffold/configure Laravel app (default)",
+      "check": "Verify Composer, Laravel artisan, and .env configuration",
+      "repair": "Re-run Composer install, key:generate, and storage:link",
+      "scaffold": "Scaffold new Laravel project only",
+      "uninstall": "Remove Laravel tracking"
+    },
+    "examples": [
+      ".\\run.ps1 install laravel",
+      ".\\run.ps1 -I 77",
+      ".\\run.ps1 -I 77 check"
+    ]
+  }
+}

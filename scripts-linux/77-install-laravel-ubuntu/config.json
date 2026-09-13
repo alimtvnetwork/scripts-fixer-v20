@@ -1,0 +1,48 @@
+{
+  "id": "77",
+  "title": "Ubuntu Laravel installer (Nginx + PHP-FPM + Composer 2 + MySQL/PostgreSQL/SQLite + Queue Worker + Scheduler)",
+  "prereqs": {
+    "apt_refresh_mode": "none",
+    "supported_apt_refresh_modes": ["none", "update", "upgrade", "dist-upgrade"],
+    "apt_refresh_timeout_seconds": 1800,
+    "_comment": "apt_refresh_mode runs BEFORE packages in the prereqs stage. 'none' skips. 'update' runs apt-get update -y. 'upgrade' runs update + apt-get upgrade -y --no-install-recommends. 'dist-upgrade' runs update + dist-upgrade. Override at runtime with --apt-refresh <mode>, --apt-update, or --apt-upgrade."
+  },
+  "components": {
+    "composer": {
+      "sig_url": "https://composer.github.io/installer.sig",
+      "setup_url": "https://getcomposer.org/installer",
+      "install_bin": "/usr/local/bin/composer"
+    },
+    "php": {
+      "default_version": "8.3",
+      "supported_versions": ["8.2", "8.3", "latest"],
+      "extensions": [
+        "cli", "fpm", "mysql", "pgsql", "sqlite3",
+        "bcmath", "mbstring", "xml", "curl", "zip",
+        "intl", "redis"
+      ]
+    },
+    "database": {
+      "default_engine": "mysql",
+      "supported_engines": ["mysql", "mariadb", "pgsql", "postgresql", "sqlite"],
+      "default_port": 3306,
+      "default_name": "laravel",
+      "default_user": "laravel_user"
+    },
+    "laravel": {
+      "default_app_name": "laravel-app",
+      "default_install_path": "/var/www/laravel",
+      "run_migrations": true,
+      "storage_link": true
+    },
+    "nginx": {
+      "default_site_port": 80,
+      "default_server_name": "localhost"
+    },
+    "daemon": {
+      "enable_queue_worker": true,
+      "queue_connection": "database",
+      "enable_scheduler": true
+    }
+  }
+}

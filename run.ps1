@@ -592,6 +592,18 @@ function Show-RootHelpRaw {
     Write-Host "    $("uninstall jumpjump-vpn".PadRight($kc))" -NoNewline; Write-Host "Uninstall JumpJump VPN + clean .installed/jumpjump-vpn.json record [61]" -ForegroundColor $ThemeMuted
     Write-Host ""
 
+    Write-Host "    Nginx Web Server & Domain Manager (script 76):" -ForegroundColor $ThemePrimary
+    Write-Host "      Management & Virtual Hosts:" -ForegroundColor DarkYellow
+    Write-Host "        .\run.ps1 nginx install".PadRight(60) -NoNewline; Write-Host "# Install Nginx Web Server via Chocolatey" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 nginx help".PadRight(60) -NoNewline; Write-Host "# Show domain manager command help" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 nginx add example.com --type php".PadRight(60) -NoNewline; Write-Host "# Register vhost + compile conf + sync INI & SQLite" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 nginx rm example.com".PadRight(60) -NoNewline; Write-Host "# Remove vhost + unlink conf + sync INI & SQLite" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 nginx list".PadRight(60) -NoNewline; Write-Host "# List all registered domains in SQLite ledger" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 nginx ini --sync".PadRight(60) -NoNewline; Write-Host "# Bidirectional sync between SQLite and domains.ini" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 nginx showcase".PadRight(60) -NoNewline; Write-Host "# 5-phase showcase of SQLite and INI synchronization" -ForegroundColor $ThemeMuted
+    Write-Host ""
+
+
     # ----- Dedicated Chrome & extensions cheatsheet ---------------------------
     # Surfaces every extension install mode (single, comma-list, all, raw URL,
     # file-of-URLs) with copy-paste examples so users do not have to grep the
@@ -2887,15 +2899,22 @@ if ($null -ne $Install) {
     $_installList = @($Install | Where-Object { $null -ne $_ -and "$_".Length -gt 0 })
 }
 
+if ($_cmdLow -in @('/run', '\run', 'run') -and $_installList.Count -ge 1) {
+    $Command = "$($_installList[0])".Trim()
+    $Install = if ($_installList.Count -gt 1) { @($_installList[1..($_installList.Count - 1)]) } else { @() }
+    $_cmdLow = $Command.ToLower()
+    $_installList = @($Install)
+}
+
 if ($_cmdLow -in $_helpAliases) {
     $_isEarlyHelp = $true
     if ($_installList.Count -gt 0) { $_earlyHelpFilter = ($_installList -join ' ').Trim() }
-} elseif ($_installList.Count -gt 0 -and "$($_installList[0])".Trim().ToLower() -in $_helpAliases) {
+} elseif ([string]::IsNullOrWhiteSpace($_cmdLow) -and $_installList.Count -gt 0 -and "$($_installList[0])".Trim().ToLower() -in $_helpAliases) {
     # e.g. PowerShell pushed `--help chrome` entirely into $Install
     $_isEarlyHelp = $true
     $_rest = @($_installList | Select-Object -Skip 1)
     if ($_rest.Count -gt 0) { $_earlyHelpFilter = ($_rest -join ' ').Trim() }
-} elseif (($Help -or $h) -and -not $I) {
+} elseif (($Help -or $h) -and -not $I -and ($_cmdLow -notin @("nginx", "os", "ssh", "menu", "vscode-folder", "git-tools"))) {
     # `-h <keyword>` or `-Help <keyword>` -- token typically lands in $Command
     $_isEarlyHelp = $true
     if ($_cmdLow -and ($_cmdLow -notin $_helpAliases)) {
@@ -3743,6 +3762,13 @@ if ($hasCommand) {
         exit 0
     }
 
+    # Handle `/run <subcommand> ...` or `run <subcommand> ...`
+    if ($normalizedCommand -in @('/run', '\run', 'run') -and $Install -and $Install.Count -ge 1) {
+        $Command = "$($Install[0])".Trim()
+        $Install = if ($Install.Count -gt 1) { @($Install[1..($Install.Count - 1)]) } else { @() }
+        $normalizedCommand = $Command.ToLower()
+    }
+
     # Aliases: `install ssh <name>` / `create ssh <name>` / `generate ssh <name>`
     # all mean the same thing as `ssh create <name>` (generate a new SSH key).
     if ($normalizedCommand -in @('install','create','generate','gen','new','keygen','add') -and $Install -and $Install.Count -ge 1) {
@@ -3810,7 +3836,7 @@ if ($hasCommand) {
         'export','status','doctor','report','models','models-download','menu',
         'os','ssh','vscode-folder','vscode-context-menu','chrome','chrome-fix-ai',
         'chrome-profile-copy','chrome-profile-export','chrome-profile-import',
-        'profile','git-tools','gsa','reset','help','version'
+        'profile','git-tools','gsa','reset','help','version','nginx'
     )
     $isFuzzyEligible = $normalizedCommand -and `
         ($normalizedCommand -notin $canonicalVerbs) -and `
@@ -3858,6 +3884,7 @@ if ($hasCommand) {
     $isBareSshCommand     = $normalizedCommand -in @("ssh","sshkey","ssh-key","ssh-keys","sshkeys")
     $isBareVscodeFolderCommand = $normalizedCommand -in @("vscode-folder", "vscode-folder-repair", "vscodefolder", "vscodefolderrepair")
     $isBareVscodeContextMenuCommand = $normalizedCommand -in @("vscode-context-menu", "vscode-contextmenu", "vscodecontextmenu", "vscode-menu", "vscodemenu")
+    $isBareNginxCommand = $normalizedCommand -eq "nginx"
     $isBareChromeCommand = $normalizedCommand -in @("chrome","google-chrome","googlechrome")
     $isBareChromeFixAiCommand = $normalizedCommand -in @("chrome-fix-ai","chromefixai","chrome-fixai","chrome-no-ai","chrome-disable-ai")
     $isBareChromeProfileCopyCommand   = $normalizedCommand -in @("chrome-profile-copy","chromeprofilecopy","chrome-clone-profile","clone-chrome-profile")
@@ -3891,7 +3918,7 @@ if ($hasCommand) {
     #   - any of $Install contains --no-pull / -no-pull / --offline
     #   - command is read-only (status/path/scan/export/doctor)
     $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand
-    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand
+    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareNginxCommand
     $isNoPullEnv = $env:SCRIPTS_FIXER_NO_PULL -eq "1"
     $isNoPullFlag = $false
     if ($null -ne $Install) {
@@ -4143,6 +4170,32 @@ if ($hasCommand) {
             exit 1
         }
         & $vscodeFolderScript @Install
+        exit $LASTEXITCODE
+    }
+
+    if ($isBareNginxCommand) {
+        Show-VersionHeader
+        $nginxScript = Join-Path $RootDir "scripts\76-install-nginx\run.ps1"
+        if (-not (Test-Path $nginxScript)) {
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
+            Write-Host "Nginx dispatcher missing at: $nginxScript"
+            Write-Host "          Reason: expected scripts\76-install-nginx\run.ps1 to exist relative to repo root: $RootDir" -ForegroundColor $ThemeMuted
+            exit 1
+        }
+        $nginxArgs = @()
+        if ($null -ne $Install) { $nginxArgs = @($Install) }
+        if ($h -or $Help) {
+            if (-not ($nginxArgs | Where-Object { $_ -in @("help", "-h", "--help", "-help", "/?", "?") })) {
+                $nginxArgs = @("help") + $nginxArgs
+            }
+        }
+        if ($nginxArgs.Count -eq 0) {
+            $nginxArgs = @("help")
+        }
+        Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
+        Write-Host "Routing 'nginx $($nginxArgs -join ' ')' to: " -NoNewline
+        Write-Host $nginxScript -ForegroundColor White
+        & $nginxScript @nginxArgs
         exit $LASTEXITCODE
     }
 
@@ -5286,7 +5339,7 @@ if ($hasInstallKeywords) {
         Write-Host ""
         Write-Host "  Installation Summary:" -ForegroundColor $ThemePrimary
         foreach ($entry in $orderedSequence) {
-            Write-Host "    ✔ $($entry.Id)" -ForegroundColor $ThemeSecondary
+            Write-Host "    $([char]0x2714) $($entry.Id)" -ForegroundColor $ThemeSecondary
         }
     }
 
