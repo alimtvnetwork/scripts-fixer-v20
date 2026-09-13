@@ -57,3 +57,5 @@ make_v3.py
 .lovable/temp-scripts/
 
 .lovable/temp-agents/
+__pycache__/
+*.pyc

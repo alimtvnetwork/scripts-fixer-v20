@@ -19,6 +19,9 @@
 - [19-ai-tools-installers](completed/19-ai-tools-installers.md) — AI Tools installers
 - [19-nginx-domain-manager-sqlite](completed/19-nginx-domain-manager-sqlite.md) — Nginx Domain Manager, SQLite DB & INI Sync
 - [20-codex-claude-code-ai-profiles](completed/20-codex-claude-code-ai-profiles.md) — Codex, Claude Code & AI Profiles
+- [21-macro-schedule-startup-storage](completed/21-macro-schedule-startup-storage.md) — Macro, Startup, Schedule (Crontab), Async Monitoring, Storage & Split Database Architecture
+- [22-fix-agy-installation-ubuntu](completed/22-fix-agy-installation-ubuntu.md) — Fix Antigravity (agy) Installation on Ubuntu and Windows
+
 
 ---
 

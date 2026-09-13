@@ -29,6 +29,10 @@
 | 18 | `subtasks/18-nginx-wordpress-laravel/04-task.md` | Laravel Stack Setup, Nginx & DB Automation | `completed` | 2026-09-08 |
 | 19 | `subtasks/18-nginx-wordpress-laravel/05-task.md` | Windows Web Stack Implementations | `completed` | 2026-09-08 |
 | 20 | `19-nginx-domain-manager-sqlite.md` | Nginx Domain Manager, SQLite DB & INI Sync | `completed` | 2026-09-09 |
+| 21 | `21-macro-schedule-startup-storage.md` | Macro, Startup, Schedule (Crontab), Async Monitoring, Storage & Split Database Architecture | `completed` | 2026-09-13 |
+| 22 | `22-fix-agy-installation-ubuntu.md` | Fix Antigravity (agy) Installation on Ubuntu and Windows | `completed` | 2026-09-13 |
+
+
 
 ---
 

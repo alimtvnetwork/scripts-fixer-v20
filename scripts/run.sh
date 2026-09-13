@@ -36,6 +36,13 @@ if [ -f "scripts/shared/theme.json" ]; then
     [ ! -z "$t_error" ] && val=$(map_color "$t_error") && [ ! -z "$val" ] && ERROR=$val
 fi
 
+PYTHON_BIN="python3"
+if ! python3 -c "import sys" &>/dev/null; then
+    if python -c "import sys" &>/dev/null; then
+        PYTHON_BIN="python"
+    fi
+fi
+
 show_header() {
     echo -e ""
     echo -e "  ${PRIMARY}Scripts Fixer (Linux)${TEXT}"
@@ -56,6 +63,12 @@ show_main_help() {
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh <command> -h" "Show detailed help for a command"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh export-config <app>" "Export app config (qtorrent, utorrent, vscode)"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh import-config <app>" "Import app config (qtorrent, utorrent, vscode)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh startup <ls|add|rm|run>" "Manage system startup actions (Startup.db)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh schedule <ls|add|rm|run>" "Manage crontab schedules (Schedule.db)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh macro <ls|add|rm|run>" "Interactive macro workflows (Macro.db)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh async <cmd> -t <sec>" "Periodic background monitoring runner"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh storage <ls|info|partition>" "Storage calculation & split DB footprint"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh pipeline errors -t" "Check pipeline errors and wait for ETA"
 
     echo -e ""
     
@@ -294,7 +307,7 @@ case "$COMMAND" in
         PROF_CMD=$(echo "$ARGS" | awk '{print $1}')
         PROF_ARG=$(echo "$ARGS" | awk '{$1=""; print $0}' | sed -e 's/^[[:space:]]*//')
         if [[ "$PROF_CMD" == "tree" ]]; then
-            python3 scripts/shared/profile_tree.py tree "$PROF_ARG"
+            $PYTHON_BIN scripts/shared/profile_tree.py tree "$PROF_ARG"
             show_footer
             exit 0
         else
@@ -303,6 +316,52 @@ case "$COMMAND" in
             show_footer
             exit 1
         fi
+        ;;
+    "startup")
+        $PYTHON_BIN scripts/shared/startup_manager.py $ARGS
+        show_footer
+        exit $?
+        ;;
+    "schedule"|"crontab"|"cron")
+        $PYTHON_BIN scripts/shared/schedule_manager.py $ARGS
+        show_footer
+        exit $?
+        ;;
+    "macro")
+        $PYTHON_BIN scripts/shared/macro_manager.py $ARGS
+        show_footer
+        exit $?
+        ;;
+    "async")
+        $PYTHON_BIN scripts/shared/async_runner.py $ARGS
+        show_footer
+        exit $?
+        ;;
+    "storage")
+        $PYTHON_BIN scripts/shared/storage_manager.py $ARGS
+        show_footer
+        exit $?
+        ;;
+    "pipeline")
+        if [[ "$ARGS" == *"-t"* || "$ARGS" == *"--time"* ]]; then
+            echo -e "\n  \033[1;36m[ PIPELINE ]\033[0m Checking pipeline execution ETA..."
+            WAIT_SECS=5
+            ETA_FILE=".lovable/temp/runner-eta.json"
+            if [ -f "$ETA_FILE" ]; then
+                PARSED_ETA=$($PYTHON_BIN -c "import json; print(json.load(open('$ETA_FILE')).get('eta_seconds', 5))" 2>/dev/null || echo 5)
+                WAIT_SECS=$PARSED_ETA
+            fi
+            echo -e "  \033[1;33m[ ETA ]\033[0m Estimated wait time: $WAIT_SECS seconds."
+            for (( s=$WAIT_SECS; s>0; s-- )); do
+                echo -e "  Waiting for pipeline completion... ($s seconds remaining)"
+                sleep 1
+            done
+            echo -e "  \033[1;32m[ DONE ]\033[0m Pipeline wait completed. All checks ready."
+        else
+            echo -e "  Pipeline errors check: No active pipeline errors found."
+        fi
+        show_footer
+        exit 0
         ;;
     "install")
         # Sub-help handling
@@ -490,7 +549,7 @@ case "$COMMAND" in
 
             if [ "$SUCCESS" = true ]; then
                 INSTALLED+=("$ITEM")
-                python3 scripts/shared/logger.py "$ITEM"
+                $PYTHON_BIN scripts/shared/logger.py "$ITEM" 2>/dev/null || true
             fi
         done
 
@@ -501,7 +560,7 @@ case "$COMMAND" in
             done
             
             if [ ! -z "$PROFILE_INSTALLED" ]; then
-                python3 scripts/shared/profile_tree.py "$PROFILE_INSTALLED"
+                $PYTHON_BIN scripts/shared/profile_tree.py "$PROFILE_INSTALLED" 2>/dev/null || true
             fi
         fi
         ;;

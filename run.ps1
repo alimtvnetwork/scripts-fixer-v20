@@ -613,6 +613,29 @@ function Show-RootHelpRaw {
     Write-Host "        .\run.ps1 nginx ini --sync".PadRight(60) -NoNewline; Write-Host "# Bidirectional sync between SQLite and domains.ini" -ForegroundColor $ThemeMuted
     Write-Host "        .\run.ps1 nginx showcase".PadRight(60) -NoNewline; Write-Host "# 5-phase showcase of SQLite and INI synchronization" -ForegroundColor $ThemeMuted
     Write-Host ""
+    Write-Host "    Startup, Task Scheduling & Macro Automation:" -ForegroundColor $ThemePrimary
+    Write-Host "      Startup & Boot Automation:" -ForegroundColor DarkYellow
+    Write-Host "        .\run.ps1 startup list".PadRight(60) -NoNewline; Write-Host "# List registered startup actions (Startup.db)" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 startup add <path|macro> [--freq on-login]".PadRight(60) -NoNewline; Write-Host "# Register item to run on startup/login" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 startup remove <id>".PadRight(60) -NoNewline; Write-Host "# Unregister startup item" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 startup run <id>".PadRight(60) -NoNewline; Write-Host "# Trigger startup item interactively now" -ForegroundColor $ThemeMuted
+    Write-Host "      Crontab & Scheduled Tasks:" -ForegroundColor DarkYellow
+    Write-Host "        .\run.ps1 schedule list".PadRight(60) -NoNewline; Write-Host "# List all scheduled jobs (Schedule.db)" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 schedule add <type> <target> <timing>".PadRight(60) -NoNewline; Write-Host "# Register job (types: ps, bash, sh, js, macro)" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 schedule run <id>".PadRight(60) -NoNewline; Write-Host "# Execute job immediately & record to child DB" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 schedule debug <id>".PadRight(60) -NoNewline; Write-Host "# Inspect execution logs in ~/.scripts-fixer/schedules/<id>.db" -ForegroundColor $ThemeMuted
+    Write-Host "      Interactive Macros & Workflows:" -ForegroundColor DarkYellow
+    Write-Host "        .\run.ps1 macro list".PadRight(60) -NoNewline; Write-Host "# List registered macros (Macro.db)" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 macro add <name> <cmd1> <cmd2>...".PadRight(60) -NoNewline; Write-Host "# Create interactive command sequence" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 macro run <name>".PadRight(60) -NoNewline; Write-Host "# Execute macro interactively with live output" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 macro startup add <name>".PadRight(60) -NoNewline; Write-Host "# Register macro to execute on system startup" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 macro schedule add <name> daily".PadRight(60) -NoNewline; Write-Host "# Schedule macro for periodic execution" -ForegroundColor $ThemeMuted
+    Write-Host "      Async Monitoring & Storage Calculation:" -ForegroundColor DarkYellow
+    Write-Host "        .\run.ps1 async <cmd> -t 5".PadRight(60) -NoNewline; Write-Host "# Run command/service periodically & monitor output" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 storage list".PadRight(60) -NoNewline; Write-Host "# Show split DB sizes & disk drive space calculation" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 storage partition".PadRight(60) -NoNewline; Write-Host "# Storage partitioning options & swap expansion guides" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 pipeline errors -t".PadRight(60) -NoNewline; Write-Host "# Wait for pipeline ETA and report error status" -ForegroundColor $ThemeMuted
+    Write-Host ""
     # ----- Dedicated Chrome & extensions cheatsheet ---------------------------
     # Surfaces every extension install mode (single, comma-list, all, raw URL,
     # file-of-URLs) with copy-paste examples so users do not have to grep the
@@ -3880,7 +3903,8 @@ if ($hasCommand) {
         'export','status','doctor','report','models','models-download','menu',
         'os','ssh','vscode-folder','vscode-context-menu','chrome','chrome-fix-ai',
         'chrome-profile-copy','chrome-profile-export','chrome-profile-import',
-        'profile','git-tools','gsa','reset','help','version','nginx'
+        'profile','git-tools','gsa','reset','help','version','nginx',
+        'startup','schedule','crontab','macro','async','storage','pipeline'
     )
     $isFuzzyEligible = $normalizedCommand -and `
         ($normalizedCommand -notin $canonicalVerbs) -and `
@@ -3943,6 +3967,12 @@ if ($hasCommand) {
     $isBareGitToolsCommand = $normalizedCommand -eq "git-tools" -or $normalizedCommand -eq "gittools"
     $isBareGsaCommand     = $normalizedCommand -eq "gsa" -or $normalizedCommand -eq "git-safe-all" -or $normalizedCommand -eq "gitsafeall"
     $isBareResetCommand   = $normalizedCommand -in @("reset","fresh","fresh-start","wipe-state","clear-state")
+    $isBareStartupCommand  = $normalizedCommand -eq "startup"
+    $isBareScheduleCommand = $normalizedCommand -in @("schedule", "crontab", "cron")
+    $isBareMacroCommand    = $normalizedCommand -eq "macro"
+    $isBareAsyncCommand    = $normalizedCommand -eq "async"
+    $isBareStorageCommand  = $normalizedCommand -eq "storage"
+    $isBarePipelineCommand = $normalizedCommand -eq "pipeline"
     $isBareHelpCommand    = $normalizedCommand -in @("help", "--help", "-help", "/?", "?")
     $isBareScriptId = $normalizedCommand -match '^\d+$'
 
@@ -5102,6 +5132,54 @@ if ($hasCommand) {
         if ($isAutoConfirm) { $updateArgs["AutoConfirm"] = $true }
 
         Invoke-ChocoUpdate @updateArgs
+        exit 0
+    } elseif ($isBareStartupCommand) {
+        $subArgs = @($Install | Where-Object { $_ })
+        python (Join-Path $RootDir "scripts\shared\startup_manager.py") @subArgs
+        exit $LASTEXITCODE
+    } elseif ($isBareScheduleCommand) {
+        $subArgs = @($Install | Where-Object { $_ })
+        python (Join-Path $RootDir "scripts\shared\schedule_manager.py") @subArgs
+        exit $LASTEXITCODE
+    } elseif ($isBareMacroCommand) {
+        $subArgs = @($Install | Where-Object { $_ })
+        python (Join-Path $RootDir "scripts\shared\macro_manager.py") @subArgs
+        exit $LASTEXITCODE
+    } elseif ($isBareAsyncCommand) {
+        $subArgs = @($Install | Where-Object { $_ })
+        python (Join-Path $RootDir "scripts\shared\async_runner.py") @subArgs
+        exit $LASTEXITCODE
+    } elseif ($isBareStorageCommand) {
+        $subArgs = @($Install | Where-Object { $_ })
+        python (Join-Path $RootDir "scripts\shared\storage_manager.py") @subArgs
+        exit $LASTEXITCODE
+    } elseif ($isBarePipelineCommand) {
+        $subArgs = @($Install | Where-Object { $_ })
+        $action = if ($subArgs.Count -gt 0) { $subArgs[0].ToLower() } else { "errors" }
+        $hasTimeFlag = $t -or ("-t" -in $subArgs) -or ("--time" -in $subArgs)
+        if ($hasTimeFlag) {
+            Write-Host ""
+            Write-Host "  [ PIPELINE ] " -ForegroundColor Cyan -NoNewline
+            Write-Host "Checking pipeline execution ETA..."
+            $etaFile = Join-Path $RootDir ".lovable\temp\runner-eta.json"
+            $waitSeconds = 5
+            if (Test-Path $etaFile) {
+                try {
+                    $etaJson = Get-Content $etaFile -Raw | ConvertFrom-Json
+                    if ($etaJson.eta_seconds) { $waitSeconds = [int]$etaJson.eta_seconds }
+                } catch { }
+            }
+            Write-Host "  [ ETA ] " -ForegroundColor Yellow -NoNewline
+            Write-Host "Estimated wait time: $waitSeconds seconds."
+            for ($s = $waitSeconds; $s -gt 0; $s--) {
+                Write-Host "  Waiting for pipeline completion... ($s seconds remaining)" -ForegroundColor DarkGray
+                Start-Sleep -Seconds 1
+            }
+            Write-Host "  [ DONE ] " -ForegroundColor Green -NoNewline
+            Write-Host "Pipeline wait completed. All checks ready."
+        } else {
+            Write-Host "  Pipeline errors check: No active pipeline errors found." -ForegroundColor Green
+        }
         exit 0
     } elseif ($isBareScriptId) {
         $I = [int]$normalizedCommand

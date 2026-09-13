@@ -176,10 +176,116 @@ Audit mode, health checks, settings sync, context-menu repair, and CI-tested ver
 | `install pin-taskbar` | Pin every supported app (ConEmu, Notepad++, Notepad, Chrome, VS Code) to the Windows taskbar. Aliases: `taskbar-pin`, `pin-all`. | script #62 |
 | `install pin-terminal` | Pin only the terminal-profile apps (ConEmu, Notepad++, Notepad, Chrome). | — |
 | `install pin-vscode` / `pin-chrome` / `pin-conemu` / `pin-notepadpp` / `pin-notepad` | Pin a single app to the taskbar. | `pin-code` = `pin-vscode`, `pin-npp` = `pin-notepadpp` |
+| `startup [ls\|add\|remove\|run]` | Manage cross-platform startup automation (`on-login` / `weekly`) logged in `Startup.db`. | `startup` |
+| `schedule [ls\|add\|remove\|run\|debug]` | Cross-platform scheduled task runner (`ps`, `bash`, `sh`, `js`, `macro`) with dynamic per-schedule log databases. | `crontab`, `cron` |
+| `macro [ls\|add\|remove\|run\|startup\|schedule]` | Multi-step interactive macro workflow engine with live streaming stdout/stderr. | `macro` |
+| `async [-t <sec>] [-c <count>] <cmd>` | Background periodic command monitor & health check loop logged into `Async.db`. | `async`, `async ls` |
+| `storage [ls\|info\|partition]` | Storage footprint inspector for physical disks and split SQLite database files. | `storage` |
+| `pipeline errors [-t]` | Check pipeline errors with automated runner ETA wait countdown support. | `pipeline` |
 
 > Every install/uninstall now persists state under `.installed/<tool>.json` (gitignored). `status` and `report` read from that folder, so you always know what's on the box.
 
 ---
+
+## ⚡ Automation, Scheduling, Macros & Split Databases
+
+A robust automation suite powered by a **Split SQLite Database architecture** rooted in `~/.scripts-fixer/`. Each domain maintains its own SQLite database registered in `Root.db`, keeping database locks isolated and tables adhering to strict **PascalCase** naming schemas (`RegisteredDatabases`, `StartupItems`, `ScheduleItems`, `MacroDefinitions`, `AsyncTasks`).
+
+```
+~/.scripts-fixer/
+├── Root.db                  # Master catalog of domain & dynamic schedule DBs
+├── Startup.db               # Startup triggers, paths, frequencies, and execution history
+├── Schedule.db              # Scheduled tasks definitions and dispatch registry
+├── Macro.db                 # Macro pipelines, numbered steps, arguments, and run logs
+├── Async.db                 # Long-running async monitors, intervals, and execution logs
+└── schedules/               # Dynamic per-schedule log databases
+    ├── <ScheduleId>.db      # Isolated execution history, durations, stdout/stderr
+    └── ...
+```
+
+### 🚀 Startup Subsystem (`startup`)
+
+Manage commands, scripts, desktop icons, and macros configured to run at OS boot / user login or weekly intervals. Automatically wires Windows Startup shortcuts (`shell:startup`) and Linux desktop autostart entries (`~/.config/autostart`).
+
+```powershell
+.\run.ps1 startup ls                                      # List all registered startup items
+.\run.ps1 startup "C:\scripts\backup.bat"                 # Quick-add any script/app for every login
+.\run.ps1 startup "/home/user/clean.sh" --freq weekly     # Run weekly
+.\run.ps1 startup "C:\tools\app.ico"                      # Add desktop icon/app to autostart
+.\run.ps1 startup add macro:deploy-flow --freq on-login   # Hook macro flow into startup
+.\run.ps1 startup run 1                                   # Manually trigger startup item #1
+.\run.ps1 startup remove 1                                # Remove startup item #1
+.\run.ps1 startup help                                    # Display help and target types
+```
+
+### ⏱️ Scheduled Tasks & Crontab (`schedule` / `crontab`)
+
+Define recurring tasks with native support for PowerShell (`ps`), Bash (`bash`), POSIX Shell (`sh`), Node.js (`js`), and custom Macros (`macro`). Every scheduled task creates an isolated log database under `~/.scripts-fixer/schedules/<ScheduleId>.db`.
+
+```powershell
+.\run.ps1 schedule ls                                     # List all scheduled jobs
+.\run.ps1 schedule add ps ".\scripts\health.ps1" "0 * * * *"   # Hourly PowerShell script
+.\run.ps1 schedule add bash "/home/user/sync.sh" "@daily" # Daily Bash job
+.\run.ps1 schedule add js ".\worker.js" "*/15 * * * *"    # Run JavaScript script every 15 min
+.\run.ps1 schedule add macro "deploy-flow" "0 2 * * *"     # Trigger macro daily at 2:00 AM
+.\run.ps1 schedule run <ScheduleId>                       # Execute scheduled job immediately
+.\run.ps1 schedule debug <ScheduleId>                     # Inspect execution logs & exit codes
+.\run.ps1 schedule remove <ScheduleId>                    # Deregister scheduled job
+.\run.ps1 schedule help                                   # Display schedule help & examples
+```
+
+*Alias: `.\run.ps1 crontab ...` and `./scripts/run.sh crontab ...` are fully supported.*
+
+### 🔄 Macro Workflow Engine (`macro`)
+
+Chain multiple commands and scripts into sequential pipelines. Macros execute with live real-time stdout and stderr streaming to the terminal and can be seamlessly scheduled or hooked into startup.
+
+```powershell
+.\run.ps1 macro ls                                        # List all defined macros
+.\run.ps1 macro add deploy "npm test" "npm run build" "npm run deploy"  # Define 3-step pipeline
+.\run.ps1 macro run deploy                                # Run pipeline with live output
+.\run.ps1 macro startup add deploy                        # Hook macro into startup
+.\run.ps1 macro startup add "C:\scripts\app.ps1"          # Register script to startup via macro
+.\run.ps1 macro schedule add deploy "0 4 * * *"           # Schedule macro to run daily at 4:00 AM
+.\run.ps1 macro schedule add ps ".\test.ps1" "0 * * * *"  # Schedule PowerShell script via macro
+.\run.ps1 macro remove deploy                             # Delete macro
+.\run.ps1 macro help                                      # Display macro help & integration
+```
+
+### 📡 Async Command Monitor (`async`)
+
+Execute and monitor repetitive tasks in the background with customizable intervals and iteration caps.
+
+```powershell
+.\run.ps1 async ls                                        # List recent async tasks and statuses
+.\run.ps1 async "python check_health.py" -t 10           # Poll command every 10 seconds
+.\run.ps1 async "curl -s http://localhost:8080/health" -t 5 -c 12  # Poll 12 times, then exit
+```
+
+### 💾 Storage & Database Footprint (`storage`)
+
+Inspect physical drive allocations, real filesystem formats (NTFS/ext4), free disk space percentages, and calculate the split SQLite database footprint across all domain and schedule files. Includes safe partitioning guidance and GUI launch tools.
+
+```powershell
+.\run.ps1 storage ls                                      # Display drive partitions & DB sizes (* marks current drive)
+.\run.ps1 storage info                                    # Detailed breakdown of ~/.scripts-fixer
+.\run.ps1 storage partition                               # Guided drive analysis and partitioning advice
+.\run.ps1 storage partition swap --size 8G                # Ubuntu swapfile expansion instructions/commands
+.\run.ps1 storage partition gui                           # Launch Windows Disk Management or GParted GUI
+.\run.ps1 storage help                                    # Display storage command reference
+```
+
+### ⏳ Pipeline Errors & ETA Timer (`pipeline errors -t`)
+
+Check CI/CD pipeline error statuses with automated ETA wait capabilities.
+
+```powershell
+.\run.ps1 pipeline errors                                 # Check active pipeline failure states
+.\run.ps1 pipeline errors -t                              # Countdown wait for runner ETA completion
+```
+
+---
+
 
 ## 🌐 Chrome & Extensions (script 58)
 
