@@ -1,0 +1,15 @@
+{
+  "version": "1.44.0",
+  "branch": "release/v1.44.0",
+  "sourceBranch": "main",
+  "commit": "",
+  "tag": "v1.44.0",
+  "assets": [],
+  "changelog": [
+    "Fix script installation for ubuntu small dev and PHP 404 archive errors"
+  ],
+  "isDraft": false,
+  "isPreRelease": false,
+  "createdAt": "2026-09-13T00:00:00Z",
+  "isLatest": true
+}

@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.44.0] - 2026-09-13
+
+### Added
+- Fix script installation for ubuntu small dev and PHP 404 archive errors
+
+
 ## [v1.43.0] - 2026-09-13
 
 ### Added
