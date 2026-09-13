@@ -6,6 +6,21 @@ All notable changes to this project are documented in this file.
 
 
 
+## [v1.38.0] - 2026-09-10
+
+### Added
+- Added cross-platform UI-based and CLI installers for **Codex UI** (`scripts/78-install-codex/` and `scripts/os/ubuntu/install-codex.sh`).
+- Added cross-platform UI-based and CLI installers for **PlotCode UI** (`scripts/79-install-plotcode/` and `scripts/os/ubuntu/install-plotcode.sh`).
+- Added cross-platform UI-based and CLI installers for **Claude Code** (`scripts/80-install-claude-code/` and `scripts/os/ubuntu/install-claude-code.sh`).
+- Added unified all-in-one AI profile (`ai-tools` / `all-ai`) installing Antigravity, Antigravity Manager, Codex, PlotCode, and Claude Code.
+- Added dedicated Antigravity profile (`antigravity` / `antigravity-suite`) installing Antigravity and Antigravity Manager on Windows and Ubuntu.
+- Added visual hierarchy and tree rendering for all new profiles in `scripts/shared/profile_tree.py`.
+- Enhanced `run.ps1` and `run.sh` help menus and dispatchers for `install list`, `install codex`, `install claude-code`, `install plotcode`, and `install antigravity`.
+
+### Fixed
+- Fixed "Antigravity CLI" typo across all repository scripts and configurations.
+- Fixed empty `install` and `install ls` / `install list` to show all available commands and scripts.
+
 ## [v1.37.0] - 2026-09-09
 
 ### Added
@@ -22,7 +37,7 @@ All notable changes to this project are documented in this file.
 
 ### Added
 - Cross-platform IaC & Cloud Tools (Kubernetes Suite, VMware, AWS CLI v2, gcloud, az, Terraform, VirtualBox, Vagrant, Ansible).
-- Antigravity Manager & Antigravity CLI native dynamic installers & profiles.
+- Antigravity Manager & Antigravity native dynamic installers & profiles.
 - Modern dev tools (Zellij, uv, fnm, jq, yq) & Databases (PostgreSQL, MongoDB, DBeaver, Compass, pgAdmin).
 
 ## [v1.34.0] - 2026-09-07

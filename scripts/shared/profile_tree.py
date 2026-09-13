@@ -89,6 +89,37 @@ PROFILES = {
             ("2. Node.js LTS", "Installs NodeSource LTS repository and configures node & npm binary paths."),
             ("3. Modern Package Managers", "Installs pnpm and yarn globally for high-performance dependency resolution.")
         ]
+    },
+    "ubuntu+ai-tools": {
+        "title": "Ubuntu AI Tools Suite",
+        "description": "Complete AI coding assistant suite: Antigravity, Codex UI, PlotCode UI, and Claude Code.",
+        "tree": [
+            "ubuntu+ai-tools",
+            "├── antigravity (Antigravity agy AI coding assistant)",
+            "├── codex (Codex UI & assistant)",
+            "├── plotcode (PlotCode visual assistant)",
+            "└── claude-code (Claude Code UI & CLI)"
+        ],
+        "steps": [
+            ("1. Antigravity", "Installs latest official Antigravity release binary."),
+            ("2. Codex UI", "Configures Codex assistant launcher and desktop entry."),
+            ("3. PlotCode UI", "Configures PlotCode visual data tool and desktop entry."),
+            ("4. Claude Code", "Installs Claude Code agent CLI and desktop launcher.")
+        ]
+    },
+    "ubuntu+antigravity": {
+        "alias_of": "ubuntu+antigravity-suite"
+    },
+    "ubuntu+antigravity-suite": {
+        "title": "Ubuntu Antigravity Suite",
+        "description": "Dedicated Antigravity AI coding assistant and environment integration.",
+        "tree": [
+            "ubuntu+antigravity-suite",
+            "└── antigravity (Antigravity agy AI coding assistant)"
+        ],
+        "steps": [
+            ("1. Antigravity", "Downloads and configures Antigravity CLI and shell integration.")
+        ]
     }
 }
 

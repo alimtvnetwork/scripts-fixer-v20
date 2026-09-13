@@ -1,7 +1,7 @@
 # Project Memory Index
 
 ## Active Master Plans
-- [ ] `01-kubernetes-vmware-suite` (Planning Phase)
+- [x] `20-codex-claude-code-ai-profiles` (Completed)
 
 ## Active File Locks
 (None currently)

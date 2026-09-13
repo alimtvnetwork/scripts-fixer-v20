@@ -596,7 +596,10 @@ function Show-RootHelpRaw {
     Write-Host "    $("uninstall jumpjump-vpn".PadRight($kc))" -NoNewline; Write-Host "Uninstall JumpJump VPN + clean .installed/jumpjump-vpn.json record [61]" -ForegroundColor $ThemeMuted
     Write-Host "    $("install antigravity-manager".PadRight($kc))" -NoNewline; Write-Host "Install Antigravity Manager [68]" -ForegroundColor $ThemeMuted
     Write-Host "    $("uninstall antigravity-manager".PadRight($kc))" -NoNewline; Write-Host "Uninstall Antigravity Manager [68]" -ForegroundColor $ThemeMuted
-    Write-Host "    $("install antigravity".PadRight($kc))" -NoNewline; Write-Host "Install Antigravity CLI (agy) [69]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install antigravity".PadRight($kc))" -NoNewline; Write-Host "Install Antigravity (agy) [69]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install codex".PadRight($kc))" -NoNewline; Write-Host "Install Codex UI [78]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install plotcode".PadRight($kc))" -NoNewline; Write-Host "Install PlotCode UI [79]" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install claude-code".PadRight($kc))" -NoNewline; Write-Host "Install Claude Code (UI & CLI) [80]" -ForegroundColor $ThemeMuted
     Write-Host "    $("install qtorrent".PadRight($kc))" -NoNewline; Write-Host "Install qBittorrent [76]" -ForegroundColor $ThemeMuted
     Write-Host "    $("install utorrent".PadRight($kc))" -NoNewline; Write-Host "Install uTorrent [77]" -ForegroundColor $ThemeMuted
     Write-Host ""
@@ -4403,14 +4406,13 @@ if ($hasCommand) {
         if ($Install -and $Install.Count -gt 0) {
             $firstSub = "$($Install[0])".Trim().ToLower()
             if ($firstSub -in @("ls", "list", "history")) {
-                Show-VersionHeader
+                Show-RootHelp
                 $listPy = Join-Path $RootDir "scripts\shared\list_installs.py"
                 if (Test-Path $listPy) {
                     python $listPy
                 } else {
                     Write-Host "  [ INFO ] No install log helper found." -ForegroundColor $ThemeMuted
                 }
-                Show-VersionFooter
                 exit 0
             }
         }
@@ -4419,11 +4421,8 @@ if ($hasCommand) {
         $hasRemainingArgs = $null -ne $Install -and $Install.Count -gt 0
         $isNoRemainingArgs = -not $hasRemainingArgs
         if ($isNoRemainingArgs) {
-            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
-            Write-Host "No keywords provided after 'install'. Usage: .\run.ps1 install <keywords>"
-            Write-Host ""
-            Write-Host "  Run .\run.ps1 -Help to see all available keywords" -ForegroundColor $ThemeSecondary
-            exit 1
+            Show-RootHelp
+            exit 0
         }
 
         # ── 'install model <ids>' shortcut ──────────────────────────────
@@ -4953,8 +4952,13 @@ if ($hasCommand) {
             "jumpjump"      = @{ Folder = "61-install-jumpjump-vpn"; Display = "JumpJump VPN" }
             "jjvpn"         = @{ Folder = "61-install-jumpjump-vpn"; Display = "JumpJump VPN" }
             "antigravity-manager" = @{ Folder = "68-install-antigravity-manager"; Display = "Antigravity Manager" }
-            "antigravity"   = @{ Folder = "69-install-antigravity"; Display = "Antigravity CLI (agy)" }
-            "agy"           = @{ Folder = "69-install-antigravity"; Display = "Antigravity CLI (agy)" }
+            "antigravity"   = @{ Folder = "69-install-antigravity"; Display = "Antigravity (agy)" }
+            "agy"           = @{ Folder = "69-install-antigravity"; Display = "Antigravity (agy)" }
+            "codex"         = @{ Folder = "78-install-codex"; Display = "Codex UI" }
+            "plotcode"      = @{ Folder = "79-install-plotcode"; Display = "PlotCode UI" }
+            "claude-code"   = @{ Folder = "80-install-claude-code"; Display = "Claude Code" }
+            "claudecode"    = @{ Folder = "80-install-claude-code"; Display = "Claude Code" }
+            "claude"        = @{ Folder = "80-install-claude-code"; Display = "Claude Code" }
         }
 
         if (-not $uninstallTargets.ContainsKey($targetRaw)) {

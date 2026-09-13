@@ -8,7 +8,7 @@ MUTED='\033[0;37m'
 ERROR='\033[1;31m'
 TEXT='\033[0m'
 
-echo -e "\n  ${SECONDARY}[  ..  ] Installing Antigravity (agy) CLI...${TEXT}"
+echo -e "\n  ${SECONDARY}[  ..  ] Installing Antigravity (agy)...${TEXT}"
 
 # ── Prerequisites ─────────────────────────────────────────────────────────────
 echo -e "  ${MUTED}[step 1/4] Ensuring curl is available...${TEXT}"

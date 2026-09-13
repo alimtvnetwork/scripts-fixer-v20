@@ -76,9 +76,13 @@ show_main_help() {
     printf "    %-28s ${MUTED}%s${TEXT}\n" "profile small-dev" "Delegates to <os>+small-dev"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "profile dev" "Delegates to <os>+dev"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "profile dev+ai" "Delegates to <os>+dev+ai"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "profile ai-tools" "Delegates to <os>+ai-tools (All AI Suite)"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "profile antigravity" "Delegates to <os>+antigravity-suite"
     echo -e ""
     echo -e "  ${ACCENT}Combo Shortcuts:${TEXT}"
     echo -e ""
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "ai-tools, all-ai" "All AI Suite (Antigravity, Codex, Claude)" "69, 78, 80"
+    printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "antigravity-suite, ag-suite" "Antigravity + Manager Profile" "68, 69"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "vscode+settings, vscode+s" "VSCode + Settings Sync" "01, 11"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "vscode+menu+settings, vms" "VSCode + Menu Fix + Sync" "01, 10, 11"
     printf "    %-32s ${MUTED}%-36s ${SECONDARY}%s${TEXT}\n" "vscode-settings, sync" "VSCode Settings Sync standalone" "11"
@@ -129,6 +133,9 @@ show_main_help() {
     echo -e "    ${MUTED}      Available: qwen2.5-coder:7b  glm4:9b  glm-edge:4b  kimi-k2:8b  deepseek-r1:8b  llama3.2:3b${TEXT}"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "43" "antigravity, ag" "Install Antigravity (agy) AI coding assistant"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "44" "antigravity-manager, agm" "Install Antigravity Manager GUI"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "78" "codex" "Install Codex UI"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "79" "plotcode" "Install PlotCode UI"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "80" "claude-code, claude" "Install Claude Code (UI & CLI)"
     echo -e ""
 
     echo -e "    ${PRIMARY}Databases${TEXT}"
@@ -299,7 +306,11 @@ case "$COMMAND" in
         ;;
     "install")
         # Sub-help handling
-        if [[ "$ARGS" == *"profile help"* || "$ARGS" == *"profile -h"* || "$ARGS" == *"profile --help"* || "$ARGS" == *"profile -help"* ]]; then
+        if [[ -z "$(echo "$ARGS" | xargs)" ]]; then
+            show_main_help
+            show_footer
+            exit 0
+        elif [[ "$ARGS" == *"profile help"* || "$ARGS" == *"profile -h"* || "$ARGS" == *"profile --help"* || "$ARGS" == *"profile -help"* ]]; then
             show_profile_help
             show_footer
             exit 0
@@ -308,6 +319,7 @@ case "$COMMAND" in
             show_footer
             exit 0
         elif [[ "$ARGS" == "ls" || "$ARGS" == "list" ]]; then
+            show_main_help
             python3 scripts/shared/list_installs.py
             show_footer
             exit 0
@@ -337,6 +349,8 @@ case "$COMMAND" in
             if [[ "$ITEM" == "profile small-dev" ]]; then ITEM="profile ${OS_ID}+small-dev"; fi
             if [[ "$ITEM" == "profile dev" ]]; then ITEM="profile ${OS_ID}+dev"; fi
             if [[ "$ITEM" == "profile dev+ai" ]]; then ITEM="profile ${OS_ID}+dev+ai"; fi
+            if [[ "$ITEM" == "profile ai-tools" || "$ITEM" == "profile all-ai" || "$ITEM" == "profile ai" ]]; then ITEM="profile ${OS_ID}+ai-tools"; fi
+            if [[ "$ITEM" == "profile antigravity-suite" || "$ITEM" == "profile antigravity" ]]; then ITEM="profile ${OS_ID}+antigravity-suite"; fi
             
             SUCCESS=false
             echo -e "  ${SECONDARY}Processing: $ITEM${TEXT}"
@@ -344,6 +358,10 @@ case "$COMMAND" in
             # Profile installation
             if [[ "$ITEM" == *"profile ubuntu+dev+ai"* ]]; then
                 bash scripts/os/ubuntu/profile-ubuntu-dev-ai.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+dev+ai"
+            elif [[ "$ITEM" == *"profile ubuntu+ai-tools"* || "$ITEM" == *"profile ubuntu+all-ai"* || "$ITEM" == *"profile ubuntu+ai"* ]]; then
+                bash scripts/os/ubuntu/profile-ubuntu-ai-tools.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+ai-tools"
+            elif [[ "$ITEM" == *"profile ubuntu+antigravity-suite"* || "$ITEM" == *"profile ubuntu+antigravity"* ]]; then
+                bash scripts/os/ubuntu/profile-ubuntu-antigravity-suite.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+antigravity-suite"
             elif [[ "$ITEM" == *"profile ubuntu+dev"* ]]; then
                 bash scripts/os/ubuntu/profile-ubuntu-dev.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+dev"
             elif [[ "$ITEM" == *"profile ubuntu+small-dev"* || "$ITEM" == *"profile ubuntu+simple-dev"* ]]; then
@@ -420,6 +438,10 @@ case "$COMMAND" in
                 SUCCESS=true
 
             # Standalone Tools
+            elif [[ "$ITEM" == *"codex"* || "$ITEM" == *"78"* ]]; then bash scripts/os/ubuntu/install-codex.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"plotcode"* || "$ITEM" == *"79"* ]]; then bash scripts/os/ubuntu/install-plotcode.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"claude-code"* || "$ITEM" == *"claudecode"* || "$ITEM" == *"claude"* || "$ITEM" == *"80"* ]]; then bash scripts/os/ubuntu/install-claude-code.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"antigravity"* || "$ITEM" == *"agy"* || "$ITEM" == *"69"* ]]; then bash scripts/os/ubuntu/install-antigravity.sh && SUCCESS=true
             elif [[ "$ITEM" == *"docker"* || "$ITEM" == *"47"* ]]; then bash scripts/os/ubuntu/install-docker.sh && SUCCESS=true
             elif [[ "$ITEM" == *"kubernetes"* || "$ITEM" == *"46"* ]]; then bash scripts/os/ubuntu/install-kubernetes.sh && SUCCESS=true
             elif [[ "$ITEM" == *"python2"* ]]; then bash scripts/os/ubuntu/install-python2.sh && SUCCESS=true
