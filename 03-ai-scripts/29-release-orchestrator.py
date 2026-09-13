@@ -124,14 +124,52 @@ def update_changelog_release(changelog_path: Path, next_version: str, release_da
     return True
 
 
-def stage_release_files(repo_root: Path) -> list[str]:
+def update_gitmap_release(repo_root: Path, next_version: str, release_date: str, scope: str) -> None:
+    release_dir = repo_root / ".gitmap" / "release"
+    release_dir.mkdir(parents=True, exist_ok=True)
+
+    latest_file = release_dir / "latest.json"
+    latest_payload = {
+        "version": next_version,
+        "tag": f"v{next_version}",
+        "branch": f"release/v{next_version}",
+    }
+    with open(latest_file, "w", encoding="utf-8", newline="\n") as file_handle:
+        json.dump(latest_payload, file_handle, indent=2)
+        file_handle.write("\n")
+
+    version_release_file = release_dir / f"v{next_version}.json"
+    clean_scope = scope if scope else f"Release v{next_version}"
+    version_payload = {
+        "version": next_version,
+        "branch": f"release/v{next_version}",
+        "sourceBranch": "main",
+        "commit": "",
+        "tag": f"v{next_version}",
+        "assets": [],
+        "changelog": [clean_scope],
+        "isDraft": False,
+        "isPreRelease": False,
+        "createdAt": f"{release_date}T00:00:00Z",
+        "isLatest": True,
+    }
+    with open(version_release_file, "w", encoding="utf-8", newline="\n") as file_handle:
+        json.dump(version_payload, file_handle, indent=2)
+        file_handle.write("\n")
+
+
+def stage_release_files(repo_root: Path, next_version: str = "") -> list[str]:
     candidate_files = [
         "version.json",
         "scripts/version.json",
         "package.json",
         "changelog.md",
         "readme.md",
+        ".gitmap/release/latest.json",
     ]
+    if next_version:
+        candidate_files.append(f".gitmap/release/v{next_version}.json")
+
     staged_list = []
     for rel_path in candidate_files:
         full_path = repo_root / rel_path
@@ -202,8 +240,9 @@ def execute_release_orchestration(tier: str, scope: str, has_push: bool) -> dict
         update_json_version(repo_root / "package.json", next_version, release_date)
         update_readme_version(repo_root / "readme.md", next_version)
         update_changelog_release(repo_root / "changelog.md", next_version, release_date, scope)
+        update_gitmap_release(repo_root, next_version, release_date, scope)
 
-        staged_files = stage_release_files(repo_root)
+        staged_files = stage_release_files(repo_root, next_version)
         print(f"  Staged Files     : {', '.join(staged_files)}")
 
         commit_hash = create_release_commit(next_version, scope)

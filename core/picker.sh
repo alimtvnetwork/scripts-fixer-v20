@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Cross-platform interactive picker.
 # Backend preference: gum -> fzf -> numbered prompt (fallback).
 # Exports: pick_one, pick_many.

@@ -1,6 +1,6 @@
 # Script Registry Summary
 
-> Auto-generated report of all 66 registered scripts, 513 keywords, and 123 mode entries.
+> Auto-generated report of all 70 registered scripts, 555 keywords, and 123 mode entries.
 > Regenerate with: `node scripts/_internal/generate-registry-summary.cjs`
 
 ## Overview
@@ -22,9 +22,9 @@
 | 13 | audit | 4 | -- |
 | 14 | 14-install-winget | 1 | -- |
 | 15 | 15-windows-tweaks | 3 | -- |
-| 16 | 16-install-php | 8 | 5 |
+| 16 | 16-install-php | 12 | 5 |
 | 17 | 17-install-powershell | 8 | -- |
-| 18 | 18-install-mysql | 1 | -- |
+| 18 | 18-install-mysql | 5 | -- |
 | 19 | 19-install-mariadb | 1 | -- |
 | 20 | 20-install-postgresql | 6 | -- |
 | 21 | 21-install-sqlite | 1 | -- |
@@ -72,7 +72,11 @@
 | 63 | 63-install-vlc | 0 | -- |
 | 64 | 64-wt-context-menu | 7 | -- |
 | 65 | 65-os-clean | 0 | -- |
+| 68 | 68-install-antigravity-manager | 12 | -- |
+| 69 | 69-install-antigravity | 7 | -- |
 | 71 | 71-install-git-compact | 0 | -- |
+| 76 | 76-install-qtorrent | 11 | -- |
+| 77 | 77-install-utorrent | 4 | -- |
 
 ## Detailed Script Reference
 
@@ -253,9 +257,9 @@ tweaks, windows-tweaks, windowstweaks
 - **Description**: Web-based MySQL/MariaDB administration tool
 - **Choco package**: `php`
 
-**Keywords** (8):
+**Keywords** (12):
 ```
-php, phpmyadmin, php+phpmyadmin, php-only, phpmyadmin-only, full-stack, fullstack, backend
+php, phpmyadmin, php+phpmyadmin, php-only, phpmyadmin-only, full-stack, fullstack, backend, lemp, lnmp, wordpress-stack, laravel-stack
 ```
 
 **Mode Mappings**:
@@ -291,9 +295,9 @@ powershell, pwsh, pwsh-menu, pwsh-context-menu, ps-context-menu, powershell-cont
 - **Description**: Popular open-source relational database
 - **Choco package**: `mysql`
 
-**Keywords** (1):
+**Keywords** (5):
 ```
-mysql
+mysql, lemp, lnmp, wordpress-stack, laravel-stack
 ```
 
 ---
@@ -1066,6 +1070,28 @@ wt-menu, wt-context-menu, windows-terminal-menu, windows-terminal-context-menu, 
 
 ---
 
+### Script 68: 68-install-antigravity-manager
+
+- **Folder**: `68-install-antigravity-manager`
+
+**Keywords** (12):
+```
+iac, terraform, vagrant, virtualbox, ansible, antigravity-manager, agm, install-antigravity-manager, all-ai, ai-suite, ai, antigravity-suite
+```
+
+---
+
+### Script 69: 69-install-antigravity
+
+- **Folder**: `69-install-antigravity`
+
+**Keywords** (7):
+```
+antigravity, agy, install-antigravity, all-ai, ai-suite, ai, antigravity-suite
+```
+
+---
+
 ### Script 71: git-compact
 
 - **Folder**: `71-install-git-compact`
@@ -1074,6 +1100,28 @@ wt-menu, wt-context-menu, windows-terminal-menu, windows-terminal-context-menu, 
 **Keywords** (0):
 ```
 (none)
+```
+
+---
+
+### Script 76: 76-install-qtorrent
+
+- **Folder**: `76-install-qtorrent`
+
+**Keywords** (11):
+```
+qtorrent, qbittorrent, nginx, nginx-server, vhost, vhosts, domain-manager, lemp, lnmp, wordpress-stack, laravel-stack
+```
+
+---
+
+### Script 77: 77-install-utorrent
+
+- **Folder**: `77-install-utorrent`
+
+**Keywords** (4):
+```
+utorrent, laravel, artisan, laravel-stack
 ```
 
 ---
@@ -1097,6 +1145,9 @@ Keywords that trigger multiple scripts in sequence.
 | `settings` | 01-install-vscode, 11-vscode-settings-sync, 32-install-dbeaver, 33-install-notepadpp, 36-install-obs, 37-install-windows-terminal, 48-install-conemu | 1, 11, 32, 33, 36, 37, 48 |
 | `settingsall` | 01-install-vscode, 11-vscode-settings-sync, 32-install-dbeaver, 33-install-notepadpp, 36-install-obs, 37-install-windows-terminal, 48-install-conemu | 1, 11, 32, 33, 36, 37, 48 |
 | `backend` | 05-install-python, 06-install-golang, 16-install-php, 20-install-postgresql, 39-install-dotnet, 40-install-java | 5, 6, 16, 20, 39, 40 |
+| `ai` | 68-install-antigravity-manager, 69-install-antigravity, (missing-78), (missing-79), (missing-80) | 68, 69, 78, 79, 80 |
+| `ai-suite` | 68-install-antigravity-manager, 69-install-antigravity, (missing-78), (missing-79), (missing-80) | 68, 69, 78, 79, 80 |
+| `all-ai` | 68-install-antigravity-manager, 69-install-antigravity, (missing-78), (missing-79), (missing-80) | 68, 69, 78, 79, 80 |
 | `web-dev` | 01-install-vscode, 03-install-nodejs, 04-install-pnpm, 07-install-git, 11-vscode-settings-sync | 1, 3, 4, 7, 11 |
 | `webdev` | 01-install-vscode, 03-install-nodejs, 04-install-pnpm, 07-install-git, 11-vscode-settings-sync | 1, 3, 4, 7, 11 |
 | `ai-full` | 05-install-python, 41-install-python-libs, 42-install-ollama, 43-install-llama-cpp | 5, 41, 42, 43 |
@@ -1104,8 +1155,12 @@ Keywords that trigger multiple scripts in sequence.
 | `data-dev` | 20-install-postgresql, 24-install-redis, 28-install-duckdb, 32-install-dbeaver | 20, 24, 28, 32 |
 | `datadev` | 20-install-postgresql, 24-install-redis, 28-install-duckdb, 32-install-dbeaver | 20, 24, 28, 32 |
 | `frontend` | 01-install-vscode, 03-install-nodejs, 04-install-pnpm, 11-vscode-settings-sync | 1, 3, 4, 11 |
+| `laravel-stack` | 76-install-qtorrent, 16-install-php, 18-install-mysql, 77-install-utorrent | 76, 16, 18, 77 |
 | `vscode+menu+fix` | 01-install-vscode, 11-vscode-settings-sync, 10-vscode-context-menu-fix, 52-vscode-folder-repair | 1, 11, 10, 52 |
+| `wordpress-stack` | 76-install-qtorrent, 16-install-php, 18-install-mysql, (missing-70) | 76, 16, 18, 70 |
 | `devops` | 07-install-git, 45-install-docker, 46-install-kubernetes | 7, 45, 46 |
+| `lemp` | 76-install-qtorrent, 16-install-php, 18-install-mysql | 76, 16, 18 |
+| `lnmp` | 76-install-qtorrent, 16-install-php, 18-install-mysql | 76, 16, 18 |
 | `vms` | 01-install-vscode, 10-vscode-context-menu-fix, 11-vscode-settings-sync | 1, 10, 11 |
 | `vs-context-menu` | 01-install-vscode, 11-vscode-settings-sync, 10-vscode-context-menu-fix | 1, 11, 10 |
 | `vscode-context-menu` | 01-install-vscode, 11-vscode-settings-sync, 10-vscode-context-menu-fix | 1, 11, 10 |
@@ -1119,6 +1174,7 @@ Keywords that trigger multiple scripts in sequence.
 | `ai-tools` | 42-install-ollama, 43-install-llama-cpp | 42, 43 |
 | `aidev` | 05-install-python, 41-install-python-libs | 5, 41 |
 | `aitools` | 42-install-ollama, 43-install-llama-cpp | 42, 43 |
+| `antigravity-suite` | 68-install-antigravity-manager, 69-install-antigravity | 68, 69 |
 | `conemu` | 48-install-conemu, 59-conemu-context-menu | 48, 59 |
 | `conemu-context-menu` | 48-install-conemu, 59-conemu-context-menu | 48, 59 |
 | `conemu-menu` | 48-install-conemu, 59-conemu-context-menu | 48, 59 |
@@ -1176,7 +1232,7 @@ Keywords that trigger multiple scripts in sequence.
 | `wt-menu` | 37-install-windows-terminal, 64-wt-context-menu | 37, 64 |
 | `wt+menu` | 37-install-windows-terminal, 64-wt-context-menu | 37, 64 |
 
-**Total combo keywords**: 91
+**Total combo keywords**: 99
 
 ## Subcommand Keywords
 
@@ -1215,9 +1271,9 @@ Keywords routed to top-level dispatchers (not script IDs).
 
 | Metric | Count |
 |--------|-------|
-| Registered scripts | 66 |
-| Total keywords (numeric-target) | 513 |
+| Registered scripts | 70 |
+| Total keywords (numeric-target) | 555 |
 | Subcommand keywords | 57 |
 | Mode entries | 123 |
 | Scripts with modes | 13 |
-| Combo keywords | 91 |
+| Combo keywords | 99 |

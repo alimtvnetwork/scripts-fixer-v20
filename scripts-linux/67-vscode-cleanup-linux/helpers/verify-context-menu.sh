@@ -287,7 +287,7 @@ verify_context_menu_render() {
   if [ "$f" -gt 0 ]; then
     printf '\n  CTX-MENU VERDICT: ❌ FAIL -- %d context-menu/MIME entry(ies) still wired to VS Code. See FILE-ERROR lines above for paths.\n\n' "$f" >&2
   else
-    printf '\n  CTX-MENU VERDICT: ✅ PASS -- no VS Code context-menu / MIME wiring detected.\n\n' "$f" >&2
+    printf '\n  CTX-MENU VERDICT: ✅ PASS -- no VS Code context-menu / MIME wiring detected.\n\n' >&2
   fi
   return 0
 }

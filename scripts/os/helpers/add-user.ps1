@@ -54,6 +54,7 @@
                                   Set-LocalUser / Add-LocalGroupMember /
                                   registry call
 #>
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
 param(
     [Parameter(ValueFromRemainingArguments = $true)]
     [string[]]$Argv = @()

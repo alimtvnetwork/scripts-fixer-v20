@@ -231,13 +231,20 @@ normalize_import_args() {
 
 # ---- chrome running check ---------------------------------------------------
 chrome_is_running() {
-  local pat
   case "$BROWSER" in
-    chrome)   pat="chrome|Google Chrome" ;;
-    chromium) pat="chromium" ;;
-    brave)    pat="brave" ;;
+    chrome)
+      pgrep -x "chrome" >/dev/null 2>&1 || pgrep -x "google-chrome" >/dev/null 2>&1 || pgrep -x "Google Chrome" >/dev/null 2>&1
+      ;;
+    chromium)
+      pgrep -x "chromium" >/dev/null 2>&1 || pgrep -x "chromium-browser" >/dev/null 2>&1 || pgrep -x "Chromium" >/dev/null 2>&1
+      ;;
+    brave)
+      pgrep -x "brave" >/dev/null 2>&1 || pgrep -x "brave-browser" >/dev/null 2>&1 || pgrep -x "Brave Browser" >/dev/null 2>&1
+      ;;
+    *)
+      return 1
+      ;;
   esac
-  pgrep -i -f "$pat" >/dev/null 2>&1
 }
 
 # ---- ledger -----------------------------------------------------------------

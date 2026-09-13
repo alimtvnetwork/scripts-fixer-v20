@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # 68-user-mgmt/helpers/_schema.sh -- shared strict-JSON-schema validator.
 #
 # Purpose

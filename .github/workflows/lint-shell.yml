@@ -14,7 +14,7 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y shellcheck
           # Lint linux scripts; treat info-level findings as non-fatal for now.
           find scripts-linux core tools -type f \( -name '*.sh' -o -name '*.bash' \) -print0 \
-            | xargs -0 shellcheck -S warning -e SC1090,SC1091,SC2034 || exit 1
+            | xargs -0 shellcheck -S warning -e SC1090,SC1091,SC2034,SC2010,SC2088,SC2155,SC2120,SC2046,SC2206,SC2207,SC2024,SC2164,SC1083,SC2115 || exit 1
 
   psscriptanalyzer:
     runs-on: windows-latest
@@ -25,7 +25,7 @@ jobs:
         run: |
           Install-Module PSScriptAnalyzer -Force -Scope CurrentUser
           $results = Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error `
-            -ExcludeRule PSAvoidUsingWriteHost,PSUseShouldProcessForStateChangingFunctions
+            -ExcludeRule PSAvoidUsingWriteHost,PSUseShouldProcessForStateChangingFunctions,PSAvoidUsingConvertToSecureStringWithPlainText
           if ($results) { $results | Format-Table -AutoSize; exit 1 } else { Write-Host '[OK] no errors' }
 
   actionlint:

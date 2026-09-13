@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # --json output mode helpers.
 # When LOVABLE_JSON_OUT=1, decorative output should go to stderr (or be skipped);
 # the final JSON envelope goes to stdout via json_envelope.

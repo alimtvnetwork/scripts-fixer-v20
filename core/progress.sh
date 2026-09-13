@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Cross-platform progress + ETA wrapper.
 # Prefers `pv` when piping bytes; otherwise prints a manual progress line with ETA.
 # Honors LOVABLE_JSON_OUT (silent in JSON mode).

@@ -89,5 +89,8 @@ function Get-StateEvents {
     if ($Last -gt 0) { $events = $events | Select-Object -Last $Last }
     return $events
 }
+$isInsideModule = ($null -ne $MyInvocation.MyCommand.ScriptBlock.Module)
 
-Export-ModuleMember -Function Write-StateEvent, Get-StateEvents, Initialize-State -ErrorAction SilentlyContinue
+if ($isInsideModule) {
+    Export-ModuleMember -Function Write-StateEvent, Get-StateEvents, Initialize-State -ErrorAction SilentlyContinue
+}

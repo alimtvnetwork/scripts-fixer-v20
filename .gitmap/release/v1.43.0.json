@@ -1,0 +1,15 @@
+{
+  "version": "1.43.0",
+  "branch": "release/v1.43.0",
+  "sourceBranch": "main",
+  "commit": "4017f908d019c009e4d25a756bdea0f3c82245fe",
+  "tag": "v1.43.0",
+  "assets": [],
+  "changelog": [
+    "**Automated Release Orchestration**: Integrated automated semantic release orchestrator and branch lifecycle suite."
+  ],
+  "isDraft": false,
+  "isPreRelease": false,
+  "createdAt": "2026-09-13T12:29:09Z",
+  "isLatest": true
+}

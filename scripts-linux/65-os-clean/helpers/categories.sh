@@ -113,7 +113,7 @@ osc_paths_for_os() {
   # Print one expanded path per line. Honors per-OS branch and runs the
   # raw entries through `eval echo` so $HOME/${XDG_*}/${TMPDIR:-...} expand.
   local cat="$1" os="${2:-$_OSC_OS}"
-  _osc_query ".categories.\"$cat\".paths.$os[]" 2>/dev/null \
+  _osc_query ".categories.\"$cat\".paths.${os}[]" 2>/dev/null \
     | while IFS= read -r raw; do
         [ -z "$raw" ] && continue
         # Safe expansion: only env-var refs, no command substitution allowed.
@@ -132,7 +132,7 @@ osc_cmd_array() {
   # $1=cat $2=applyCmd|dryCmd
   # Emits one argv element per line.
   local cat="$1" which="$2"
-  _osc_query ".categories.\"$cat\".$which[]" 2>/dev/null
+  _osc_query ".categories.\"$cat\".${which}[]" 2>/dev/null
 }
 
 osc_in_list() {

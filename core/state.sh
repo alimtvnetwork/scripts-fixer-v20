@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Lovable unified state store.
 # Append-only JSONL — grep-able, atomic per-line, safe under concurrent writes
 # because Linux/macOS POSIX guarantees <4 KiB writes via O_APPEND are atomic.

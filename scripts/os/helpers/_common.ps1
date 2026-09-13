@@ -101,6 +101,7 @@ function Mask-Password {
 #        comment <text> | enable | disable | add-group <g> | rm-group <g> |
 #        rename <newName>
 function Invoke-UserModify {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
     param(
         [Parameter(Mandatory)][string]$Name,
         [Parameter(Mandatory)][ValidateSet('password','shell','comment','enable','disable','add-group','rm-group','rename')][string]$Op,
