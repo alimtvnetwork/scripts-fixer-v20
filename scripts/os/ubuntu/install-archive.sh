@@ -61,18 +61,51 @@ show_help() {
     echo -e "    ./run.sh install archive <path-or-url> [app-name]"
     echo -e "    ./run.sh install-tar <path-or-url> [app-name]"
     echo -e ""
+    echo -e "  ${ACCENT}Options & Flags:${TEXT}"
+    echo -e "    --force, -f          Force re-installation (re-extracts, cleans and re-links; reuses cached download)"
+    echo -e "    --download-must      Force fresh re-download of archive even if cached locally in temp folder"
+    echo -e ""
     echo -e "  ${ACCENT}Examples:${TEXT}"
     echo -e "    ./run.sh install tar https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz"
     echo -e "    ./run.sh install zip https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
     echo -e "    ./run.sh install tar ./ripgrep-14.1.0-x86_64-unknown-linux-musl.tar.gz"
     echo -e "    ./run.sh install tar ~/Downloads/Antigravity.tar.gz antigravity"
+    echo -e "    ./run.sh install tar https://example.com/app.tar.gz --force"
+    echo -e "    ./run.sh install tar https://example.com/app.tar.gz --download-must"
     echo -e ""
 }
 
-RAW_INPUT="$1"
-CUSTOM_APP_NAME="$2"
+IS_FORCE=false
+IS_DOWNLOAD_MUST=false
 
-if [ -z "$RAW_INPUT" ] || [[ "$RAW_INPUT" == "-h" ]] || [[ "$RAW_INPUT" == "--help" ]] || [[ "$RAW_INPUT" == "help" ]]; then
+if [ "${FORCE:-0}" = "1" ] || [ "${IS_FORCE:-false}" = "true" ]; then
+    IS_FORCE=true
+fi
+
+if [ "${DOWNLOAD_MUST:-0}" = "1" ] || [ "${IS_DOWNLOAD_MUST:-false}" = "true" ]; then
+    IS_DOWNLOAD_MUST=true
+fi
+
+CLEAN_ARGS=()
+for arg in "$@"; do
+    if [ "$arg" = "-h" ] || [ "$arg" = "--help" ] || [ "$arg" = "help" ]; then
+        show_help
+        exit 0
+    elif [ "$arg" = "--force" ] || [ "$arg" = "-f" ]; then
+        IS_FORCE=true
+        export FORCE=1
+    elif [ "$arg" = "--download-must" ] || [ "$arg" = "--redownload" ] || [ "$arg" = "--force-download" ] || [ "$arg" = "-fd" ]; then
+        IS_DOWNLOAD_MUST=true
+        export DOWNLOAD_MUST=1
+    else
+        CLEAN_ARGS+=("$arg")
+    fi
+done
+
+RAW_INPUT="${CLEAN_ARGS[0]:-}"
+CUSTOM_APP_NAME="${CLEAN_ARGS[1]:-}"
+
+if [ -z "$RAW_INPUT" ]; then
     show_help
     exit 0
 fi
@@ -143,20 +176,20 @@ if [[ "$RAW_INPUT" =~ ^https?:// ]] || [[ "$RAW_INPUT" =~ ^ftp:// ]]; then
     CACHE_DIR="${TMPDIR:-/tmp}/scripts-fixer-downloads"
     mkdir -p "$CACHE_DIR"
     CACHED_ARCHIVE="$CACHE_DIR/$URL_BASENAME"
-    has_cached=false
+    has_valid_cache=false
 
-    if [ "${FORCE:-0}" != "1" ] && [ "${IS_FORCE:-false}" != "true" ]; then
+    if [ "$IS_DOWNLOAD_MUST" != "true" ]; then
         if [ -f "$CACHED_ARCHIVE" ] && [ -s "$CACHED_ARCHIVE" ]; then
             CACHED_SIZE=$(stat -c%s "$CACHED_ARCHIVE" 2>/dev/null || echo 0)
             if [ "$CACHED_SIZE" -gt 1000 ]; then
                 echo -e "  ${PRIMARY}[  OK  ] Reusing valid download from temp folder: ${SECONDARY}$CACHED_ARCHIVE ($(( CACHED_SIZE / 1024 / 1024 )) MB)${TEXT}"
                 ARCHIVE_PATH="$CACHED_ARCHIVE"
-                has_cached=true
+                has_valid_cache=true
             fi
         fi
     fi
 
-    if [ "$has_cached" = "false" ]; then
+    if [ "$has_valid_cache" = "false" ]; then
         ARCHIVE_PATH="$CACHED_ARCHIVE"
         rm -f "$CACHED_ARCHIVE" "${CACHED_ARCHIVE}.aria2" 2>/dev/null || true
 

@@ -72,6 +72,12 @@ show_main_help() {
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh pipeline errors -t" "Check pipeline errors and wait for ETA"
 
     echo -e ""
+    echo -e "  ${ACCENT}Options & Flags:${TEXT}"
+    echo -e ""
+    printf "    %-30s ${MUTED}%s${TEXT}\n" "--force, -f" "Force re-install (clean reinstall; reuses cached downloads)"
+    printf "    %-30s ${MUTED}%s${TEXT}\n" "--download-must" "Force fresh download even if archive is cached locally"
+    printf "    %-30s ${MUTED}%s${TEXT}\n" "--tree, -t" "Display profile dependency tree without installing"
+    echo -e ""
     
     echo -e "  ${ACCENT}Profiles:${TEXT}"
     echo -e ""
@@ -185,8 +191,12 @@ show_main_help() {
     
     echo -e "  ${ACCENT}Usage Examples:${TEXT}"
     echo -e "    ./run.sh install vscode+settings"
+    echo -e "    ./run.sh install agy"
+    echo -e "    ./run.sh install agy --force"
+    echo -e "    ./run.sh install agy --download-must"
     echo -e "    ./run.sh install bcompare"
     echo -e "    ./run.sh install tar https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz"
+    echo -e "    ./run.sh install tar https://example.com/app.tar.gz --download-must"
     echo -e "    ./run.sh install zip ./package.zip"
     echo -e "    ./run.sh install ollama"
     echo -e "    ./run.sh install clean"
@@ -384,6 +394,14 @@ case "$COMMAND" in
             ARGS=$(echo "$ARGS" | sed -E 's/(^|[[:space:]])(--force|-f)([[:space:]]|$)/ /g' | xargs)
         fi
 
+        IS_DOWNLOAD_MUST=false
+        if [[ "$ARGS" =~ (^|[[:space:]])(--download-must|--redownload|--force-download|-fd)([[:space:]]|$) ]]; then
+            IS_DOWNLOAD_MUST=true
+            export DOWNLOAD_MUST=1
+            export IS_DOWNLOAD_MUST=true
+            ARGS=$(echo "$ARGS" | sed -E 's/(^|[[:space:]])(--download-must|--redownload|--force-download|-fd)([[:space:]]|$)/ /g' | xargs)
+        fi
+
         FIRST_WORD=$(echo "$ARGS" | awk '{print $1}')
         REST_WORDS=$(echo "$ARGS" | awk '{$1=""; print $0}' | sed -e 's/^[[:space:]]*//')
 
@@ -407,7 +425,10 @@ case "$COMMAND" in
                 show_footer
                 exit 1
             fi
-            bash scripts/os/ubuntu/install-archive.sh $REST_WORDS
+            extra_archive_flags=()
+            [ "$IS_FORCE" = "true" ] && extra_archive_flags+=("--force")
+            [ "$IS_DOWNLOAD_MUST" = "true" ] && extra_archive_flags+=("--download-must")
+            bash scripts/os/ubuntu/install-archive.sh $REST_WORDS "${extra_archive_flags[@]}"
             EXIT_CODE=$?
             if [ $EXIT_CODE -eq 0 ]; then
                 $PYTHON_BIN scripts/shared/logger.py "archive:${REST_WORDS%% *}" 2>/dev/null || true
@@ -424,7 +445,10 @@ case "$COMMAND" in
                 show_footer
                 exit 1
             fi
-            bash scripts/os/ubuntu/install-archive.sh $ARGS
+            extra_archive_flags=()
+            [ "$IS_FORCE" = "true" ] && extra_archive_flags+=("--force")
+            [ "$IS_DOWNLOAD_MUST" = "true" ] && extra_archive_flags+=("--download-must")
+            bash scripts/os/ubuntu/install-archive.sh $ARGS "${extra_archive_flags[@]}"
             EXIT_CODE=$?
             if [ $EXIT_CODE -eq 0 ]; then
                 $PYTHON_BIN scripts/shared/logger.py "archive:${FIRST_WORD}" 2>/dev/null || true
@@ -524,9 +548,10 @@ case "$COMMAND" in
             elif [[ "$ITEM" == *"antigravity-manager"* || "$ITEM" == *"agm"* || "$ITEM" == *"44"* || "$ITEM" == *"68"* ]]; then
                 bash scripts/os/ubuntu/install-antigravity-manager.sh && SUCCESS=true
             elif [[ "$ITEM" == *"antigravity"* || "$ITEM" == *"agy"* || "$ITEM" == *" ag"* || "$ITEM" == "ag" || "$ITEM" == *"43"* || "$ITEM" == *"69"* ]]; then
-                force_arg=""
-                [[ "$IS_FORCE" == "true" ]] && force_arg="--force"
-                bash scripts/os/ubuntu/install-antigravity.sh $force_arg && SUCCESS=true
+                extra_args=()
+                [[ "$IS_FORCE" == "true" ]] && extra_args+=("--force")
+                [[ "$IS_DOWNLOAD_MUST" == "true" ]] && extra_args+=("--download-must")
+                bash scripts/os/ubuntu/install-antigravity.sh "${extra_args[@]}" && SUCCESS=true
             elif [[ "$ITEM" == *"workspace"* || "$ITEM" == *"12"* ]]; then
                 bash scripts/os/ubuntu/setup-workspace.sh && SUCCESS=true
             elif [[ "$ITEM" == *"databases"* || "$ITEM" == *"db"* || "$ITEM" == *"30"* ]]; then

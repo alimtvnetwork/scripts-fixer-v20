@@ -9,14 +9,39 @@ ERROR='\033[1;31m'
 TEXT='\033[0m'
 
 IS_FORCE=false
+IS_DOWNLOAD_MUST=false
+
 for arg in "$@"; do
+    if [ "$arg" = "-h" ] || [ "$arg" = "--help" ] || [ "$arg" = "help" ]; then
+        echo -e ""
+        echo -e "  ${PRIMARY}Google Antigravity IDE & CLI Companion Installer${TEXT}"
+        echo -e ""
+        echo -e "  ${ACCENT}Usage:${TEXT}"
+        echo -e "    ./run.sh install agy"
+        echo -e "    ./run.sh install antigravity"
+        echo -e ""
+        echo -e "  ${ACCENT}Options & Flags:${TEXT}"
+        echo -e "    --force, -f          Force re-installation (clean reinstall, reusing cached downloads)"
+        echo -e "    --download-must      Force fresh re-download of archive even if cached locally"
+        echo -e ""
+        exit 0
+    fi
+
     if [ "$arg" = "--force" ] || [ "$arg" = "-f" ] || [ "$arg" = "force" ]; then
         IS_FORCE=true
-        break
+    fi
+
+    if [ "$arg" = "--download-must" ] || [ "$arg" = "--redownload" ] || [ "$arg" = "--force-download" ] || [ "$arg" = "-fd" ]; then
+        IS_DOWNLOAD_MUST=true
     fi
 done
-if [ "${FORCE:-0}" = "1" ] || [ "${IS_FORCE_INSTALL:-false}" = "true" ]; then
+
+if [ "${FORCE:-0}" = "1" ] || [ "${IS_FORCE_INSTALL:-false}" = "true" ] || [ "${IS_FORCE:-false}" = "true" ]; then
     IS_FORCE=true
+fi
+
+if [ "${DOWNLOAD_MUST:-0}" = "1" ] || [ "${IS_DOWNLOAD_MUST:-false}" = "true" ]; then
+    IS_DOWNLOAD_MUST=true
 fi
 
 detect_arch() {
@@ -65,7 +90,10 @@ clean_existing_installation() {
     echo -e "  ${ACCENT}[FORCE] Wiping previous Antigravity installations for clean re-install...${TEXT}"
     rm -rf "$HOME/.local/share/antigravity" "$HOME/.local/share/antigravity-ide" "$HOME/.antigravity"
     rm -f "$HOME/.local/bin/antigravity" "$HOME/.local/bin/agy" "$HOME/.local/bin/antigravity-ide"
-    rm -f "/tmp/scripts-fixer-downloads/Antigravity.tar.gz" "/tmp/Antigravity.tar.gz"
+    if [ "$IS_DOWNLOAD_MUST" = "true" ]; then
+        echo -e "  ${ACCENT}[DOWNLOAD-MUST] Purging cached downloads to force fresh download...${TEXT}"
+        rm -f "/tmp/scripts-fixer-downloads/Antigravity.tar.gz" "/tmp/Antigravity.tar.gz"
+    fi
 
     rm -f "$HOME/.local/share/applications/antigravity.desktop" \
           "$HOME/.local/share/applications/antigravity-ide.desktop" \
@@ -359,10 +387,12 @@ main() {
     ide_url=$(fetch_ide_url "$arch")
     local target_archive=""
 
-    if [ "$IS_FORCE" != "true" ]; then
+    if [ "$IS_DOWNLOAD_MUST" != "true" ]; then
         local cached
         if cached=$(find_cached_download); then
-            echo -e "  ${PRIMARY}[  OK  ] Reusing cached Antigravity download from temp folder: ${SECONDARY}$cached${TEXT}"
+            local cached_sz
+            cached_sz=$(stat -c%s "$cached" 2>/dev/null || echo 0)
+            echo -e "  ${PRIMARY}[  OK  ] Reusing cached Antigravity download from temp folder: ${SECONDARY}$cached ($(( cached_sz / 1024 / 1024 )) MB)${TEXT}"
             target_archive="$cached"
         fi
     fi
@@ -377,8 +407,12 @@ main() {
     script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     local archive_installer="$script_dir/install-archive.sh"
 
+    local extra_flags=()
+    [ "$IS_FORCE" = "true" ] && extra_flags+=("--force")
+    [ "$IS_DOWNLOAD_MUST" = "true" ] && extra_flags+=("--download-must")
+
     if [ -f "$archive_installer" ]; then
-        bash "$archive_installer" "$target_archive" "antigravity-ide"
+        bash "$archive_installer" "$target_archive" "antigravity-ide" "${extra_flags[@]}"
     else
         install_ide_fallback "$target_archive"
         create_runtime_wrapper
