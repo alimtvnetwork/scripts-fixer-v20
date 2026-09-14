@@ -20,9 +20,9 @@ def parse_arguments() -> argparse.Namespace:
     )
     parser.add_argument(
         "--tier",
-        choices=["minor", "patch", "major"],
+        choices=["minor", "patch", "major", "none"],
         default="minor",
-        help="Semantic release increment tier (default: minor).",
+        help="Semantic release increment tier (default: minor). Use 'none' to re-tag current version.",
     )
     parser.add_argument(
         "--scope",
@@ -38,12 +38,17 @@ def parse_arguments() -> argparse.Namespace:
 
 
 def run_git_command(git_args: list[str], has_check: bool = True) -> subprocess.CompletedProcess:
-    return subprocess.run(
+    repo_root = Path(__file__).resolve().parent.parent
+    proc = subprocess.run(
         ["git"] + git_args,
+        cwd=str(repo_root),
         capture_output=True,
         text=True,
-        check=has_check,
     )
+    if has_check and proc.returncode != 0:
+        print(f"Git command failed: git {' '.join(git_args)}\nError: {proc.stderr.strip()}")
+        raise subprocess.CalledProcessError(proc.returncode, ["git"] + git_args, output=proc.stdout, stderr=proc.stderr)
+    return proc
 
 
 def get_current_git_branch() -> str:
@@ -61,6 +66,9 @@ def read_canonical_version(repo_root: Path) -> str:
 
 
 def calculate_next_version(current_ver: str, tier: str) -> str:
+    if tier == "none":
+        return current_ver.strip().lstrip("v")
+
     parts = current_ver.strip().lstrip("v").split(".")
     major_num = int(parts[0]) if len(parts) > 0 else 1
     minor_num = int(parts[1]) if len(parts) > 1 else 0
@@ -162,6 +170,21 @@ def update_gitmap_release(repo_root: Path, next_version: str, release_date: str,
         file_handle.write("\n")
 
 
+def run_pre_release_generators(repo_root: Path) -> None:
+    generators = [
+        ["node", str(repo_root / "tools" / "registry-sync.cjs")],
+        ["node", str(repo_root / "scripts" / "_internal" / "generate-registry-summary.cjs")],
+        ["node", str(repo_root / "tools" / "docs-generate.cjs")],
+        ["node", str(repo_root / "tools" / "manifest-aliases.cjs")],
+        ["node", str(repo_root / "tools" / "gen-completions.cjs")],
+    ]
+    for cmd in generators:
+        try:
+            subprocess.run(cmd, cwd=str(repo_root), check=False, capture_output=True)
+        except Exception:
+            pass
+
+
 def stage_release_files(repo_root: Path, next_version: str = "") -> list[str]:
     candidate_files = [
         "version.json",
@@ -169,6 +192,15 @@ def stage_release_files(repo_root: Path, next_version: str = "") -> list[str]:
         "package.json",
         "changelog.md",
         "readme.md",
+        "spec/script-registry-summary.md",
+        "docs/parity-matrix.md",
+        "scripts/readme.md",
+        "scripts-linux/readme.md",
+        "scripts/aliases.generated.json",
+        "scripts-linux/aliases.generated.json",
+        "completions/run.ps1",
+        "completions/run.bash",
+        "completions/run.zsh",
         ".gitmap/release/latest.json",
     ]
     if next_version:
@@ -207,9 +239,9 @@ def push_release_artifacts(original_branch: str, release_branch: str, tag_name: 
     print(f"  -> Pushing {original_branch} to origin...")
     run_git_command(["push", "origin", original_branch])
     print(f"  -> Pushing {release_branch} to origin...")
-    run_git_command(["push", "origin", release_branch])
+    run_git_command(["push", "--force", "origin", release_branch])
     print(f"  -> Pushing tag {tag_name} to origin...")
-    run_git_command(["push", "origin", tag_name])
+    run_git_command(["push", "--force", "origin", tag_name])
 
 
 def ensure_active_branch_restored(original_branch: str) -> None:
@@ -245,6 +277,9 @@ def execute_release_orchestration(tier: str, scope: str, has_push: bool) -> dict
         update_readme_version(repo_root / "readme.md", next_version)
         update_changelog_release(repo_root / "changelog.md", next_version, release_date, scope)
         update_gitmap_release(repo_root, next_version, release_date, scope)
+
+        # Run pre-release generators to sync registry summary, docs, completions, and aliases
+        run_pre_release_generators(repo_root)
 
         staged_files = stage_release_files(repo_root, next_version)
         print(f"  Staged Files     : {', '.join(staged_files)}")
