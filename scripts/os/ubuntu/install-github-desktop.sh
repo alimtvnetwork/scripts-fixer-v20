@@ -18,6 +18,18 @@ is_github_desktop_installed() {
     return 1
 }
 
+install_via_gitmap() {
+    command -v gitmap &>/dev/null || return 1
+
+    echo -e "  ${MUTED}  -> Installing via GitMap (recommended)...${TEXT}"
+
+    if gitmap install github-desktop 2>/dev/null; then
+        return 0
+    fi
+
+    return 1
+}
+
 install_via_snap() {
     command -v snap &>/dev/null || return 1
 
@@ -46,6 +58,11 @@ main() {
     fi
 
     echo -e "  ${SECONDARY}[  ..  ] Installing GitHub Desktop GUI...${TEXT}"
+
+    if install_via_gitmap; then
+        echo -e "  ${PRIMARY}[  OK  ] GitHub Desktop installed via GitMap.${TEXT}"
+        return 0
+    fi
 
     if install_via_snap; then
         echo -e "  ${PRIMARY}[  OK  ] GitHub Desktop installed via Snap.${TEXT}"
