@@ -16,13 +16,25 @@ def get_db_path() -> str:
     if env_path:
         return env_path
 
-    home = os.path.expanduser("~")
-    local_share = Path(home) / ".local" / "share" / "scripts-fixer"
+    # Relative repository database path (ignored by .gitignore)
+    repo_root = Path(__file__).resolve().parent.parent.parent
+    data_dir = repo_root / ".data"
     try:
-        local_share.mkdir(parents=True, exist_ok=True)
-        return str(local_share / "scripts-fixer.db")
+        data_dir.mkdir(parents=True, exist_ok=True)
+        db_path = data_dir / "scripts-fixer.db"
+
+        if not db_path.exists():
+            legacy_path = Path(os.path.expanduser("~")) / ".local" / "share" / "scripts-fixer" / "scripts-fixer.db"
+            if legacy_path.exists():
+                import shutil
+                try:
+                    shutil.copy2(str(legacy_path), str(db_path))
+                except Exception:
+                    pass
+
+        return str(db_path)
     except Exception:
-        fallback = Path(__file__).resolve().parent.parent.parent / ".data"
+        fallback = Path(os.getcwd()) / ".data"
         fallback.mkdir(parents=True, exist_ok=True)
         return str(fallback / "scripts-fixer.db")
 

@@ -37,16 +37,20 @@ get_db_file() {
     return 0
   fi
 
-  local target_dir="${HOME:-/root}/.local/share/scripts-fixer"
+  local target_dir="$_DB_ROOT/.data"
   mkdir -p "$target_dir" 2>/dev/null || true
 
-  if [ -d "$target_dir" ] && [ -w "$target_dir" ]; then
-    echo "$target_dir/scripts-fixer.db"
+  local db_file="$target_dir/scripts-fixer.db"
 
-    return 0
+  if [ ! -f "$db_file" ]; then
+    local legacy_file="${HOME:-/root}/.local/share/scripts-fixer/scripts-fixer.db"
+
+    if [ -f "$legacy_file" ]; then
+      cp -f "$legacy_file" "$db_file" 2>/dev/null || true
+    fi
   fi
 
-  echo "$_DB_ROOT/.data/scripts-fixer.db"
+  echo "$db_file"
 }
 
 ensure_db() {
