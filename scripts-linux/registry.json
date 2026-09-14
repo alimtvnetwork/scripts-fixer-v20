@@ -279,6 +279,12 @@
       "title": "Cross-OS user/group management (Linux useradd|macOS dscl; CLI + JSON object/array auto-detect; mirrors Windows 'os add-user')"
     },
     {
+      "id": "69",
+      "folder": "69-install-antigravity",
+      "phase": "04",
+      "title": "Antigravity IDE & agy CLI"
+    },
+    {
       "id": "70",
       "folder": "70-install-wordpress-ubuntu",
       "phase": "14",

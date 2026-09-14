@@ -263,7 +263,8 @@
         {
           "kind": "script",
           "id": 69,
-          "label": "Antigravity (agy)"
+          "mode": "cli",
+          "label": "Antigravity CLI (agy)"
         }
       ]
     },
@@ -464,7 +465,8 @@
     "40": "JAVA_MODE",
     "41": "PYTHON_LIBS_MODE",
     "48": "CONEMU_MODE",
-    "50": "ONENOTE_MODE"
+    "50": "ONENOTE_MODE",
+    "69": "ANTIGRAVITY_MODE"
   },
   "execution": {
     "stopOnFailure": false,

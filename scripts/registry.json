@@ -63,6 +63,8 @@
     "71": "71-install-git-compact",
     "76": "76-install-qtorrent",
     "77": "77-install-utorrent",
+    "78": "78-install-codex",
+    "79": "79-install-plotcode",
     "01": "01-install-vscode",
     "02": "02-install-package-managers",
     "03": "03-install-nodejs",

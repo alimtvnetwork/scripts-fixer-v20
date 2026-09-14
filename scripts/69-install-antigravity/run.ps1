@@ -190,6 +190,28 @@ function Install-AntigravityIDE {
 # ── Antigravity CLI Installer ─────────────────────────────────────────────────
 function Install-AntigravityCLI {
     Write-Host "Installing Antigravity CLI..." -ForegroundColor Cyan
+
+    $installDir = Join-Path $env:USERPROFILE ".antigravity\bin"
+    if (-not (Test-Path $installDir)) {
+        New-Item -ItemType Directory -Path $installDir -Force | Out-Null
+    }
+
+    $agyExe = Join-Path $installDir "agy.exe"
+    $antigravityExe = Join-Path $installDir "antigravity.exe"
+    $hasExistingCli = (Test-Path $agyExe) -and (Test-Path $antigravityExe)
+    if ($hasExistingCli) {
+        Write-Host "Antigravity CLI is already present in $installDir." -ForegroundColor Green
+        return $installDir
+    }
+
+    $localAgy = Join-Path $env:LOCALAPPDATA "agy\bin\agy.exe"
+    $hasLocalAgy = Test-Path $localAgy
+    if ($hasLocalAgy) {
+        Copy-Item -Path $localAgy -Destination $agyExe -Force -ErrorAction SilentlyContinue
+        Copy-Item -Path $localAgy -Destination $antigravityExe -Force -ErrorAction SilentlyContinue
+        return $installDir
+    }
+
     $arch = if ($env:PROCESSOR_ARCHITECTURE -eq "ARM64") { "arm64" } else { "x64" }
     $assetName = "agy_cli_windows_${arch}.zip"
     $downloadUrl = $null
@@ -219,14 +241,6 @@ function Install-AntigravityCLI {
     if (Test-Path $tempDir) { Remove-Item -Force -Recurse $tempDir }
     Expand-Archive -Path $tempZip -DestinationPath $tempDir -Force
 
-    $installDir = Join-Path $env:USERPROFILE ".antigravity\bin"
-    if (-not (Test-Path $installDir)) {
-        New-Item -ItemType Directory -Path $installDir -Force | Out-Null
-    }
-
-    # Stop running CLI processes before overwriting binaries
-    Get-Process -Name "antigravity", "agy" -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
-
     $srcExe = if (Test-Path (Join-Path $tempDir "antigravity.exe")) {
         Join-Path $tempDir "antigravity.exe"
     } elseif (Test-Path (Join-Path $tempDir "agy.exe")) {
@@ -239,8 +253,8 @@ function Install-AntigravityCLI {
         throw "Could not find Antigravity executable in extracted files."
     }
 
-    Copy-Item -Path $srcExe -Destination (Join-Path $installDir "antigravity.exe") -Force
-    Copy-Item -Path $srcExe -Destination (Join-Path $installDir "agy.exe") -Force
+    Copy-Item -Path $srcExe -Destination $antigravityExe -Force -ErrorAction SilentlyContinue
+    Copy-Item -Path $srcExe -Destination $agyExe -Force -ErrorAction SilentlyContinue
 
     Remove-Item -Path $tempZip -Force -ErrorAction SilentlyContinue
     Remove-Item -Path $tempDir -Recurse -Force -ErrorAction SilentlyContinue
@@ -437,6 +451,31 @@ function Uninstall-Antigravity {
     Write-Host "Antigravity uninstalled successfully." -ForegroundColor Green
 }
 
+function Record-AntigravityDbSuccess {
+    param([string]$Mode = "cli")
+
+    try {
+        $bridge = Join-Path (Split-Path -Parent $PSScriptRoot) "shared\db_bridge.py"
+
+        if (Test-Path $bridge) {
+            python $bridge record-success package "antigravity" "1.0.0" "Google Antigravity ($Mode) installed" 2>$null
+        }
+    } catch { }
+}
+
+function Install-AntigravityCLIOnly {
+    Write-Host "Installing Antigravity CLI (agy)..." -ForegroundColor Cyan
+
+    $installDir = Install-AntigravityCLI
+
+    Update-EnvironmentPath -InstallDir $installDir
+    Create-Shortcuts -IdePath $null -InstallDir $installDir
+    Verify-AntigravityInstallation -InstallDir $installDir
+    Record-AntigravityDbSuccess -Mode "cli"
+
+    Write-Host "Antigravity CLI installation complete." -ForegroundColor Green
+}
+
 # ── Main Entry Point ──────────────────────────────────────────────────────────
 function Install-Antigravity {
     Write-Host "Installing Antigravity (IDE & CLI)..." -ForegroundColor Cyan
@@ -451,6 +490,7 @@ function Install-Antigravity {
     Update-EnvironmentPath -InstallDir $installDir
     Create-Shortcuts -IdePath $idePath -InstallDir $installDir
     Verify-AntigravityInstallation -InstallDir $installDir
+    Record-AntigravityDbSuccess -Mode "full"
 
     Write-Host "Antigravity installation complete." -ForegroundColor Green
 }
@@ -484,8 +524,12 @@ function Check-Antigravity {
     exit 0
 }
 
-switch ($Command.ToLowerInvariant()) {
+$action = if ($env:ANTIGRAVITY_MODE) { $env:ANTIGRAVITY_MODE } else { $Command }
+
+switch ($action.ToLowerInvariant()) {
+    "cli"       { Install-AntigravityCLIOnly }
     "check"     { Check-Antigravity }
     "uninstall" { Uninstall-Antigravity }
     default     { Install-Antigravity }
 }
+

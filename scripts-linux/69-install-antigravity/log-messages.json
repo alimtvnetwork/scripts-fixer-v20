@@ -1,0 +1,14 @@
+{
+  "description": "Log messages for 69-install-antigravity",
+  "messages": {
+    "start":            "[69] Starting Antigravity installer",
+    "alreadyInstalled": "[69] Antigravity already installed: {detail}",
+    "downloading":      "[69] Downloading Antigravity",
+    "running":          "[69] Installing Antigravity suite",
+    "installSuccess":   "[69] Antigravity installed",
+    "installFailed":    "[69] Antigravity install failed: {err}",
+    "verifyOk":         "[69] Antigravity detected: {detail}",
+    "verifyFail":       "[69] Antigravity not found on PATH",
+    "noMethod":         "[69] curl or aria2c required for Antigravity installer"
+  }
+}

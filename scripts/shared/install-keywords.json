@@ -211,6 +211,15 @@
     "winget": [
       14
     ],
+    "store": [
+      14
+    ],
+    "windows-store": [
+      14
+    ],
+    "msstore": [
+      14
+    ],
     "tweaks": [
       15
     ],
@@ -1379,6 +1388,12 @@
     "codex": [
       78
     ],
+    "codecs": [
+      78
+    ],
+    "codec": [
+      78
+    ],
     "install-codex": [
       78
     ],
@@ -1386,6 +1401,9 @@
       78
     ],
     "plotcode": [
+      79
+    ],
+    "plot": [
       79
     ],
     "install-plotcode": [

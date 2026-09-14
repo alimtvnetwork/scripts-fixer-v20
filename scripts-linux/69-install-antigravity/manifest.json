@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0",
+  "id": "69",
+  "name": "Antigravity IDE & agy CLI",
+  "summary": "Google Antigravity AI coding assistant IDE and agy CLI",
+  "aliases": ["agy", "antigravity"],
+  "platforms": {
+    "windows": {
+      "folder": "69-install-antigravity",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "69-install-antigravity",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "69-install-antigravity",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install",
+    "check",
+    "repair",
+    "uninstall"
+  ],
+  "phase": "04",
+  "tags": ["ai", "ide", "cli", "antigravity"]
+}

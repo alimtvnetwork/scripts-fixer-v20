@@ -576,6 +576,14 @@ scripts:
   - id: '69'
     windows:
       folder: 69-install-antigravity
+    linux:
+      folder: 69-install-antigravity
+      phase: '04'
+      title: Antigravity IDE & agy CLI
+    macos:
+      folder: 69-install-antigravity
+      phase: '04'
+      title: Antigravity IDE & agy CLI
   - id: '70'
     linux:
       folder: 70-install-wordpress-ubuntu
@@ -607,6 +615,12 @@ scripts:
       folder: 77-install-utorrent
       phase: '04'
       title: uTorrent (brew)
+  - id: '78'
+    windows:
+      folder: 78-install-codex
+  - id: '79'
+    windows:
+      folder: 79-install-plotcode
   - id: '80'
     linux:
       folder: 80-change-port-ssh
