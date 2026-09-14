@@ -1,6 +1,6 @@
 # Script Registry Summary
 
-> Auto-generated report of all 70 registered scripts, 555 keywords, and 123 mode entries.
+> Auto-generated report of all 73 registered scripts, 578 keywords, and 123 mode entries.
 > Regenerate with: `node scripts/_internal/generate-registry-summary.cjs`
 
 ## Overview
@@ -20,7 +20,7 @@
 | 11 | 11-vscode-settings-sync | 35 | -- |
 | 12 | 12-install-all-dev-tools | 3 | -- |
 | 13 | audit | 4 | -- |
-| 14 | 14-install-winget | 1 | -- |
+| 14 | 14-install-winget | 4 | -- |
 | 15 | 15-windows-tweaks | 3 | -- |
 | 16 | 16-install-php | 12 | 5 |
 | 17 | 17-install-powershell | 8 | -- |
@@ -72,11 +72,14 @@
 | 63 | 63-install-vlc | 0 | -- |
 | 64 | 64-wt-context-menu | 7 | -- |
 | 65 | 65-os-clean | 0 | -- |
+| 66 | 66-install-vmware | 3 | -- |
 | 68 | 68-install-antigravity-manager | 12 | -- |
 | 69 | 69-install-antigravity | 7 | -- |
-| 71 | 71-install-git-compact | 0 | -- |
+| 71 | 71-install-git-compact | 2 | -- |
 | 76 | 76-install-qtorrent | 11 | -- |
 | 77 | 77-install-utorrent | 4 | -- |
+| 78 | 78-install-codex | 8 | -- |
+| 79 | 79-install-plotcode | 7 | -- |
 
 ## Detailed Script Reference
 
@@ -233,9 +236,9 @@ audit, health, health-check, healthcheck
 
 - **Folder**: `14-install-winget`
 
-**Keywords** (1):
+**Keywords** (4):
 ```
-winget
+winget, store, windows-store, msstore
 ```
 
 ---
@@ -1070,6 +1073,17 @@ wt-menu, wt-context-menu, windows-terminal-menu, windows-terminal-context-menu, 
 
 ---
 
+### Script 66: 66-install-vmware
+
+- **Folder**: `66-install-vmware`
+
+**Keywords** (3):
+```
+vmware, vmware-tools, vmwaretools
+```
+
+---
+
 ### Script 68: 68-install-antigravity-manager
 
 - **Folder**: `68-install-antigravity-manager`
@@ -1097,9 +1111,9 @@ antigravity, agy, install-antigravity, all-ai, ai-suite, ai, antigravity-suite
 - **Folder**: `71-install-git-compact`
 - **Description**: Compacts and prunes local git repositories (gc, reflog expire, repack)
 
-**Keywords** (0):
+**Keywords** (2):
 ```
-(none)
+git-compact, gitcompact
 ```
 
 ---
@@ -1126,6 +1140,28 @@ utorrent, laravel, artisan, laravel-stack
 
 ---
 
+### Script 78: 78-install-codex
+
+- **Folder**: `78-install-codex`
+
+**Keywords** (8):
+```
+codex, codecs, codec, install-codex, codex-ui, all-ai, ai-suite, ai
+```
+
+---
+
+### Script 79: 79-install-plotcode
+
+- **Folder**: `79-install-plotcode`
+
+**Keywords** (7):
+```
+plotcode, plot, install-plotcode, plotcode-ui, all-ai, ai-suite, ai
+```
+
+---
+
 ## Combo Keywords
 
 Keywords that trigger multiple scripts in sequence.
@@ -1145,9 +1181,9 @@ Keywords that trigger multiple scripts in sequence.
 | `settings` | 01-install-vscode, 11-vscode-settings-sync, 32-install-dbeaver, 33-install-notepadpp, 36-install-obs, 37-install-windows-terminal, 48-install-conemu | 1, 11, 32, 33, 36, 37, 48 |
 | `settingsall` | 01-install-vscode, 11-vscode-settings-sync, 32-install-dbeaver, 33-install-notepadpp, 36-install-obs, 37-install-windows-terminal, 48-install-conemu | 1, 11, 32, 33, 36, 37, 48 |
 | `backend` | 05-install-python, 06-install-golang, 16-install-php, 20-install-postgresql, 39-install-dotnet, 40-install-java | 5, 6, 16, 20, 39, 40 |
-| `ai` | 68-install-antigravity-manager, 69-install-antigravity, (missing-78), (missing-79), (missing-80) | 68, 69, 78, 79, 80 |
-| `ai-suite` | 68-install-antigravity-manager, 69-install-antigravity, (missing-78), (missing-79), (missing-80) | 68, 69, 78, 79, 80 |
-| `all-ai` | 68-install-antigravity-manager, 69-install-antigravity, (missing-78), (missing-79), (missing-80) | 68, 69, 78, 79, 80 |
+| `ai` | 68-install-antigravity-manager, 69-install-antigravity, 78-install-codex, 79-install-plotcode, (missing-80) | 68, 69, 78, 79, 80 |
+| `ai-suite` | 68-install-antigravity-manager, 69-install-antigravity, 78-install-codex, 79-install-plotcode, (missing-80) | 68, 69, 78, 79, 80 |
+| `all-ai` | 68-install-antigravity-manager, 69-install-antigravity, 78-install-codex, 79-install-plotcode, (missing-80) | 68, 69, 78, 79, 80 |
 | `web-dev` | 01-install-vscode, 03-install-nodejs, 04-install-pnpm, 07-install-git, 11-vscode-settings-sync | 1, 3, 4, 7, 11 |
 | `webdev` | 01-install-vscode, 03-install-nodejs, 04-install-pnpm, 07-install-git, 11-vscode-settings-sync | 1, 3, 4, 7, 11 |
 | `ai-full` | 05-install-python, 41-install-python-libs, 42-install-ollama, 43-install-llama-cpp | 5, 41, 42, 43 |
@@ -1271,8 +1307,8 @@ Keywords routed to top-level dispatchers (not script IDs).
 
 | Metric | Count |
 |--------|-------|
-| Registered scripts | 70 |
-| Total keywords (numeric-target) | 555 |
+| Registered scripts | 73 |
+| Total keywords (numeric-target) | 578 |
 | Subcommand keywords | 57 |
 | Mode entries | 123 |
 | Scripts with modes | 13 |

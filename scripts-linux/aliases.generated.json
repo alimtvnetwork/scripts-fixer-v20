@@ -1,4 +1,12 @@
 {
+  "agy": {
+    "id": "69",
+    "folder": "69-install-antigravity"
+  },
+  "antigravity": {
+    "id": "69",
+    "folder": "69-install-antigravity"
+  },
   "git-compact": {
     "id": "71",
     "folder": "71-install-git-compact"

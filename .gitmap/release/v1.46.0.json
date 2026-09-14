@@ -6,7 +6,7 @@
   "tag": "v1.46.0",
   "assets": [],
   "changelog": [
-    "Windows Server OS detection, Store prerequisites for PlotCode and Codex, Antigravity CLI in dev profile, and repo-relative SQLite database"
+    "Regenerate registry summary, doc parity matrix, and aliases to fix CI release drift"
   ],
   "isDraft": false,
   "isPreRelease": false,

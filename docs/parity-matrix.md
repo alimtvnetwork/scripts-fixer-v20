@@ -70,13 +70,15 @@ Auto-generated from `registry.yaml`. Legend: ✅ supported, ⬜ not implemented.
 | 63 | 63-install-vlc | ✅ | ✅ | ✅ |
 | 64 | 64-wt-context-menu | ✅ | ✅ | ✅ |
 | 65 | 65-os-clean | ✅ | ✅ | ✅ |
-| 66 | macOS VS Code 'context-menu' cleanup (Services workflows, LaunchAgents/Daemons, Login Items, code/code-insiders shims, vscode:// URL handlers) | ⬜ | ✅ | ✅ |
+| 66 | 66-install-vmware | ✅ | ✅ | ✅ |
 | 67 | Linux/Ubuntu VS Code uninstaller (detects apt|snap|deb|tarball|user-config and removes only matching artifacts) | ⬜ | ✅ | ✅ |
 | 68 | 68-install-antigravity-manager | ✅ | ✅ | ✅ |
-| 69 | 69-install-antigravity | ✅ | ⬜ | ⬜ |
+| 69 | 69-install-antigravity | ✅ | ✅ | ✅ |
 | 70 | Ubuntu WordPress installer (Nginx + PHP-FPM + MySQL/MariaDB + latest WordPress; modular components with --interactive prompts) | ⬜ | ✅ | ✅ |
 | 76 | 76-install-qtorrent | ✅ | ✅ | ✅ |
 | 77 | 77-install-utorrent | ✅ | ✅ | ✅ |
+| 78 | 78-install-codex | ✅ | ⬜ | ⬜ |
+| 79 | 79-install-plotcode | ✅ | ⬜ | ⬜ |
 | 80 | Change OpenSSH listening port (backup+validate+prompt+ufw) | ⬜ | ✅ | ✅ |
 | 81 | Change MySQL listening port (backup+prompt+ufw) | ⬜ | ✅ | ✅ |
 | 82 | Change PostgreSQL listening port (backup+prompt+ufw) | ⬜ | ✅ | ✅ |
@@ -101,7 +103,7 @@ Auto-generated from `registry.yaml`. Legend: ✅ supported, ⬜ not implemented.
 | 108 | Install NSD (NLnet authoritative-only DNS) | ⬜ | ✅ | ✅ |
 | 109 | Interactive DNS-install menu (dispatches to 100-108) | ⬜ | ✅ | ✅ |
 
-**Coverage:** 47 on all three OSes · 23 Windows-only · 25 Linux/macOS-only · 95 total.
+**Coverage:** 49 on all three OSes · 24 Windows-only · 24 Linux/macOS-only · 97 total.
 
 ## Orchestrator playbooks (Linux/macOS fan-out over SSH)
 
