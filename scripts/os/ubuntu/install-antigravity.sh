@@ -57,10 +57,32 @@ fetch_ide_fallback_url() {
     echo "${url// /%20}"
 }
 
+check_reference_installer() {
+    local candidates=(
+        "/mnt/d/work/antigravity-installer/01-installer/agy-install.sh"
+        "D:/work/antigravity-installer/01-installer/agy-install.sh"
+        "/d/work/antigravity-installer/01-installer/agy-install.sh"
+    )
+
+    for ref in "${candidates[@]}"; do
+        if [ -f "$ref" ]; then
+            echo -e "  ${MUTED}Executing reference installer from $ref...${TEXT}"
+            bash "$ref" && return 0
+        fi
+    done
+
+    return 1
+}
+
 install_ide() {
     local arch="$1"
     local ide_dir="$HOME/.local/share/antigravity"
     local ide_legacy_dir="$HOME/.local/share/antigravity-ide"
+
+    if check_reference_installer; then
+        return 0
+    fi
+
     local ide_url
     ide_url=$(fetch_ide_url "$arch")
     local tmp_archive

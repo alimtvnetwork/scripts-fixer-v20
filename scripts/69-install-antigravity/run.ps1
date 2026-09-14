@@ -96,6 +96,18 @@ function New-AntigravityShortcut {
     }
 }
 
+function Invoke-ReferenceInstaller {
+    $refScript = "D:\work\antigravity-installer\01-installer\agy-install.ps1"
+
+    if (Test-Path $refScript) {
+        Write-Host "Found reference installer at $refScript; executing..." -ForegroundColor Cyan
+        & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $refScript
+        return $true
+    }
+
+    return $false
+}
+
 # ── Google Antigravity IDE Installer ──────────────────────────────────────────
 function Install-AntigravityIDE {
     $ideCandidates = @(
@@ -107,6 +119,14 @@ function Install-AntigravityIDE {
         if (Test-Path $cand) {
             Write-Host "Antigravity IDE is already installed at $cand." -ForegroundColor Green
             return $cand
+        }
+    }
+
+    if (Invoke-ReferenceInstaller) {
+        foreach ($cand in $ideCandidates) {
+            if (Test-Path $cand) {
+                return $cand
+            }
         }
     }
 
