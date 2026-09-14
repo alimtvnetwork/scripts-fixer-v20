@@ -441,8 +441,15 @@ case "$COMMAND" in
         elif [[ "$ARGS" == "ls" || "$ARGS" == "list" ]]; then
             show_main_help
             python3 scripts/shared/list_installs.py
-            show_footer
             exit 0
+        fi
+
+        IS_FORCE=false
+        if [[ "$ARGS" == *"--force"* || "$ARGS" == *"-f "* || "$ARGS" == *" -f"* || "$ARGS" == "-f" ]]; then
+            IS_FORCE=true
+            export FORCE=1
+            export IS_FORCE=true
+            ARGS=$(echo "$ARGS" | sed -E 's/(^|[[:space:]])(--force|-f)([[:space:]]|$)/ /g' | xargs)
         fi
 
         INSTALLED=()
@@ -517,7 +524,9 @@ case "$COMMAND" in
             elif [[ "$ITEM" == *"antigravity-manager"* || "$ITEM" == *"agm"* || "$ITEM" == *"44"* || "$ITEM" == *"68"* ]]; then
                 bash scripts/os/ubuntu/install-antigravity-manager.sh && SUCCESS=true
             elif [[ "$ITEM" == *"antigravity"* || "$ITEM" == *"agy"* || "$ITEM" == *" ag"* || "$ITEM" == "ag" || "$ITEM" == *"43"* || "$ITEM" == *"69"* ]]; then
-                bash scripts/os/ubuntu/install-antigravity.sh && SUCCESS=true
+                force_arg=""
+                [[ "$IS_FORCE" == "true" ]] && force_arg="--force"
+                bash scripts/os/ubuntu/install-antigravity.sh $force_arg && SUCCESS=true
             elif [[ "$ITEM" == *"workspace"* || "$ITEM" == *"12"* ]]; then
                 bash scripts/os/ubuntu/setup-workspace.sh && SUCCESS=true
             elif [[ "$ITEM" == *"databases"* || "$ITEM" == *"db"* || "$ITEM" == *"30"* ]]; then
@@ -561,7 +570,10 @@ case "$COMMAND" in
             elif [[ "$ITEM" == *"codex"* || "$ITEM" == *"78"* ]]; then bash scripts/os/ubuntu/install-codex.sh && SUCCESS=true
             elif [[ "$ITEM" == *"plotcode"* || "$ITEM" == *"79"* ]]; then bash scripts/os/ubuntu/install-plotcode.sh && SUCCESS=true
             elif [[ "$ITEM" == *"claude-code"* || "$ITEM" == *"claudecode"* || "$ITEM" == *"claude"* || "$ITEM" == *"80"* ]]; then bash scripts/os/ubuntu/install-claude-code.sh && SUCCESS=true
-            elif [[ "$ITEM" == *"antigravity"* || "$ITEM" == *"agy"* || "$ITEM" == *"69"* ]]; then bash scripts/os/ubuntu/install-antigravity.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"antigravity"* || "$ITEM" == *"agy"* || "$ITEM" == *"69"* ]]; then
+                force_arg=""
+                [[ "$IS_FORCE" == "true" ]] && force_arg="--force"
+                bash scripts/os/ubuntu/install-antigravity.sh $force_arg && SUCCESS=true
             elif [[ "$ITEM" == *"docker"* || "$ITEM" == *"47"* ]]; then bash scripts/os/ubuntu/install-docker.sh && SUCCESS=true
             elif [[ "$ITEM" == *"kubernetes"* || "$ITEM" == *"46"* ]]; then bash scripts/os/ubuntu/install-kubernetes.sh && SUCCESS=true
             elif [[ "$ITEM" == *"python2"* ]]; then bash scripts/os/ubuntu/install-python2.sh && SUCCESS=true
@@ -605,7 +617,7 @@ case "$COMMAND" in
                 snap install utorrent && SUCCESS=true
             elif [[ "$ITEM" == "tar "* || "$ITEM" == "zip "* || "$ITEM" == "gz "* || "$ITEM" == "archive "* ]]; then
                 ARCHIVE_TARGET=$(echo "$ITEM" | sed -E 's/^(tar|zip|gz|archive)[[:space:]]+//')
-                bash scripts/os/ubuntu/install-archive.sh "$ARCHIVE_TARGET" && SUCCESS=true
+                bash scripts/os/ubuntu/install-archive.sh $ARCHIVE_TARGET && SUCCESS=true
             elif [[ "$ITEM" == "tar" || "$ITEM" == "zip" || "$ITEM" == "gz" || "$ITEM" == "archive" || "$ITEM" == "81" ]]; then
                 echo -e "  ${ACCENT}Usage: ./run.sh install tar <path-or-url> [app-name]${TEXT}"
                 echo -e "  ${MUTED}Example: ./run.sh install tar https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz${TEXT}"
@@ -616,7 +628,7 @@ case "$COMMAND" in
 
             if [ "$SUCCESS" = true ]; then
                 if [[ "$ITEM" == *"antigravity"* || "$ITEM" == *"agy"* || "$ITEM" == "ag" || "$ITEM" == "43" || "$ITEM" == "69" ]]; then
-                    if ! command -v antigravity &>/dev/null && [ ! -x "$HOME/.local/bin/antigravity" ] && [ ! -x "/usr/local/bin/antigravity" ] && [ ! -x "$HOME/.local/share/antigravity/antigravity" ] && [ ! -x "$HOME/.local/share/antigravity/Antigravity" ] && [ ! -x "$HOME/.antigravity/bin/antigravity" ]; then
+                    if ! command -v antigravity &>/dev/null && [ ! -x "$HOME/.local/bin/antigravity" ] && [ ! -x "/usr/local/bin/antigravity" ] && [ ! -x "$HOME/.local/share/antigravity/antigravity" ] && [ ! -x "$HOME/.local/share/antigravity/antigravity.run" ] && [ ! -x "$HOME/.local/share/antigravity/Antigravity" ] && [ ! -x "$HOME/.antigravity/bin/antigravity" ]; then
                         echo -e "  ${ERROR}[FAIL ] Antigravity was not found in PATH or standard binary locations.${TEXT}"
                         SUCCESS=false
                     fi

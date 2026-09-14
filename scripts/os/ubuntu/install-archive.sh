@@ -398,19 +398,24 @@ if [ -f "$TARGET_DIR/chrome-sandbox" ]; then
     fi
 fi
 
-# Library path wrapper if internal lib directory exists
-BIN_EXEC_TARGET="$MAIN_BIN"
-if [ -d "$TARGET_DIR/lib" ] && [ -f "$MAIN_BIN" ]; then
-    WRAPPER_PATH="$TARGET_DIR/${APP_NAME}.run"
-    cat <<EOF > "$WRAPPER_PATH"
+# Step 7.5: Runtime wrapper creation (handles LD_LIBRARY_PATH and headless / sandbox fallback)
+WRAPPER_PATH="$TARGET_DIR/${APP_NAME}.run"
+cat <<EOF > "$WRAPPER_PATH"
 #!/bin/bash
 DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
-export LD_LIBRARY_PATH="\$DIR/lib:\$LD_LIBRARY_PATH"
-exec "\$DIR/$(basename "$MAIN_BIN")" "\$@"
-EOF
-    chmod +x "$WRAPPER_PATH"
-    BIN_EXEC_TARGET="$WRAPPER_PATH"
+export LD_LIBRARY_PATH="\$DIR:\$DIR/lib:\${LD_LIBRARY_PATH:-}"
+EXEC="\$DIR/$(basename "$MAIN_BIN")"
+
+if [ -z "\${DISPLAY:-}" ] && [ -z "\${WAYLAND_DISPLAY:-}" ]; then
+    exec "\$EXEC" --no-sandbox "\$@"
+elif [ -f "\$DIR/chrome-sandbox" ] && [ ! -u "\$DIR/chrome-sandbox" ]; then
+    exec "\$EXEC" --no-sandbox "\$@"
+else
+    exec "\$EXEC" "\$@"
 fi
+EOF
+chmod +x "$WRAPPER_PATH"
+BIN_EXEC_TARGET="$WRAPPER_PATH"
 
 # Step 8: Symlink to user and system PATH
 echo -e "  ${MUTED}[step 8/10] Linking binaries to system and user PATH...${TEXT}"
@@ -418,6 +423,11 @@ mkdir -p "$HOME/.local/bin"
 USER_LINK="$HOME/.local/bin/$APP_NAME"
 ln -sf "$BIN_EXEC_TARGET" "$USER_LINK"
 echo -e "  ${MUTED}  -> User symlink created: ${SECONDARY}$USER_LINK${TEXT}"
+
+if [ "$APP_NAME" = "antigravity" ]; then
+    ln -sf "$BIN_EXEC_TARGET" "$HOME/.local/bin/agy"
+    echo -e "  ${MUTED}  -> Alias symlink created: ${SECONDARY}$HOME/.local/bin/agy${TEXT}"
+fi
 
 # Also link real binary basename if different from APP_NAME
 REAL_BASENAME="$(basename "$MAIN_BIN")"
@@ -430,10 +440,25 @@ SYS_LINK="/usr/local/bin/$APP_NAME"
 if [ -w "/usr/local/bin" ]; then
     ln -sf "$BIN_EXEC_TARGET" "$SYS_LINK" 2>/dev/null || true
     echo -e "  ${MUTED}  -> System symlink created: ${SECONDARY}$SYS_LINK${TEXT}"
+    if [ "$APP_NAME" = "antigravity" ]; then
+        ln -sf "$BIN_EXEC_TARGET" "/usr/local/bin/agy" 2>/dev/null || true
+    fi
 elif command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
     sudo ln -sf "$BIN_EXEC_TARGET" "$SYS_LINK" 2>/dev/null || true
     echo -e "  ${MUTED}  -> System symlink created (sudo): ${SECONDARY}$SYS_LINK${TEXT}"
+    if [ "$APP_NAME" = "antigravity" ]; then
+        sudo ln -sf "$BIN_EXEC_TARGET" "/usr/local/bin/agy" 2>/dev/null || true
+        sudo ln -sf "$BIN_EXEC_TARGET" "/usr/bin/antigravity" 2>/dev/null || true
+        sudo ln -sf "$BIN_EXEC_TARGET" "/usr/bin/agy" 2>/dev/null || true
+    fi
 fi
+
+# Ensure ~/.local/bin is on PATH in shell profiles
+for rc in "$HOME/.bashrc" "$HOME/.zshrc" "$HOME/.profile"; do
+    if [ -f "$rc" ] && ! grep -q '\.local/bin' "$rc" 2>/dev/null; then
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$rc"
+    fi
+done
 
 # Step 9: Desktop launcher & icons
 echo -e "  ${MUTED}[step 9/10] Evaluating Desktop integration & UI launchers...${TEXT}"
