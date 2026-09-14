@@ -346,6 +346,10 @@ $builtinAliases = @{
     "gitcompact"  = @{ kind = "exact";    target = "git-compact" }
     "cppdx"       = @{ kind = "exact";    target = "cpp-dx" }
     "smalldev"    = @{ kind = "exact";    target = "small-dev" }
+    "terminal-profile" = @{ kind = "exact";    target = "terminal" }
+    "profile-terminal" = @{ kind = "exact";    target = "terminal" }
+    "term"             = @{ kind = "exact";    target = "terminal" }
+    "cli"              = @{ kind = "exact";    target = "terminal" }
     "dev"         = @{ kind = "fallback"; target = "base";    reason = "'dev' profile not present locally; closest match is 'base'." }
     "dev-advance" = @{ kind = "fallback"; target = "advance"; reason = "'dev-advance' profile not present locally; closest match is 'advance'." }
 }
@@ -385,6 +389,15 @@ if (Test-Path -LiteralPath $aliasPath) {
 
 $resolvedName     = $normalizedAction
 $aliasFallbackHit = $null  # populated when a fallback alias is used
+
+if (-not $aliasMap.ContainsKey($resolvedName) -and $null -eq $config.profiles.$resolvedName) {
+    $strippedAction = $resolvedName
+    if ($strippedAction -like 'profile-*') { $strippedAction = $strippedAction.Substring(8) }
+    if ($strippedAction -like '*-profile') { $strippedAction = $strippedAction.Substring(0, $strippedAction.Length - 8) }
+    if ($aliasMap.ContainsKey($strippedAction) -or $null -ne $config.profiles.$strippedAction) {
+        $resolvedName = $strippedAction
+    }
+}
 
 if ($aliasMap.ContainsKey($resolvedName)) {
     $entry  = $aliasMap[$resolvedName]

@@ -215,8 +215,8 @@ for alias, target in ALIASES.items():
         PROFILES[alias] = {"alias_of": target}
 
 def resolve_profile(name):
-    clean_name = name.strip().lower()
-    clean_name = clean_name.replace("--tree", "").replace("-t", "").strip()
+    tokens = [t for t in name.strip().lower().split() if t not in ("--tree", "-t")]
+    clean_name = " ".join(tokens).strip()
     changed = True
     while changed:
         changed = False

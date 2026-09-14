@@ -13,6 +13,10 @@
     "all-ai":      { "kind": "exact",    "target": "ai-tools" },
     "ai":          { "kind": "exact",    "target": "ai-tools" },
     "ai-suite":    { "kind": "exact",    "target": "ai-tools" },
+    "terminal-profile": { "kind": "exact", "target": "terminal" },
+    "profile-terminal": { "kind": "exact", "target": "terminal" },
+    "term":             { "kind": "exact", "target": "terminal" },
+    "cli":              { "kind": "exact", "target": "terminal" },
 
     "dev":         { "kind": "fallback", "target": "base",    "reason": "'dev' profile not present locally; closest match is 'base' (full Windows dev setup)." },
     "dev-advance": { "kind": "fallback", "target": "advance", "reason": "'dev-advance' profile not present locally; closest match is 'advance' (extended dev tooling)." },
