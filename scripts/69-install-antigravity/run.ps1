@@ -442,6 +442,10 @@ function Install-Antigravity {
     Write-Host "Installing Antigravity (IDE & CLI)..." -ForegroundColor Cyan
 
     $idePath = Install-AntigravityIDE
+    if ($idePath -and (Test-Path $idePath)) {
+        Update-EnvironmentPath -InstallDir (Split-Path -Parent $idePath)
+    }
+
     $installDir = Install-AntigravityCLI
 
     Update-EnvironmentPath -InstallDir $installDir
@@ -454,7 +458,10 @@ function Install-Antigravity {
 function Check-Antigravity {
     Write-Host "Checking Antigravity installation..." -ForegroundColor Cyan
     $installDir = Join-Path $env:USERPROFILE ".antigravity\bin"
-    $hasCli = (Test-Path (Join-Path $installDir "antigravity.exe")) -or (Test-Path (Join-Path $installDir "agy.exe"))
+    $hasCli = (Test-Path (Join-Path $installDir "antigravity.exe")) -or `
+              (Test-Path (Join-Path $installDir "agy.exe")) -or `
+              ($null -ne (Get-Command "agy.exe" -ErrorAction SilentlyContinue)) -or `
+              ($null -ne (Get-Command "antigravity" -ErrorAction SilentlyContinue))
     $hasIde = $false
 
     $ideCandidates = @(
