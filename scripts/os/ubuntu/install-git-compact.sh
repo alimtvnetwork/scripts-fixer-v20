@@ -50,7 +50,13 @@ install_via_upstream() {
     repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 
     if [ -f "$repo_root/scripts-linux/71-install-git-compact/run.sh" ]; then
-        bash "$repo_root/scripts-linux/71-install-git-compact/run.sh" install
+        local force_flag=""
+        if [ "$IS_FORCE" = "true" ]; then
+            force_flag="--force"
+        fi
+
+        bash "$repo_root/scripts-linux/71-install-git-compact/run.sh" install $force_flag
+
         return $?
     fi
 

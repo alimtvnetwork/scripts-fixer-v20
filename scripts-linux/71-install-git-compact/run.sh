@@ -47,12 +47,14 @@ EOF
 # Precedence:  --tag flag  >  $GIT_COMPACT_TAG env  >  config install.releaseTag
 #              >  hard default "main".
 # ---------------------------------------------------------------------------
+IS_FORCE=false
 TAG_FLAG=""
 ARGS=()
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --tag)          TAG_FLAG="${2:-}"; shift 2 ;;
     --tag=*)        TAG_FLAG="${1#--tag=}"; shift ;;
+    --force|-f)     IS_FORCE=true; shift ;;
     --help|-h)      show_help; exit 0 ;;
     *)              ARGS+=("$1"); shift ;;
   esac
@@ -123,11 +125,17 @@ verb_install() {
     --target "$DEST"
 
   log_info "[71] Starting git-compact installer"
-  if verify_installed; then
+
+  if [ "$IS_FORCE" != "true" ] && verify_installed; then
     log_ok "[71] Already installed"
+
     if assert_version; then
-      mkdir -p "$ROOT/.installed"; touch "$INSTALLED_MARK"; return 0
+      mkdir -p "$ROOT/.installed"
+      touch "$INSTALLED_MARK"
+
+      return 0
     fi
+
     log_warn "[71] Binary present but version check failed; continuing to reinstall"
   fi
 
