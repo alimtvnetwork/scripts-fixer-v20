@@ -338,7 +338,7 @@ case "$COMMAND" in
         exit $?
         ;;
     "pipeline")
-        if [[ "$ARGS" == *"-t"* || "$ARGS" == *"--time"* ]]; then
+        if [[ "$ARGS" =~ (^|[[:space:]])-t([[:space:]]|$) || "$ARGS" == *"--time"* ]]; then
             echo -e "\n  \033[1;36m[ PIPELINE ]\033[0m Checking pipeline execution ETA..."
             WAIT_SECS=5
             ETA_FILE=".lovable/temp/runner-eta.json"
@@ -364,7 +364,7 @@ case "$COMMAND" in
             show_footer
             exit 0
         fi
-        if [ "$(uname -s)" != "Linux" ]; then
+        if [ "$(uname -s)" != "Linux" ] && [ "${ALLOW_NON_LINUX:-0}" != "1" ]; then
             echo -e "  ${ERROR}[FAIL ] Archive installation is supported on Linux / Ubuntu only.${TEXT}"
             echo -e "  ${ACCENT}For Windows, use run.ps1 or run in WSL2.${TEXT}"
             show_footer
@@ -376,24 +376,32 @@ case "$COMMAND" in
         exit $EXIT_CODE
         ;;
     "install")
+        IS_FORCE=false
+        if [[ "$ARGS" == *"--force"* || "$ARGS" == *"-f "* || "$ARGS" == *" -f"* || "$ARGS" == "-f" ]]; then
+            IS_FORCE=true
+            export FORCE=1
+            export IS_FORCE=true
+            ARGS=$(echo "$ARGS" | sed -E 's/(^|[[:space:]])(--force|-f)([[:space:]]|$)/ /g' | xargs)
+        fi
+
         FIRST_WORD=$(echo "$ARGS" | awk '{print $1}')
         REST_WORDS=$(echo "$ARGS" | awk '{$1=""; print $0}' | sed -e 's/^[[:space:]]*//')
 
         # Tree inspection handling: ./run.sh install profile <name> --tree or ./run.sh install <name> --tree
-        if [[ "$ARGS" == *"--tree"* || "$ARGS" == *"-t"* || "$ARGS" == *"tree "* || "$ARGS" == *" tree"* ]]; then
+        if [[ "$ARGS" =~ (^|[[:space:]])(--tree|-t)([[:space:]]|$) || "$ARGS" == *"tree "* || "$ARGS" == *" tree"* ]]; then
             $PYTHON_BIN scripts/shared/profile_tree.py "$ARGS"
             show_footer
             exit 0
         fi
 
-        # Handle tar-specific help: ./run.sh install tar -h or ./run.sh install tar help
-        if [[ "$FIRST_WORD" == "tar" || "$FIRST_WORD" == "zip" || "$FIRST_WORD" == "gz" || "$FIRST_WORD" == "archive" ]]; then
+        # Handle tar, zip, gz, archive keywords: ./run.sh install tar <path|url> [app-name]
+        if [[ "$FIRST_WORD" == "tar" || "$FIRST_WORD" == "zip" || "$FIRST_WORD" == "gz" || "$FIRST_WORD" == "archive" || "$FIRST_WORD" == "tar.gz" || "$FIRST_WORD" == "tgz" || "$FIRST_WORD" == "tar.xz" || "$FIRST_WORD" == "tar.bz2" || "$FIRST_WORD" == "tar.zst" ]]; then
             if [[ -z "$REST_WORDS" || "$REST_WORDS" == "-h" || "$REST_WORDS" == "--help" || "$REST_WORDS" == "help" ]]; then
                 show_tar_install_help
                 show_footer
                 exit 0
             fi
-            if [ "$(uname -s)" != "Linux" ]; then
+            if [ "$(uname -s)" != "Linux" ] && [ "${ALLOW_NON_LINUX:-0}" != "1" ]; then
                 echo -e "  ${ERROR}[FAIL ] Archive installation is supported on Linux / Ubuntu only.${TEXT}"
                 echo -e "  ${ACCENT}For Windows, use run.ps1 or run in WSL2.${TEXT}"
                 show_footer
@@ -410,7 +418,7 @@ case "$COMMAND" in
 
         # Direct archive detection: ./run.sh install /path/to/archive.tar.gz or URL
         if [[ "$FIRST_WORD" == *.tar.gz || "$FIRST_WORD" == *.tgz || "$FIRST_WORD" == *.tar.xz || "$FIRST_WORD" == *.tar.bz2 || "$FIRST_WORD" == *.tar.zst || "$FIRST_WORD" == *.tar || "$FIRST_WORD" == *.zip || "$FIRST_WORD" == *.gz ]]; then
-            if [ "$(uname -s)" != "Linux" ]; then
+            if [ "$(uname -s)" != "Linux" ] && [ "${ALLOW_NON_LINUX:-0}" != "1" ]; then
                 echo -e "  ${ERROR}[FAIL ] Archive installation is supported on Linux / Ubuntu only.${TEXT}"
                 echo -e "  ${ACCENT}For Windows, use run.ps1 or run in WSL2.${TEXT}"
                 show_footer
@@ -442,14 +450,6 @@ case "$COMMAND" in
             show_main_help
             python3 scripts/shared/list_installs.py
             exit 0
-        fi
-
-        IS_FORCE=false
-        if [[ "$ARGS" == *"--force"* || "$ARGS" == *"-f "* || "$ARGS" == *" -f"* || "$ARGS" == "-f" ]]; then
-            IS_FORCE=true
-            export FORCE=1
-            export IS_FORCE=true
-            ARGS=$(echo "$ARGS" | sed -E 's/(^|[[:space:]])(--force|-f)([[:space:]]|$)/ /g' | xargs)
         fi
 
         INSTALLED=()
@@ -615,10 +615,10 @@ case "$COMMAND" in
                 apt install -y qbittorrent && SUCCESS=true
             elif [[ "$ITEM" == *"utorrent"* || "$ITEM" == *"77"* ]]; then
                 snap install utorrent && SUCCESS=true
-            elif [[ "$ITEM" == "tar "* || "$ITEM" == "zip "* || "$ITEM" == "gz "* || "$ITEM" == "archive "* ]]; then
-                ARCHIVE_TARGET=$(echo "$ITEM" | sed -E 's/^(tar|zip|gz|archive)[[:space:]]+//')
+            elif [[ "$ITEM" == "tar "* || "$ITEM" == "zip "* || "$ITEM" == "gz "* || "$ITEM" == "archive "* || "$ITEM" == "tar.gz "* || "$ITEM" == "tgz "* ]]; then
+                ARCHIVE_TARGET=$(echo "$ITEM" | sed -E 's/^(tar|zip|gz|archive|tar\.gz|tgz)[[:space:]]+//')
                 bash scripts/os/ubuntu/install-archive.sh $ARCHIVE_TARGET && SUCCESS=true
-            elif [[ "$ITEM" == "tar" || "$ITEM" == "zip" || "$ITEM" == "gz" || "$ITEM" == "archive" || "$ITEM" == "81" ]]; then
+            elif [[ "$ITEM" == "tar" || "$ITEM" == "zip" || "$ITEM" == "gz" || "$ITEM" == "archive" || "$ITEM" == "tar.gz" || "$ITEM" == "tgz" || "$ITEM" == "81" ]]; then
                 echo -e "  ${ACCENT}Usage: ./run.sh install tar <path-or-url> [app-name]${TEXT}"
                 echo -e "  ${MUTED}Example: ./run.sh install tar https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz${TEXT}"
             else

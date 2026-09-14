@@ -7,6 +7,9 @@
 
 set -eo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+
 # ANSI color codes with fallback
 PRIMARY='\033[1;32m'   # Bright LightGreen
 SECONDARY='\033[1;36m' # Bright Cyan
@@ -75,10 +78,10 @@ if [ -z "$RAW_INPUT" ] || [[ "$RAW_INPUT" == "-h" ]] || [[ "$RAW_INPUT" == "--he
 fi
 
 # Step 0: Strict Linux check
-if [ "$(uname -s)" != "Linux" ]; then
+if [ "$(uname -s)" != "Linux" ] && [ "${ALLOW_NON_LINUX:-0}" != "1" ]; then
     echo -e "  ${ERROR}[FAIL ] This installer is designed for Linux / Ubuntu systems only.${TEXT}"
     echo -e "  ${MUTED}Detected operating system: $(uname -s)${TEXT}"
-    echo -e "  ${ACCENT}For Windows, please use run.ps1 or run inside WSL2.${TEXT}"
+    echo -e "  ${ACCENT}For Windows, use run.ps1 or run inside WSL2.${TEXT}"
     exit 1
 fi
 
@@ -214,7 +217,7 @@ detect_format() {
 
     if [[ "$mime" =~ gzip ]] || [[ "$fname" =~ \.(tar\.gz|tgz)$ ]]; then
         # Check if tarball or single gz
-        if tar -ztf "$file" &>/dev/null; then
+        if [ -n "$(tar --force-local -ztf "$file" 2>/dev/null | head -n 1)" ]; then
             echo "tar.gz"
         elif gzip -t "$file" &>/dev/null; then
             echo "gz-single"
@@ -299,25 +302,27 @@ STAGE_DIR=$(mktemp -d /tmp/archive-stage-XXXXXX)
 
 case "$FORMAT" in
     "tar.gz")
-        tar -xzf "$ARCHIVE_PATH" -C "$STAGE_DIR"
+        tar --force-local -xzf "$ARCHIVE_PATH" -C "$STAGE_DIR"
         ;;
     "tar.xz")
-        tar -xJf "$ARCHIVE_PATH" -C "$STAGE_DIR" || tar -xf "$ARCHIVE_PATH" -C "$STAGE_DIR"
+        tar --force-local -xJf "$ARCHIVE_PATH" -C "$STAGE_DIR" || tar --force-local -xf "$ARCHIVE_PATH" -C "$STAGE_DIR"
         ;;
     "tar.bz2")
-        tar -xjf "$ARCHIVE_PATH" -C "$STAGE_DIR"
+        tar --force-local -xjf "$ARCHIVE_PATH" -C "$STAGE_DIR"
         ;;
     "tar")
-        tar -xf "$ARCHIVE_PATH" -C "$STAGE_DIR"
+        tar --force-local -xf "$ARCHIVE_PATH" -C "$STAGE_DIR"
         ;;
     "tar.zst")
-        tar --zstd -xf "$ARCHIVE_PATH" -C "$STAGE_DIR" || tar -xf "$ARCHIVE_PATH" -C "$STAGE_DIR"
+        tar --force-local --zstd -xf "$ARCHIVE_PATH" -C "$STAGE_DIR" || tar --force-local -xf "$ARCHIVE_PATH" -C "$STAGE_DIR"
         ;;
     "zip")
         if command -v unzip &>/dev/null; then
             unzip -q -o "$ARCHIVE_PATH" -d "$STAGE_DIR"
-        else
+        elif command -v python3 &>/dev/null; then
             python3 -m zipfile -e "$ARCHIVE_PATH" "$STAGE_DIR"
+        else
+            python -m zipfile -e "$ARCHIVE_PATH" "$STAGE_DIR"
         fi
         ;;
     "gz-single")
@@ -446,20 +451,37 @@ fi
 
 # Step 7.5: Runtime wrapper creation (handles LD_LIBRARY_PATH and headless / sandbox fallback)
 WRAPPER_PATH="$TARGET_DIR/${APP_NAME}.run"
+REL_BIN="${MAIN_BIN#$TARGET_DIR/}"
+
+IS_ELECTRON=false
+if [ -f "$TARGET_DIR/chrome-sandbox" ] || [ -f "$TARGET_DIR/resources/app.asar" ]; then
+    IS_ELECTRON=true
+fi
+
 cat <<EOF > "$WRAPPER_PATH"
 #!/bin/bash
 DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
 export LD_LIBRARY_PATH="\$DIR:\$DIR/lib:\${LD_LIBRARY_PATH:-}"
-EXEC="\$DIR/$(basename "$MAIN_BIN")"
+EXEC="\$DIR/$REL_BIN"
 
-if [ -z "\${DISPLAY:-}" ] && [ -z "\${WAYLAND_DISPLAY:-}" ]; then
-    exec "\$EXEC" --no-sandbox "\$@"
-elif [ -f "\$DIR/chrome-sandbox" ] && [ ! -u "\$DIR/chrome-sandbox" ]; then
-    exec "\$EXEC" --no-sandbox "\$@"
+EOF
+
+if [ "$IS_ELECTRON" = true ]; then
+    cat <<'EOF' >> "$WRAPPER_PATH"
+if [ -f "$DIR/chrome-sandbox" ] && [ ! -u "$DIR/chrome-sandbox" ]; then
+    exec "$EXEC" --no-sandbox "$@"
+elif [ -z "${DISPLAY:-}" ] && [ -z "${WAYLAND_DISPLAY:-}" ]; then
+    exec "$EXEC" --no-sandbox "$@"
 else
-    exec "\$EXEC" "\$@"
+    exec "$EXEC" "$@"
 fi
 EOF
+else
+    cat <<'EOF' >> "$WRAPPER_PATH"
+exec "$EXEC" "$@"
+EOF
+fi
+
 chmod +x "$WRAPPER_PATH"
 BIN_EXEC_TARGET="$WRAPPER_PATH"
 
@@ -641,7 +663,11 @@ echo -e "  ${ACCENT}==================================================${TEXT}"
 
 # Log to install database if python is available
 if [ -f "$ROOT_DIR/scripts/shared/logger.py" ]; then
-    python3 "$ROOT_DIR/scripts/shared/logger.py" "archive:$APP_NAME" 2>/dev/null || true
+    PYTHON_CMD="python3"
+    if ! command -v python3 &>/dev/null && command -v python &>/dev/null; then
+        PYTHON_CMD="python"
+    fi
+    $PYTHON_CMD "$ROOT_DIR/scripts/shared/logger.py" "archive:$APP_NAME" 2>/dev/null || true
 fi
 
 exit 0

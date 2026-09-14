@@ -79,6 +79,8 @@ TOOL_DESCRIPTIONS = {
     "claude-code": "Claude Code Anthropic Agentic CLI Assistant",
     "81": "Universal Linux Archive Installer (.tar.gz, .tar.xz, .tar.bz2, .tar, .zip, .gz)",
     "tar": "Universal Linux Archive Installer (.tar.gz, .tar.xz, .tar.bz2, .tar, .zip, .gz)",
+    "tar.gz": "Universal Linux Archive Installer (.tar.gz, .tar.xz, .tar.bz2, .tar, .zip, .gz)",
+    "tgz": "Universal Linux Archive Installer (.tar.gz, .tar.xz, .tar.bz2, .tar, .zip, .gz)",
     "zip": "Universal Linux Archive Installer (.tar.gz, .tar.xz, .tar.bz2, .tar, .zip, .gz)",
     "gz": "Universal Linux Archive Installer (.tar.gz, .tar.xz, .tar.bz2, .tar, .zip, .gz)",
     "archive": "Universal Linux Archive Installer (.tar.gz, .tar.xz, .tar.bz2, .tar, .zip, .gz)"
