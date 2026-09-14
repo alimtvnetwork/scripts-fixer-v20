@@ -107,6 +107,10 @@ for tool in tar gzip bzip2 xz unzip file; do
     fi
 done
 
+if ! command -v aria2c &>/dev/null; then
+    MISSING_TOOLS+=("aria2")
+fi
+
 if [ ${#MISSING_TOOLS[@]} -gt 0 ]; then
     echo -e "  ${MUTED}  -> Installing missing utilities: ${MISSING_TOOLS[*]}...${TEXT}"
     if [ "$(id -u)" -eq 0 ]; then
@@ -125,7 +129,6 @@ ORIGINAL_FILENAME=""
 
 if [[ "$RAW_INPUT" =~ ^https?:// ]] || [[ "$RAW_INPUT" =~ ^ftp:// ]]; then
     TMP_WORK_DIR=$(mktemp -d /tmp/archive-install-XXXXXX)
-    # Extract filename from URL (stripping query string and fragment)
     URL_CLEAN="${RAW_INPUT%%\?*}"
     URL_CLEAN="${URL_CLEAN%%\#*}"
     URL_BASENAME="$(basename "$URL_CLEAN")"
@@ -133,16 +136,44 @@ if [[ "$RAW_INPUT" =~ ^https?:// ]] || [[ "$RAW_INPUT" =~ ^ftp:// ]]; then
         URL_BASENAME="download.archive"
     fi
     ORIGINAL_FILENAME="$URL_BASENAME"
-    ARCHIVE_PATH="$TMP_WORK_DIR/$URL_BASENAME"
 
-    echo -e "  ${MUTED}  -> Downloading from: ${SECONDARY}$RAW_INPUT${TEXT}"
-    if command -v curl &>/dev/null; then
-        curl -fSL --progress-bar "$RAW_INPUT" -o "$ARCHIVE_PATH"
-    elif command -v wget &>/dev/null; then
-        wget -q --show-progress "$RAW_INPUT" -O "$ARCHIVE_PATH"
-    else
-        echo -e "  ${ERROR}[FAIL ] Neither curl nor wget is installed.${TEXT}"
-        exit 1
+    CACHE_DIR="${TMPDIR:-/tmp}/scripts-fixer-downloads"
+    mkdir -p "$CACHE_DIR"
+    CACHED_ARCHIVE="$CACHE_DIR/$URL_BASENAME"
+    has_cached=false
+
+    if [ "${FORCE:-0}" != "1" ] && [ "${IS_FORCE:-false}" != "true" ]; then
+        if [ -f "$CACHED_ARCHIVE" ] && [ -s "$CACHED_ARCHIVE" ]; then
+            CACHED_SIZE=$(stat -c%s "$CACHED_ARCHIVE" 2>/dev/null || echo 0)
+            if [ "$CACHED_SIZE" -gt 1000 ]; then
+                echo -e "  ${PRIMARY}[  OK  ] Reusing valid download from temp folder: ${SECONDARY}$CACHED_ARCHIVE ($(( CACHED_SIZE / 1024 / 1024 )) MB)${TEXT}"
+                ARCHIVE_PATH="$CACHED_ARCHIVE"
+                has_cached=true
+            fi
+        fi
+    fi
+
+    if [ "$has_cached" = "false" ]; then
+        ARCHIVE_PATH="$CACHED_ARCHIVE"
+        rm -f "$CACHED_ARCHIVE" "${CACHED_ARCHIVE}.aria2" 2>/dev/null || true
+
+        if command -v aria2c &>/dev/null; then
+            echo -e "  ${MUTED}  -> Downloading via aria2c (16 parallel connections)...${TEXT}"
+            aria2c -x 16 -s 16 -j 4 -k 1M --file-allocation=none --continue=true \
+                   --summary-interval=2 -d "$CACHE_DIR" -o "$URL_BASENAME" "$RAW_INPUT" || {
+                echo -e "  ${MUTED}  -> aria2c download failed, falling back to curl...${TEXT}"
+                curl -fSL --progress-bar "$RAW_INPUT" -o "$CACHED_ARCHIVE"
+            }
+        elif command -v curl &>/dev/null; then
+            echo -e "  ${MUTED}  -> Downloading via curl: ${SECONDARY}$RAW_INPUT${TEXT}"
+            curl -fSL --progress-bar "$RAW_INPUT" -o "$CACHED_ARCHIVE"
+        elif command -v wget &>/dev/null; then
+            echo -e "  ${MUTED}  -> Downloading via wget: ${SECONDARY}$RAW_INPUT${TEXT}"
+            wget -q --show-progress "$RAW_INPUT" -O "$CACHED_ARCHIVE"
+        else
+            echo -e "  ${ERROR}[FAIL ] Neither aria2c, curl, nor wget is installed.${TEXT}"
+            exit 1
+        fi
     fi
 
     if [ ! -f "$ARCHIVE_PATH" ] || [ ! -s "$ARCHIVE_PATH" ]; then
@@ -323,6 +354,18 @@ fi
 mkdir -p "$TARGET_DIR"
 cp -a "$APP_SOURCE_ROOT/." "$TARGET_DIR/"
 
+# Prevent nested redundant directory naming (e.g. antigravity/antigravity or app/app)
+if [ -d "$TARGET_DIR/$APP_NAME" ]; then
+    echo -e "  ${MUTED}  -> Normalizing redundant nested $APP_NAME subfolder...${TEXT}"
+    cp -a "$TARGET_DIR/$APP_NAME/." "$TARGET_DIR/" 2>/dev/null || true
+    rm -rf "$TARGET_DIR/$APP_NAME" 2>/dev/null || true
+fi
+if [ "$APP_NAME" = "antigravity-ide" ] && [ -d "$TARGET_DIR/antigravity" ] && [ -d "$TARGET_DIR/antigravity/resources" ]; then
+    echo -e "  ${MUTED}  -> Normalizing nested antigravity folder inside $TARGET_DIR...${TEXT}"
+    cp -a "$TARGET_DIR/antigravity/." "$TARGET_DIR/" 2>/dev/null || true
+    rm -rf "$TARGET_DIR/antigravity" 2>/dev/null || true
+fi
+
 # Step 7: Binary discovery & permissions
 echo -e "  ${MUTED}[step 7/10] Discovering executables & configuring permissions...${TEXT}"
 MAIN_BIN=""
@@ -333,6 +376,9 @@ if [ -f "$TARGET_DIR/bin/$APP_NAME" ]; then
 # Candidate 2: $TARGET_DIR/$APP_NAME
 elif [ -f "$TARGET_DIR/$APP_NAME" ]; then
     MAIN_BIN="$TARGET_DIR/$APP_NAME"
+# Candidate 2.5: For antigravity-ide, check $TARGET_DIR/antigravity
+elif [ "$APP_NAME" = "antigravity-ide" ] && [ -f "$TARGET_DIR/antigravity" ]; then
+    MAIN_BIN="$TARGET_DIR/antigravity"
 # Candidate 3: In bin directory matching app name without punctuation
 elif [ -d "$TARGET_DIR/bin" ]; then
     FOUND_IN_BIN=$(find "$TARGET_DIR/bin" -maxdepth 1 -type f -iname "*$APP_NAME*" | head -n 1)
@@ -424,9 +470,11 @@ USER_LINK="$HOME/.local/bin/$APP_NAME"
 ln -sf "$BIN_EXEC_TARGET" "$USER_LINK"
 echo -e "  ${MUTED}  -> User symlink created: ${SECONDARY}$USER_LINK${TEXT}"
 
-if [ "$APP_NAME" = "antigravity" ]; then
+if [ "$APP_NAME" = "antigravity" ] || [ "$APP_NAME" = "antigravity-ide" ]; then
+    ln -sf "$BIN_EXEC_TARGET" "$HOME/.local/bin/antigravity"
     ln -sf "$BIN_EXEC_TARGET" "$HOME/.local/bin/agy"
-    echo -e "  ${MUTED}  -> Alias symlink created: ${SECONDARY}$HOME/.local/bin/agy${TEXT}"
+    ln -sf "$BIN_EXEC_TARGET" "$HOME/.local/bin/antigravity-ide"
+    echo -e "  ${MUTED}  -> Alias symlinks created: ${SECONDARY}antigravity, agy, antigravity-ide${TEXT}"
 fi
 
 # Also link real binary basename if different from APP_NAME
@@ -440,17 +488,27 @@ SYS_LINK="/usr/local/bin/$APP_NAME"
 if [ -w "/usr/local/bin" ]; then
     ln -sf "$BIN_EXEC_TARGET" "$SYS_LINK" 2>/dev/null || true
     echo -e "  ${MUTED}  -> System symlink created: ${SECONDARY}$SYS_LINK${TEXT}"
-    if [ "$APP_NAME" = "antigravity" ]; then
+    if [ "$APP_NAME" = "antigravity" ] || [ "$APP_NAME" = "antigravity-ide" ]; then
+        ln -sf "$BIN_EXEC_TARGET" "/usr/local/bin/antigravity" 2>/dev/null || true
         ln -sf "$BIN_EXEC_TARGET" "/usr/local/bin/agy" 2>/dev/null || true
+        ln -sf "$BIN_EXEC_TARGET" "/usr/local/bin/antigravity-ide" 2>/dev/null || true
     fi
 elif command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
     sudo ln -sf "$BIN_EXEC_TARGET" "$SYS_LINK" 2>/dev/null || true
     echo -e "  ${MUTED}  -> System symlink created (sudo): ${SECONDARY}$SYS_LINK${TEXT}"
-    if [ "$APP_NAME" = "antigravity" ]; then
+    if [ "$APP_NAME" = "antigravity" ] || [ "$APP_NAME" = "antigravity-ide" ]; then
+        sudo ln -sf "$BIN_EXEC_TARGET" "/usr/local/bin/antigravity" 2>/dev/null || true
         sudo ln -sf "$BIN_EXEC_TARGET" "/usr/local/bin/agy" 2>/dev/null || true
+        sudo ln -sf "$BIN_EXEC_TARGET" "/usr/local/bin/antigravity-ide" 2>/dev/null || true
         sudo ln -sf "$BIN_EXEC_TARGET" "/usr/bin/antigravity" 2>/dev/null || true
         sudo ln -sf "$BIN_EXEC_TARGET" "/usr/bin/agy" 2>/dev/null || true
+        sudo ln -sf "$BIN_EXEC_TARGET" "/usr/bin/antigravity-ide" 2>/dev/null || true
     fi
+fi
+
+# Compatibility link for legacy paths
+if [ "$APP_NAME" = "antigravity-ide" ]; then
+    ln -sfn "$TARGET_DIR" "$HOME/.local/share/antigravity" 2>/dev/null || true
 fi
 
 # Ensure ~/.local/bin is on PATH in shell profiles

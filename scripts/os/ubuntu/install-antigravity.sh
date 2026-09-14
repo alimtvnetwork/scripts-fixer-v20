@@ -30,15 +30,18 @@ detect_arch() {
 }
 
 ensure_prereqs() {
-    local pkgs=(curl tar libnss3 libgbm1 libasound2 libsecret-1-0)
+    local pkgs=(curl tar aria2 libnss3 libgbm1 libasound2 libsecret-1-0)
     local missing=()
+
     for p in "${pkgs[@]}"; do
         if ! dpkg -s "$p" &>/dev/null && ! command -v "$p" &>/dev/null; then
             missing+=("$p")
         fi
     done
+
     if [ ${#missing[@]} -gt 0 ]; then
         echo -e "  ${MUTED}[step 1/5] Installing dependencies (${missing[*]})...${TEXT}"
+
         if [ "$(id -u)" -eq 0 ]; then
             apt-get update -qq && apt-get install -y -qq "${missing[@]}" 2>/dev/null || true
         elif command -v sudo &>/dev/null; then
@@ -49,55 +52,102 @@ ensure_prereqs() {
 
 fetch_ide_url() {
     local arch="$1"
+
     if [ "$arch" = "arm64" ] || [ "$arch" = "arm" ] || [ "$arch" = "aarch64" ]; then
         echo "https://storage.googleapis.com/antigravity-public/antigravity-hub/2.13.0-6362815968182272/linux-arm/Antigravity.tar.gz"
-    else
-        echo "https://storage.googleapis.com/antigravity-public/antigravity-hub/2.13.0-6362815968182272/linux-x64/Antigravity.tar.gz"
+        return
     fi
+
+    echo "https://storage.googleapis.com/antigravity-public/antigravity-hub/2.13.0-6362815968182272/linux-x64/Antigravity.tar.gz"
 }
 
 clean_existing_installation() {
     echo -e "  ${ACCENT}[FORCE] Wiping previous Antigravity installations for clean re-install...${TEXT}"
     rm -rf "$HOME/.local/share/antigravity" "$HOME/.local/share/antigravity-ide" "$HOME/.antigravity"
-    rm -f "$HOME/.local/bin/antigravity" "$HOME/.local/bin/agy"
+    rm -f "$HOME/.local/bin/antigravity" "$HOME/.local/bin/agy" "$HOME/.local/bin/antigravity-ide"
+    rm -f "/tmp/scripts-fixer-downloads/Antigravity.tar.gz" "/tmp/Antigravity.tar.gz"
 
     if command -v sudo &>/dev/null; then
-        sudo rm -f /usr/local/bin/antigravity /usr/local/bin/agy /usr/bin/antigravity /usr/bin/agy 2>/dev/null || true
+        sudo rm -f /usr/local/bin/antigravity /usr/local/bin/agy /usr/local/bin/antigravity-ide \
+                   /usr/bin/antigravity /usr/bin/agy /usr/bin/antigravity-ide 2>/dev/null || true
     fi
 }
 
+find_cached_download() {
+    local candidates=(
+        "/tmp/scripts-fixer-downloads/Antigravity.tar.gz"
+        "/tmp/Antigravity.tar.gz"
+        "$HOME/Downloads/Antigravity.tar.gz"
+    )
+
+    for c in "${candidates[@]}"; do
+        if [ -f "$c" ] && [ -s "$c" ]; then
+            local sz
+            sz=$(stat -c%s "$c" 2>/dev/null || echo 0)
+
+            if [ "$sz" -gt 50000000 ] && gzip -t "$c" &>/dev/null; then
+                echo "$c"
+                return 0
+            fi
+        fi
+    done
+
+    return 1
+}
+
+download_with_aria2c() {
+    local url="$1"
+    local dest="$2"
+    local dest_dir
+    dest_dir=$(dirname "$dest")
+    mkdir -p "$dest_dir"
+    local dest_name
+    dest_name=$(basename "$dest")
+    rm -f "$dest" "${dest}.aria2" 2>/dev/null || true
+
+    if command -v aria2c &>/dev/null; then
+        echo -e "  ${MUTED}[step 2/5] Downloading Google Antigravity via aria2c (16 parallel connections)...${TEXT}"
+        aria2c -x 16 -s 16 -j 4 -k 1M --file-allocation=none --continue=true \
+               --summary-interval=2 -d "$dest_dir" -o "$dest_name" "$url" && return 0
+        echo -e "  ${MUTED}  -> aria2c failed, falling back to curl...${TEXT}"
+    fi
+
+    echo -e "  ${MUTED}[step 2/5] Downloading Google Antigravity via curl...${TEXT}"
+    curl -fL --retry 2 --connect-timeout 30 "$url" -o "$dest"
+}
+
 install_ide_fallback() {
-    local arch="$1"
-    local ide_url
-    ide_url=$(fetch_ide_url "$arch")
-    local ide_dir="$HOME/.local/share/antigravity"
-    local tmp_archive
-    tmp_archive=$(mktemp /tmp/antigravity-XXXXXX.tar.gz)
+    local archive_path="$1"
+    local ide_dir="$HOME/.local/share/antigravity-ide"
     local staging
     staging=$(mktemp -d /tmp/antigravity-extract-XXXXXX)
 
     mkdir -p "$ide_dir"
-    echo -e "  ${MUTED}[step 2/5] Downloading Google Antigravity ($arch)...${TEXT}"
-    curl -fL --retry 2 --connect-timeout 30 "$ide_url" -o "$tmp_archive"
-    tar -xzf "$tmp_archive" -C "$staging"
-    rm -f "$tmp_archive"
+    echo -e "  ${MUTED}[step 3/5] Extracting archive into $ide_dir...${TEXT}"
+    tar -xzf "$archive_path" -C "$staging"
 
     local root="$staging"
+
     if [ -d "$staging/Antigravity-x64" ]; then
         root="$staging/Antigravity-x64"
+    elif [ -d "$staging/antigravity" ]; then
+        root="$staging/antigravity"
     fi
 
     cp -a "$root"/* "$ide_dir/" 2>/dev/null || cp -a "$root"/. "$ide_dir/" 2>/dev/null || true
     rm -rf "$staging"
+    ln -sfn "$ide_dir" "$HOME/.local/share/antigravity" 2>/dev/null || true
 }
 
 create_runtime_wrapper() {
-    local ide_dir="$HOME/.local/share/antigravity"
+    local ide_dir="$HOME/.local/share/antigravity-ide"
+    [ -d "$ide_dir" ] || ide_dir="$HOME/.local/share/antigravity"
     local exec_bin="$ide_dir/antigravity"
     [ -f "$exec_bin" ] || exec_bin="$ide_dir/Antigravity"
     [ -f "$exec_bin" ] || return 0
 
     chmod +x "$exec_bin"
+
     if [ -f "$ide_dir/chrome-sandbox" ]; then
         chmod 4755 "$ide_dir/chrome-sandbox" 2>/dev/null || chmod +x "$ide_dir/chrome-sandbox" 2>/dev/null || true
     fi
@@ -112,30 +162,36 @@ EXEC="$DIR/antigravity"
 
 if [ -z "${DISPLAY:-}" ] && [ -z "${WAYLAND_DISPLAY:-}" ]; then
     exec "$EXEC" --no-sandbox "$@"
+elif [ -f "$DIR/chrome-sandbox" ] && [ ! -u "$DIR/chrome-sandbox" ]; then
+    exec "$EXEC" --no-sandbox "$@"
 else
     exec "$EXEC" "$@"
 fi
 EOF
     chmod +x "$wrapper"
 
-    # Link wrapper to PATH
     mkdir -p "$HOME/.local/bin"
     ln -sf "$wrapper" "$HOME/.local/bin/antigravity"
     ln -sf "$wrapper" "$HOME/.local/bin/agy"
+    ln -sf "$wrapper" "$HOME/.local/bin/antigravity-ide"
 
     if [ -w "/usr/local/bin" ]; then
         ln -sf "$wrapper" "/usr/local/bin/antigravity" 2>/dev/null || true
         ln -sf "$wrapper" "/usr/local/bin/agy" 2>/dev/null || true
+        ln -sf "$wrapper" "/usr/local/bin/antigravity-ide" 2>/dev/null || true
     elif command -v sudo &>/dev/null; then
         sudo ln -sf "$wrapper" "/usr/local/bin/antigravity" 2>/dev/null || true
         sudo ln -sf "$wrapper" "/usr/local/bin/agy" 2>/dev/null || true
+        sudo ln -sf "$wrapper" "/usr/local/bin/antigravity-ide" 2>/dev/null || true
         sudo ln -sf "$wrapper" "/usr/bin/antigravity" 2>/dev/null || true
         sudo ln -sf "$wrapper" "/usr/bin/agy" 2>/dev/null || true
+        sudo ln -sf "$wrapper" "/usr/bin/antigravity-ide" 2>/dev/null || true
     fi
 }
 
 configure_shell_profiles() {
-    local line='export PATH="$HOME/.local/bin:$HOME/.antigravity/bin:$HOME/.local/share/antigravity:$PATH"'
+    local line='export PATH="$HOME/.local/bin:$HOME/.antigravity/bin:$HOME/.local/share/antigravity-ide:$HOME/.local/share/antigravity:$PATH"'
+
     for rc in "$HOME/.bashrc" "$HOME/.zshrc" "$HOME/.profile"; do
         if [ -f "$rc" ]; then
             if ! grep -q ".local/bin" "$rc" 2>/dev/null; then
@@ -147,10 +203,12 @@ configure_shell_profiles() {
 }
 
 create_desktop_launcher() {
-    local ide_dir="$HOME/.local/share/antigravity"
+    local ide_dir="$HOME/.local/share/antigravity-ide"
+    [ -d "$ide_dir" ] || ide_dir="$HOME/.local/share/antigravity"
     local app_dir="$HOME/.local/share/applications"
     local desktop_path="$app_dir/antigravity.desktop"
     local exec_cmd="$ide_dir/antigravity-runner.sh"
+    [ -f "$exec_cmd" ] || exec_cmd="$ide_dir/antigravity.run"
     [ -f "$exec_cmd" ] || exec_cmd="$ide_dir/antigravity"
 
     local icon_path
@@ -196,9 +254,13 @@ verify_antigravity() {
         "/usr/local/bin/agy" \
         "$HOME/.local/bin/agy" \
         "/usr/bin/agy" \
-        "$HOME/.local/share/antigravity/antigravity-runner.sh" \
+        "$HOME/.local/share/antigravity-ide/antigravity.run" \
+        "$HOME/.local/share/antigravity-ide/antigravity-runner.sh" \
+        "$HOME/.local/share/antigravity-ide/antigravity" \
+        "$HOME/.local/share/antigravity/antigravity.run" \
         "$HOME/.local/share/antigravity/antigravity" \
-        "$HOME/.local/share/antigravity/Antigravity"; do
+        "$HOME/.local/share/antigravity/Antigravity" \
+        "$HOME/.antigravity/bin/antigravity"; do
         if [ -f "$b" ] && [ -x "$b" ]; then
             bin_path="$b"
             break
@@ -219,6 +281,9 @@ main() {
 
     if [ "$IS_FORCE" = "true" ]; then
         clean_existing_installation
+    elif command -v antigravity &>/dev/null && [ -x "$HOME/.local/share/antigravity-ide/antigravity" ]; then
+        echo -e "  ${PRIMARY}[  OK  ] Google Antigravity is already installed (use --force to reinstall).${TEXT}"
+        return 0
     elif command -v antigravity &>/dev/null && [ -x "$HOME/.local/share/antigravity/antigravity" ]; then
         echo -e "  ${PRIMARY}[  OK  ] Google Antigravity is already installed (use --force to reinstall).${TEXT}"
         return 0
@@ -228,16 +293,32 @@ main() {
 
     local arch
     arch=$(detect_arch)
+    local ide_url
+    ide_url=$(fetch_ide_url "$arch")
+    local target_archive=""
+
+    if [ "$IS_FORCE" != "true" ]; then
+        local cached
+        if cached=$(find_cached_download); then
+            echo -e "  ${PRIMARY}[  OK  ] Reusing cached Antigravity download from temp folder: ${SECONDARY}$cached${TEXT}"
+            target_archive="$cached"
+        fi
+    fi
+
+    if [ -z "$target_archive" ]; then
+        local cache_dest="${TMPDIR:-/tmp}/scripts-fixer-downloads/Antigravity.tar.gz"
+        download_with_aria2c "$ide_url" "$cache_dest"
+        target_archive="$cache_dest"
+    fi
+
     local script_dir
     script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     local archive_installer="$script_dir/install-archive.sh"
 
     if [ -f "$archive_installer" ]; then
-        local ide_url
-        ide_url=$(fetch_ide_url "$arch")
-        bash "$archive_installer" "$ide_url" "antigravity"
+        bash "$archive_installer" "$target_archive" "antigravity-ide"
     else
-        install_ide_fallback "$arch"
+        install_ide_fallback "$target_archive"
         create_runtime_wrapper
         configure_shell_profiles
         echo -e "  ${MUTED}[step 4/5] Setting up desktop application launcher...${TEXT}"
