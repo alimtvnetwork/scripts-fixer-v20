@@ -83,8 +83,8 @@ show_main_help() {
     echo -e ""
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu-basic" "Git, ZSH, aria2c, vim, curl, wget, build-essential"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+vscode" "ubuntu-basic + VS Code snap + settings sync"
-    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+simple-dev" "ubuntu+vscode + GitHub Desktop + Go, Rust, PHP, Python3"
-    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+small-dev" "Alias: same as ubuntu+simple-dev (GitHub Desktop included)"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+simple-dev" "ubuntu+vscode + GitHub Desktop + Git-compact + Go, Rust, PHP, Python3"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+small-dev" "Alias: same as ubuntu+simple-dev (GitHub Desktop & Git-compact included)"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+dev" "ubuntu+simple-dev + Node.js, PNPM, Yarn + Antigravity"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+dev+ai" "ubuntu+dev + Ollama LLM + Antigravity (agy)"
     echo -e ""
@@ -133,6 +133,7 @@ show_main_help() {
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "05" "python3" "Install Python 3, pip, venv"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "06" "golang" "Install Go compiler via APT"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "07" "git" "Install Git, Git LFS, GitHub CLI"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "71" "git-compact, gitcompact" "Install git-compact CLI (repo compactor & pruner)"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "16" "php" "Install PHP, CLI, FPM"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "20" "rust" "Install Rust (cargo, rustup)"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "21" "build-essential" "Install build dev tool chain (gcc, g++, make)"
@@ -519,8 +520,10 @@ case "$COMMAND" in
                 bash scripts/os/ubuntu/profile-ubuntu-simple-dev.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+simple-dev"
             elif [[ "$ITEM" == *"profile ubuntu+vscode"* || "$ITEM" == *"ubuntu+vscode"* ]]; then
                 bash scripts/os/ubuntu/profile-ubuntu-vscode.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+vscode"
-            elif [[ "$ITEM" == *"profile ubuntu-basic"* || "$ITEM" == *"ubuntu-basic"* ]]; then
+            elif [[ "$ITEM" == *"profile ubuntu+basic"* || "$ITEM" == *"ubuntu-basic"* ]]; then
                 bash scripts/os/ubuntu/profile-ubuntu-basic.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu-basic"
+            elif [[ "$ITEM" == *"profile git-compact"* || "$ITEM" == *"profile-git-compact"* || "$ITEM" == *"profile git"* ]]; then
+                bash scripts/os/ubuntu/install-git-compact.sh && SUCCESS=true && PROFILE_INSTALLED="git-compact"
             
             # Combos & Multi-stack
             elif [[ "$ITEM" == *"vscode+menu+settings"* || "$ITEM" == *"vms"* ]]; then
@@ -615,6 +618,10 @@ case "$COMMAND" in
                 bash scripts/os/ubuntu/install-git-lfs.sh && bash scripts/os/ubuntu/install-gh.sh && SUCCESS=true
             elif [[ "$ITEM" == *"dbeaver"* || "$ITEM" == *"32"* ]]; then bash scripts/os/ubuntu/install-dbeaver.sh && SUCCESS=true
             elif [[ "$ITEM" == *"github-desktop"* || "$ITEM" == *"33"* ]]; then bash scripts/os/ubuntu/install-github-desktop.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"git-compact"* || "$ITEM" == *"gitcompact"* || "$ITEM" == "git compact" || "$ITEM" == *"71"* ]]; then
+                force_arg=""
+                [[ "$IS_FORCE" == "true" ]] && force_arg="--force"
+                bash scripts/os/ubuntu/install-git-compact.sh $force_arg && SUCCESS=true
             elif [[ "$ITEM" == *"sticky-notes"* || "$ITEM" == *"34"* ]]; then bash scripts/os/ubuntu/install-sticky-notes.sh && SUCCESS=true
             elif [[ "$ITEM" == *"chrome"* || "$ITEM" == *"35"* ]]; then bash scripts/os/ubuntu/install-chrome.sh && SUCCESS=true
             elif [[ "$ITEM" == *"zsh,zsh+config"* || "$ITEM" == *"zsh+config"* || "$ITEM" == *"51"* ]]; then

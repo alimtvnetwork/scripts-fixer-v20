@@ -125,6 +125,11 @@
           "label": "GitHub Desktop"
         },
         {
+          "kind": "script",
+          "id": 71,
+          "label": "git-compact CLI"
+        },
+        {
           "kind": "inline",
           "function": "Setup-SshKey",
           "label": "SSH key (ed25519)"

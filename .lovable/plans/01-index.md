@@ -35,6 +35,7 @@
 | 24 | `24-install-tar-gz-zip-linux.md` | Intelligent Linux Archive Installer (.tar.gz, .zip, .gz) | `completed` | 2026-09-13 |
 | 25 | `25-run-install-help-tree-antigravity.md` | Run Install Help, Profile Tree Inspection & Antigravity Installer Parity | `completed` | 2026-09-14 |
 | 26 | `26-vscode-extension-sync-stacktrace.md` | VS Code Extension Sync Stacktrace, JSON Parser & Built-in Filter | `completed` | 2026-09-14 |
+| 27 | `27-dev-profile-git-compact.md` | Dev Profile Git-Compact CLI Integration (ubuntu+dev, ubuntu+simple-dev) | `completed` | 2026-09-14 |
 
 ---
 

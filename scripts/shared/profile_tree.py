@@ -46,7 +46,7 @@ PROFILES = {
     },
     "ubuntu+simple-dev": {
         "title": "Ubuntu Simple Dev (ubuntu+small-dev)",
-        "description": "Complete multi-language developer workstation with VS Code, GitHub Desktop, Go, Rust, PHP, and Python 3.",
+        "description": "Complete multi-language developer workstation with VS Code, GitHub Desktop, Git-compact, Go, Rust, PHP, and Python 3.",
         "tree": [
             "ubuntu+small-dev (ubuntu+simple-dev)",
             "├── ubuntu+vscode (Base environment + VS Code IDE + synced settings)",
@@ -54,6 +54,7 @@ PROFILES = {
             "│   ├── vscode (Visual Studio Code IDE)",
             "│   └── vscode-settings (settings.json, keybindings.json & extensions)",
             "├── github-desktop (GitHub Desktop GUI client)",
+            "├── git-compact (Git repository pruning & compaction CLI)",
             "├── golang (Go compiler, GOPATH & Go runtime tooling)",
             "├── rust (Rust toolchain, rustup installer & cargo package manager)",
             "├── php (PHP 8.x CLI, PHP-FPM, core extensions & composer readiness)",
@@ -62,10 +63,11 @@ PROFILES = {
         "steps": [
             ("1. Base & Editor", "Deploys ubuntu+vscode (git, zsh, build-essential, aria2c, and VS Code IDE)."),
             ("2. GitHub Desktop", "Installs GitHub Desktop GUI client and desktop launcher."),
-            ("3. Golang Runtime", "Installs Go compiler, sets up workspace directories, and verifies go version."),
-            ("4. Rust & Cargo", "Installs rustup toolchain, stable compiler, and cargo package manager."),
-            ("5. PHP 8.x Environment", "Installs php, php-cli, php-fpm, readline, and core modules with systemd service."),
-            ("6. Python 3 Toolchain", "Installs python3, pip, python3-venv, and dev headers for package compilation.")
+            ("3. Git Compact", "Installs git-compact CLI for repository pruning, garbage collection, and cleanup."),
+            ("4. Golang Runtime", "Installs Go compiler, sets up workspace directories, and verifies go version."),
+            ("5. Rust & Cargo", "Installs rustup toolchain, stable compiler, and cargo package manager."),
+            ("6. PHP 8.x Environment", "Installs php, php-cli, php-fpm, readline, and core modules with systemd service."),
+            ("7. Python 3 Toolchain", "Installs python3, pip, python3-venv, and dev headers for package compilation.")
         ]
     },
     "ubuntu+small-dev": {
@@ -73,12 +75,13 @@ PROFILES = {
     },
     "ubuntu+dev": {
         "title": "Ubuntu Full Dev Workstation",
-        "description": "Full-stack development environment containing all simple-dev runtimes plus Node.js, PNPM, Yarn, and Antigravity.",
+        "description": "Full-stack development environment containing all simple-dev runtimes plus Git-compact, Node.js, PNPM, Yarn, and Antigravity.",
         "tree": [
             "ubuntu+dev",
-            "├── ubuntu+simple-dev (Base + VS Code + GitHub Desktop + Go + Rust + PHP + Python3)",
+            "├── ubuntu+simple-dev (Base + VS Code + GitHub Desktop + Git-compact + Go + Rust + PHP + Python3)",
             "│   ├── ubuntu+vscode (git, zsh, build-essential, aria2c, vscode)",
             "│   ├── github-desktop (GitHub Desktop GUI client)",
+            "│   ├── git-compact (Git repository pruning & compaction CLI)",
             "│   ├── golang (Go compiler & tools)",
             "│   ├── rust (Rust toolchain & cargo)",
             "│   ├── php (PHP 8.x CLI & FPM)",
@@ -89,7 +92,7 @@ PROFILES = {
             "└── antigravity (Antigravity agy AI coding assistant & IDE)"
         ],
         "steps": [
-            ("1. Simple Dev Stack", "Deploys all ubuntu+simple-dev components (Base, VS Code, GitHub Desktop, Go, Rust, PHP, Python)."),
+            ("1. Simple Dev Stack", "Deploys all ubuntu+simple-dev components (Base, VS Code, GitHub Desktop, Git-compact, Go, Rust, PHP, Python)."),
             ("2. Node.js & Package Managers", "Installs NodeSource LTS repository, pnpm, and yarn."),
             ("3. Antigravity Suite", "Installs Antigravity IDE and agy CLI assistant.")
         ]
@@ -117,9 +120,10 @@ PROFILES = {
         "tree": [
             "ubuntu+dev+ai",
             "├── ubuntu+dev (Full-stack developer workstation)",
-            "│   ├── ubuntu+simple-dev (Base + VS Code + GitHub Desktop + Go + Rust + PHP + Python3)",
+            "│   ├── ubuntu+simple-dev (Base + VS Code + GitHub Desktop + Git-compact + Go + Rust + PHP + Python3)",
             "│   │   ├── ubuntu+vscode (git, zsh, build-essential, aria2c, vscode)",
             "│   │   ├── github-desktop (GitHub Desktop GUI client)",
+            "│   │   ├── git-compact (Git repository pruning & compaction CLI)",
             "│   │   ├── golang (Go compiler & tools)",
             "│   │   ├── rust (Rust toolchain & cargo)",
             "│   │   ├── php (PHP 8.x CLI & FPM)",
@@ -131,7 +135,7 @@ PROFILES = {
             "└── antigravity (Antigravity agy AI coding assistant & IDE)"
         ],
         "steps": [
-            ("1. Full Dev Workstation", "Executes full ubuntu+dev stack (Base, VS Code, GitHub Desktop, Go, Rust, PHP, Python, Node, pnpm)."),
+            ("1. Full Dev Workstation", "Executes full ubuntu+dev stack (Base, VS Code, GitHub Desktop, Git-compact, Go, Rust, PHP, Python, Node, pnpm)."),
             ("2. Ollama LLM Runner", "Installs Ollama runner service for local offline LLM inference."),
             ("3. Antigravity Suite", "Installs Antigravity IDE and agy CLI assistant.")
         ]
