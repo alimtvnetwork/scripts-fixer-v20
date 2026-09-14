@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.46.0] - 2026-09-14
+
+### Added
+- Windows Server OS detection, Store prerequisites for PlotCode and Codex, Antigravity CLI in dev profile, and repo-relative SQLite database
+
+
 ## [v1.45.0] - 2026-09-14
 
 ### Added
