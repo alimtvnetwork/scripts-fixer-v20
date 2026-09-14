@@ -104,7 +104,15 @@ jobs:
               exit 1
           }
 
-          $beforeHash = (Get-FileHash -Path $summary -Algorithm SHA256).Hash
+          $getNormalizedHash = {
+              param($filePath)
+              $rawContent = (Get-Content -Path $filePath -Raw).Replace("`r`n", "`n")
+              $bytes = [System.Text.Encoding]::UTF8.GetBytes($rawContent)
+              $hashBytes = [System.Security.Cryptography.SHA256]::Create().ComputeHash($bytes)
+              [System.BitConverter]::ToString($hashBytes).Replace("-", "").ToUpperInvariant()
+          }
+
+          $beforeHash = &$getNormalizedHash $summary
           Write-Host "Committed summary SHA256 : $beforeHash"
 
           & node $generator | Out-Host
@@ -114,7 +122,7 @@ jobs:
               exit 1
           }
 
-          $afterHash = (Get-FileHash -Path $summary -Algorithm SHA256).Hash
+          $afterHash = &$getNormalizedHash $summary
           Write-Host "Regenerated summary SHA256: $afterHash"
 
           $isInSync = $beforeHash -eq $afterHash
