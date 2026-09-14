@@ -15,14 +15,13 @@ echo -e "\n  ${PRIMARY}ubuntu+dev+ai Profile${TEXT}"
 echo -e "  ${MUTED}=========================================${TEXT}"
 echo -e "  ${MUTED}  = ubuntu+dev + Antigravity${TEXT}\n"
 
-# ── Phase 1: Full dev stack ────────────────────────────────────────────────────
+# ── Phase 1: Full dev stack (includes Antigravity IDE) ──────────────────────────
 echo -e "  ${ACCENT}[Phase 1] Installing ubuntu+dev stack...${TEXT}"
 bash scripts/os/ubuntu/profile-ubuntu-dev.sh
 
-# ── Phase 2: Antigravity agy CLI ──────────────────────────────────────────────
-echo -e "\n  ${ACCENT}[Phase 2] Installing Antigravity tools...${TEXT}"
-bash scripts/os/ubuntu/install-antigravity-manager.sh
-bash scripts/os/ubuntu/install-antigravity.sh
+# ── Phase 2: Local LLM Runner (Ollama) ─────────────────────────────────────────
+echo -e "\n  ${ACCENT}[Phase 2] Installing Ollama local LLM runner...${TEXT}"
+bash scripts/os/ubuntu/install-models.sh
 
 echo -e "\n  ${PRIMARY}ubuntu+dev+ai profile complete!${TEXT}"
 echo -e "  ${MUTED}  agy    - AI coding assistant (run anywhere)${TEXT}\n"

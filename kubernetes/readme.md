@@ -10,16 +10,45 @@ by Md Alim Ul Karim.
 | Folder / File | Purpose |
 |---------------|---------|
 | `01-base-helpers/` | Reusable shell helpers (logger, apt installer, package checker) |
-| `02-ubuntu-prereq/` | Ubuntu prerequisites and server bootstrap |
+| `02-node-setup/` | Node preparation (static IP, sudo user, ZSH theme, cleanup, repo permissions) |
+| `02-ubuntu-prereq/` | Ubuntu prerequisites and server bootstrap (kernel modules, swapoff) |
 | `03-kube-install/` | kubeadm, kubelet, kubectl installation |
 | `04-kube-init/` | Cluster initialization (master + worker join) |
 | `05-helm-install/` | Helm package manager installation |
 | `06-nfs-setup/` | NFS server + Helm NFS provisioner |
-| `07-remote-commands/` | Multi-node SSH command executor |
-| `config-sample.json` | Node IP configuration template |
+| `07-remote-commands/` | Multi-node SSH command executor (SQLite & SSH RSA auth engine) |
+| `config-sample.json` | Node IP configuration template (importable into SQLite) |
 | `cheat-sheet.md` | Quick-reference kubectl/kubeadm commands |
 
-## Quick Start
+## Quick Start & CLI Usage
+
+### 1. Cluster Management via `./run.sh` / `.\run.ps1`
+
+```bash
+# Register nodes in SQLite database
+./run.sh cluster add control control 192.168.0.20 22 root
+./run.sh cluster add worker-1 worker 192.168.0.21 22 root
+./run.sh cluster add worker-2 worker 192.168.0.22 22 root
+
+# Or import from existing JSON
+./run.sh cluster import kubernetes/config-sample.json
+
+# List registered cluster nodes
+./run.sh cluster list
+
+# Deploy SSH RSA keys to nodes (zero-password authentication)
+./run.sh cluster bootstrap all
+
+# Execute remote commands across cluster
+./run.sh cluster run all "hostname -I"
+./run.sh cluster run control "kubectl get nodes"
+./run.sh cluster run workers "df -h /"
+
+# View execution audit history
+./run.sh cluster history
+```
+
+### 2. Manual Setup Sequence
 
 ```bash
 # 1. Copy config

@@ -635,6 +635,10 @@ function Show-RootHelpRaw {
     Write-Host "        .\run.ps1 storage list".PadRight(60) -NoNewline; Write-Host "# Show split DB sizes & disk drive space calculation" -ForegroundColor $ThemeMuted
     Write-Host "        .\run.ps1 storage partition".PadRight(60) -NoNewline; Write-Host "# Storage partitioning options & swap expansion guides" -ForegroundColor $ThemeMuted
     Write-Host "        .\run.ps1 pipeline errors -t".PadRight(60) -NoNewline; Write-Host "# Wait for pipeline ETA and report error status" -ForegroundColor $ThemeMuted
+    Write-Host "      Kubernetes Cluster Nodes & Remote Commands (SQLite + SSH RSA):" -ForegroundColor DarkYellow
+    Write-Host "        .\run.ps1 cluster list".PadRight(60) -NoNewline; Write-Host "# List cluster nodes from SQLite" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 cluster add <name> <role> <ip>".PadRight(60) -NoNewline; Write-Host "# Register node in SQLite" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 cluster history".PadRight(60) -NoNewline; Write-Host "# View cluster remote command execution logs" -ForegroundColor $ThemeMuted
     Write-Host ""
     # ----- Dedicated Chrome & extensions cheatsheet ---------------------------
     # Surfaces every extension install mode (single, comma-list, all, raw URL,
@@ -3904,7 +3908,7 @@ if ($hasCommand) {
         'os','ssh','vscode-folder','vscode-context-menu','chrome','chrome-fix-ai',
         'chrome-profile-copy','chrome-profile-export','chrome-profile-import',
         'profile','git-tools','gsa','reset','help','version','nginx',
-        'startup','schedule','crontab','macro','async','storage','pipeline'
+        'startup','schedule','crontab','macro','async','storage','pipeline','cluster'
     )
     $isFuzzyEligible = $normalizedCommand -and `
         ($normalizedCommand -notin $canonicalVerbs) -and `
@@ -3973,6 +3977,7 @@ if ($hasCommand) {
     $isBareAsyncCommand    = $normalizedCommand -eq "async"
     $isBareStorageCommand  = $normalizedCommand -eq "storage"
     $isBarePipelineCommand = $normalizedCommand -eq "pipeline"
+    $isBareClusterCommand  = $normalizedCommand -in @("cluster", "k8s-cluster", "node-cmd")
     $isBareHelpCommand    = $normalizedCommand -in @("help", "--help", "-help", "/?", "?")
     $isBareScriptId = $normalizedCommand -match '^\d+$'
 
@@ -5181,6 +5186,56 @@ if ($hasCommand) {
             Write-Host "  Pipeline errors check: No active pipeline errors found." -ForegroundColor Green
         }
         exit 0
+    } elseif ($isBareClusterCommand) {
+        $subArgs = @($Install | Where-Object { $_ })
+        $action = if ($subArgs.Count -gt 0) { $subArgs[0].ToLower() } else { "help" }
+        $actionArgs = @($subArgs | Select-Object -Skip 1)
+
+        if ($action -in @("help", "-h", "--help")) {
+            Write-Host ""
+            Write-Host "  Cluster Command Help (SQLite + SSH RSA):" -ForegroundColor $ThemeAccent
+            Write-Host "    .\run.ps1 cluster list                         - List all cluster nodes from SQLite"
+            Write-Host "    .\run.ps1 cluster add <name> <role> <ip> [user]- Add node to SQLite database"
+            Write-Host "    .\run.ps1 cluster remove <name>                - Remove node from SQLite"
+            Write-Host "    .\run.ps1 cluster import [json-path]           - Import nodes from config.json"
+            Write-Host "    .\run.ps1 cluster history                      - View past command execution logs"
+            Write-Host "    .\run.ps1 cluster run <target> `"<cmd>`"         - Execute remote command via bash"
+            Write-Host ""
+            exit 0
+        } elseif ($action -in @("list", "ls")) {
+            python (Join-Path $RootDir "scripts\shared\db_bridge.py") cluster-list-nodes @actionArgs
+            exit $LASTEXITCODE
+        } elseif ($action -eq "add") {
+            python (Join-Path $RootDir "scripts\shared\db_bridge.py") cluster-add-node @actionArgs
+            exit $LASTEXITCODE
+        } elseif ($action -in @("remove", "rm")) {
+            python (Join-Path $RootDir "scripts\shared\db_bridge.py") cluster-remove-node @actionArgs
+            exit $LASTEXITCODE
+        } elseif ($action -eq "import") {
+            $jsonPath = if ($actionArgs.Count -gt 0) { $actionArgs[0] } else { "kubernetes\config.json" }
+            python (Join-Path $RootDir "scripts\shared\db_bridge.py") cluster-import-json $jsonPath
+            exit $LASTEXITCODE
+        } elseif ($action -in @("history", "logs")) {
+            python (Join-Path $RootDir "scripts\shared\db_bridge.py") cluster-list-logs @actionArgs
+            exit $LASTEXITCODE
+        } elseif ($action -in @("run", "exec")) {
+            $bashCmd = Get-Command bash -ErrorAction SilentlyContinue
+            $gitBash = Join-Path $env:ProgramFiles "Git\bin\bash.exe"
+            if ($bashCmd) {
+                bash (Join-Path $RootDir "kubernetes\07-remote-commands\run-cmd.sh") @actionArgs
+                exit $LASTEXITCODE
+            } elseif (Test-Path $gitBash) {
+                & $gitBash (Join-Path $RootDir "kubernetes\07-remote-commands\run-cmd.sh") @actionArgs
+                exit $LASTEXITCODE
+            } else {
+                Write-Host "  [ FAIL ] 'bash' is required to execute remote cluster SSH commands on Windows." -ForegroundColor Red
+                exit 1
+            }
+        } else {
+            Write-Host "  Unknown cluster action: $action" -ForegroundColor Red
+            Write-Host "  Run '.\run.ps1 cluster help' for usage."
+            exit 1
+        }
     } elseif ($isBareScriptId) {
         $I = [int]$normalizedCommand
     } else {

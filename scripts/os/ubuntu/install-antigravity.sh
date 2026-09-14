@@ -98,12 +98,20 @@ clean_existing_installation() {
     rm -f "$HOME/.local/share/applications/antigravity.desktop" \
           "$HOME/.local/share/applications/antigravity-ide.desktop" \
           "$HOME/.local/share/applications/Google Antigravity.desktop" \
+          "$HOME/.local/share/applications/Google-Antigravity.desktop" \
+          "$HOME/.local/share/applications/Antigravity.desktop" \
           "$HOME/Desktop/antigravity.desktop" \
-          "$HOME/Desktop/antigravity-ide.desktop"
+          "$HOME/Desktop/antigravity-ide.desktop" \
+          "$HOME/Desktop/Google Antigravity.desktop" \
+          "$HOME/Desktop/Google-Antigravity.desktop" \
+          "$HOME/Desktop/Antigravity.desktop"
 
     if command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
         sudo rm -f /usr/share/applications/antigravity.desktop \
-                   /usr/share/applications/antigravity-ide.desktop 2>/dev/null || true
+                   /usr/share/applications/antigravity-ide.desktop \
+                   /usr/share/applications/"Google Antigravity.desktop" \
+                   /usr/share/applications/"Google-Antigravity.desktop" \
+                   /usr/share/applications/Antigravity.desktop 2>/dev/null || true
     fi
 
     if command -v sudo &>/dev/null; then
@@ -705,16 +713,46 @@ create_desktop_launcher() {
     [ -f "$exec_cmd" ] || exec_cmd="$ide_dir/antigravity"
 
     # Purge old conflicting launchers
-    rm -f "$app_dir/antigravity-ide.desktop" "$app_dir/Google Antigravity.desktop"
-    rm -f "$HOME/Desktop/antigravity-ide.desktop"
-    if [ -w "/usr/share/applications" ]; then
-        rm -f "/usr/share/applications/antigravity-ide.desktop" 2>/dev/null || true
-    elif command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
-        sudo rm -f "/usr/share/applications/antigravity-ide.desktop" 2>/dev/null || true
+    local stale_launchers=(
+        "$app_dir/antigravity-ide.desktop"
+        "$app_dir/Google Antigravity.desktop"
+        "$app_dir/Google-Antigravity.desktop"
+        "$app_dir/Antigravity.desktop"
+        "$HOME/Desktop/antigravity-ide.desktop"
+        "$HOME/Desktop/Google Antigravity.desktop"
+        "$HOME/Desktop/Google-Antigravity.desktop"
+        "$HOME/Desktop/Antigravity.desktop"
+    )
+    for stale in "${stale_launchers[@]}"; do
+        rm -f "$stale" 2>/dev/null || true
+    done
+
+    local sys_stale_launchers=(
+        "/usr/share/applications/antigravity-ide.desktop"
+        "/usr/share/applications/Google Antigravity.desktop"
+        "/usr/share/applications/Google-Antigravity.desktop"
+        "/usr/share/applications/Antigravity.desktop"
+    )
+    for sys_stale in "${sys_stale_launchers[@]}"; do
+        if [ -w "/usr/share/applications" ]; then
+            rm -f "$sys_stale" 2>/dev/null || true
+        elif command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
+            sudo rm -f "$sys_stale" 2>/dev/null || true
+        fi
+    done
+
+    local script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local repo_icon="$script_dir/../../shared/antigravity-icon.png"
+    local icon_path=""
+
+    if [ -f "$repo_icon" ] && [ -s "$repo_icon" ]; then
+        icon_path="$repo_icon"
     fi
 
-    local icon_path
-    icon_path=$(find "$ide_dir" -maxdepth 8 -type f \( -iname "*antigravity*.png" -o -iname "*code*.png" -o -iname "*icon*.png" -o -iname "*logo*.png" \) 2>/dev/null | head -n 1 || true)
+    if [ -z "$icon_path" ]; then
+        icon_path=$(find "$ide_dir" -maxdepth 8 -type f \( -iname "*antigravity*.png" -o -iname "*code*.png" -o -iname "*icon*.png" -o -iname "*logo*.png" \) 2>/dev/null | head -n 1 || true)
+    fi
+
     if [ -z "$icon_path" ]; then
         for sys_icon in \
             "$HOME/.local/share/icons/hicolor/512x512/apps/antigravity.png" \
@@ -740,29 +778,35 @@ create_desktop_launcher() {
         deploy_antigravity_multi_resolution_icons "$icon_path"
     fi
 
+    local target_icon="$HOME/.local/share/icons/hicolor/256x256/apps/antigravity.png"
+    [ -f "$HOME/.local/share/pixmaps/antigravity.png" ] && [ ! -f "$target_icon" ] && target_icon="$HOME/.local/share/pixmaps/antigravity.png"
+    [ -f "$target_icon" ] || target_icon="antigravity"
+
     mkdir -p "$app_dir"
     cat <<EOF > "$desktop_path"
 [Desktop Entry]
 Version=1.0
-Name=Google Antigravity
-Comment=Google Antigravity IDE & AI Coding Assistant
+Type=Application
+Name=Antigravity
+Comment=Antigravity IDE & AI Coding Assistant
 GenericName=Text Editor
 Exec=$exec_cmd %F
-Icon=antigravity
-Type=Application
+Icon=$target_icon
+Terminal=false
 StartupNotify=true
 StartupWMClass=Antigravity
-Categories=Development;IDE;TextEditor;
+Categories=Development;IDE;TextEditor;Utility;
 MimeType=text/plain;inode/directory;
-Terminal=false
 EOF
     chmod +x "$desktop_path"
-    ln -sf "$desktop_path" "$app_dir/antigravity-ide.desktop" 2>/dev/null || true
+    rm -f "$app_dir/antigravity-ide.desktop" 2>/dev/null || true
 
     if [ -w "/usr/share/applications" ]; then
         cp -f "$desktop_path" "/usr/share/applications/antigravity.desktop" 2>/dev/null || true
+        rm -f "/usr/share/applications/antigravity-ide.desktop" 2>/dev/null || true
     elif command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
         sudo cp -f "$desktop_path" "/usr/share/applications/antigravity.desktop" 2>/dev/null || true
+        sudo rm -f "/usr/share/applications/antigravity-ide.desktop" 2>/dev/null || true
     fi
 
     if [ -d "$HOME/Desktop" ]; then

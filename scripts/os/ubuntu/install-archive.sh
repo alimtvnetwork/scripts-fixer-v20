@@ -606,6 +606,21 @@ if [ -z "$ICON_CANDIDATE" ]; then
     ICON_CANDIDATE=$(find "$TARGET_DIR" -maxdepth 8 -type f \( -name "*.png" -o -name "*.svg" \) 2>/dev/null | head -n 1 || true)
 fi
 
+# Fallback to bundled repository icon for Antigravity
+if [ -z "$ICON_CANDIDATE" ] && ([ "$APP_NAME" = "antigravity" ] || [ "$APP_NAME" = "antigravity-ide" ]); then
+    SCRIPT_BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    for repo_icon in \
+        "$SCRIPT_BASE_DIR/../../shared/antigravity-icon.png" \
+        "$SCRIPT_BASE_DIR/../../../scripts/shared/antigravity-icon.png" \
+        "$HOME/.local/share/pixmaps/antigravity.png" \
+        "$HOME/.local/share/icons/hicolor/256x256/apps/antigravity.png"; do
+        if [ -f "$repo_icon" ]; then
+            ICON_CANDIDATE="$repo_icon"
+            break
+        fi
+    done
+fi
+
 # Fallback to system or known icon locations
 if [ -z "$ICON_CANDIDATE" ]; then
     for sys_icon in \
@@ -694,8 +709,9 @@ THEME_EOF
     fi
 
     ICON_FILE="$APP_NAME"
-    if [ "$APP_NAME" = "antigravity-ide" ]; then
-        ICON_FILE="antigravity"
+    if [ "$APP_NAME" = "antigravity" ] || [ "$APP_NAME" = "antigravity-ide" ]; then
+        ICON_FILE="$HOME/.local/share/icons/hicolor/256x256/apps/antigravity.png"
+        [ -f "$HOME/.local/share/pixmaps/antigravity.png" ] && [ ! -f "$ICON_FILE" ] && ICON_FILE="$HOME/.local/share/pixmaps/antigravity.png"
     fi
 fi
 
@@ -705,15 +721,39 @@ if [ "$IS_GUI" = true ]; then
 
     # Clean up conflicting / duplicate desktop files
     if [ "$APP_NAME" = "antigravity" ] || [ "$APP_NAME" = "antigravity-ide" ]; then
-        rm -f "$DESKTOP_DIR/antigravity.desktop" "$DESKTOP_DIR/antigravity-ide.desktop" "$DESKTOP_DIR/Google Antigravity.desktop"
-        rm -f "$HOME/Desktop/antigravity.desktop" "$HOME/Desktop/antigravity-ide.desktop"
-        if [ -w "/usr/share/applications" ]; then
-            rm -f "/usr/share/applications/antigravity-ide.desktop" 2>/dev/null || true
-        elif command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
-            sudo rm -f "/usr/share/applications/antigravity-ide.desktop" 2>/dev/null || true
-        fi
+        local old_launchers=(
+            "$DESKTOP_DIR/antigravity-ide.desktop"
+            "$DESKTOP_DIR/Google Antigravity.desktop"
+            "$DESKTOP_DIR/Google-Antigravity.desktop"
+            "$DESKTOP_DIR/Antigravity.desktop"
+            "$DESKTOP_DIR/antigravity.desktop"
+            "$HOME/Desktop/antigravity-ide.desktop"
+            "$HOME/Desktop/Google Antigravity.desktop"
+            "$HOME/Desktop/Google-Antigravity.desktop"
+            "$HOME/Desktop/Antigravity.desktop"
+            "$HOME/Desktop/antigravity.desktop"
+        )
+        for old_l in "${old_launchers[@]}"; do
+            rm -f "$old_l" 2>/dev/null || true
+        done
+
+        local sys_old_launchers=(
+            "/usr/share/applications/antigravity-ide.desktop"
+            "/usr/share/applications/Google Antigravity.desktop"
+            "/usr/share/applications/Google-Antigravity.desktop"
+            "/usr/share/applications/Antigravity.desktop"
+            "/usr/share/applications/antigravity.desktop"
+        )
+        for sys_l in "${sys_old_launchers[@]}"; do
+            if [ -w "/usr/share/applications" ]; then
+                rm -f "$sys_l" 2>/dev/null || true
+            elif command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
+                sudo rm -f "$sys_l" 2>/dev/null || true
+            fi
+        done
+
         DESKTOP_FILE="$DESKTOP_DIR/antigravity.desktop"
-        FORMATTED_NAME="Google Antigravity"
+        FORMATTED_NAME="Antigravity"
     else
         DESKTOP_FILE="$DESKTOP_DIR/${APP_NAME}.desktop"
         FORMATTED_NAME=$(echo "$APP_NAME" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
@@ -724,25 +764,28 @@ if [ "$IS_GUI" = true ]; then
 Version=1.0
 Type=Application
 Name=$FORMATTED_NAME
-Comment=$FORMATTED_NAME installed via scripts-fixer
+Comment=$FORMATTED_NAME IDE & AI Coding Assistant
 GenericName=Text Editor
 Exec=$BIN_EXEC_TARGET %F
 Icon=${ICON_FILE:-$APP_NAME}
 Terminal=false
 StartupNotify=true
 StartupWMClass=$([ "$APP_NAME" = "antigravity" ] || [ "$APP_NAME" = "antigravity-ide" ] && echo "Antigravity" || echo "$APP_NAME")
-Categories=Utility;Development;IDE;TextEditor;
+Categories=Development;IDE;TextEditor;Utility;
 MimeType=text/plain;inode/directory;
 EOF
     chmod +x "$DESKTOP_FILE"
     echo -e "  ${MUTED}  -> Desktop launcher created: ${SECONDARY}$DESKTOP_FILE${TEXT}"
 
     if [ "$APP_NAME" = "antigravity" ] || [ "$APP_NAME" = "antigravity-ide" ]; then
-        ln -sf "$DESKTOP_FILE" "$DESKTOP_DIR/antigravity-ide.desktop" 2>/dev/null || true
+        # Strictly ensure duplicate symlink is NEVER created
+        rm -f "$DESKTOP_DIR/antigravity-ide.desktop" 2>/dev/null || true
         if [ -w "/usr/share/applications" ]; then
             cp -f "$DESKTOP_FILE" "/usr/share/applications/antigravity.desktop" 2>/dev/null || true
+            rm -f "/usr/share/applications/antigravity-ide.desktop" 2>/dev/null || true
         elif command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
             sudo cp -f "$DESKTOP_FILE" "/usr/share/applications/antigravity.desktop" 2>/dev/null || true
+            sudo rm -f "/usr/share/applications/antigravity-ide.desktop" 2>/dev/null || true
         fi
     fi
 

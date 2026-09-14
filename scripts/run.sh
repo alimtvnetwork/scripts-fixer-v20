@@ -81,6 +81,8 @@ show_main_help() {
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh async <cmd> -t <sec>" "Periodic background monitoring runner"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh storage <ls|info|partition>" "Storage calculation & split DB footprint"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh pipeline errors -t" "Check pipeline errors and wait for ETA"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh cluster <cmd>" "Cluster nodes & remote execution (SQLite+SSH RSA)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh fix-antigravity" "Fix Antigravity launcher & restore official icon"
 
     echo -e ""
     echo -e "  ${ACCENT}Options & Flags:${TEXT}"
@@ -393,6 +395,12 @@ case "$COMMAND" in
         show_footer
         exit 0
         ;;
+    "fix-antigravity"|"fix-icon")
+        bash scripts/os/ubuntu/fix-antigravity-desktop.sh "$ARGS"
+        show_footer
+        exit $?
+        ;;
+
     "os")
         OS_CMD=$(echo "$ARGS" | awk '{print $1}')
         OS_ARG=$(echo "$ARGS" | awk '{$1=""; print $0}' | sed -e 's/^[[:space:]]*//')
@@ -402,6 +410,7 @@ case "$COMMAND" in
             echo -e "    update               - Run apt update and upgrade"
             echo -e "    update-all           - Run update and release-upgrade"
             echo -e "    fix-link <path>      - Create global symlink or fix broken git symlink"
+            echo -e "    fix-antigravity      - Fix Antigravity launcher & restore official icon"
             show_footer
             exit 0
         elif [[ "$OS_CMD" == "update-all" || "$OS_CMD" == "91" ]]; then
@@ -410,6 +419,8 @@ case "$COMMAND" in
             bash scripts/os/ubuntu/update.sh
         elif [[ "$OS_CMD" == "fix-link" ]]; then
             bash scripts/os/ubuntu/fix-link.sh "$OS_ARG"
+        elif [[ "$OS_CMD" == "fix-antigravity" || "$OS_CMD" == "fix-icon" ]]; then
+            bash scripts/os/ubuntu/fix-antigravity-desktop.sh "$OS_ARG"
         else
             echo -e "  ${ERROR}Unknown OS argument: $OS_CMD${TEXT}"
         fi
@@ -470,6 +481,57 @@ case "$COMMAND" in
         ;;
     "storage")
         $PYTHON_BIN scripts/shared/storage_manager.py $ARGS
+        show_footer
+        exit $?
+        ;;
+    "cluster"|"k8s-cluster"|"node-cmd")
+        ACTION=$(echo "$ARGS" | awk '{print $1}')
+        SUBARGS=$(echo "$ARGS" | awk '{$1=""; print $0}' | sed -e 's/^[[:space:]]*//')
+
+        if [[ "$ACTION" == "help" || "$ACTION" == "-h" || "$ACTION" == "--help" || -z "$ACTION" ]]; then
+            echo -e "  ${ACCENT}Cluster Command Help (SQLite + SSH RSA):${TEXT}"
+            echo -e "    list                         - List all cluster nodes from SQLite"
+            echo -e "    add <name> <role> <ip> [user]- Add node to SQLite database"
+            echo -e "    remove <name>                - Remove node from SQLite"
+            echo -e "    import [json-path]           - Import nodes from config.json"
+            echo -e "    bootstrap <target>           - Deploy SSH RSA key to node & revert creds"
+            echo -e "    run <target> \"<cmd>\"         - Execute remote command via SSH key"
+            echo -e "    setup <target> <action>      - Run node setup (ip, user, cleanup, sync)"
+            echo -e "    history                      - View past command execution logs"
+            show_footer
+            exit 0
+        elif [[ "$ACTION" == "list" || "$ACTION" == "ls" ]]; then
+            $PYTHON_BIN scripts/shared/db_bridge.py cluster-list-nodes $SUBARGS
+        elif [[ "$ACTION" == "add" ]]; then
+            $PYTHON_BIN scripts/shared/db_bridge.py cluster-add-node $SUBARGS
+        elif [[ "$ACTION" == "remove" || "$ACTION" == "rm" ]]; then
+            $PYTHON_BIN scripts/shared/db_bridge.py cluster-remove-node $SUBARGS
+        elif [[ "$ACTION" == "import" ]]; then
+            $PYTHON_BIN scripts/shared/db_bridge.py cluster-import-json ${SUBARGS:-kubernetes/config.json}
+        elif [[ "$ACTION" == "bootstrap" ]]; then
+            bash kubernetes/07-remote-commands/cluster-ssh-manager.sh bootstrap $SUBARGS
+        elif [[ "$ACTION" == "run" || "$ACTION" == "exec" ]]; then
+            bash kubernetes/07-remote-commands/run-cmd.sh $SUBARGS
+        elif [[ "$ACTION" == "setup" ]]; then
+            TARGET=$(echo "$SUBARGS" | awk '{print $1}')
+            TOOL=$(echo "$SUBARGS" | awk '{print $2}')
+            TOOL_ARGS=$(echo "$SUBARGS" | awk '{$1=""; $2=""; print $0}' | sed -e 's/^[[:space:]]*//')
+
+            case "$TOOL" in
+                ip) bash kubernetes/07-remote-commands/run-cmd.sh "$TARGET" "bash -s" --sudo < kubernetes/02-node-setup/set-static-ip.sh ;;
+                user) bash kubernetes/07-remote-commands/run-cmd.sh "$TARGET" "bash -s $TOOL_ARGS" --sudo < kubernetes/02-node-setup/setup-cluster-user.sh ;;
+                kill-procs) bash kubernetes/07-remote-commands/run-cmd.sh "$TARGET" "bash -s $TOOL_ARGS" --sudo < kubernetes/02-node-setup/kill-user-procs.sh ;;
+                cleanup|purge) bash kubernetes/07-remote-commands/run-cmd.sh "$TARGET" "bash -s" --sudo < kubernetes/02-node-setup/system-autopurge.sh ;;
+                sync) bash kubernetes/07-remote-commands/run-cmd.sh "$TARGET" "bash -s $TOOL_ARGS" < kubernetes/02-node-setup/sync-repo-permissions.sh ;;
+                *) echo -e "  ${ERROR}Unknown setup tool: $TOOL (available: ip, user, kill-procs, cleanup, sync)${TEXT}" ;;
+            esac
+        elif [[ "$ACTION" == "history" || "$ACTION" == "logs" ]]; then
+            $PYTHON_BIN scripts/shared/db_bridge.py cluster-list-logs $SUBARGS
+        else
+            echo -e "  ${ERROR}Unknown cluster action: $ACTION${TEXT}"
+            echo -e "  Run './run.sh cluster help' for usage."
+        fi
+
         show_footer
         exit $?
         ;;
@@ -673,6 +735,8 @@ case "$COMMAND" in
                 bash scripts/os/ubuntu/install-model-picker.sh && SUCCESS=true
             elif [[ "$ITEM" == *"ollama"* || "$ITEM" == *"llm"* || "$ITEM" == *"models"* || "$ITEM" == *"42"* ]]; then
                 bash scripts/os/ubuntu/install-models.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"fix-antigravity"* || "$ITEM" == *"fix-icon"* ]]; then
+                bash scripts/os/ubuntu/fix-antigravity-desktop.sh && SUCCESS=true
             elif [[ "$ITEM" == *"antigravity-manager"* || "$ITEM" == *"agm"* || "$ITEM" == *"44"* || "$ITEM" == *"68"* ]]; then
                 bash scripts/os/ubuntu/install-antigravity-manager.sh && SUCCESS=true
             elif [[ "$ITEM" == *"antigravity"* || "$ITEM" == *"agy"* || "$ITEM" == *" ag"* || "$ITEM" == "ag" || "$ITEM" == *"43"* || "$ITEM" == *"69"* ]]; then

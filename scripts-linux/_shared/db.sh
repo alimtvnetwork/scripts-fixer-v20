@@ -176,3 +176,60 @@ db_get_status() {
 
   echo "unknown"
 }
+
+db_cluster_list_nodes() {
+  local role="${1:-}"
+
+  if has_python && [ -f "$_DB_BRIDGE" ]; then
+    "$(get_python_bin)" "$_DB_BRIDGE" cluster-list-nodes "$role"
+
+    return 0
+  fi
+
+  return 1
+}
+
+db_cluster_add_node() {
+  local name="${1:-}"
+  local role="${2:-worker}"
+  local ip="${3:-}"
+  local port="${4:-22}"
+  local user="${5:-root}"
+  local key="${6:-}"
+
+  if has_python && [ -f "$_DB_BRIDGE" ]; then
+    "$(get_python_bin)" "$_DB_BRIDGE" cluster-add-node "$name" "$role" "$ip" "$port" "$user" "$key"
+
+    return $?
+  fi
+
+  return 1
+}
+
+db_cluster_remove_node() {
+  local name="${1:-}"
+
+  if has_python && [ -f "$_DB_BRIDGE" ]; then
+    "$(get_python_bin)" "$_DB_BRIDGE" cluster-remove-node "$name"
+
+    return $?
+  fi
+
+  return 1
+}
+
+db_cluster_log_cmd() {
+  local target="${1:-unknown}"
+  local cmd="${2:-}"
+  local code="${3:-0}"
+  local out="${4:-}"
+  local err="${5:-}"
+
+  if has_python && [ -f "$_DB_BRIDGE" ]; then
+    "$(get_python_bin)" "$_DB_BRIDGE" cluster-log-cmd "$target" "$cmd" "$code" "$out" "$err" 2>/dev/null || true
+
+    return 0
+  fi
+
+  return 0
+}

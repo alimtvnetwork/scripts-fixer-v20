@@ -1,120 +1,157 @@
 #!/usr/bin/env bash
 # --------------------------------------------------------------------------
-#  Step 7 -- Remote Command Executor
-#  Execute commands on cluster nodes via SSH.
-#  Usage:  ./run-cmd.sh all|control|workers|worker-1 "<command>"
+#  Step 7 -- Kubernetes Multi-Node Remote Command Executor
+#  Executes commands on cluster nodes using SQLite node inventory & SSH RSA key auth.
+#  Usage:  ./run-cmd.sh <target> "<command>" [--sudo]
 # --------------------------------------------------------------------------
-set -e
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-source "$SCRIPT_DIR/../01-base-helpers/import-all.sh"
+set -u
 
-# -- Help ------------------------------------------------------------------
+_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+_REPO_ROOT="$(cd "$_SCRIPT_DIR/../.." && pwd)"
+_DB_BRIDGE="$_REPO_ROOT/scripts/shared/db_bridge.py"
+_SSH_MGR="$_SCRIPT_DIR/cluster-ssh-manager.sh"
+
+source "$_REPO_ROOT/kubernetes/01-base-helpers/import-all.sh"
+
 show_help() {
-    echo ""
-    echo "  Kubernetes Remote Command Executor"
-    echo ""
-    echo "  Usage:"
-    echo "    $0 <target> \"<command>\""
-    echo ""
-    echo "  Targets:"
-    echo "    all        Run on master + all workers"
-    echo "    control    Run on master only"
-    echo "    workers    Run on all workers"
-    echo "    worker-N   Run on a specific worker (e.g., worker-1)"
-    echo ""
-    echo "  Examples:"
-    echo "    $0 all \"hostname && hostname -I\""
-    echo "    $0 workers \"kubectl get nodes\""
-    echo "    $0 control \"kubeadm token create --print-join-command\""
-    echo ""
-    echo "  Config file: ../config.json (copy from config-sample.json)"
-    echo ""
+  echo ""
+  echo "  Kubernetes Remote Command Executor (SSH RSA & SQLite Engine)"
+  echo ""
+  echo "  Usage:"
+  echo "    $0 <target> \"<command>\" [--sudo]"
+  echo ""
+  echo "  Targets:"
+  echo "    all        Run on control + all worker nodes"
+  echo "    control    Run on control / master node only"
+  echo "    workers    Run on all worker nodes"
+  echo "    <node>     Run on a specific node (e.g. worker-1, control)"
+  echo ""
+  echo "  Options:"
+  echo "    --sudo     Execute command with sudo privileges"
+  echo "    -h, --help Show this help message"
+  echo ""
+  echo "  Examples:"
+  echo "    $0 all \"hostname -I\""
+  echo "    $0 control \"kubectl get nodes\""
+  echo "    $0 workers \"df -h /\""
+  echo "    $0 worker-1 \"systemctl status kubelet\" --sudo"
+  echo ""
 }
 
-# -- Read JSON config -------------------------------------------------------
-read_json() {
-    local json_file="$1"
-    local key="$2"
-    jq -r "$key" "$json_file"
+get_python_bin() {
+  if command -v python3 >/dev/null 2>&1; then
+    echo "python3"
+
+    return 0
+  fi
+
+  echo "python"
 }
 
-# -- Execute on nodes -------------------------------------------------------
-execute_on_nodes() {
-    local username="$1"
-    local password="$2"
-    local command="$3"
-    local label="$4"
-    shift 4
-    local nodes=("$@")
+has_registered_nodes() {
+  local py_bin
+  py_bin="$(get_python_bin)"
+  local count
+  count=$("$py_bin" -c "import json, subprocess; out=subprocess.getoutput('$py_bin $_DB_BRIDGE cluster-list-nodes --json'); print(len(json.loads(out)) if out.startswith('[') else 0)" 2>/dev/null || echo "0")
 
-    for node in "${nodes[@]}"; do
-        echo ""
-        log_message "Executing on $label [$node]: \"$command\"" "info"
-        sshpass -p "$password" ssh -o StrictHostKeyChecking=no \
-            "$username@$node" "echo $password | sudo -S bash -c '$command' 2>/dev/null" || \
-            log_message "Failed to execute on $node" "error"
-    done
+  [ "$count" -gt 0 ]
 }
 
-# -- Main -------------------------------------------------------------------
+ensure_node_inventory() {
+  if has_registered_nodes; then
+    return 0
+  fi
+
+  local legacy_json="$_SCRIPT_DIR/../config.json"
+
+  if [ -f "$legacy_json" ]; then
+    log_message "Importing cluster nodes from legacy $legacy_json..." "info"
+    local py_bin
+    py_bin="$(get_python_bin)"
+    "$py_bin" "$_DB_BRIDGE" cluster-import-json "$legacy_json" >/dev/null 2>&1
+  fi
+
+  return 0
+}
+
+get_target_nodes() {
+  local target="$1"
+  local py_bin
+  py_bin="$(get_python_bin)"
+
+  case "$target" in
+    all)
+      "$py_bin" -c "import json, subprocess; out=subprocess.getoutput('$py_bin $_DB_BRIDGE cluster-list-nodes --json'); nodes=json.loads(out) if out.startswith('[') else []; print(' '.join(n['node_name'] for n in nodes))" 2>/dev/null
+      ;;
+    control)
+      "$py_bin" -c "import json, subprocess; out=subprocess.getoutput('$py_bin $_DB_BRIDGE cluster-list-nodes control --json'); nodes=json.loads(out) if out.startswith('[') else []; print(' '.join(n['node_name'] for n in nodes))" 2>/dev/null
+      ;;
+    workers)
+      "$py_bin" -c "import json, subprocess; out=subprocess.getoutput('$py_bin $_DB_BRIDGE cluster-list-nodes worker --json'); nodes=json.loads(out) if out.startswith('[') else []; print(' '.join(n['node_name'] for n in nodes))" 2>/dev/null
+      ;;
+    *)
+      echo "$target"
+      ;;
+  esac
+}
+
+execute_on_node() {
+  local node_name="$1"
+  local command="$2"
+  local is_sudo="$3"
+
+  log_message "Executing on [$node_name]: \"$command\"" "info"
+  bash "$_SSH_MGR" exec "$node_name" "$command" "$is_sudo"
+}
+
 main() {
-    if [[ "$1" == "-h" || "$1" == "--help" || -z "$1" ]]; then
-        show_help
-        exit 0
-    fi
+  if [ $# -lt 2 ] || [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+    show_help
 
-    local config_file="$SCRIPT_DIR/../config.json"
-    if [[ ! -f "$config_file" ]]; then
-        log_message "Config file not found: $config_file" "error"
-        echo "  Copy config-sample.json to config.json and edit it."
-        exit 1
-    fi
+    return 0
+  fi
 
-    install_apt_quiet sshpass jq
+  local target="$1"
+  local command="$2"
+  local is_sudo="false"
 
-    local username
-    local password
-    local control_node
-    username=$(read_json "$config_file" '.user.name')
-    password=$(read_json "$config_file" '.user.password')
-    control_node=$(read_json "$config_file" '.control.master')
+  if [ "${3:-}" = "--sudo" ] || [ "${3:-}" = "sudo" ]; then
+    is_sudo="true"
+  fi
 
-    local worker_ips
-    mapfile -t worker_ips < <(jq -r '.nodes | to_entries[] | .value' "$config_file")
+  ensure_node_inventory
 
-    local target="$1"
-    local command="$2"
+  local target_nodes
+  target_nodes="$(get_target_nodes "$target")"
 
-    log_message "Target: $target | Command: \"$command\"" "info"
+  if [ -z "$target_nodes" ]; then
+    log_message "No nodes found for target: $target. Use 'run.sh cluster add' first." "error"
 
-    case "$target" in
-        all)
-            execute_on_nodes "$username" "$password" "$command" "Master" "$control_node"
-            execute_on_nodes "$username" "$password" "$command" "Worker" "${worker_ips[@]}"
-            ;;
-        control)
-            execute_on_nodes "$username" "$password" "$command" "Master" "$control_node"
-            ;;
-        workers)
-            execute_on_nodes "$username" "$password" "$command" "Worker" "${worker_ips[@]}"
-            ;;
-        worker-*)
-            local node_ip
-            node_ip=$(jq -r ".nodes.\"$target\"" "$config_file")
-            if [[ "$node_ip" == "null" ]]; then
-                log_message "Unknown node: $target" "error"
-                exit 1
-            fi
-            execute_on_nodes "$username" "$password" "$command" "$target" "$node_ip"
-            ;;
-        *)
-            show_help
-            exit 1
-            ;;
-    esac
+    return 1
+  fi
 
+  local has_failure="false"
+
+  for node in $target_nodes; do
     echo ""
-    log_message "Command execution complete for target: $target" "success"
+
+    if ! execute_on_node "$node" "$command" "$is_sudo"; then
+      log_message "Command failed on node $node" "error"
+      has_failure="true"
+    fi
+  done
+
+  echo ""
+
+  if [ "$has_failure" = "true" ]; then
+    log_message "Cluster execution completed with errors for target: $target" "warn"
+
+    return 1
+  fi
+
+  log_message "Cluster execution successfully completed for target: $target" "success"
+
+  return 0
 }
 
 main "$@"

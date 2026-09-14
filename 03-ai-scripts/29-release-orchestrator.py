@@ -198,6 +198,8 @@ def stage_release_files(repo_root: Path, next_version: str = "") -> list[str]:
         "scripts-linux/readme.md",
         "scripts/aliases.generated.json",
         "scripts-linux/aliases.generated.json",
+        "scripts/registry.json",
+        "scripts-linux/registry.json",
         "completions/run.ps1",
         "completions/run.bash",
         "completions/run.zsh",

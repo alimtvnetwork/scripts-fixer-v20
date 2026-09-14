@@ -77,6 +77,16 @@ verb_repair() {
 verb_uninstall() {
   rm -f "$HOME/.local/bin/agy" "$HOME/.local/bin/antigravity"
   rm -rf "$HOME/.local/share/antigravity" "$HOME/.local/share/antigravity-ide"
+  rm -f "$HOME/.local/share/applications/antigravity.desktop" \
+        "$HOME/.local/share/applications/antigravity-ide.desktop" \
+        "$HOME/.local/share/applications/Google Antigravity.desktop" \
+        "$HOME/.local/share/applications/Google-Antigravity.desktop" \
+        "$HOME/.local/share/applications/Antigravity.desktop" \
+        "$HOME/Desktop/antigravity.desktop" \
+        "$HOME/Desktop/antigravity-ide.desktop" \
+        "$HOME/Desktop/Google Antigravity.desktop" \
+        "$HOME/Desktop/Google-Antigravity.desktop" \
+        "$HOME/Desktop/Antigravity.desktop"
   rm -f "$INSTALLED_MARK"
   log_ok "[69] Antigravity uninstalled"
 }
