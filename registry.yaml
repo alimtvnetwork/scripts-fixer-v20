@@ -543,6 +543,8 @@ scripts:
       phase: '12'
       title: Cross-OS cleanup (user temp+caches, trash, package caches, logs+crash dumps)
   - id: '66'
+    windows:
+      folder: 66-install-vmware
     linux:
       folder: 66-vscode-menu-cleanup-mac
       phase: '12'

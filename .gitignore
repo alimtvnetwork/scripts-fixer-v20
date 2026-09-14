@@ -36,6 +36,13 @@ release-assets
 .resolved/
 tmp/
 *.sqlite3
+*.sqlite
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+.data/
+.db/
 
 # Generated
 artifacts/

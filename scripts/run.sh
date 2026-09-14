@@ -43,6 +43,14 @@ if ! python3 -c "import sys" &>/dev/null; then
     fi
 fi
 
+if [ -f "scripts/shared/db.sh" ]; then
+    . "scripts/shared/db.sh"
+    ensure_db
+elif [ -f "scripts-linux/_shared/db.sh" ]; then
+    . "scripts-linux/_shared/db.sh"
+    ensure_db
+fi
+
 show_header() {
     echo -e ""
     echo -e "  ${PRIMARY}Scripts Fixer (Linux)${TEXT}"
@@ -61,6 +69,9 @@ show_main_help() {
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install ls" "List all previously installed items"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install tar <file|url>" "Intelligent archive installer (.tar.gz, .zip, .gz)"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh os <action>" "OS level actions (update, update-all)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh vmware <tools|mount>" "VMware tools installation and shared folder mount"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh vmware-tools" "Install VMware Tools (open-vm-tools & desktop)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh vmware-mount" "Mount VMware shared folder (.host:/ -> /mnt/hgfs)"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh <command> -h" "Show detailed help for a command"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh export-config <app>" "Export app config (qtorrent, utorrent, vscode)"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh import-config <app>" "Import app config (qtorrent, utorrent, vscode)"
@@ -175,6 +186,7 @@ show_main_help() {
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "76" "qtorrent" "Install qBittorrent"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "77" "utorrent" "Install uTorrent"
     printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "81" "tar, zip, gz, archive" "Intelligent archive installer (.tar.gz, .zip, .gz)"
+    printf "    ${MUTED}%s${TEXT}  %-30s  %s\n" "66" "vmware, vmware-tools" "Install VMware Tools & mount shared folder"
     echo -e ""
     
     echo -e "    ${PRIMARY}Desktop GUI Tools & OS Menus${TEXT}"
@@ -208,6 +220,9 @@ show_main_help() {
     echo -e "    ./run.sh profile dev --tree"
     echo -e "    ./run.sh profile tree dev"
     echo -e "    ./run.sh install 01,11,03,04,27,42"
+    echo -e "    ./run.sh vmware-tools"
+    echo -e "    ./run.sh vmware-mount"
+    echo -e "    ./run.sh install vmware"
     echo -e "    ./run.sh os update-all"
     echo -e "    ./run.sh install ls"
     echo -e "    ./run.sh install profile help"
@@ -244,6 +259,92 @@ show_footer() {
         echo -e "  ${MUTED}repo: ${TEXT}${REMOTE}"
     fi
     echo -e ""
+}
+
+is_profile_already_installed() {
+    local prof="$1"
+
+    if [ "${IS_FORCE:-false}" = "true" ]; then
+        return 1
+    fi
+
+    if ! $PYTHON_BIN scripts/shared/profile_tree.py is-installed "$prof" &>/dev/null; then
+        return 1
+    fi
+
+    return 0
+}
+
+display_profile_installed() {
+    local prof="$1"
+
+    echo -e "\n  ${PRIMARY}[  OK  ]${TEXT} Profile '${prof}' is already installed."
+    echo -e "  ${MUTED}All profile components are present on this system.${TEXT}"
+    $PYTHON_BIN scripts/shared/profile_tree.py show-installed "$prof"
+    echo -e "  ${MUTED}Use --force to reinstall.${TEXT}\n"
+}
+
+handle_skipped_profile() {
+    local prof="$1"
+
+    display_profile_installed "$prof"
+    db_record_skipped profile "$prof" "All profile components already installed"
+    SUCCESS=true
+
+    return 0
+}
+
+exec_profile_script() {
+    local prof="$1"
+    local script="$2"
+
+    if bash "$script"; then
+        SUCCESS=true
+        PROFILE_INSTALLED="$prof"
+        db_record_success profile "$prof" "latest" "Profile installed"
+
+        return 0
+    fi
+
+    local code=$?
+    db_record_failure profile "$prof" "$code" "Profile script failed"
+
+    return $code
+}
+
+run_profile_step() {
+    local prof="$1"
+    local script="$2"
+
+    if is_profile_already_installed "$prof"; then
+        handle_skipped_profile "$prof"
+
+        return 0
+    fi
+
+    db_record_start profile "$prof" "install"
+    exec_profile_script "$prof" "$script"
+
+    return $?
+}
+
+run_pkg_step() {
+    local name="$1"
+    shift
+
+    db_record_start package "$name" "install"
+
+    if "$@"; then
+        SUCCESS=true
+        db_record_success package "$name" "latest" "Package installed"
+
+        return 0
+    fi
+
+    local code=$?
+    db_record_failure package "$name" "$code" "Package command failed"
+
+    return $code
 }
 
 COMMAND=$1
@@ -322,6 +423,30 @@ case "$COMMAND" in
         $PYTHON_BIN scripts/shared/profile_tree.py "$ARGS"
         show_footer
         exit 0
+        ;;
+    "vmware")
+        ACTION=$(echo "$ARGS" | awk '{print $1}')
+
+        if [[ "$ACTION" == "mount" ]]; then
+            bash scripts/os/ubuntu/vmware-mount-shared.sh
+        elif [[ "$ACTION" == "tools" || -z "$ACTION" ]]; then
+            bash scripts/os/ubuntu/install-vmware-tools.sh
+        else
+            bash scripts/os/ubuntu/install-vmware.sh $ARGS
+        fi
+
+        show_footer
+        exit $?
+        ;;
+    "vmware-tools")
+        bash scripts/os/ubuntu/install-vmware-tools.sh $ARGS
+        show_footer
+        exit $?
+        ;;
+    "vmware-mount")
+        bash scripts/os/ubuntu/vmware-mount-shared.sh $ARGS
+        show_footer
+        exit $?
         ;;
     "startup")
         $PYTHON_BIN scripts/shared/startup_manager.py $ARGS
@@ -509,21 +634,21 @@ case "$COMMAND" in
 
             # Profile installation
             if [[ "$ITEM" == *"profile ubuntu+dev+ai"* || "$ITEM" == *"ubuntu+dev+ai"* ]]; then
-                bash scripts/os/ubuntu/profile-ubuntu-dev-ai.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+dev+ai"
+                run_profile_step "dev+ai" "scripts/os/ubuntu/profile-ubuntu-dev-ai.sh"
             elif [[ "$ITEM" == *"profile ubuntu+ai-tools"* || "$ITEM" == *"profile ubuntu+all-ai"* || "$ITEM" == *"profile ubuntu+ai"* || "$ITEM" == *"ubuntu+ai-tools"* ]]; then
-                bash scripts/os/ubuntu/profile-ubuntu-ai-tools.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+ai-tools"
+                run_profile_step "ai-tools" "scripts/os/ubuntu/profile-ubuntu-ai-tools.sh"
             elif [[ "$ITEM" == *"profile ubuntu+antigravity-suite"* || "$ITEM" == *"profile ubuntu+antigravity"* || "$ITEM" == *"ubuntu+antigravity"* ]]; then
-                bash scripts/os/ubuntu/profile-ubuntu-antigravity-suite.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+antigravity-suite"
+                run_profile_step "antigravity" "scripts/os/ubuntu/profile-ubuntu-antigravity-suite.sh"
             elif [[ "$ITEM" == *"profile ubuntu+dev"* || "$ITEM" == *"ubuntu+dev"* ]]; then
-                bash scripts/os/ubuntu/profile-ubuntu-dev.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+dev"
+                run_profile_step "dev" "scripts/os/ubuntu/profile-ubuntu-dev.sh"
             elif [[ "$ITEM" == *"profile ubuntu+small-dev"* || "$ITEM" == *"profile ubuntu+simple-dev"* || "$ITEM" == *"ubuntu+small-dev"* || "$ITEM" == *"ubuntu+simple-dev"* ]]; then
-                bash scripts/os/ubuntu/profile-ubuntu-simple-dev.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+simple-dev"
+                run_profile_step "simple-dev" "scripts/os/ubuntu/profile-ubuntu-simple-dev.sh"
             elif [[ "$ITEM" == *"profile ubuntu+vscode"* || "$ITEM" == *"ubuntu+vscode"* ]]; then
-                bash scripts/os/ubuntu/profile-ubuntu-vscode.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu+vscode"
+                run_profile_step "vscode" "scripts/os/ubuntu/profile-ubuntu-vscode.sh"
             elif [[ "$ITEM" == *"profile ubuntu+basic"* || "$ITEM" == *"ubuntu-basic"* ]]; then
-                bash scripts/os/ubuntu/profile-ubuntu-basic.sh && SUCCESS=true && PROFILE_INSTALLED="ubuntu-basic"
+                run_profile_step "basic" "scripts/os/ubuntu/profile-ubuntu-basic.sh"
             elif [[ "$ITEM" == *"profile git-compact"* || "$ITEM" == *"profile-git-compact"* || "$ITEM" == *"profile git"* ]]; then
-                bash scripts/os/ubuntu/install-git-compact.sh && SUCCESS=true && PROFILE_INSTALLED="git-compact"
+                run_profile_step "git-compact" "scripts/os/ubuntu/install-git-compact.sh"
             
             # Combos & Multi-stack
             elif [[ "$ITEM" == *"vscode+menu+settings"* || "$ITEM" == *"vms"* ]]; then
@@ -619,6 +744,12 @@ case "$COMMAND" in
                 force_arg=""
                 [[ "$IS_FORCE" == "true" ]] && force_arg="--force"
                 bash scripts/os/ubuntu/install-git-compact.sh $force_arg && SUCCESS=true
+            elif [[ "$ITEM" == *"vmware-tools"* || "$ITEM" == *"vmwaretools"* ]]; then
+                run_pkg_step "vmware-tools" bash scripts/os/ubuntu/install-vmware-tools.sh
+            elif [[ "$ITEM" == *"vmware-mount"* || "$ITEM" == *"vmwaremount"* ]]; then
+                run_pkg_step "vmware-mount" bash scripts/os/ubuntu/vmware-mount-shared.sh
+            elif [[ "$ITEM" == *"vmware"* || "$ITEM" == "66" || "$ITEM" == *" 66"* ]]; then
+                run_pkg_step "vmware" bash scripts/os/ubuntu/install-vmware-tools.sh
             elif [[ "$ITEM" == *"git-lfs"* || "$ITEM" == *"gh"* || "$ITEM" == "git" || "$ITEM" == "07" || "$ITEM" == "7" || "$ITEM" == "git-cli" ]]; then 
                 bash scripts/os/ubuntu/install-git-lfs.sh && bash scripts/os/ubuntu/install-gh.sh && SUCCESS=true
             elif [[ "$ITEM" == *"dbeaver"* || "$ITEM" == *"32"* ]]; then bash scripts/os/ubuntu/install-dbeaver.sh && SUCCESS=true

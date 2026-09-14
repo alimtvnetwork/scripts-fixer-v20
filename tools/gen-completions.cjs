@@ -24,8 +24,9 @@ for (const s of reg.scripts) {
   if (w) aliases.push(w.replace(/^\d+-/, ""));
   if (l && l !== w) aliases.push(l.replace(/^\d+-/, ""));
 }
-const allTargets = Array.from(new Set([...ids, ...aliases])).sort();
-const cmds = ["install", "uninstall", "check", "repair", "list", "doctor", "version"];
+const extraTargets = ["vmware", "vmware-tools", "vmware-mount"];
+const allTargets = Array.from(new Set([...ids, ...aliases, ...extraTargets])).sort();
+const cmds = ["install", "uninstall", "check", "repair", "list", "doctor", "version", "profile", "vmware", "vmware-tools", "vmware-mount"];
 
 const bash = `# bash completion for run
 _run_complete() {

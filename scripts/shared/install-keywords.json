@@ -1355,6 +1355,15 @@
     "virtualbox": [
       68
     ],
+    "vmware": [
+      66
+    ],
+    "vmware-tools": [
+      66
+    ],
+    "vmwaretools": [
+      66
+    ],
     "ansible": [
       68
     ],

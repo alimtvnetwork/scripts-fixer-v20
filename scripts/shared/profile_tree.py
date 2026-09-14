@@ -250,7 +250,86 @@ def resolve_profile(name):
         return prof, clean_name
     return None, clean_name
 
-def print_tree(name, use_colors=True):
+def is_command_available(cmd):
+    import shutil
+    return shutil.which(cmd) is not None
+
+def check_component_installed(comp_name):
+    # Check SQLite DB first
+    try:
+        from db_bridge import is_installed
+        if is_installed("package", comp_name):
+            return True
+    except Exception:
+        pass
+
+    detectors = {
+        "git": lambda: is_command_available("git"),
+        "zsh": lambda: is_command_available("zsh"),
+        "aria2c": lambda: is_command_available("aria2c"),
+        "build-essential": lambda: is_command_available("gcc") or is_command_available("make"),
+        "vscode": lambda: is_command_available("code") or os.path.exists("/snap/bin/code"),
+        "vscode-settings": lambda: os.path.exists(os.path.expanduser("~/.config/Code/User/settings.json")) or os.path.exists(os.path.expanduser("~/AppData/Roaming/Code/User/settings.json")),
+        "github-desktop": lambda: is_command_available("github-desktop") or os.path.exists("/usr/share/applications/github-desktop.desktop") or is_command_available("github"),
+        "git-compact": lambda: is_command_available("git-compact") or os.path.exists(os.path.expanduser("~/.local/bin/git-compact")),
+        "golang": lambda: is_command_available("go"),
+        "rust": lambda: is_command_available("rustc") or is_command_available("cargo"),
+        "php": lambda: is_command_available("php"),
+        "python3": lambda: is_command_available("python3") or is_command_available("python"),
+        "nodejs": lambda: is_command_available("node"),
+        "pnpm": lambda: is_command_available("pnpm"),
+        "yarn": lambda: is_command_available("yarn"),
+        "antigravity": lambda: is_command_available("antigravity") or is_command_available("agy") or os.path.exists(os.path.expanduser("~/.local/bin/agy")) or os.path.exists(os.path.expanduser("~/.local/share/antigravity/antigravity")),
+        "docker": lambda: is_command_available("docker"),
+        "ollama": lambda: is_command_available("ollama"),
+        "claude-code": lambda: is_command_available("claude"),
+        "codex": lambda: is_command_available("codex"),
+    }
+    detector = detectors.get(comp_name)
+    if detector:
+        try:
+            return bool(detector())
+        except Exception:
+            return False
+    return False
+
+def is_profile_installed(name):
+    prof, actual_name = resolve_profile(name)
+    if not prof:
+        return False
+
+    # Check SQLite DB
+    try:
+        from db_bridge import is_installed
+        if is_installed("profile", actual_name):
+            return True
+    except Exception:
+        pass
+
+    # Check constituent packages
+    profile_components = {
+        "ubuntu-basic": ["git", "zsh", "aria2c", "build-essential"],
+        "ubuntu+vscode": ["git", "zsh", "aria2c", "vscode"],
+        "ubuntu+simple-dev": ["git", "vscode", "github-desktop", "git-compact", "golang", "rust", "php", "python3"],
+        "ubuntu+dev": ["git", "vscode", "github-desktop", "git-compact", "golang", "rust", "php", "python3", "nodejs", "pnpm", "antigravity"],
+        "ubuntu+dev+ai": ["git", "vscode", "golang", "nodejs", "antigravity", "ollama"],
+        "ubuntu+ai-tools": ["ollama"],
+        "git-compact": ["git", "git-compact"]
+    }
+    comps = profile_components.get(actual_name, [])
+    if not comps:
+        return False
+
+    has_all = all(check_component_installed(c) for c in comps)
+    if has_all:
+        try:
+            from db_bridge import record_success
+            record_success("profile", actual_name, details="auto-detected from filesystem")
+        except Exception:
+            pass
+    return has_all
+
+def print_tree(name, use_colors=True, check_installed=False):
     prof, actual_name = resolve_profile(name)
     if not prof:
         if name.strip().lower() in ["all", "list", "help", "", "--help", "-h"]:
@@ -265,14 +344,30 @@ def print_tree(name, use_colors=True):
     c_gray = "\033[0;37m" if use_colors else ""
     c_reset = "\033[0m" if use_colors else ""
 
-    print(f"\n  {c_green}Profile Structure:{c_reset} {c_cyan}{actual_name}{c_reset} - {c_yellow}{prof['title']}{c_reset}")
+    installed_badge = ""
+    is_installed_prof = is_profile_installed(name)
+    if check_installed or is_installed_prof:
+        installed_badge = f" {c_green}[✔ Already Installed]{c_reset}"
+
+    print(f"\n  {c_green}Profile Structure:{c_reset} {c_cyan}{actual_name}{c_reset} - {c_yellow}{prof['title']}{c_reset}{installed_badge}")
     print(f"  {c_gray}{prof['description']}{c_reset}\n")
     print(f"  {c_green}Hierarchy Tree:{c_reset}")
     for line in prof["tree"]:
-        print(f"    {c_cyan}{line}{c_reset}")
+        annotated_line = line
+        if check_installed or is_installed_prof:
+            # Check if line contains a known component
+            for comp in ["git", "zsh", "aria2c", "vscode", "github-desktop", "git-compact", "golang", "rust", "php", "python3", "nodejs", "pnpm", "yarn", "antigravity", "docker", "ollama"]:
+                if f" {comp} " in f" {line.lower()} " or f"({comp}" in line.lower():
+                    if check_component_installed(comp):
+                        annotated_line = line.replace(f"├── {comp}", f"├── ✔ {comp}").replace(f"└── {comp}", f"└── ✔ {comp}")
+                    break
+        print(f"    {c_cyan}{annotated_line}{c_reset}")
     print(f"\n  {c_green}Step-by-Step Components Breakdown:{c_reset}")
     for step_title, step_desc in prof["steps"]:
-        print(f"    {c_yellow}✔ {step_title}{c_reset}")
+        badge = "✔"
+        if check_installed or is_installed_prof:
+            badge = "✔ [Installed]"
+        print(f"    {c_yellow}{badge} {step_title}{c_reset}")
         print(f"      {c_gray}{step_desc}{c_reset}")
     print("")
 
@@ -307,7 +402,14 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         raw_args = " ".join(sys.argv[1:]).strip()
         cmd = sys.argv[1].lower()
-        if cmd in ["all", "list", "help", "--help", "-h"] and len(sys.argv) == 2:
+        if cmd == "is-installed" and len(sys.argv) > 2:
+            target = " ".join(sys.argv[2:])
+            sys.exit(0 if is_profile_installed(target) else 1)
+        elif cmd == "show-installed" and len(sys.argv) > 2:
+            target = " ".join(sys.argv[2:])
+            print_tree(target, check_installed=True)
+            sys.exit(0)
+        elif cmd in ["all", "list", "help", "--help", "-h"] and len(sys.argv) == 2:
             print_all_profiles()
         elif cmd in ["describe", "tree", "summary"] and len(sys.argv) > 2:
             print_tree(" ".join(sys.argv[2:]))

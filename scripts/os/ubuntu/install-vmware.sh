@@ -31,21 +31,45 @@ install_vmware() {
     rm -f vmware-installer.bundle
 }
 
+_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+_ROOT_DIR="$(cd "$_SCRIPT_DIR/../../.." && pwd)"
+
+if [ -f "$_ROOT_DIR/scripts/shared/db.sh" ]; then
+    . "$_ROOT_DIR/scripts/shared/db.sh"
+    ensure_db
+fi
+
+for arg in "$@"; do
+    if [ "$arg" = "tools" ] || [ "$arg" = "--tools" ] || [ "$arg" = "mount" ] || [ "$arg" = "--mount" ]; then
+        exec bash "$_SCRIPT_DIR/install-vmware-tools.sh" "$@"
+    fi
+done
+
 main() {
     echo -e "\e[1;36mℹ Installing VMware\e[0m"
+
     if is_vmware_installed; then
         echo -e "\e[1;32m✔ VMware is already installed.\e[0m"
+        db_record_skipped package "vmware" "already installed"
+
         return 0
     fi
-    
+
+    db_record_start package "vmware" "install"
+
     if ! download_installer; then
+        db_record_failure package "vmware" 1 "download failed"
         exit 1
     fi
-    
+
     if ! install_vmware; then
+        db_record_failure package "vmware" 1 "installer failed"
         exit 1
     fi
+
+    local ver="${VMWARE_VERSION:-17.5.2}"
+    db_record_success package "vmware" "$ver" "VMware Workstation installed"
     echo -e "\e[1;32m✔ VMware installation complete.\e[0m"
 }
 
-main
+main "$@"
