@@ -39,7 +39,11 @@ case "$EFFECTIVE_TAG" in
   [0-9]*) EFFECTIVE_TAG="v${EFFECTIVE_TAG}" ;;
 esac
 
-URL_TEMPLATE="${CONFIG_URL_TEMPLATE:-https://raw.githubusercontent.com/alimtvnetwork/gitmap-v28/{tag}/install.sh}"
+URL_TEMPLATE="$CONFIG_URL_TEMPLATE"
+if [ -z "$URL_TEMPLATE" ]; then
+  URL_TEMPLATE="https://raw.githubusercontent.com/alimtvnetwork/gitmap-v28/{tag}/install.sh"
+fi
+
 INSTALL_URL="${URL_TEMPLATE//\{tag\}/$EFFECTIVE_TAG}"
 
 log_info "[35] gitmap release tag: $EFFECTIVE_TAG"

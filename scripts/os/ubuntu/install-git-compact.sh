@@ -57,10 +57,17 @@ install_via_upstream() {
     local bin_dir="$HOME/.local/bin"
     mkdir -p "$bin_dir"
 
-    local install_url="https://raw.githubusercontent.com/alimtvnetwork/git-compact/main/install.sh"
-    curl -fsSL "$install_url" | sh -s -- --dir "$bin_dir"
+    local payload="$repo_root/scripts-linux/71-install-git-compact/payload/git-compact.sh"
+    if [ -f "$payload" ]; then
+        cp -f "$payload" "$bin_dir/git-compact"
+        chmod +x "$bin_dir/git-compact"
+        return 0
+    fi
 
-    return $?
+    local install_url="https://raw.githubusercontent.com/alimtvnetwork/git-compact/main/install.sh"
+    curl -fsSL "$install_url" 2>/dev/null | sh -s -- --dir "$bin_dir" || return 1
+
+    return 0
 }
 
 verify_git_compact() {

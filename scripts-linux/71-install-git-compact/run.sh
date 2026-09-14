@@ -67,7 +67,11 @@ case "$EFFECTIVE_TAG" in
   [0-9]*) EFFECTIVE_TAG="v${EFFECTIVE_TAG}" ;;
 esac
 
-URL_TEMPLATE="${CONFIG_URL_TEMPLATE:-https://raw.githubusercontent.com/alimtvnetwork/git-compact/{tag}/install.sh}"
+URL_TEMPLATE="$CONFIG_URL_TEMPLATE"
+if [ -z "$URL_TEMPLATE" ]; then
+  URL_TEMPLATE="https://raw.githubusercontent.com/alimtvnetwork/git-compact/{tag}/install.sh"
+fi
+
 INSTALL_URL="${URL_TEMPLATE//\{tag\}/$EFFECTIVE_TAG}"
 
 log_info "[71] git-compact ref: $EFFECTIVE_TAG"
@@ -150,10 +154,23 @@ verb_install() {
     log_info "[71] Disk space OK on $BIN_DIR ($((free_kb / 1024)) MB free, 200 MB required)"
   fi
 
+  local payload="$SCRIPT_DIR/payload/git-compact.sh"
+  local is_remote_installed=false
+
   log_info "[71] Invoking: curl -fsSL $INSTALL_URL | sh -s -- --dir \"$BIN_DIR\""
-  if ! curl -fsSL "$INSTALL_URL" | sh -s -- --dir "$BIN_DIR"; then
-    log_file_error "$INSTALL_URL" "curl | sh one-liner exited non-zero (dir=$BIN_DIR)"
-    return 1
+  if curl -fsSL "$INSTALL_URL" 2>/dev/null | sh -s -- --dir "$BIN_DIR" 2>/dev/null; then
+    is_remote_installed=true
+  fi
+
+  if [ "$is_remote_installed" != "true" ] || ! verify_installed; then
+    if [ -f "$payload" ]; then
+      log_info "[71] Upstream installer unavailable; deploying bundled payload -> $DEST"
+      cp -f "$payload" "$DEST"
+      chmod +x "$DEST"
+    else
+      log_file_error "$INSTALL_URL" "curl | sh one-liner exited non-zero (dir=$BIN_DIR) and no bundled payload found"
+      return 1
+    fi
   fi
 
   case ":$PATH:" in *":$BIN_DIR:"*) ;; *) export PATH="$BIN_DIR:$PATH" ;; esac

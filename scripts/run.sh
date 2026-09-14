@@ -614,14 +614,14 @@ case "$COMMAND" in
             elif [[ "$ITEM" == *"php"* || "$ITEM" == *"16"* ]]; then bash scripts/os/ubuntu/install-php.sh && SUCCESS=true
             elif [[ "$ITEM" == *"dotnet"* || "$ITEM" == *"csharp"* || "$ITEM" == *"39"* ]]; then bash scripts/os/ubuntu/install-dotnet.sh && SUCCESS=true
             elif [[ "$ITEM" == *"java"* || "$ITEM" == *"jdk"* || "$ITEM" == *"40"* ]]; then bash scripts/os/ubuntu/install-java.sh && SUCCESS=true
-            elif [[ "$ITEM" == *"git-lfs"* || "$ITEM" == *"gh"* || "$ITEM" == *"git"* || "$ITEM" == *"07"* ]]; then 
-                bash scripts/os/ubuntu/install-git-lfs.sh && bash scripts/os/ubuntu/install-gh.sh && SUCCESS=true
-            elif [[ "$ITEM" == *"dbeaver"* || "$ITEM" == *"32"* ]]; then bash scripts/os/ubuntu/install-dbeaver.sh && SUCCESS=true
             elif [[ "$ITEM" == *"github-desktop"* || "$ITEM" == *"33"* ]]; then bash scripts/os/ubuntu/install-github-desktop.sh && SUCCESS=true
-            elif [[ "$ITEM" == *"git-compact"* || "$ITEM" == *"gitcompact"* || "$ITEM" == "git compact" || "$ITEM" == *"71"* ]]; then
+            elif [[ "$ITEM" == *"git-compact"* || "$ITEM" == *"gitcompact"* || "$ITEM" == "git compact" || "$ITEM" == "71" || "$ITEM" == *" 71"* ]]; then
                 force_arg=""
                 [[ "$IS_FORCE" == "true" ]] && force_arg="--force"
                 bash scripts/os/ubuntu/install-git-compact.sh $force_arg && SUCCESS=true
+            elif [[ "$ITEM" == *"git-lfs"* || "$ITEM" == *"gh"* || "$ITEM" == "git" || "$ITEM" == "07" || "$ITEM" == "7" || "$ITEM" == "git-cli" ]]; then 
+                bash scripts/os/ubuntu/install-git-lfs.sh && bash scripts/os/ubuntu/install-gh.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"dbeaver"* || "$ITEM" == *"32"* ]]; then bash scripts/os/ubuntu/install-dbeaver.sh && SUCCESS=true
             elif [[ "$ITEM" == *"sticky-notes"* || "$ITEM" == *"34"* ]]; then bash scripts/os/ubuntu/install-sticky-notes.sh && SUCCESS=true
             elif [[ "$ITEM" == *"chrome"* || "$ITEM" == *"35"* ]]; then bash scripts/os/ubuntu/install-chrome.sh && SUCCESS=true
             elif [[ "$ITEM" == *"zsh,zsh+config"* || "$ITEM" == *"zsh+config"* || "$ITEM" == *"51"* ]]; then
