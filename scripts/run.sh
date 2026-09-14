@@ -628,7 +628,7 @@ case "$COMMAND" in
 
             if [ "$SUCCESS" = true ]; then
                 if [[ "$ITEM" == *"antigravity"* || "$ITEM" == *"agy"* || "$ITEM" == "ag" || "$ITEM" == "43" || "$ITEM" == "69" ]]; then
-                    if ! command -v antigravity &>/dev/null && [ ! -x "$HOME/.local/bin/antigravity" ] && [ ! -x "/usr/local/bin/antigravity" ] && [ ! -x "$HOME/.local/share/antigravity-ide/antigravity" ] && [ ! -x "$HOME/.local/share/antigravity-ide/antigravity.run" ] && [ ! -x "$HOME/.local/share/antigravity/antigravity" ] && [ ! -x "$HOME/.local/share/antigravity/antigravity.run" ] && [ ! -x "$HOME/.local/share/antigravity/Antigravity" ] && [ ! -x "$HOME/.antigravity/bin/antigravity" ]; then
+                    if ! command -v antigravity &>/dev/null && [ ! -x "$HOME/.local/bin/antigravity" ] && [ ! -x "$HOME/.local/bin/agy" ] && [ ! -x "/usr/local/bin/antigravity" ] && [ ! -x "$HOME/.local/share/antigravity-ide/antigravity" ] && [ ! -x "$HOME/.local/share/antigravity-ide/antigravity.run" ] && [ ! -x "$HOME/.local/share/antigravity-ide/antigravity-ide.run" ] && [ ! -x "$HOME/.local/share/antigravity/antigravity" ] && [ ! -x "$HOME/.local/share/antigravity/antigravity.run" ] && [ ! -x "$HOME/.local/share/antigravity/Antigravity" ] && [ ! -x "$HOME/.antigravity/bin/antigravity" ]; then
                         echo -e "  ${ERROR}[FAIL ] Antigravity was not found in PATH or standard binary locations.${TEXT}"
                         SUCCESS=false
                     fi

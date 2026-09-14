@@ -67,6 +67,17 @@ clean_existing_installation() {
     rm -f "$HOME/.local/bin/antigravity" "$HOME/.local/bin/agy" "$HOME/.local/bin/antigravity-ide"
     rm -f "/tmp/scripts-fixer-downloads/Antigravity.tar.gz" "/tmp/Antigravity.tar.gz"
 
+    rm -f "$HOME/.local/share/applications/antigravity.desktop" \
+          "$HOME/.local/share/applications/antigravity-ide.desktop" \
+          "$HOME/.local/share/applications/Google Antigravity.desktop" \
+          "$HOME/Desktop/antigravity.desktop" \
+          "$HOME/Desktop/antigravity-ide.desktop"
+
+    if command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
+        sudo rm -f /usr/share/applications/antigravity.desktop \
+                   /usr/share/applications/antigravity-ide.desktop 2>/dev/null || true
+    fi
+
     if command -v sudo &>/dev/null; then
         sudo rm -f /usr/local/bin/antigravity /usr/local/bin/agy /usr/local/bin/antigravity-ide \
                    /usr/bin/antigravity /usr/bin/agy /usr/bin/antigravity-ide 2>/dev/null || true
@@ -160,15 +171,15 @@ export LD_LIBRARY_PATH="$DIR:$DIR/lib:${LD_LIBRARY_PATH:-}"
 EXEC="$DIR/antigravity"
 [ -f "$EXEC" ] || EXEC="$DIR/Antigravity"
 
-if [ -z "${DISPLAY:-}" ] && [ -z "${WAYLAND_DISPLAY:-}" ]; then
-    exec "$EXEC" --no-sandbox "$@"
-elif [ -f "$DIR/chrome-sandbox" ] && [ ! -u "$DIR/chrome-sandbox" ]; then
-    exec "$EXEC" --no-sandbox "$@"
-else
-    exec "$EXEC" "$@"
-fi
+export ELECTRON_OZONE_PLATFORM_HINT="auto"
+export DONT_PROMPT_WSL_INSTALL=1
+
+# Always pass --no-sandbox for tarball Electron builds on modern Linux (AppArmor userns restriction)
+exec "$EXEC" --no-sandbox "$@"
 EOF
     chmod +x "$wrapper"
+    ln -sf "$wrapper" "$ide_dir/antigravity.run" 2>/dev/null || true
+    ln -sf "$wrapper" "$ide_dir/antigravity-ide.run" 2>/dev/null || true
 
     mkdir -p "$HOME/.local/bin"
     ln -sf "$wrapper" "$HOME/.local/bin/antigravity"
@@ -209,19 +220,58 @@ create_desktop_launcher() {
     local desktop_path="$app_dir/antigravity.desktop"
     local exec_cmd="$ide_dir/antigravity-runner.sh"
     [ -f "$exec_cmd" ] || exec_cmd="$ide_dir/antigravity.run"
+    [ -f "$exec_cmd" ] || exec_cmd="$ide_dir/antigravity-ide.run"
     [ -f "$exec_cmd" ] || exec_cmd="$ide_dir/antigravity"
 
+    # Purge old conflicting launchers
+    rm -f "$app_dir/antigravity-ide.desktop" "$app_dir/Google Antigravity.desktop"
+    rm -f "$HOME/Desktop/antigravity-ide.desktop"
+    if [ -w "/usr/share/applications" ]; then
+        rm -f "/usr/share/applications/antigravity-ide.desktop" 2>/dev/null || true
+    elif command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
+        sudo rm -f "/usr/share/applications/antigravity-ide.desktop" 2>/dev/null || true
+    fi
+
     local icon_path
-    icon_path=$(find "$ide_dir" -maxdepth 4 -type f \( -name "antigravity.png" -o -name "code.png" -o -name "icon.png" \) 2>/dev/null | head -n 1 || true)
+    icon_path=$(find "$ide_dir" -maxdepth 8 -type f \( -iname "*antigravity*.png" -o -iname "*code*.png" -o -iname "*icon*.png" -o -iname "*logo*.png" \) 2>/dev/null | head -n 1 || true)
+    if [ -z "$icon_path" ]; then
+        for sys_icon in \
+            "$HOME/.local/share/icons/hicolor/512x512/apps/antigravity.png" \
+            "$HOME/.local/share/icons/hicolor/256x256/apps/antigravity.png" \
+            "/usr/share/pixmaps/antigravity.png" \
+            "/usr/share/icons/hicolor/256x256/apps/antigravity.png"; do
+            if [ -f "$sys_icon" ]; then
+                icon_path="$sys_icon"
+                break
+            fi
+        done
+    fi
+
+    if [ -n "$icon_path" ]; then
+        mkdir -p "$HOME/.local/share/icons/hicolor/256x256/apps"
+        mkdir -p "$HOME/.local/share/icons/hicolor/512x512/apps"
+        mkdir -p "$HOME/.local/share/pixmaps"
+        cp -f "$icon_path" "$HOME/.local/share/icons/hicolor/256x256/apps/antigravity.png" 2>/dev/null || true
+        cp -f "$icon_path" "$HOME/.local/share/icons/hicolor/256x256/apps/antigravity-ide.png" 2>/dev/null || true
+        cp -f "$icon_path" "$HOME/.local/share/pixmaps/antigravity.png" 2>/dev/null || true
+        cp -f "$icon_path" "$HOME/.local/share/pixmaps/antigravity-ide.png" 2>/dev/null || true
+        if [ -w "/usr/share/pixmaps" ]; then
+            cp -f "$icon_path" "/usr/share/pixmaps/antigravity.png" 2>/dev/null || true
+        elif command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
+            sudo cp -f "$icon_path" "/usr/share/pixmaps/antigravity.png" 2>/dev/null || true
+        fi
+        icon_path="$HOME/.local/share/icons/hicolor/256x256/apps/antigravity.png"
+    fi
     [ -z "$icon_path" ] && icon_path="antigravity"
 
     mkdir -p "$app_dir"
     cat <<EOF > "$desktop_path"
 [Desktop Entry]
+Version=1.0
 Name=Google Antigravity
 Comment=Google Antigravity IDE & AI Coding Assistant
 GenericName=Text Editor
-Exec="$exec_cmd" %F
+Exec=$exec_cmd %F
 Icon=$icon_path
 Type=Application
 StartupNotify=true
@@ -231,13 +281,25 @@ MimeType=text/plain;inode/directory;
 Terminal=false
 EOF
     chmod +x "$desktop_path"
+    ln -sf "$desktop_path" "$app_dir/antigravity-ide.desktop" 2>/dev/null || true
 
     if [ -w "/usr/share/applications" ]; then
         cp -f "$desktop_path" "/usr/share/applications/antigravity.desktop" 2>/dev/null || true
-    elif command -v sudo &>/dev/null; then
+    elif command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
         sudo cp -f "$desktop_path" "/usr/share/applications/antigravity.desktop" 2>/dev/null || true
     fi
 
+    if [ -d "$HOME/Desktop" ]; then
+        cp -f "$desktop_path" "$HOME/Desktop/" 2>/dev/null || true
+        chmod +x "$HOME/Desktop/$(basename "$desktop_path")" 2>/dev/null || true
+        if command -v gio &>/dev/null; then
+            gio set "$HOME/Desktop/$(basename "$desktop_path")" metadata::trusted true 2>/dev/null || true
+        fi
+    fi
+
+    if command -v gtk-update-icon-cache &>/dev/null; then
+        gtk-update-icon-cache -f -t "$HOME/.local/share/icons/hicolor" 2>/dev/null || true
+    fi
     if command -v update-desktop-database &>/dev/null; then
         update-desktop-database "$app_dir" 2>/dev/null || true
     fi

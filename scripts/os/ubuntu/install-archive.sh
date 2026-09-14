@@ -454,7 +454,7 @@ WRAPPER_PATH="$TARGET_DIR/${APP_NAME}.run"
 REL_BIN="${MAIN_BIN#$TARGET_DIR/}"
 
 IS_ELECTRON=false
-if [ -f "$TARGET_DIR/chrome-sandbox" ] || [ -f "$TARGET_DIR/resources/app.asar" ]; then
+if [ -f "$TARGET_DIR/chrome-sandbox" ] || [ -f "$TARGET_DIR/resources/app.asar" ] || [ -d "$TARGET_DIR/resources/app" ]; then
     IS_ELECTRON=true
 fi
 
@@ -468,13 +468,11 @@ EOF
 
 if [ "$IS_ELECTRON" = true ]; then
     cat <<'EOF' >> "$WRAPPER_PATH"
-if [ -f "$DIR/chrome-sandbox" ] && [ ! -u "$DIR/chrome-sandbox" ]; then
-    exec "$EXEC" --no-sandbox "$@"
-elif [ -z "${DISPLAY:-}" ] && [ -z "${WAYLAND_DISPLAY:-}" ]; then
-    exec "$EXEC" --no-sandbox "$@"
-else
-    exec "$EXEC" "$@"
-fi
+export ELECTRON_OZONE_PLATFORM_HINT="auto"
+export DONT_PROMPT_WSL_INSTALL=1
+
+# Unconfined tarball Electron builds require --no-sandbox on modern Linux (AppArmor userns restriction)
+exec "$EXEC" --no-sandbox "$@"
 EOF
 else
     cat <<'EOF' >> "$WRAPPER_PATH"
@@ -484,6 +482,12 @@ fi
 
 chmod +x "$WRAPPER_PATH"
 BIN_EXEC_TARGET="$WRAPPER_PATH"
+
+if [ "$APP_NAME" = "antigravity" ] || [ "$APP_NAME" = "antigravity-ide" ]; then
+    ln -sf "$WRAPPER_PATH" "$TARGET_DIR/antigravity.run" 2>/dev/null || true
+    ln -sf "$WRAPPER_PATH" "$TARGET_DIR/antigravity-runner.sh" 2>/dev/null || true
+    ln -sf "$WRAPPER_PATH" "$TARGET_DIR/antigravity-ide.run" 2>/dev/null || true
+fi
 
 # Step 8: Symlink to user and system PATH
 echo -e "  ${MUTED}[step 8/10] Linking binaries to system and user PATH...${TEXT}"
@@ -556,40 +560,89 @@ if find "$TARGET_DIR" -maxdepth 2 -name "libQt*" -o -name "libgtk*" 2>/dev/null 
     IS_GUI=true
 fi
 
-# Find icon
-ICON_CANDIDATE=$(find "$TARGET_DIR" -maxdepth 3 \( -name "*.png" -o -name "*.svg" \) 2>/dev/null | grep -iE 'icon|logo|app' | head -n 1 || true)
+# Find icon with deep search
+ICON_CANDIDATE=$(find "$TARGET_DIR" -maxdepth 8 -type f \( -iname "*antigravity*.png" -o -iname "*code*.png" -o -iname "*icon*.png" -o -iname "*logo*.png" \) 2>/dev/null | head -n 1 || true)
 if [ -z "$ICON_CANDIDATE" ]; then
-    ICON_CANDIDATE=$(find "$TARGET_DIR" -maxdepth 3 \( -name "*.png" -o -name "*.svg" \) 2>/dev/null | head -n 1 || true)
+    ICON_CANDIDATE=$(find "$TARGET_DIR" -maxdepth 8 -type f \( -name "*.png" -o -name "*.svg" \) 2>/dev/null | head -n 1 || true)
+fi
+
+# Fallback to system or known icon locations
+if [ -z "$ICON_CANDIDATE" ]; then
+    for sys_icon in \
+        "$HOME/.local/share/icons/hicolor/512x512/apps/antigravity.png" \
+        "$HOME/.local/share/icons/hicolor/256x256/apps/antigravity.png" \
+        "/usr/share/pixmaps/antigravity.png" \
+        "/usr/share/icons/hicolor/256x256/apps/antigravity.png"; do
+        if [ -f "$sys_icon" ]; then
+            ICON_CANDIDATE="$sys_icon"
+            break
+        fi
+    done
 fi
 
 if [ -n "$ICON_CANDIDATE" ]; then
     mkdir -p "$HOME/.local/share/icons/hicolor/256x256/apps"
+    mkdir -p "$HOME/.local/share/icons/hicolor/512x512/apps"
+    mkdir -p "$HOME/.local/share/pixmaps"
     ICON_DEST="$HOME/.local/share/icons/hicolor/256x256/apps/${APP_NAME}.png"
     cp -f "$ICON_CANDIDATE" "$ICON_DEST" 2>/dev/null || true
-    ICON_FILE="$ICON_DEST"
+    cp -f "$ICON_CANDIDATE" "$HOME/.local/share/icons/hicolor/256x256/apps/antigravity.png" 2>/dev/null || true
+    cp -f "$ICON_CANDIDATE" "$HOME/.local/share/pixmaps/antigravity.png" 2>/dev/null || true
+    cp -f "$ICON_CANDIDATE" "$HOME/.local/share/pixmaps/${APP_NAME}.png" 2>/dev/null || true
+    if [ -w "/usr/share/pixmaps" ]; then
+        cp -f "$ICON_CANDIDATE" "/usr/share/pixmaps/antigravity.png" 2>/dev/null || true
+    elif command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
+        sudo cp -f "$ICON_CANDIDATE" "/usr/share/pixmaps/antigravity.png" 2>/dev/null || true
+    fi
+    ICON_FILE="$HOME/.local/share/icons/hicolor/256x256/apps/antigravity.png"
 fi
 
 if [ "$IS_GUI" = true ]; then
     DESKTOP_DIR="$HOME/.local/share/applications"
     mkdir -p "$DESKTOP_DIR"
-    DESKTOP_FILE="$DESKTOP_DIR/${APP_NAME}.desktop"
 
-    FORMATTED_NAME=$(echo "$APP_NAME" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
+    # Clean up conflicting / duplicate desktop files
+    if [ "$APP_NAME" = "antigravity" ] || [ "$APP_NAME" = "antigravity-ide" ]; then
+        rm -f "$DESKTOP_DIR/antigravity.desktop" "$DESKTOP_DIR/antigravity-ide.desktop" "$DESKTOP_DIR/Google Antigravity.desktop"
+        rm -f "$HOME/Desktop/antigravity.desktop" "$HOME/Desktop/antigravity-ide.desktop"
+        if [ -w "/usr/share/applications" ]; then
+            rm -f "/usr/share/applications/antigravity-ide.desktop" 2>/dev/null || true
+        elif command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
+            sudo rm -f "/usr/share/applications/antigravity-ide.desktop" 2>/dev/null || true
+        fi
+        DESKTOP_FILE="$DESKTOP_DIR/antigravity.desktop"
+        FORMATTED_NAME="Google Antigravity"
+    else
+        DESKTOP_FILE="$DESKTOP_DIR/${APP_NAME}.desktop"
+        FORMATTED_NAME=$(echo "$APP_NAME" | sed 's/-/ /g' | awk '{for(i=1;i<=NF;i++)sub(/./,toupper(substr($i,1,1)),$i)}1')
+    fi
+
     cat <<EOF > "$DESKTOP_FILE"
 [Desktop Entry]
 Version=1.0
 Type=Application
 Name=$FORMATTED_NAME
 Comment=$FORMATTED_NAME installed via scripts-fixer
-Exec=$BIN_EXEC_TARGET %U
+GenericName=Text Editor
+Exec=$BIN_EXEC_TARGET %F
 Icon=${ICON_FILE:-$APP_NAME}
 Terminal=false
 StartupNotify=true
-StartupWMClass=$APP_NAME
-Categories=Utility;Development;
+StartupWMClass=$([ "$APP_NAME" = "antigravity" ] || [ "$APP_NAME" = "antigravity-ide" ] && echo "Antigravity" || echo "$APP_NAME")
+Categories=Utility;Development;IDE;TextEditor;
+MimeType=text/plain;inode/directory;
 EOF
     chmod +x "$DESKTOP_FILE"
     echo -e "  ${MUTED}  -> Desktop launcher created: ${SECONDARY}$DESKTOP_FILE${TEXT}"
+
+    if [ "$APP_NAME" = "antigravity" ] || [ "$APP_NAME" = "antigravity-ide" ]; then
+        ln -sf "$DESKTOP_FILE" "$DESKTOP_DIR/antigravity-ide.desktop" 2>/dev/null || true
+        if [ -w "/usr/share/applications" ]; then
+            cp -f "$DESKTOP_FILE" "/usr/share/applications/antigravity.desktop" 2>/dev/null || true
+        elif command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
+            sudo cp -f "$DESKTOP_FILE" "/usr/share/applications/antigravity.desktop" 2>/dev/null || true
+        fi
+    fi
 
     # If ~/Desktop exists, copy launcher
     if [ -d "$HOME/Desktop" ]; then
@@ -600,6 +653,9 @@ EOF
         fi
     fi
 
+    if command -v gtk-update-icon-cache &>/dev/null; then
+        gtk-update-icon-cache -f -t "$HOME/.local/share/icons/hicolor" 2>/dev/null || true
+    fi
     if command -v update-desktop-database &>/dev/null; then
         update-desktop-database "$DESKTOP_DIR" 2>/dev/null || true
     fi
@@ -633,10 +689,11 @@ if [ ! -x "$MAIN_BIN" ]; then
 fi
 
 VERSION_OUT=""
-if [ -x "$MAIN_BIN" ]; then
-    # Test version output with 3 second timeout
-    VERSION_OUT=$(timeout 3 "$BIN_EXEC_TARGET" --version 2>/dev/null || timeout 3 "$BIN_EXEC_TARGET" -v 2>/dev/null || timeout 3 "$BIN_EXEC_TARGET" -V 2>/dev/null || echo "")
-    VERSION_OUT=$(echo "$VERSION_OUT" | head -n 1 | tr -d '\r\n')
+if [ "$IS_GUI" != true ] && [ -x "$MAIN_BIN" ]; then
+    TMP_VER=$(mktemp /tmp/ver-check-XXXXXX 2>/dev/null || echo "/tmp/ver-check-$$")
+    timeout -k 1s 2s "$BIN_EXEC_TARGET" --version >"$TMP_VER" 2>/dev/null || timeout -k 1s 2s "$BIN_EXEC_TARGET" -v >"$TMP_VER" 2>/dev/null || true
+    VERSION_OUT=$(head -n 1 "$TMP_VER" 2>/dev/null | tr -d '\r\n' || echo "")
+    rm -f "$TMP_VER" 2>/dev/null || true
 fi
 
 TOTAL_SIZE=$(du -sh "$TARGET_DIR" 2>/dev/null | awk '{print $1}' || echo "unknown")
