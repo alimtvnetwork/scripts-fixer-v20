@@ -71,7 +71,7 @@ PROFILES = {
     },
     "ubuntu+dev": {
         "title": "Ubuntu Full Dev Workstation",
-        "description": "Full-stack development environment containing all simple-dev runtimes plus Node.js, PNPM, and Yarn.",
+        "description": "Full-stack development environment containing all simple-dev runtimes plus Node.js, PNPM, Yarn, and Antigravity.",
         "tree": [
             "ubuntu+dev",
             "├── ubuntu+simple-dev (Base + VS Code + Go + Rust + PHP + Python3)",
@@ -82,12 +82,13 @@ PROFILES = {
             "│   └── python3 (Python 3.x, pip, venv)",
             "├── nodejs (Node.js LTS runtime & global npm)",
             "├── pnpm (Fast, disk space efficient package manager)",
-            "└── yarn (Classic / Modern Yarn package manager)"
+            "├── yarn (Classic / Modern Yarn package manager)",
+            "└── antigravity (Antigravity agy AI coding assistant & IDE)"
         ],
         "steps": [
             ("1. Simple Dev Stack", "Deploys all ubuntu+simple-dev components (Base, VS Code, Go, Rust, PHP, Python)."),
-            ("2. Node.js LTS", "Installs NodeSource LTS repository and configures node & npm binary paths."),
-            ("3. Modern Package Managers", "Installs pnpm and yarn globally for high-performance dependency resolution.")
+            ("2. Node.js & Package Managers", "Installs NodeSource LTS repository, pnpm, and yarn."),
+            ("3. Antigravity Suite", "Installs Antigravity IDE and agy CLI assistant.")
         ]
     },
     "ubuntu+ai-tools": {
@@ -105,6 +106,30 @@ PROFILES = {
             ("2. Codex UI", "Configures Codex assistant launcher and desktop entry."),
             ("3. PlotCode UI", "Configures PlotCode visual data tool and desktop entry."),
             ("4. Claude Code", "Installs Claude Code agent CLI and desktop launcher.")
+        ]
+    },
+    "ubuntu+dev+ai": {
+        "title": "Ubuntu Full Dev Workstation + AI Suite",
+        "description": "Full-stack development workstation (ubuntu+dev) combined with Ollama LLM Runner and Antigravity (agy) AI assistant.",
+        "tree": [
+            "ubuntu+dev+ai",
+            "├── ubuntu+dev (Full-stack developer workstation)",
+            "│   ├── ubuntu+simple-dev (Base + VS Code + Go + Rust + PHP + Python3)",
+            "│   │   ├── ubuntu+vscode (git, zsh, build-essential, aria2c, vscode)",
+            "│   │   ├── golang (Go compiler & tools)",
+            "│   │   ├── rust (Rust toolchain & cargo)",
+            "│   │   ├── php (PHP 8.x CLI & FPM)",
+            "│   │   └── python3 (Python 3.x, pip, venv)",
+            "│   ├── nodejs (Node.js LTS runtime & global npm)",
+            "│   ├── pnpm (High-performance package manager)",
+            "│   └── yarn (Yarn package manager)",
+            "├── ollama (Local LLM runner: Qwen2.5, GLM-4, DeepSeek-R1)",
+            "└── antigravity (Antigravity agy AI coding assistant & IDE)"
+        ],
+        "steps": [
+            ("1. Full Dev Workstation", "Executes full ubuntu+dev stack (Base, VS Code, Go, Rust, PHP, Python, Node, pnpm)."),
+            ("2. Ollama LLM Runner", "Installs Ollama runner service for local offline LLM inference."),
+            ("3. Antigravity Suite", "Installs Antigravity IDE and agy CLI assistant.")
         ]
     },
     "ubuntu+antigravity": {
@@ -161,14 +186,54 @@ def load_windows_profiles():
 
 load_windows_profiles()
 
+ALIASES = {
+    "basic": "ubuntu-basic",
+    "vscode": "ubuntu+vscode",
+    "simple-dev": "ubuntu+simple-dev",
+    "small-dev": "ubuntu+simple-dev",
+    "smalldev": "ubuntu+simple-dev",
+    "dev": "ubuntu+dev",
+    "dev+ai": "ubuntu+dev+ai",
+    "ai-tools": "ubuntu+ai-tools",
+    "all-ai": "ubuntu+ai-tools",
+    "ai": "ubuntu+ai-tools",
+    "antigravity": "ubuntu+antigravity-suite",
+    "antigravity-suite": "ubuntu+antigravity-suite",
+    "ag-suite": "ubuntu+antigravity-suite",
+    "ag": "ubuntu+antigravity-suite"
+}
+for alias, target in ALIASES.items():
+    if alias not in PROFILES:
+        PROFILES[alias] = {"alias_of": target}
+
 def resolve_profile(name):
     clean_name = name.strip().lower()
+    clean_name = clean_name.replace("--tree", "").replace("-t", "").strip()
+    changed = True
+    while changed:
+        changed = False
+        for prefix in ("tree ", "profile ", "install "):
+            if clean_name.startswith(prefix):
+                clean_name = clean_name[len(prefix):].strip()
+                changed = True
+        for suffix in (" tree", " profile"):
+            if clean_name.endswith(suffix):
+                clean_name = clean_name[:-len(suffix)].strip()
+                changed = True
+
     if clean_name.startswith("profile-"):
         clean_name = clean_name[8:]
     if clean_name.endswith("-profile"):
         clean_name = clean_name[:-8]
-    if clean_name.startswith("profile "):
-        clean_name = clean_name[8:].strip()
+
+    is_linux = sys.platform.startswith("linux") or os.path.exists("/etc/os-release")
+    if is_linux:
+        ub_plus = f"ubuntu+{clean_name}"
+        ub_dash = f"ubuntu-{clean_name}"
+        if ub_plus in PROFILES:
+            clean_name = ub_plus
+        elif ub_dash in PROFILES:
+            clean_name = ub_dash
 
     if clean_name in PROFILES:
         prof = PROFILES[clean_name]
@@ -180,6 +245,9 @@ def resolve_profile(name):
 def print_tree(name, use_colors=True):
     prof, actual_name = resolve_profile(name)
     if not prof:
+        if name.strip().lower() in ["all", "list", "help", "", "--help", "-h"]:
+            print_all_profiles(use_colors=use_colors)
+            return
         print(f"Unknown profile: {name}")
         return
     
@@ -229,12 +297,13 @@ def print_all_profiles(use_colors=True):
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
+        raw_args = " ".join(sys.argv[1:]).strip()
         cmd = sys.argv[1].lower()
-        if cmd in ["all", "list", "help"]:
+        if cmd in ["all", "list", "help", "--help", "-h"] and len(sys.argv) == 2:
             print_all_profiles()
         elif cmd in ["describe", "tree", "summary"] and len(sys.argv) > 2:
-            print_tree(sys.argv[2])
+            print_tree(" ".join(sys.argv[2:]))
         else:
-            print_tree(cmd)
+            print_tree(raw_args)
     else:
         print_all_profiles()

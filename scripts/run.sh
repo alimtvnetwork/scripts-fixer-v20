@@ -192,7 +192,10 @@ show_main_help() {
     echo -e "    ./run.sh install clean"
     echo -e "    ./run.sh install profile ubuntu+small-dev"
     echo -e "    ./run.sh install profile ubuntu+dev"
-    echo -e "    ./run.sh profile tree ubuntu+dev"
+    echo -e "    ./run.sh install profile dev"
+    echo -e "    ./run.sh install profile dev --tree"
+    echo -e "    ./run.sh profile dev --tree"
+    echo -e "    ./run.sh profile tree dev"
     echo -e "    ./run.sh install 01,11,03,04,27,42"
     echo -e "    ./run.sh os update-all"
     echo -e "    ./run.sh install ls"
@@ -201,29 +204,7 @@ show_main_help() {
 }
 
 show_install_help() {
-    echo -e "  ${ACCENT}Install Command Help:${TEXT}"
-    echo -e "    Installs specified tools, keywords, archives, or profiles on the Ubuntu system."
-    echo -e ""
-    echo -e "  ${ACCENT}Usage:${TEXT}"
-    echo -e "    ./run.sh install <tool|ID>"
-    echo -e "    ./run.sh install <tool1,tool2,tool3>"
-    echo -e "    ./run.sh install tar <path-or-url> [app-name]"
-    echo -e "    ./run.sh install zip <path-or-url> [app-name]"
-    echo -e "    ./run.sh install gz <path-or-url> [app-name]"
-    echo -e "    ./run.sh install archive <path-or-url> [app-name]"
-    echo -e "    ./run.sh install profile <name>"
-    echo -e "    ./run.sh profile tree <name>"
-    echo -e "    ./run.sh os <update|update-all|fix-link <path>>"
-    echo -e ""
-    echo -e "  ${ACCENT}Examples:${TEXT}"
-    echo -e "    ./run.sh install vscode+settings"
-    echo -e "    ./run.sh install tar https://github.com/derailed/k9s/releases/latest/download/k9s_Linux_amd64.tar.gz"
-    echo -e "    ./run.sh install zip ./my-app.zip"
-    echo -e "    ./run.sh install 01,05,golang,rust"
-    echo -e "    ./run.sh install profile dev"
-    echo -e "    ./run.sh profile tree dev"
-    echo -e "    ./run.sh os fix-link ./scripts/my-script.sh"
-    echo -e ""
+    show_main_help
 }
 
 show_profile_help() {
@@ -258,10 +239,14 @@ COMMAND=$1
 shift
 ARGS="$*"
 
-# Handle no arguments -> git pull and help
-if [ -z "$COMMAND" ]; then
+# Mandatory initial repository refresh before processing any command
+if git rev-parse --is-inside-work-tree &>/dev/null; then
     echo -e "  ${SECONDARY}Refreshing local repository (git pull)...${TEXT}"
-    git pull
+    git pull --quiet 2>/dev/null || true
+fi
+
+# Handle no arguments -> help
+if [ -z "$COMMAND" ]; then
     show_main_help
     show_footer
     exit 0
@@ -318,18 +303,14 @@ case "$COMMAND" in
         fi
         ;;
     "profile")
-        PROF_CMD=$(echo "$ARGS" | awk '{print $1}')
-        PROF_ARG=$(echo "$ARGS" | awk '{$1=""; print $0}' | sed -e 's/^[[:space:]]*//')
-        if [[ "$PROF_CMD" == "tree" ]]; then
-            $PYTHON_BIN scripts/shared/profile_tree.py tree "$PROF_ARG"
+        if [[ -z "$(echo "$ARGS" | xargs)" || "$ARGS" == "help" || "$ARGS" == "-h" || "$ARGS" == "--help" || "$ARGS" == "all" || "$ARGS" == "ls" || "$ARGS" == "list" ]]; then
+            $PYTHON_BIN scripts/shared/profile_tree.py all
             show_footer
             exit 0
-        else
-            echo -e "  ${ERROR}Unknown profile command: $PROF_CMD${TEXT}"
-            echo -e "  Only 'tree' is supported via this top-level command. Use 'install profile <name>' to install."
-            show_footer
-            exit 1
         fi
+        $PYTHON_BIN scripts/shared/profile_tree.py "$ARGS"
+        show_footer
+        exit 0
         ;;
     "startup")
         $PYTHON_BIN scripts/shared/startup_manager.py $ARGS
@@ -397,6 +378,13 @@ case "$COMMAND" in
     "install")
         FIRST_WORD=$(echo "$ARGS" | awk '{print $1}')
         REST_WORDS=$(echo "$ARGS" | awk '{$1=""; print $0}' | sed -e 's/^[[:space:]]*//')
+
+        # Tree inspection handling: ./run.sh install profile <name> --tree or ./run.sh install <name> --tree
+        if [[ "$ARGS" == *"--tree"* || "$ARGS" == *"-t"* || "$ARGS" == *"tree "* || "$ARGS" == *" tree"* ]]; then
+            $PYTHON_BIN scripts/shared/profile_tree.py "$ARGS"
+            show_footer
+            exit 0
+        fi
 
         # Handle tar-specific help: ./run.sh install tar -h or ./run.sh install tar help
         if [[ "$FIRST_WORD" == "tar" || "$FIRST_WORD" == "zip" || "$FIRST_WORD" == "gz" || "$FIRST_WORD" == "archive" ]]; then
@@ -628,7 +616,7 @@ case "$COMMAND" in
 
             if [ "$SUCCESS" = true ]; then
                 if [[ "$ITEM" == *"antigravity"* || "$ITEM" == *"agy"* || "$ITEM" == "ag" || "$ITEM" == "43" || "$ITEM" == "69" ]]; then
-                    if ! command -v antigravity &>/dev/null && [ ! -x "$HOME/.local/bin/antigravity" ] && [ ! -x "/usr/local/bin/antigravity" ] && [ ! -x "$HOME/.local/share/antigravity/antigravity" ] && [ ! -x "$HOME/.antigravity/bin/antigravity" ]; then
+                    if ! command -v antigravity &>/dev/null && [ ! -x "$HOME/.local/bin/antigravity" ] && [ ! -x "/usr/local/bin/antigravity" ] && [ ! -x "$HOME/.local/share/antigravity/antigravity" ] && [ ! -x "$HOME/.local/share/antigravity/Antigravity" ] && [ ! -x "$HOME/.antigravity/bin/antigravity" ]; then
                         echo -e "  ${ERROR}[FAIL ] Antigravity was not found in PATH or standard binary locations.${TEXT}"
                         SUCCESS=false
                     fi

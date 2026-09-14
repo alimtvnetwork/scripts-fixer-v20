@@ -33,6 +33,7 @@
 | 22 | `22-fix-agy-installation-ubuntu.md` | Fix Antigravity (agy) Installation on Ubuntu and Windows | `completed` | 2026-09-13 |
 | 23 | `23-fix-antigravity-installer-cross-platform.md` | Cross-Platform Official Google Antigravity Installation (IDE, CLI, Desktop Entry) | `completed` | 2026-09-13 |
 | 24 | `24-install-tar-gz-zip-linux.md` | Intelligent Linux Archive Installer (.tar.gz, .zip, .gz) | `completed` | 2026-09-13 |
+| 25 | `25-run-install-help-tree-antigravity.md` | Run Install Help, Profile Tree Inspection & Antigravity Installer Parity | `completed` | 2026-09-14 |
 
 ---
 

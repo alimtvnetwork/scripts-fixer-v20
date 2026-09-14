@@ -100,7 +100,8 @@ function New-AntigravityShortcut {
 function Install-AntigravityIDE {
     $ideCandidates = @(
         (Join-Path $env:LOCALAPPDATA "Programs\Antigravity\Antigravity.exe"),
-        (Join-Path $env:LOCALAPPDATA "Programs\antigravity\Antigravity.exe")
+        (Join-Path $env:LOCALAPPDATA "Programs\antigravity\Antigravity.exe"),
+        (Join-Path $env:ProgramFiles "Antigravity\Antigravity.exe")
     )
     foreach ($cand in $ideCandidates) {
         if (Test-Path $cand) {
@@ -188,8 +189,8 @@ function Install-AntigravityCLI {
         $downloadUrl = "https://github.com/google-antigravity/antigravity-cli/releases/latest/download/$assetName"
     }
 
-    $tempZip = Join-Path $env:TEMP $assetName
     $uniqueId = [System.Guid]::NewGuid().ToString("N")
+    $tempZip = Join-Path $env:TEMP "agy_${uniqueId}_${assetName}"
     $tempDir = Join-Path $env:TEMP "agy_extracted_$uniqueId"
 
     Write-Host "Downloading Antigravity CLI ($assetName)..." -ForegroundColor Cyan
@@ -310,7 +311,8 @@ function Verify-AntigravityInstallation {
 
     $ideCandidates = @(
         (Join-Path $env:LOCALAPPDATA "Programs\Antigravity\Antigravity.exe"),
-        (Join-Path $env:LOCALAPPDATA "Programs\antigravity\Antigravity.exe")
+        (Join-Path $env:LOCALAPPDATA "Programs\antigravity\Antigravity.exe"),
+        (Join-Path $env:ProgramFiles "Antigravity\Antigravity.exe")
     )
     foreach ($cand in $ideCandidates) {
         if (Test-Path $cand) {
@@ -429,7 +431,34 @@ function Install-Antigravity {
     Write-Host "Antigravity installation complete." -ForegroundColor Green
 }
 
+function Check-Antigravity {
+    Write-Host "Checking Antigravity installation..." -ForegroundColor Cyan
+    $installDir = Join-Path $env:USERPROFILE ".antigravity\bin"
+    $hasCli = (Test-Path (Join-Path $installDir "antigravity.exe")) -or (Test-Path (Join-Path $installDir "agy.exe"))
+    $hasIde = $false
+
+    $ideCandidates = @(
+        (Join-Path $env:LOCALAPPDATA "Programs\Antigravity\Antigravity.exe"),
+        (Join-Path $env:LOCALAPPDATA "Programs\antigravity\Antigravity.exe"),
+        (Join-Path $env:ProgramFiles "Antigravity\Antigravity.exe")
+    )
+    foreach ($cand in $ideCandidates) {
+        if (Test-Path $cand) {
+            $hasIde = $true
+            break
+        }
+    }
+
+    if ($hasCli -or $hasIde) {
+        Write-Host "Antigravity is present on the system (CLI: $hasCli, IDE: $hasIde)." -ForegroundColor Green
+    } else {
+        Write-Host "Antigravity is not currently installed." -ForegroundColor Yellow
+    }
+    exit 0
+}
+
 switch ($Command.ToLowerInvariant()) {
+    "check"     { Check-Antigravity }
     "uninstall" { Uninstall-Antigravity }
     default     { Install-Antigravity }
 }

@@ -65,28 +65,79 @@ install_ide() {
     ide_url=$(fetch_ide_url "$arch")
     local tmp_archive
     tmp_archive=$(mktemp /tmp/antigravity-XXXXXX.tar.gz)
+    local staging
+    staging=$(mktemp -d /tmp/antigravity-extract-XXXXXX)
+
     mkdir -p "$ide_dir"
     echo -e "  ${MUTED}[step 2/5] Downloading Google Antigravity ($arch)...${TEXT}"
-    if curl -fL "$ide_url" -o "$tmp_archive" 2>/dev/null; then
-        echo -e "  ${MUTED}          Extracting into $ide_dir...${TEXT}"
-        tar -xzf "$tmp_archive" -C "$ide_dir" --strip-components=1 2>/dev/null || \
-            tar -xzf "$tmp_archive" -C "$ide_dir" 2>/dev/null || true
+    local is_downloaded=false
+
+    if curl -fL --retry 2 --connect-timeout 30 "$ide_url" -o "$tmp_archive" 2>/dev/null; then
+        is_downloaded=true
     else
         echo -e "  ${ACCENT}[WARN] Primary download failed; attempting fallback URL...${TEXT}"
         local fallback_url
         fallback_url=$(fetch_ide_fallback_url)
-        if curl -fL "$fallback_url" -o "$tmp_archive" 2>/dev/null; then
-            tar -xzf "$tmp_archive" -C "$ide_dir" --strip-components=1 2>/dev/null || \
-                tar -xzf "$tmp_archive" -C "$ide_dir" 2>/dev/null || true
+
+        if curl -fL --retry 2 --connect-timeout 30 "$fallback_url" -o "$tmp_archive" 2>/dev/null; then
+            is_downloaded=true
         fi
     fi
-    rm -f "$tmp_archive"
-    if [ -f "$ide_dir/antigravity" ]; then
-        chmod +x "$ide_dir/antigravity"
+
+    if [ "$is_downloaded" != "true" ] || [ ! -s "$tmp_archive" ]; then
+        echo -e "  ${ERROR}[FAIL] Failed to download Antigravity archive.${TEXT}"
+        rm -rf "$tmp_archive" "$staging"
+
+        return 1
     fi
+
+    echo -e "  ${MUTED}          Extracting into $ide_dir...${TEXT}"
+
+    if ! tar -xzf "$tmp_archive" -C "$staging" 2>/dev/null; then
+        echo -e "  ${ERROR}[FAIL] Failed to extract Antigravity archive.${TEXT}"
+        rm -rf "$tmp_archive" "$staging"
+
+        return 1
+    fi
+
+    rm -f "$tmp_archive"
+
+    local root="$staging"
+    local entries
+    entries=$(find "$staging" -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ')
+
+    if [ "$entries" = "1" ] && [ -d "$(find "$staging" -mindepth 1 -maxdepth 1)" ]; then
+        root=$(find "$staging" -mindepth 1 -maxdepth 1)
+    fi
+
+    cp -a "$root"/* "$ide_dir/" 2>/dev/null || cp -a "$root"/. "$ide_dir/" 2>/dev/null || true
+    rm -rf "$staging"
+
+    local bin=""
+
+    for cand in "$ide_dir/Antigravity" "$ide_dir/antigravity" "$ide_dir/bin/Antigravity" "$ide_dir/bin/antigravity"; do
+        if [ -f "$cand" ]; then
+            bin="$cand"
+            break
+        fi
+    done
+
+    if [ -z "$bin" ]; then
+        bin=$(find "$ide_dir" -maxdepth 2 -type f -perm -u+x ! -name '*.so*' ! -name '*.sh' 2>/dev/null | head -n 1 || true)
+    fi
+
+    if [ -n "$bin" ]; then
+        chmod +x "$bin"
+
+        if [ "$bin" != "$ide_dir/antigravity" ] && [ ! -e "$ide_dir/antigravity" ]; then
+            ln -sf "$bin" "$ide_dir/antigravity" 2>/dev/null || true
+        fi
+    fi
+
     if [ -f "$ide_dir/chrome-sandbox" ]; then
         chmod 4755 "$ide_dir/chrome-sandbox" 2>/dev/null || chmod +x "$ide_dir/chrome-sandbox" 2>/dev/null || true
     fi
+
     if [ ! -d "$ide_legacy_dir" ] && [ -d "$ide_dir" ]; then
         ln -sfn "$ide_dir" "$ide_legacy_dir" 2>/dev/null || true
     fi
@@ -98,15 +149,18 @@ fetch_cli_url() {
     local api="https://api.github.com/repos/google-antigravity/antigravity-cli/releases/latest"
     local url=""
     url=$(curl -s "$api" 2>/dev/null | grep "browser_download_url.*${asset}" | cut -d '"' -f 4 || true)
+
     if [ -z "$url" ]; then
         url="https://github.com/google-antigravity/antigravity-cli/releases/latest/download/${asset}"
     fi
+
     echo "$url"
 }
 
 extract_cli_bin() {
     local tmp_dir="$1"
     local target="$HOME/.antigravity/bin/antigravity"
+
     if [ -f "$tmp_dir/antigravity" ]; then
         mv "$tmp_dir/antigravity" "$target"
     elif [ -f "$tmp_dir/agy" ]; then
@@ -120,17 +174,27 @@ extract_cli_bin() {
 
 fallback_cli_from_ide() {
     local cli_bin="$HOME/.antigravity/bin/antigravity"
-    local ide_dir="$HOME/.local/share/antigravity-ide"
+    local ide_dir="$HOME/.local/share/antigravity"
+    mkdir -p "$HOME/.antigravity/bin"
+
     if [ ! -f "$cli_bin" ]; then
-        if [ -f "$ide_dir/bin/antigravity" ]; then
-            cp -f "$ide_dir/bin/antigravity" "$cli_bin"
-        elif [ -f "$ide_dir/antigravity" ]; then
-            ln -sf "$ide_dir/antigravity" "$cli_bin"
+        local cand_ide=""
+
+        for cand in "$ide_dir/bin/antigravity" "$ide_dir/bin/Antigravity" "$ide_dir/Antigravity" "$ide_dir/antigravity" "$HOME/.local/share/antigravity-ide/Antigravity" "$HOME/.local/share/antigravity-ide/antigravity"; do
+            if [ -f "$cand" ]; then
+                cand_ide="$cand"
+                break
+            fi
+        done
+
+        if [ -n "$cand_ide" ]; then
+            ln -sf "$cand_ide" "$cli_bin"
         fi
     fi
-    if [ -f "$cli_bin" ]; then
-        chmod +x "$cli_bin"
-        ln -sf "$cli_bin" "$HOME/.antigravity/bin/agy"
+
+    if [ -f "$cli_bin" ] || [ -L "$cli_bin" ]; then
+        chmod +x "$cli_bin" 2>/dev/null || true
+        ln -sf "$cli_bin" "$HOME/.antigravity/bin/agy" 2>/dev/null || true
     fi
 }
 
@@ -143,29 +207,36 @@ install_cli() {
     dl_url=$(fetch_cli_url "$arch")
     local tmp_dir
     tmp_dir=$(mktemp -d /tmp/antigravity-cli-XXXXXX)
+
     echo -e "  ${MUTED}[step 3/5] Downloading Antigravity CLI companion (${asset})...${TEXT}"
+
     if curl -fL "$dl_url" -o "$tmp_dir/$asset" 2>/dev/null; then
         tar -xzf "$tmp_dir/$asset" -C "$tmp_dir" 2>/dev/null || true
         extract_cli_bin "$tmp_dir"
     fi
+
     rm -rf "$tmp_dir"
     fallback_cli_from_ide
 }
 
 resolve_primary_bin() {
-    if [ -x "$HOME/.local/share/antigravity/antigravity" ]; then
-        echo "$HOME/.local/share/antigravity/antigravity"
-    elif [ -x "$HOME/.local/share/antigravity-ide/antigravity" ]; then
-        echo "$HOME/.local/share/antigravity-ide/antigravity"
-    elif [ -x "$HOME/.antigravity/bin/antigravity" ]; then
-        echo "$HOME/.antigravity/bin/antigravity"
-    elif [ -x "$HOME/.local/share/antigravity/bin/antigravity" ]; then
-        echo "$HOME/.local/share/antigravity/bin/antigravity"
-    elif [ -x "$HOME/.local/share/antigravity-ide/bin/antigravity" ]; then
-        echo "$HOME/.local/share/antigravity-ide/bin/antigravity"
-    else
-        echo "$HOME/.antigravity/bin/antigravity"
-    fi
+    for b in \
+        "$HOME/.local/share/antigravity/Antigravity" \
+        "$HOME/.local/share/antigravity/antigravity" \
+        "$HOME/.local/share/antigravity/bin/Antigravity" \
+        "$HOME/.local/share/antigravity/bin/antigravity" \
+        "$HOME/.local/share/antigravity-ide/Antigravity" \
+        "$HOME/.local/share/antigravity-ide/antigravity" \
+        "$HOME/.antigravity/bin/antigravity" \
+        "$HOME/.antigravity/bin/agy"; do
+        if [ -x "$b" ] || [ -f "$b" ]; then
+            echo "$b"
+
+            return
+        fi
+    done
+
+    echo "$HOME/.local/share/antigravity/Antigravity"
 }
 
 link_system_binaries() {
@@ -198,17 +269,26 @@ configure_shell_profiles() {
 }
 
 resolve_ide_exec() {
-    local app="$HOME/.local/share/antigravity/antigravity"
-    if [ -f "$app" ]; then
-        chmod +x "$app"
+    local app=""
+
+    for cand in \
+        "$HOME/.local/share/antigravity/Antigravity" \
+        "$HOME/.local/share/antigravity/antigravity" \
+        "$HOME/.local/share/antigravity-ide/Antigravity" \
+        "$HOME/.local/share/antigravity-ide/antigravity" \
+        "$HOME/.local/bin/antigravity" \
+        "$HOME/.antigravity/bin/antigravity"; do
+        if [ -f "$cand" ]; then
+            chmod +x "$cand" 2>/dev/null || true
+            app="$cand"
+            break
+        fi
+    done
+
+    if [ -n "$app" ]; then
         echo "$app"
-    elif [ -f "$HOME/.local/share/antigravity-ide/antigravity" ]; then
-        chmod +x "$HOME/.local/share/antigravity-ide/antigravity"
-        echo "$HOME/.local/share/antigravity-ide/antigravity"
-    elif [ -f "$HOME/.local/bin/antigravity" ]; then
-        echo "$HOME/.local/bin/antigravity"
     else
-        echo "$HOME/.antigravity/bin/antigravity"
+        echo "$HOME/.local/share/antigravity/antigravity"
     fi
 }
 
@@ -216,9 +296,11 @@ resolve_ide_icon() {
     local ide_dir="$HOME/.local/share/antigravity"
     local icon
     icon=$(find "$ide_dir" -maxdepth 4 -type f \( -name "antigravity.png" -o -name "code.png" -o -name "icon.png" \) 2>/dev/null | head -n 1 || true)
+
     if [ -z "$icon" ]; then
         icon=$(find "$HOME/.local/share/antigravity-ide" -maxdepth 4 -type f \( -name "antigravity.png" -o -name "code.png" -o -name "icon.png" \) 2>/dev/null | head -n 1 || true)
     fi
+
     if [ -n "$icon" ]; then
         echo "$icon"
     else
@@ -228,6 +310,7 @@ resolve_ide_icon() {
 
 install_system_desktop() {
     local src="$1"
+
     if [ -w "/usr/share/applications" ]; then
         cp -f "$src" "/usr/share/applications/antigravity.desktop" 2>/dev/null || true
     elif command -v sudo &>/dev/null; then
@@ -237,9 +320,11 @@ install_system_desktop() {
 
 install_user_desktop() {
     local src="$1"
+
     if [ -d "$HOME/Desktop" ]; then
         cp -f "$src" "$HOME/Desktop/antigravity.desktop"
         chmod +x "$HOME/Desktop/antigravity.desktop"
+
         if command -v gio &>/dev/null; then
             gio set "$HOME/Desktop/antigravity.desktop" metadata::trusted true 2>/dev/null || true
         fi
@@ -248,8 +333,10 @@ install_user_desktop() {
 
 refresh_desktop_database() {
     local app_dir="$1"
+
     if command -v update-desktop-database &>/dev/null; then
         update-desktop-database "$app_dir" 2>/dev/null || true
+
         if [ -w "/usr/share/applications" ]; then
             update-desktop-database "/usr/share/applications" 2>/dev/null || true
         elif command -v sudo &>/dev/null; then
@@ -273,22 +360,47 @@ create_desktop_launcher() {
 verify_antigravity() {
     export PATH="$HOME/.local/bin:$HOME/.antigravity/bin:$HOME/.local/share/antigravity:$HOME/.local/share/antigravity-ide/bin:$HOME/.local/share/antigravity-ide:$PATH"
     local bin_path=""
-    for b in "$HOME/.local/share/antigravity/antigravity" "$HOME/.local/bin/antigravity" "/usr/local/bin/antigravity" "$HOME/.antigravity/bin/antigravity" "$HOME/.local/share/antigravity-ide/antigravity"; do
-        [ -f "$b" ] && [ -x "$b" ] && bin_path="$b" && break
+
+    for b in \
+        "$HOME/.local/share/antigravity/Antigravity" \
+        "$HOME/.local/share/antigravity/antigravity" \
+        "$HOME/.local/bin/antigravity" \
+        "$HOME/.local/bin/agy" \
+        "/usr/local/bin/antigravity" \
+        "/usr/local/bin/agy" \
+        "$HOME/.antigravity/bin/antigravity" \
+        "$HOME/.antigravity/bin/agy" \
+        "$HOME/.local/share/antigravity-ide/Antigravity" \
+        "$HOME/.local/share/antigravity-ide/antigravity"; do
+        if [ -f "$b" ] && [ -x "$b" ]; then
+            bin_path="$b"
+            break
+        fi
     done
-    [ -z "$bin_path" ] && echo -e "  ${ERROR}[FAIL] Antigravity binary not found.${TEXT}" && return 1
-    [ ! -x "$bin_path" ] && echo -e "  ${ERROR}[FAIL] Antigravity binary ($bin_path) not executable.${TEXT}" && return 1
+
+    if [ -z "$bin_path" ]; then
+        echo -e "  ${ERROR}[FAIL] Antigravity binary not found or not executable.${TEXT}"
+
+        return 1
+    fi
+
     local out=""
+
     if out=$("$bin_path" --version 2>/dev/null) || out=$("$bin_path" -v 2>/dev/null) || out=$("$bin_path" -h 2>/dev/null) || \
        out=$(antigravity --version 2>/dev/null) || out=$(agy --version 2>/dev/null); then
         echo -e "  ${PRIMARY}[  OK  ] Antigravity verified: ${out:-operational} ($bin_path)${TEXT}"
+
         return 0
     fi
+
     if [ -x "$bin_path" ]; then
         echo -e "  ${PRIMARY}[  OK  ] Antigravity verified at $bin_path${TEXT}"
+
         return 0
     fi
+
     echo -e "  ${ERROR}[FAIL] Antigravity binary ($bin_path) execution test failed.${TEXT}"
+
     return 1
 }
 
