@@ -235,6 +235,13 @@ else
         echo -e "  ${ERROR}[FAIL ] File is not readable: $ARCHIVE_PATH${TEXT}"
         exit 1
     fi
+
+    if [[ "$ARCHIVE_PATH" =~ /tmp/ || "$ARCHIVE_PATH" =~ scripts-fixer-downloads ]]; then
+        LOCAL_SZ=$(stat -c%s "$ARCHIVE_PATH" 2>/dev/null || echo 0)
+        if [ "$LOCAL_SZ" -gt 1000 ]; then
+            echo -e "  ${PRIMARY}[  OK  ] Reusing valid download from temp folder: ${SECONDARY}$ARCHIVE_PATH ($(( LOCAL_SZ / 1024 / 1024 )) MB)${TEXT}"
+        fi
+    fi
 fi
 
 # Step 3: Format detection
@@ -614,20 +621,82 @@ if [ -z "$ICON_CANDIDATE" ]; then
 fi
 
 if [ -n "$ICON_CANDIDATE" ]; then
-    mkdir -p "$HOME/.local/share/icons/hicolor/256x256/apps"
-    mkdir -p "$HOME/.local/share/icons/hicolor/512x512/apps"
-    mkdir -p "$HOME/.local/share/pixmaps"
-    ICON_DEST="$HOME/.local/share/icons/hicolor/256x256/apps/${APP_NAME}.png"
-    cp -f "$ICON_CANDIDATE" "$ICON_DEST" 2>/dev/null || true
-    cp -f "$ICON_CANDIDATE" "$HOME/.local/share/icons/hicolor/256x256/apps/antigravity.png" 2>/dev/null || true
-    cp -f "$ICON_CANDIDATE" "$HOME/.local/share/pixmaps/antigravity.png" 2>/dev/null || true
-    cp -f "$ICON_CANDIDATE" "$HOME/.local/share/pixmaps/${APP_NAME}.png" 2>/dev/null || true
-    if [ -w "/usr/share/pixmaps" ]; then
-        cp -f "$ICON_CANDIDATE" "/usr/share/pixmaps/antigravity.png" 2>/dev/null || true
-    elif command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
-        sudo cp -f "$ICON_CANDIDATE" "/usr/share/pixmaps/antigravity.png" 2>/dev/null || true
+    local_resolutions=(16 24 32 48 64 128 256 512)
+    local_hicolor_base="$HOME/.local/share/icons/hicolor"
+    mkdir -p "$local_hicolor_base"
+    if [ ! -f "$local_hicolor_base/index.theme" ]; then
+        cat <<'THEME_EOF' > "$local_hicolor_base/index.theme"
+[Icon Theme]
+Name=Hicolor
+Comment=Fallback icon theme
+Hidden=true
+Directories=16x16/apps,24x24/apps,32x32/apps,48x48/apps,64x64/apps,128x128/apps,256x256/apps,512x512/apps
+
+[16x16/apps]
+Size=16
+Type=Threshold
+
+[24x24/apps]
+Size=24
+Type=Threshold
+
+[32x32/apps]
+Size=32
+Type=Threshold
+
+[48x48/apps]
+Size=48
+Type=Threshold
+
+[64x64/apps]
+Size=64
+Type=Threshold
+
+[128x128/apps]
+Size=128
+Type=Threshold
+
+[256x256/apps]
+Size=256
+Type=Threshold
+
+[512x512/apps]
+Size=512
+Type=Threshold
+THEME_EOF
     fi
-    ICON_FILE="$HOME/.local/share/icons/hicolor/256x256/apps/antigravity.png"
+
+    for r in "${local_resolutions[@]}"; do
+        mkdir -p "$local_hicolor_base/${r}x${r}/apps"
+        cp -f "$ICON_CANDIDATE" "$local_hicolor_base/${r}x${r}/apps/${APP_NAME}.png" 2>/dev/null || true
+        if [ "$APP_NAME" = "antigravity" ] || [ "$APP_NAME" = "antigravity-ide" ]; then
+            cp -f "$ICON_CANDIDATE" "$local_hicolor_base/${r}x${r}/apps/antigravity.png" 2>/dev/null || true
+            cp -f "$ICON_CANDIDATE" "$local_hicolor_base/${r}x${r}/apps/antigravity-ide.png" 2>/dev/null || true
+        fi
+    done
+
+    mkdir -p "$HOME/.local/share/pixmaps"
+    cp -f "$ICON_CANDIDATE" "$HOME/.local/share/pixmaps/${APP_NAME}.png" 2>/dev/null || true
+    if [ "$APP_NAME" = "antigravity" ] || [ "$APP_NAME" = "antigravity-ide" ]; then
+        cp -f "$ICON_CANDIDATE" "$HOME/.local/share/pixmaps/antigravity.png" 2>/dev/null || true
+    fi
+
+    if [ -w "/usr/share/pixmaps" ]; then
+        cp -f "$ICON_CANDIDATE" "/usr/share/pixmaps/${APP_NAME}.png" 2>/dev/null || true
+        if [ "$APP_NAME" = "antigravity" ] || [ "$APP_NAME" = "antigravity-ide" ]; then
+            cp -f "$ICON_CANDIDATE" "/usr/share/pixmaps/antigravity.png" 2>/dev/null || true
+        fi
+    elif command -v sudo &>/dev/null && sudo -n true 2>/dev/null; then
+        sudo cp -f "$ICON_CANDIDATE" "/usr/share/pixmaps/${APP_NAME}.png" 2>/dev/null || true
+        if [ "$APP_NAME" = "antigravity" ] || [ "$APP_NAME" = "antigravity-ide" ]; then
+            sudo cp -f "$ICON_CANDIDATE" "/usr/share/pixmaps/antigravity.png" 2>/dev/null || true
+        fi
+    fi
+
+    ICON_FILE="$APP_NAME"
+    if [ "$APP_NAME" = "antigravity-ide" ]; then
+        ICON_FILE="antigravity"
+    fi
 fi
 
 if [ "$IS_GUI" = true ]; then
