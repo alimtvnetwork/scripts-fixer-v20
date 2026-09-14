@@ -1,0 +1,15 @@
+{
+  "version": "1.45.0",
+  "branch": "release/v1.45.0",
+  "sourceBranch": "main",
+  "commit": "",
+  "tag": "v1.45.0",
+  "assets": [],
+  "changelog": [
+    "Enhance run install help, support profile --tree inspection, and fix Antigravity IDE and CLI installer"
+  ],
+  "isDraft": false,
+  "isPreRelease": false,
+  "createdAt": "2026-09-14T00:00:00Z",
+  "isLatest": true
+}

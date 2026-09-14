@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.45.0] - 2026-09-14
+
+### Added
+- Enhance run install help, support profile --tree inspection, and fix Antigravity IDE and CLI installer
+
+
 ## [v1.44.0] - 2026-09-13
 
 ### Added
