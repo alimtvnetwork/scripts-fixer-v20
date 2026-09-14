@@ -83,9 +83,9 @@ show_main_help() {
     echo -e ""
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu-basic" "Git, ZSH, aria2c, vim, curl, wget, build-essential"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+vscode" "ubuntu-basic + VS Code snap + settings sync"
-    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+simple-dev" "ubuntu+vscode + Golang, Rust, PHP, Python3"
-    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+small-dev" "Alias: same as ubuntu+simple-dev (VS Code included)"
-    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+dev" "ubuntu+simple-dev + Node.js, PNPM, Yarn"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+simple-dev" "ubuntu+vscode + GitHub Desktop + Go, Rust, PHP, Python3"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+small-dev" "Alias: same as ubuntu+simple-dev (GitHub Desktop included)"
+    printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+dev" "ubuntu+simple-dev + Node.js, PNPM, Yarn + Antigravity"
     printf "    %-28s ${MUTED}%s${TEXT}\n" "ubuntu+dev+ai" "ubuntu+dev + Ollama LLM + Antigravity (agy)"
     echo -e ""
     
