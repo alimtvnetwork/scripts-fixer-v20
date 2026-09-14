@@ -75,15 +75,24 @@ verb_install() {
       [ -z "$ext" ] && continue
       local ext_lower
       ext_lower=$(echo "$ext" | tr '[:upper:]' '[:lower:]')
+      [[ "$ext_lower" == vscode.* ]] && continue
       if ! echo "$installed_exts" | grep -qx "$ext_lower"; then
-        to_install+=("$ext")
+        to_install+=("$ext_lower")
       fi
     done < "$EXT_FILE"
     if [ ${#to_install[@]} -gt 0 ]; then
       log_info "[11] Installing ${#to_install[@]} missing extensions in parallel (pool: 4)"
       local running=0
       for ext in "${to_install[@]}"; do
-        code --install-extension "$ext" --force >/dev/null 2>&1 &
+        (
+          out=$(code --install-extension "$ext" --force 2>&1)
+          rc=$?
+          if [ "$rc" -eq 0 ] && ! echo "$out" | grep -qiE "(error:|failed|not found)"; then
+            log_ok "[11] Installed extension: $ext"
+          else
+            log_warn "[11] Failed extension: $ext -- $out"
+          fi
+        ) &
         running=$((running + 1))
         if [ "$running" -ge 4 ]; then
           wait -n 2>/dev/null || wait

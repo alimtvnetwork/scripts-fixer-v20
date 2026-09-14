@@ -100,7 +100,13 @@ function Resolve-SourceFiles {
         $isExtFound = Test-Path $extPath
         if ($isExtFound) {
             $extData = Get-Content $extPath -Raw | ConvertFrom-Json
-            $result.Extensions = @($extData.extensions)
+            $disabledList = @($extData.disabled | ForEach-Object { $_.ToString().ToLower().Trim() })
+            $result.Extensions = @($extData.extensions | Where-Object {
+                $e = $_.ToString().ToLower().Trim()
+                -not [string]::IsNullOrWhiteSpace($e) -and
+                -not ($e -like "vscode.*") -and
+                -not ($disabledList -contains $e)
+            })
             Write-Log ($LogMessages.messages.extensionsLoaded -replace '\{count\}', $result.Extensions.Count) -Level "success"
         } else {
             Write-Log $LogMessages.messages.noExtensionsJson -Level "warn"
