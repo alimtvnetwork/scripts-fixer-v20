@@ -67,10 +67,33 @@ verb_install() {
     fi
   done
   if command -v code >/dev/null 2>&1 && [ -f "$EXT_FILE" ]; then
-    log_info "[11] Installing extensions from $EXT_FILE"
+    log_info "[11] Checking curated extensions from $EXT_FILE"
+    local installed_exts
+    installed_exts=$(code --list-extensions 2>/dev/null | tr '[:upper:]' '[:lower:]')
+    local -a to_install=()
     while IFS= read -r ext; do
-      [ -n "$ext" ] && code --install-extension "$ext" --force >/dev/null 2>&1 || true
+      [ -z "$ext" ] && continue
+      local ext_lower
+      ext_lower=$(echo "$ext" | tr '[:upper:]' '[:lower:]')
+      if ! echo "$installed_exts" | grep -qx "$ext_lower"; then
+        to_install+=("$ext")
+      fi
     done < "$EXT_FILE"
+    if [ ${#to_install[@]} -gt 0 ]; then
+      log_info "[11] Installing ${#to_install[@]} missing extensions in parallel (pool: 4)"
+      local running=0
+      for ext in "${to_install[@]}"; do
+        code --install-extension "$ext" --force >/dev/null 2>&1 &
+        running=$((running + 1))
+        if [ "$running" -ge 4 ]; then
+          wait -n 2>/dev/null || wait
+          running=$((running - 1))
+        fi
+      done
+      wait
+    else
+      log_ok "[11] All curated extensions are already installed"
+    fi
   else
     log_info "[11] Skipping extensions (no 'code' CLI on PATH)"
   fi
