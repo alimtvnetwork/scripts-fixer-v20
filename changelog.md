@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.47.0] - 2026-09-14
+
+### Added
+- Fix duplicate Antigravity launchers, restore official icon, and integrate k8s cluster node tooling with SQLite and SSH RSA
+
+
 ## [v1.46.0] - 2026-09-14
 
 ### Added

@@ -1,0 +1,15 @@
+{
+  "version": "1.47.0",
+  "branch": "release/v1.47.0",
+  "sourceBranch": "main",
+  "commit": "",
+  "tag": "v1.47.0",
+  "assets": [],
+  "changelog": [
+    "Fix duplicate Antigravity launchers, restore official icon, and integrate k8s cluster node tooling with SQLite and SSH RSA"
+  ],
+  "isDraft": false,
+  "isPreRelease": false,
+  "createdAt": "2026-09-14T00:00:00Z",
+  "isLatest": true
+}
