@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import time
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -39,13 +40,18 @@ def parse_arguments() -> argparse.Namespace:
 
 def run_git_command(git_args: list[str], has_check: bool = True) -> subprocess.CompletedProcess:
     repo_root = Path(__file__).resolve().parent.parent
-    proc = subprocess.run(
-        ["git"] + git_args,
-        cwd=str(repo_root),
-        capture_output=True,
-        text=True,
-    )
-    if has_check and proc.returncode != 0:
+    for attempt in range(5):
+        proc = subprocess.run(
+            ["git"] + git_args,
+            cwd=str(repo_root),
+            capture_output=True,
+            text=True,
+        )
+        if proc.returncode == 0 or not has_check:
+            return proc
+        if "index.lock" in proc.stderr and attempt < 4:
+            time.sleep(0.5)
+            continue
         print(f"Git command failed: git {' '.join(git_args)}\nError: {proc.stderr.strip()}")
         raise subprocess.CalledProcessError(proc.returncode, ["git"] + git_args, output=proc.stdout, stderr=proc.stderr)
     return proc
@@ -208,12 +214,9 @@ def stage_release_files(repo_root: Path, next_version: str = "") -> list[str]:
     if next_version:
         candidate_files.append(f".gitmap/release/v{next_version}.json")
 
-    staged_list = []
-    for rel_path in candidate_files:
-        full_path = repo_root / rel_path
-        if full_path.exists():
-            run_git_command(["add", rel_path])
-            staged_list.append(rel_path)
+    staged_list = [rel_path for rel_path in candidate_files if (repo_root / rel_path).exists()]
+    if staged_list:
+        run_git_command(["add"] + staged_list)
     return staged_list
 
 
