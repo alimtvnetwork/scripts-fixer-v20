@@ -1,0 +1,15 @@
+{
+  "version": "1.48.1",
+  "branch": "release/v1.48.1",
+  "sourceBranch": "main",
+  "commit": "",
+  "tag": "v1.48.1",
+  "assets": [],
+  "changelog": [
+    "Add cargo and rust toolchain installer with components, aliases, and dev profiles integration"
+  ],
+  "isDraft": false,
+  "isPreRelease": false,
+  "createdAt": "2026-09-15T00:00:00Z",
+  "isLatest": true
+}

@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.48.1] - 2026-09-15
+
+### Added
+- Add cargo and rust toolchain installer with components, aliases, and dev profiles integration
+
+
 ## [v1.48.0] - 2026-09-15
 
 ### Added
