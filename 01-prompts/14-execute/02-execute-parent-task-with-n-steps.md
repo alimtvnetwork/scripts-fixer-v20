@@ -1,8 +1,3 @@
----
-name: Multi-Agent Orchestration Workflow
-description: Orchestrates and executes parent tasks by decomposing them into subtasks and running a continuous N-step self-loop with strict 2-agent concurrency and consolidation.
----
-
 # Parent Task N-Step Continuous Loop & Multi-Agent Orchestration — Workflow (must follow)
 
 > **Prompt Version:** 2.1.0
@@ -11,7 +6,7 @@ description: Orchestrates and executes parent tasks by decomposing them into sub
 /goal Autonomously orchestrate and execute the parent task by decomposing it into subtasks and running a continuous N-step self-loop until completion without a single failure.
 
 ```text
-N = 200
+N = 150
 ```
 
 N = total self-loop steps budget that the agents will perform.
@@ -27,8 +22,8 @@ N = total self-loop steps budget that the agents will perform.
 7. [ ] /goal Phase 2 (Change Recording & Quality Linting): Record all modified files into `.lovable/temp/recent-file-changes.json` under lock (`python 03-ai-scripts/33-test-inventory-generator.py --record <files...>`) and run targeted file-level linters/autofixers on specifically modified files (`exit 0`). DO NOT run `06-cicd-local-runner.py`, unit tests, or build checks (deferred to CI/CD).
 8. [ ] /learn Ingest `.lovable/memory/01-index.md` for project memory index and past learnings.
 9. [ ] /learn Ingest `.lovable/strictly-avoid.md` for banned anti-patterns and strict constraints.
-10. [ ] /learn Ingest `spec/02-coding-guidelines/` for domain-specific architectural specifications.
-11. [ ] /learn Ingest `spec/03-error-manage/` for error handling architectures and AppError.
+10. [ ] /learn Ingest `02-spec/02-coding-guidelines/` for domain-specific architectural specifications.
+11. [ ] /learn Ingest `02-spec/03-error-manage/` for error handling architectures and AppError.
 12. [ ] /learn Ingest `.lovable/coding-guidelines.md` for master consolidated coding guidelines.
 13. [ ] /goal Create or update agent rules in the repository if missing from agent memory.
 
@@ -70,7 +65,7 @@ Before writing any source code changes, you MUST execute Phase 1:
 2. **Master Spec Generation:** Save the master architectural plan into `.lovable/plans/pending/xx-<slug>.md`.
 3. **Task-Specific Rule Set:** Write down 3–5 custom rules or constraints unique to this task inside the spec file.
 4. **Lean Subtask Decomposition:** Break down the plan into a few highly focused subtask files in `.lovable/plans/subtasks/xx-<slug>/01-<subtask-title>.md`, `02-<subtask-title>.md`, etc. **Task Focus Over Meta-Prompting:** Your goal is to write code and solve the problem, not just generate more AI prompts. Subagent instructions should clearly define the domain task itself.
-5. **Strict Relative Git Paths:** All markdown links and file paths in subtasks MUST be strictly relative to the repository root (e.g. `spec/...`, `src/...`). Zero absolute paths or `file:///` URIs.
+5. **Strict Relative Git Paths:** All markdown links and file paths in subtasks MUST be strictly relative to the repository root (e.g. `.lovable/spec/...`, `src/...`). Zero absolute paths (`/absolute/path/to/...`, `/absolute/path/to/...`) or `file:///` URIs.
 6. **MANDATORY AUTO-LOOP (DO NOT STOP):** As soon as Phase 1 planning completes, the master orchestrator **MUST NOT STOP or ask the user for permission**. It MUST immediately self-loop and transition directly into Phase 2 execution mode.
 
 ---
@@ -95,7 +90,7 @@ Before writing any source code changes, you MUST execute Phase 1:
 
 - [ ] `/goal` **Reuse First:** Scanned and learned `03-ai-scripts/01-index.md` before writing temporary code.
 - [ ] **Strict In-Repository Execution:** All Python scripts executed strictly within the codebase repository root.
-- [ ] **Strict Storage:** All helper scripts, local runners, and linters stored in `03-ai-scripts/`.
+- [ ] **Strict .lovable/ Folder Storage:** All helper scripts, local runners, and linters stored in `03-ai-scripts/`.
 - [ ] **Native File Manipulator:** Use `python 03-ai-scripts/03-file-manipulator.py <command>` for mass file operations.
 - [ ] **Go Generate Sync:** If Go constants or enums are modified, run `go generate ./...` in the relevant package and commit generated files.
 
@@ -114,14 +109,14 @@ Before writing any source code changes, you MUST execute Phase 1:
 
 /goal You MUST verify every item on this checklist before committing any code. If a subagent violated one of these rules, you must reject their work.
 
-- [ ] Master Guidelines: Fully enforced every file in `spec/02-coding-guidelines/` and `.lovable/coding-guidelines.md`.
-- [ ] Error Management: Enforced `spec/03-error-manage/` using domain-specific `AppError`, never generic error.
+- [ ] Master Guidelines: Fully enforced every file in `02-spec/02-coding-guidelines/` and `.lovable/coding-guidelines.md`.
+- [ ] Error Management: Enforced `02-spec/03-error-manage/` using domain-specific `AppError`, never generic error.
 - [ ] Boolean Conventions: All booleans begin with is or has ONLY (all other prefixes like can, should, was, will, did, must are banned). NO negatives (`!isSuccess` is banned; use `isFail`).
 - [ ] Semantic Naming: Zero generic garbage names (`temp`, `data`, `obj`). Behavior-driven unit test names.
 - [ ] Multi-Line Arguments (Rule 9a/9b): Signatures and call sites with >2 arguments formatted one argument per line with trailing commas.
 - [ ] Line Endings & Encoding: Strictly Unix LF (`\n`) and UTF-8 without BOM.
 - [ ] Function Sizing: Functions <= 8 lines preferred (hard cap 15 lines).
-- [ ] Strict Relative Git Paths: Zero absolute paths or `file:///` URIs.
+- [ ] Strict Relative Git Paths: Zero absolute paths (`/absolute/path/to/...`, `/absolute/path/to/...`) or `file:///` URIs.
 
 ---
 
@@ -135,6 +130,35 @@ Before writing any source code changes, you MUST execute Phase 1:
 - [ ] Continuous Loop Maintained: Continuous self-loop executed until 100% complete without running banned test/build commands (all testing and build verification deferred to CI/CD).
 
 ---
+
+## Continuous 2-Phase Self-Loop & 2-Agent Concurrency Architecture
+
+To guarantee full execution without stopping after planning mode, the master orchestrator MUST enforce this continuous 2-phase loop:
+
+### 1. 2-Agent Concurrency & Strict `.lovable/` Bounding
+
+- **2-Agent Limit (Max 2 Threads Each):** When dispatching work, spawn **at most 2 sub-agents concurrently**, with **no more than 2 threads per agent**.
+- **Strict Folder Bounding (`.lovable/`):** Subagents can ONLY write planning files, subtasks, status reports, and logs inside `.lovable/` (`.lovable/plans/`, `.lovable/01-index.md`, `.lovable/memory/issues/`).
+- **Context Diet & Task Focus:** Provide subagents with clear, lean instructions that focus on the actual domain task itself. Do not write massive meta-prompts or generate excessive boilerplate markdown. Do not paste huge files into agent prompts.
+
+### 2. Phase 1: Planning Mode & Subtask Generation (Steps 1 .. N/2)
+
+- Spawn 2 planning subagents to scan the codebase for target guideline violations.
+- Write the master architectural specification in `.lovable/plans/pending/xx-audit.md` with an exhaustive Violation Ledger table.
+- **Lean Subtask Decomposition:** Break down the plan into a few highly focused subtask files in `.lovable/plans/subtasks/xx-<parent-slug>/01-<subtask-title>.md`, `02-<subtask-title>.md`, etc. **Task Focus Over Meta-Prompting:** Your goal is to write code and solve the problem, not just generate more AI prompts. Subagent instructions should clearly define the domain task itself.
+- **MANDATORY AUTO-LOOP (DO NOT STOP):** Once Phase 1 planning completes, the master orchestrator **MUST NOT STOP or ask the user for confirmation**. It MUST immediately self-loop and transition directly into Phase 2 execution mode.
+
+### 3. Phase 2: Execution Mode & Parallel Refactoring (Steps N/2+1 .. N)
+
+- Spawn 2 execution subagents (max 2 threads each) to execute subtasks in parallel on disjoint files.
+- Subagents refactor code following all coding guidelines (<= 8–15 line functions, single return types, universal `*AppError` wrapping, Unix LF line endings).
+- Move completed subtasks from `.lovable/plans/subtasks/` to `.lovable/plans/completed/` and update `.lovable/plans/01-index.md`.
+- **Failure Memory & Feedback Loop:** If a subagent fails:
+  - Rollback dirty working tree and log error details to `.lovable/plan.md` and `.lovable/memory/issues/xx-failure.md`.
+  - The next subagent spawned MUST read the previous failure log first, record it as a pending memory task, and implement the necessary fix.
+- Execute targeted local linters on modified files ensuring `exit 0` before concluding. DO NOT run `06-cicd-local-runner.py`, unit test suites, or build checks during routine loops.
+- **TOTAL BAN on Test Running & Build Checking:** All test runs (`go test`, `pytest`, python runners) and build checks (`go build`, compiler verification) are strictly banned during routine execution. Verification will be checked later on in CI/CD.
+- Record all modified files to `.lovable/temp/recent-file-changes.json` under lock (`python 03-ai-scripts/33-test-inventory-generator.py --record <files...>`) for subsequent CI/CD runs.
 
 ## Task Consolidation & File Reduction (End of Loop)
 

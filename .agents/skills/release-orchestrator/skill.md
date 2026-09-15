@@ -4,26 +4,14 @@ description: >-
   Execute full automated release orchestration, semantic version bumping, branch management, and tag creation using Python scripts.
 ---
 
-# Automated Release Orchestrator & Branch Lifecycle — Release Management
+# Automated Release Orchestrator
 
-## Core Rules & Version Calculation
-1. Read canonical version source (`version.json` or `package.json`).
-2. Default bump tier is **MINOR**: `MAJOR.MINOR.PATCH` becomes `MAJOR.(MINOR+1).0`. PATCH resets to `0`.
-3. Only bump PATCH if explicitly specified.
-4. Only bump MAJOR if explicitly specified.
-5. State previous and new versions explicitly before touching files.
+Execute full automated release orchestration, semantic version bumping, branch management, and tag creation using Python scripts.
 
-## Release Script Execution
-All release operations must be executed via `03-ai-scripts/29-release-orchestrator.py`:
-```bash
-python 03-ai-scripts/29-release-orchestrator.py --tier <minor|patch|major> --scope "<Release summary>"
-```
+## Core Directives
 
-## Git Release Lifecycle & Invariants
-1. Detect & store original branch (`git rev-parse --abbrev-ref HEAD`).
-2. Bump SemVer across `version.json`, `scripts/version.json`, `package.json`, `changelog.md`, `readme.md`.
-3. Stage & Commit on current branch: `release: vX.Y.Z <scope>`.
-4. Create release branch: `release/vX.Y.Z` pointing to the commit.
-5. Create annotated git tag: `vX.Y.Z` on that release commit.
-6. Push release branch and tag to remote origin.
-7. Mandatory revert back to `original_branch` in all cases (including failures).
+1. Determine bump tier (MINOR default, reset PATCH to 0).
+2. Verify git clean status before release execution.
+3. **Mandatory Pre-Release Unit Tests & CI/CD Verification:** Execute `python 03-ai-scripts/06-cicd-local-runner.py --run-tests` and verify all unit test suites, AST checks, and quality gates pass 100% green (`exit 0`).
+4. **Test Inventory Validation:** Cross-reference `.lovable/temp/recent-file-changes.json` with `.lovable/test-inventory.json` to verify that all test suites covering recently modified files pass completely.
+5. Use `03-ai-scripts/29-release-orchestrator.py` to coordinate version updates across packages, changelog, and git branches/tags.

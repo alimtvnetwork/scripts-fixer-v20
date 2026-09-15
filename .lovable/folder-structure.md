@@ -21,6 +21,7 @@
 ├── suggestions.md               # Unified suggestions ledger (Active & Implemented)
 ├── prompt.md                    # Root prompt pointer -> prompts/index.md
 ├── cicd-index.md                # CI/CD workflows and issue index
+├── temp/                        # Gitignored scratch, plans generation, and runtime state cache
 ├── prompts/                     # Standardized reusable system prompts
 │   ├── index.md                 # Index of prompt templates
 │   ├── 01-read-prompt.md        # Session startup & onboarding prompt
@@ -56,6 +57,14 @@
 ├── spec/                        # Internal specifications and command references
 │   └── commands/                # Granular command syntax and CLI behavior specs
 └── assets/                      # Static metadata assets (diagrams, screenshots)
+
+01-prompts/                      # Standardized AI prompt modules and workflows
+spec/                            # Authoritative specifications and command documentation
+03-ai-scripts/                   # High-speed Python automation toolchain & shared utilities
+.agents/skills/                  # Antigravity native skill blueprints & orchestration agents
+scripts/                         # Windows PowerShell scripts (numbered)
+scripts-linux/                   # Linux/macOS bash equivalents (numbered)
+tools/                           # Node.js maintenance utilities and validators
 ```
 
 ---
