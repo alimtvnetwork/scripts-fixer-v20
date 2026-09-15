@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.48.0] - 2026-09-15
+
+### Added
+- Adopt coding-guidelines folder structure, sync prompts, skills, ai-scripts, and clean root scratch files
+
+
 ## [v1.47.0] - 2026-09-14
 
 ### Added

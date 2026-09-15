@@ -1,0 +1,15 @@
+{
+  "version": "1.48.0",
+  "branch": "release/v1.48.0",
+  "sourceBranch": "main",
+  "commit": "",
+  "tag": "v1.48.0",
+  "assets": [],
+  "changelog": [
+    "Adopt coding-guidelines folder structure, sync prompts, skills, ai-scripts, and clean root scratch files"
+  ],
+  "isDraft": false,
+  "isPreRelease": false,
+  "createdAt": "2026-09-15T00:00:00Z",
+  "isLatest": true
+}
