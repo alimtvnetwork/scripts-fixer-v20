@@ -253,7 +253,8 @@
         {
           "kind": "script",
           "id": 44,
-          "label": "Rust (rustup + cargo)"
+          "mode": "all",
+          "label": "Rust (rustup + cargo + rustfmt + clippy)"
         },
         {
           "kind": "script",

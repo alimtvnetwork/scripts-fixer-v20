@@ -50,7 +50,7 @@ Run: `.\run.ps1 -I <id>` or `.\run.ps1 install <alias>`.
 | 41 | 41-install-python-libs | Python libraries (pip) | 09 |  |  |
 | 42 | 42-install-ollama | Ollama (curl|sh) | 09 |  |  |
 | 43 | 43-install-llama-cpp | llama.cpp (build|apt) | 09 |  |  |
-| 44 | 44-install-rust | Rust (rustup) | 05 |  |  |
+| 44 | 44-install-rust | Rust toolchain (rustc, cargo, rustup, rustfmt, clippy) | 05 | cargo, clippy, rust, rustfmt, rustup |  |
 | 45 | 45-install-docker | Docker (apt) | 08 |  |  |
 | 46 | 46-install-kubernetes | Kubernetes (kubectl/kubeadm apt) | 08 |  |  |
 | 47 | 47-install-ubuntu-font | Ubuntu font (apt) | 04 |  |  |

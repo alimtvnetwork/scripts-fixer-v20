@@ -3,6 +3,14 @@
     "id": "77",
     "folder": "77-install-laravel"
   },
+  "cargo": {
+    "id": "44",
+    "folder": "44-install-rust"
+  },
+  "clippy": {
+    "id": "44",
+    "folder": "44-install-rust"
+  },
   "git-compact": {
     "id": "71",
     "folder": "71-install-git-compact"
@@ -30,6 +38,18 @@
   "nginx": {
     "id": "76",
     "folder": "76-install-nginx"
+  },
+  "rust": {
+    "id": "44",
+    "folder": "44-install-rust"
+  },
+  "rustfmt": {
+    "id": "44",
+    "folder": "44-install-rust"
+  },
+  "rustup": {
+    "id": "44",
+    "folder": "44-install-rust"
   },
   "web-server": {
     "id": "76",

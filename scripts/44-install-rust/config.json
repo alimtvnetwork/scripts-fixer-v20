@@ -10,7 +10,7 @@
     "rust-analyzer": true
   },
   "targets": {
-    "addWasm": false,
+    "addWasm": true,
     "wasmTarget": "wasm32-unknown-unknown"
   },
   "cargoPackages": {

@@ -16,12 +16,23 @@ verb_install() {
     --temp   "$HOME/.rustup/tmp" \
     --target "$CARGO_BIN/rustc + $CARGO_BIN/cargo"
   log_info "[44] Starting Rust installer"
-  if verify_installed; then log_ok "[44] rustc already installed"; mkdir -p "$ROOT/.installed"; touch "$INSTALLED_MARK"; return 0; fi
+  if verify_installed; then
+    log_ok "[44] rustc already installed"
+    "$CARGO_BIN/rustup" component add rustfmt clippy rust-analyzer 2>/dev/null || true
+    mkdir -p "$ROOT/.installed"
+    touch "$INSTALLED_MARK"
+    return 0
+  fi
   has_curl || { log_err "[44] curl required"; return 1; }
   log_info "[44] Running rustup -y (default profile)"
   if curl -fsSL https://sh.rustup.rs | sh -s -- -y --default-toolchain stable; then
     log_ok "[44] Rust toolchain installed (~/.cargo/bin)"
-    mkdir -p "$ROOT/.installed"; touch "$INSTALLED_MARK"; return 0
+    if [ -f "$CARGO_BIN/rustup" ]; then
+      "$CARGO_BIN/rustup" component add rustfmt clippy rust-analyzer 2>/dev/null || true
+    fi
+    mkdir -p "$ROOT/.installed"
+    touch "$INSTALLED_MARK"
+    return 0
   fi
   log_err "[44] rustup failed"; return 1
 }

@@ -2,8 +2,14 @@
   "schemaVersion": "1.0",
   "id": "44",
   "name": "Rust (rustup)",
-  "summary": "Rust (rustup)",
-  "aliases": [],
+  "summary": "Rust toolchain (rustc, cargo, rustup, rustfmt, clippy)",
+  "aliases": [
+    "cargo",
+    "clippy",
+    "rust",
+    "rustfmt",
+    "rustup"
+  ],
   "platforms": {
     "windows": {
       "folder": "44-install-rust",
@@ -22,8 +28,21 @@
   "idempotent": true,
   "destructive": false,
   "commands": [
-    "install"
+    "all",
+    "check",
+    "components",
+    "install",
+    "repair",
+    "uninstall"
   ],
   "phase": "05",
-  "tags": []
+  "tags": [
+    "cargo",
+    "clippy",
+    "compiler",
+    "rust",
+    "rust-analyzer",
+    "rustfmt",
+    "rustup"
+  ]
 }
