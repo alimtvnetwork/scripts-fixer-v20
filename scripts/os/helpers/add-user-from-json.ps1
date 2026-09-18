@@ -89,7 +89,7 @@
     Loader-level dry-run notes:
       - Per-record failures are counted but do NOT abort the run; the
         loader continues with the next row and exits rc=1 if any failed.
-      - The cross-OS ledger at ~/.lovable/ssh-keys-state.json is NOT
+      - The cross-OS ledger at ~/.ai-memory/ssh-keys-state.json is NOT
         updated under --dry-run.
 #>
 param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Argv = @())

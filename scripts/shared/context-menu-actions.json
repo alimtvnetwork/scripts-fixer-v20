@@ -1,6 +1,6 @@
 {
   "$schema": "./context-menu-actions.schema.json",
-  "_comment": "Canonical action catalog for the cross-OS Scripts Fixer right-click menu. See spec/55-universal-context-menu/readme.md.",
+  "_comment": "Canonical action catalog for the cross-OS Scripts Fixer right-click menu. See 02-spec/55-universal-context-menu/readme.md.",
   "version": 1,
   "actions": [
     {

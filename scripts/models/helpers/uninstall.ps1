@@ -1,7 +1,7 @@
 # --------------------------------------------------------------------------
 #  Models uninstall -- enumerate locally installed GGUF + Ollama models,
 #  multi-select, delete via each backend's natural removal path.
-#  Used by `.\run.ps1 models uninstall` (see spec/models/readme.md).
+#  Used by `.\run.ps1 models uninstall` (see 02-spec/models/readme.md).
 # --------------------------------------------------------------------------
 
 function Get-InstalledLlamaCppModels {

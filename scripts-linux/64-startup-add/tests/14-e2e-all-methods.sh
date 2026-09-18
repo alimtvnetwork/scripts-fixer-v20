@@ -28,7 +28,7 @@ printf '# user-content-keep\nalias ll="ls -la"\n' > "$rc_file"
 # after install (empty for env -- shell-rc-env is verified via grep).
 plan=()
 if [ "$os" = "Darwin" ]; then
-  plan+=("launchagent|e2e-launch|app|$HOME/Library/LaunchAgents/com.lovable-startup.e2e-launch.plist")
+  plan+=("launchagent|e2e-launch|app|$HOME/Library/LaunchAgents/com.ai-memory-startup.e2e-launch.plist")
   plan+=("shell-rc|e2e-shellapp|app|")
   plan+=("shell-rc|E2E_SHELL_VAR=hello|env|")
 else

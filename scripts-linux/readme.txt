@@ -22,7 +22,7 @@ v0.126.0 milestone: Script 64 (cross-OS startup-add) COMPLETE.
   - macOS plist round-trips through plistlib; env values survive sourcing
   - Smoke test: 4 entries -> 2 removes -> empty list
   - Full docs: scripts-linux/64-startup-add/readme.md
-  - Memory:    .lovable/memory/features/03-cross-os-startup-add.md
+  - Memory:    .ai-memory/memory/features/03-cross-os-startup-add.md
 
 Earlier milestone (v0.114.0): skeleton + shared helpers complete.
 

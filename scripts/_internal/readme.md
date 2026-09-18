@@ -15,7 +15,7 @@
 [![Changelog](https://img.shields.io/badge/Changelog-Latest-ec4899)](https://github.com/alimtvnetwork/gitmap-v6/blob/main/changelog.md)
 [![Repo](https://img.shields.io/badge/Repo-gitmap--v6-22c55e?logo=github&logoColor=white)](https://github.com/alimtvnetwork/gitmap-v6)
 
-*Mandatory spec header — see [spec/00-spec-writing-guide](../../spec/00-spec-writing-guide/readme.md).*
+*Mandatory spec header — see [02-spec/00-spec-writing-guide](../../02-spec/00-spec-writing-guide/readme.md).*
 
 </div>
 
@@ -112,5 +112,5 @@ drift check. FAIL rows abort the release.
 
 ### Full spec
 
-See `spec/lint-config-schemas/readme.md` for rules, schema discrimination,
+See `02-spec/lint-config-schemas/readme.md` for rules, schema discrimination,
 output format, and how to extend.

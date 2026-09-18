@@ -25,7 +25,7 @@ Mirrors the Windows-side `scripts/os/` startup block.
 ### macOS
 | Method         | Where it writes                                            | Best for                 |
 |----------------|------------------------------------------------------------|--------------------------|
-| `launchagent`  | `~/Library/LaunchAgents/com.lovable-startup.<name>.plist`  | Default — survives reboot|
+| `launchagent`  | `~/Library/LaunchAgents/com.ai-memory-startup.<name>.plist`  | Default — survives reboot|
 | `login-item`   | System Events login items (via `osascript`)                | GUI apps that need Dock  |
 | `shell-rc`     | Marker block in `~/.zshrc` or `~/.bashrc`                  | Terminal-only login      |
 
@@ -175,8 +175,8 @@ Every entry this script writes is tagged with the prefix `lovable-startup` so
 `list` and `remove` can find them across all 6 methods without false positives:
 
 - File names:    `lovable-startup-<name>.{desktop,service,plist}`
-- Plist labels:  `com.lovable-startup.<name>`
-- Login items:   `com.lovable-startup.<name>`
+- Plist labels:  `com.ai-memory-startup.<name>`
+- Login items:   `com.ai-memory-startup.<name>`
 - Shell blocks:  `# >>> lovable-startup-<name> (lovable-startup-app) >>>`
 - Env block:     `# >>> lovable-startup-env (managed) >>>`
 

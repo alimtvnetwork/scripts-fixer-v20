@@ -15,7 +15,7 @@
 [![Changelog](https://img.shields.io/badge/Changelog-Latest-ec4899)](https://github.com/alimtvnetwork/gitmap-v6/blob/main/changelog.md)
 [![Repo](https://img.shields.io/badge/Repo-gitmap--v6-22c55e?logo=github&logoColor=white)](https://github.com/alimtvnetwork/gitmap-v6)
 
-*Mandatory spec header — see [spec/00-spec-writing-guide](../../../spec/00-spec-writing-guide/readme.md).*
+*Mandatory spec header — see [02-spec/00-spec-writing-guide](../../../02-spec/00-spec-writing-guide/readme.md).*
 
 </div>
 
@@ -37,7 +37,7 @@ this file (and any other surfaces) accordingly.
 
 
 Plain-PowerShell test runner for spec section 17 (cases 6 - 13) of
-`spec/53-script-fixer-context-menu/readme.md`.
+`02-spec/53-script-fixer-context-menu/readme.md`.
 
 Runs **read-only** registry assertions against a LIVE installation. Does not
 touch the registry, does not require Pester, no external dependencies.

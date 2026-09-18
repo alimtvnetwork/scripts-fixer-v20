@@ -1,7 +1,7 @@
 # --------------------------------------------------------------------------
 #  Scripts Fixer -- Models Orchestrator
 #  Pick a backend (llama.cpp / Ollama), then browse and install models.
-#  Spec: spec/models/readme.md
+#  Spec: 02-spec/models/readme.md
 # --------------------------------------------------------------------------
 param(
     [Parameter(Position = 0, ValueFromRemainingArguments = $true)]

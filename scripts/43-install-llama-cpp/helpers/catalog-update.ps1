@@ -1,7 +1,7 @@
 # --------------------------------------------------------------------------
 #  helpers/catalog-update.ps1
 #  Hugging Face GGUF catalog auto-update proposer for Script 43.
-#  Implements spec/2025-batch/suggestions/01-catalog-auto-update.md.
+#  Implements 02-spec/2025-batch/suggestions/01-catalog-auto-update.md.
 #
 #  Public functions:
 #    Invoke-CatalogUpdateCheck  -- main entry point

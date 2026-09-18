@@ -16,12 +16,12 @@ tf_setup
 mkdir -p "$HOME/Library/LaunchAgents"
 
 tf_run_quiet app /usr/bin/true --name unit-test --method launchagent
-plist="$HOME/Library/LaunchAgents/com.lovable-startup.unit-test.plist"
+plist="$HOME/Library/LaunchAgents/com.ai-memory-startup.unit-test.plist"
 assert_file "$plist" "LaunchAgent plist written"
 
 content=$(cat "$plist" 2>/dev/null)
 assert_contains '<key>Label</key>'           "$content" "plist has Label"
-assert_contains 'com.lovable-startup.unit-test' "$content" "Label is tagged"
+assert_contains 'com.ai-memory-startup.unit-test' "$content" "Label is tagged"
 assert_contains '<key>ProgramArguments</key>' "$content" "plist has ProgramArguments"
 assert_contains '<key>RunAtLoad</key>'        "$content" "plist has RunAtLoad"
 

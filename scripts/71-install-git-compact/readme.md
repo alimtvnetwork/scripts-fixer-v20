@@ -13,7 +13,7 @@
 [![License](https://img.shields.io/badge/License-MIT-eab308)](../../LICENSE)
 [![Repo](https://img.shields.io/badge/Repo-git--compact-22c55e?logo=github&logoColor=white)](https://github.com/alimtvnetwork/git-compact)
 
-*Mandatory spec header — see [spec/00-spec-writing-guide](../00-spec-writing-guide/readme.md).*
+*Mandatory spec header — see [02-spec/00-spec-writing-guide](../00-spec-writing-guide/readme.md).*
 
 </div>
 
@@ -60,5 +60,5 @@ Pin a different ref (branch / tag / commit) with `-Tag` / `--tag`:
 
 ## See also
 
-- [Full spec](../../spec/71-install-git-compact/readme.md)
+- [Full spec](../../02-spec/71-install-git-compact/readme.md)
 - [Script 35 — Install GitMap](../35-install-gitmap/readme.md)

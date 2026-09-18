@@ -7,7 +7,7 @@ All AI agents operating in this repository MUST comply with the following non-ne
 
 ## 1. Single Source of Truth
 - Repo wins over training data every time.
-- Mandatory read-first sequence defined in `.lovable/what-to-read.md`.
+- Mandatory read-first sequence defined in `.ai-memory/what-to-read.md`.
 - Root `readme.md` must be strictly lowercase.
 
 ## 2. Coding Guidelines

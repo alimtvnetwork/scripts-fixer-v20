@@ -5,7 +5,7 @@ the Optimization-Guide On-Device Model (Gemini Nano) and reclaims the 2–4 GB
 it consumes under the user profile.
 
 See the full problem statement and mechanism in
-[`spec/chrome-fix-ai/fix-ai.md`](../../spec/chrome-fix-ai/fix-ai.md). This
+[`02-spec/chrome-fix-ai/fix-ai.md`](../../02-spec/chrome-fix-ai/fix-ai.md). This
 readme is just the operator-facing quick reference.
 
 ## Usage

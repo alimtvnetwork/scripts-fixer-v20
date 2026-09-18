@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Linux/macOS port of scripts/58-install-chrome/helpers/profile-copy.ps1
-# Spec: spec/58-install-chrome/profile-copy.md
+# Spec: 02-spec/58-install-chrome/profile-copy.md
 #
 # Subcommands:
 #   copy    <from> [to] <to>           clone a profile into a new offline profile

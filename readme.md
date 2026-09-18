@@ -116,29 +116,29 @@ Audit mode, health checks, settings sync, context-menu repair, and CI-tested ver
 
 ## 🤖 For AI Agents & Contributors
 
-> **Start here every session:** [`.lovable/what-to-read.md`](.lovable/what-to-read.md) — the canonical onboarding guide for any AI (or human) touching this repo.
+> **Start here every session:** [`.ai-memory/what-to-read.md`](.ai-memory/what-to-read.md) — the canonical onboarding guide for any AI (or human) touching this repo.
 
 ### Read-first (every session)
 
 | # | Path | Purpose |
 |---|------|---------|
-| 1 | [`.lovable/what-to-read.md`](.lovable/what-to-read.md) | Folder map + workflow rules (this list, expanded) |
-| 2 | [`.lovable/overview.md`](.lovable/overview.md) | Project shape and conventions |
-| 3 | [`.lovable/memory/index.md`](.lovable/memory/index.md) | Master index of every memory file |
-| 4 | [`.lovable/plan.md`](.lovable/plan.md) | Active roadmap |
-| 5 | [`.lovable/strictly-avoid.md`](.lovable/strictly-avoid.md) | Hard prohibitions |
-| 6 | [`.lovable/suggestions.md`](.lovable/suggestions.md) | Tracker — active + implemented |
-| 7 | [`.lovable/cicd-index.md`](.lovable/cicd-index.md) | CI/CD issue index |
-| 8 | [`.lovable/prompts/index.md`](.lovable/prompts/index.md) | Reusable prompts (incl. write-memory) |
-| 9 | [`.lovable/coding-guidelines.md`](.lovable/coding-guidelines.md) | Code rules (≤8-line fns, no `any`, `is`/`has` booleans, DRY, ≤100 lines/file) |
-| 10 | [`spec/`](spec/) + [`spec/shared/`](spec/shared/) + [`spec/error-manage/`](spec/error-manage/) | Public specs per script/feature and shared helpers |
+| 1 | [`.ai-memory/what-to-read.md`](.ai-memory/what-to-read.md) | Folder map + workflow rules (this list, expanded) |
+| 2 | [`.ai-memory/overview.md`](.ai-memory/overview.md) | Project shape and conventions |
+| 3 | [`.ai-memory/memory/index.md`](.ai-memory/memory/index.md) | Master index of every memory file |
+| 4 | [`.ai-memory/plan.md`](.ai-memory/plan.md) | Active roadmap |
+| 5 | [`.ai-memory/strictly-avoid.md`](.ai-memory/strictly-avoid.md) | Hard prohibitions |
+| 6 | [`.ai-memory/suggestions.md`](.ai-memory/suggestions.md) | Tracker — active + implemented |
+| 7 | [`.ai-memory/cicd-index.md`](.ai-memory/cicd-index.md) | CI/CD issue index |
+| 8 | [`01-prompts/index.md`](01-prompts/index.md) | Reusable prompts (incl. write-memory) |
+| 9 | [`.ai-memory/coding-guidelines.md`](.ai-memory/coding-guidelines.md) | Code rules (≤8-line fns, no `any`, `is`/`has` booleans, DRY, ≤100 lines/file) |
+| 10 | [`02-spec/`](spec/) + [`02-spec/shared/`](02-spec/shared/) + [`02-spec/error-manage/`](02-spec/error-manage/) | Public specs per script/feature and shared helpers |
 
 ### What each top-level folder is for
 
 | Folder | Contents |
 |---|---|
-| `.lovable/` | AI memory, plans, prompts, issues, suggestions — the project's brain |
-| `spec/` | Public specs per script/feature; `spec/shared/` for reusable helpers; `spec/error-manage/` for error rules |
+| `.ai-memory/` | AI memory, plans, prompts, issues, suggestions — the project's brain |
+| `02-spec/` | Public specs per script/feature; `02-spec/shared/` for reusable helpers; `02-spec/error-manage/` for error rules |
 | `scripts/` | Windows PowerShell scripts (numeric-prefixed: `01-..` … `68-..`) |
 | `scripts-linux/` | Linux/macOS bash equivalents |
 | `scripts-orchestrator/` | Multi-host SSH playbooks and orchestration |
@@ -147,13 +147,13 @@ Audit mode, health checks, settings sync, context-menu repair, and CI-tested ver
 | `src/` | React + Vite + TypeScript dashboard UI |
 | `assets/` | Static assets (`assets/XX-folder/XX-file.ext`) |
 
-### Common workflows (full detail in [`what-to-read.md`](.lovable/what-to-read.md))
+### Common workflows (full detail in [`what-to-read.md`](.ai-memory/what-to-read.md))
 
-- **Add a feature** → read `spec/00-generic-install-script-behavior/` → create `spec/<NN>-<feature>/readme.md` → implement in both `scripts/<NN>-*/` and `scripts-linux/<name>/` → wire `run.ps1` + `run.sh` → update `readme.md` + `.lovable/memory/features/`.
+- **Add a feature** → read `02-spec/00-generic-install-script-behavior/` → create `spec/<NN>-<feature>/readme.md` → implement in both `scripts/<NN>-*/` and `scripts-linux/<name>/` → wire `run.ps1` + `run.sh` → update `readme.md` + `.ai-memory/memory/features/`.
 - **Add a unit test** → vitest under `src/test/*.test.ts`, PowerShell under `scripts/<NN>-*/tests/`, bash under `scripts-linux/<name>/tests/`; mirror an existing CI workflow in `.github/workflows/`.
-- **Fix a bug** → open `.lovable/pending-issues/<NN>-<slug>.md` → on green, move to `.lovable/solved-issues/` with `## Solution` + `## Learning` + `## What NOT to Repeat`.
-- **Write a spec** → public spec in `spec/<area>/readme.md`; verbatim user directive in `.lovable/memory/specs/<NN>-<slug>.md` (quote, never paraphrase).
-- **End a session** → run [`.lovable/prompts/01-write-memory.md`](.lovable/prompts/01-write-memory.md).
+- **Fix a bug** → open `.ai-memory/pending-issues/<NN>-<slug>.md` → on green, move to `.ai-memory/solved-issues/` with `## Solution` + `## Learning` + `## What NOT to Repeat`.
+- **Write a spec** → public spec in `spec/<area>/readme.md`; verbatim user directive in `.ai-memory/memory/specs/<NN>-<slug>.md` (quote, never paraphrase).
+- **End a session** → run [`01-prompts/01-write-memory.md`](01-prompts/01-write-memory.md).
 
 ---
 
@@ -313,7 +313,7 @@ Clone a Chrome profile to a brand-new **offline** profile (no Google sign-in req
 .\run.ps1 chrome-profile-import C:\backups\profile.json to Restored   # Recreate an offline profile from JSON
 ```
 
-Close all Chrome windows first (or pass `-Yes` to override the guard). Full spec: [`spec/58-install-chrome/profile-copy.md`](spec/58-install-chrome/profile-copy.md).
+Close all Chrome windows first (or pass `-Yes` to override the guard). Full spec: [`02-spec/58-install-chrome/profile-copy.md`](02-spec/58-install-chrome/profile-copy.md).
 
 On **Linux / macOS** the same commands ship as top-level verbs on `scripts-linux/run.sh` (ledger lives at `~/.local/share/dev-server/chrome-profiles.sqlite`):
 
@@ -512,7 +512,7 @@ IDs to remember, no order to figure out, no half-installed tools.
 | 🟣 [Dev Advance](#-profile-dev-advance) | `.\run.ps1 profile dev-advance -y` | 33 | 33 | Polyglot + native (.NET + C++/DirectX) |
 
 Source of truth: [`scripts/profile/config.json`](scripts/profile/config.json) ·
-spec: [`spec/2025-batch/12-profiles.md`](spec/2025-batch/12-profiles.md).
+spec: [`02-spec/2025-batch/12-profiles.md`](02-spec/2025-batch/12-profiles.md).
 
 ### Profile commands (cheat sheet)
 
@@ -1090,7 +1090,7 @@ the current working directory.
 Same helper backs **every model pull** in `.\run.ps1 models …` and is
 bundled into the `minimal` and `terminal` profiles so a fresh box always
 has aria2c ready before the first GGUF is fetched. Spec:
-[`spec/shared/fast-download.md`](spec/shared/fast-download.md).
+[`02-spec/shared/fast-download.md`](02-spec/shared/fast-download.md).
 
 ## 🤖 Local AI Models — 90 GGUFs + Ollama
 
@@ -1158,7 +1158,7 @@ NF4 encoders, prebuilt CUDA wheels) are tracked as standalone specs.
 
 | Model | What it is | Spec | Upstream |
 |---|---|---|---|
-| **Kimodo** + `KIMODO-Meta3_llm2vec_NF4` | NVIDIA-derived motion/video pipeline with NF4-quantized LLM2Vec text encoder (~5.4 GB). Python repo + prebuilt `motion_correction` wheel + offline encoder override. | [`spec/kimodo/readme.md`](spec/kimodo/readme.md) | [gist](https://gist.github.com/Aero-Ex/3affd23c4c9632dbff3045f4ae3655ec) · [kimodo](https://github.com/Aero-Ex/kimodo) · [HF encoder](https://huggingface.co/Aero-Ex/KIMODO-Meta3_llm2vec_NF4) |
+| **Kimodo** + `KIMODO-Meta3_llm2vec_NF4` | NVIDIA-derived motion/video pipeline with NF4-quantized LLM2Vec text encoder (~5.4 GB). Python repo + prebuilt `motion_correction` wheel + offline encoder override. | [`02-spec/kimodo/readme.md`](02-spec/kimodo/readme.md) | [gist](https://gist.github.com/Aero-Ex/3affd23c4c9632dbff3045f4ae3655ec) · [kimodo](https://github.com/Aero-Ex/kimodo) · [HF encoder](https://huggingface.co/Aero-Ex/KIMODO-Meta3_llm2vec_NF4) |
 
 > Why separate? Specialty models need a Python repo clone, CUDA wheel,
 > and a one-line edit to a wrapper file — they can't be pulled like a
@@ -1469,7 +1469,7 @@ Requires elevation for write operations; `--dry-run-uninstall`,
 Destructive actions (`uninstall`, `restore`) prompt for confirmation by
 default. Pass `--yes` (or `-y`) to auto-approve, or `--non-interactive`
 for headless mode (which refuses destructive ops unless `--yes` is also
-supplied). See [Destructive confirmation prompt](spec/shared/) for the
+supplied). See [Destructive confirmation prompt](02-spec/shared/) for the
 shared contract.
 
 ```powershell
@@ -1738,13 +1738,13 @@ Console:
   "errorReason": "file not found after install — choco shim missing too",
   "chocoExitCode": 0,
   "warnings": [
-    "Chocolatey 'whatsapp' v2.2024.6.x is older than upstream — see spec/2025-batch/03-whatsapp.md open question"
+    "Chocolatey 'whatsapp' v2.2024.6.x is older than upstream — see 02-spec/2025-batch/03-whatsapp.md open question"
   ]
 }
 ```
 > **Fix path:** re-run with `--force` (`.\run.ps1 -I 49 -- -Force`) or fall
 > back to direct download per the open question in
-> [`spec/2025-batch/03-whatsapp.md`](spec/2025-batch/03-whatsapp.md).
+> [`02-spec/2025-batch/03-whatsapp.md`](02-spec/2025-batch/03-whatsapp.md).
 
 #### ✅ Success — `.\run.ps1 install onenote` (OneNote-only — default)
 
@@ -2637,7 +2637,7 @@ Reusable utilities in `scripts/shared/`:
 2. Dot-source shared helpers from `scripts/shared/`
 3. Support `-Help` flag using `Show-ScriptHelp`
 4. Save state via `Save-ResolvedData`
-5. Add spec in `spec/NN-name/readme.md`
+5. Add spec in `02-spec/NN-name/readme.md`
 6. Register in `scripts/registry.json`
 7. Add keywords in `scripts/shared/install-keywords.json`
 8. Add to script 12's `config.json` if it should be orchestrated
@@ -2747,25 +2747,25 @@ You may use, copy, modify, merge, publish, distribute, sublicense, and/or sell c
 - [Debian Manage](ubuntu-installation-guide/04-debian-manage.md)
 
 ## Architecture & Releases
-- [Release Architecture Map](.lovable/memory/release-architecture-map.md)
-- [What to Read](.lovable/what-to-read.md)
+- [Release Architecture Map](.ai-memory/memory/release-architecture-map.md)
+- [What to Read](.ai-memory/what-to-read.md)
 
 ## What to Read (AI Agent Onboarding)
 
 | # | Path | Why |
 |---|------|-----|
 | 1 | `readme.md` | Product overview, commands, install one-liners |
-| 2 | `.lovable/overview.md` | Project shape and conventions |
-| 3 | `.lovable/memory/01-index.md` | Master index of every memory file |
-| 4 | `.lovable/plans/01-index.md` | Master index of all plans (pending & completed) |
-| 5 | `.lovable/strictly-avoid.md` | Hard prohibitions — do not violate |
-| 6 | `.lovable/suggestions.md` | Open and implemented suggestions |
-| 7 | `.lovable/cicd-index.md` | CI/CD issue index |
-| 8 | `.lovable/prompts/index.md` | Reusable prompt registry (incl. write-memory) |
-| 9 | `.lovable/prompt.md` | Top-level pointer to prompts |
-| 10 | `.lovable/memory/workflow/` | Current workflow state and status markers |
-| 11 | `.lovable/memory/release-architecture-map.md` | Release architecture and versioning rules |
+| 2 | `.ai-memory/overview.md` | Project shape and conventions |
+| 3 | `.ai-memory/memory/01-index.md` | Master index of every memory file |
+| 4 | `.ai-memory/plans/01-index.md` | Master index of all plans (pending & completed) |
+| 5 | `.ai-memory/strictly-avoid.md` | Hard prohibitions — do not violate |
+| 6 | `.ai-memory/suggestions.md` | Open and implemented suggestions |
+| 7 | `.ai-memory/cicd-index.md` | CI/CD issue index |
+| 8 | `01-prompts/index.md` | Reusable prompt registry (incl. write-memory) |
+| 9 | `.ai-memory/prompt.md` | Top-level pointer to prompts |
+| 10 | `.ai-memory/memory/workflow/` | Current workflow state and status markers |
+| 11 | `.ai-memory/memory/release-architecture-map.md` | Release architecture and versioning rules |
 | 12 | `03-ai-scripts/01-index.md` | AI Automation tools & fast cached exploration index |
 
-See `.lovable/plans/01-index.md` for the **Recent Completed Tasks Register** tracking the last 20 tasks.
+See `.ai-memory/plans/01-index.md` for the **Recent Completed Tasks Register** tracking the last 20 tasks.
 

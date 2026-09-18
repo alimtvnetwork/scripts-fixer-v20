@@ -1,7 +1,7 @@
 # --------------------------------------------------------------------------
 #  Shared helper: aria2c batch (parallel) downloads
 #
-#  Implements spec/2025-batch/suggestions/03-parallel-downloads.md.
+#  Implements 02-spec/2025-batch/suggestions/03-parallel-downloads.md.
 #  Builds an aria2c --input-file with multiple entries and runs them
 #  concurrently. Returns a per-item success map; the caller can fall
 #  back to a sequential downloader for the items that failed.

@@ -65,6 +65,6 @@ Companion scripts (per spec 01)
   62-install-zsh-clear             not yet built
   63-remote-runner                 THIS SCRIPT (built v0.117.0)
 
-Spec: .lovable/specs/01-zsh-and-remote-runner-spec.md
+Spec: .ai-memory/specs/01-zsh-and-remote-runner-spec.md
 
 let's start now 2026-04-26 18:30 (UTC+8)

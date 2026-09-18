@@ -5,7 +5,7 @@
 #
 #  Auto-discovery: probes scripts-fixer-vN repos (N = current+1..current+30)
 #  in parallel and redirects to the newest published version.
-#  Spec: spec/install-bootstrap/readme.md
+#  Spec: 02-spec/install-bootstrap/readme.md
 #  Disable with: --no-upgrade  or  SCRIPTS_FIXER_NO_UPGRADE=1
 #  Version check: --version (shows current and latest, no install)
 #  Dry-run:       --dry-run  (prints every step but mutates nothing)

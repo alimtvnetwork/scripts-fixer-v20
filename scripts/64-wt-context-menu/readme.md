@@ -12,7 +12,7 @@
 [![Script](https://img.shields.io/badge/Script-59-8b5cf6)](https://github.com/alimtvnetwork/gitmap-v6/blob/main/scripts/registry.json)
 [![License](https://img.shields.io/badge/License-MIT-eab308)](https://github.com/alimtvnetwork/gitmap-v6/blob/main/LICENSE)
 
-*Mandatory spec header — see [spec/00-spec-writing-guide](../../spec/00-spec-writing-guide/readme.md).*
+*Mandatory spec header — see [02-spec/00-spec-writing-guide](../../02-spec/00-spec-writing-guide/readme.md).*
 
 </div>
 

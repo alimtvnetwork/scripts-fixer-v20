@@ -35,7 +35,7 @@
                           with SHA256 fingerprint when ssh-keygen is on PATH)
       --known-hosts       Print ~/.ssh/known_hosts (hashed lines kept as-is)
       --ledger            Print the cross-OS ledger summary
-                          (~/.lovable/ssh-keys-state.json)
+                          (~/.ai-memory/ssh-keys-state.json)
       --raw               Disable masking + headers, dump file contents only
       --json              Machine-readable JSON output (suppresses colors)
 
@@ -327,7 +327,7 @@ function Show-FileBlock {
 
 function Show-LedgerBlock {
     param([string]$Search)
-    $ledger = Join-Path $env:USERPROFILE ".lovable\ssh-keys-state.json"
+    $ledger = Join-Path $env:USERPROFILE ".ai-memory\ssh-keys-state.json"
     if (-not (Test-Path -LiteralPath $ledger)) {
         Write-Host ""
         Write-Host "  [LEDGER ] " -ForegroundColor Magenta -NoNewline
@@ -418,7 +418,7 @@ if ($asJson) {
         }
         $result.files += $entry
     }
-    $ledgerPath = Join-Path $env:USERPROFILE ".lovable\ssh-keys-state.json"
+    $ledgerPath = Join-Path $env:USERPROFILE ".ai-memory\ssh-keys-state.json"
     if (Test-Path -LiteralPath $ledgerPath) {
         try { $result.ledger = Get-Content -LiteralPath $ledgerPath -Raw | ConvertFrom-Json } catch { }
     }

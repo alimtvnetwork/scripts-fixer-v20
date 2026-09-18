@@ -91,7 +91,7 @@ All notable changes to this project are documented in this file.
 - Added tri-state bidirectional INI sync engine (`domains.ini` on Windows, `/etc/nginx/sites.ini` on Linux) with drift reconciliation.
 - Added automated WordPress and Laravel deployment suites with FastCGI caching and security hardening.
 - Added high-performance cached repository exploration tool `03-ai-scripts/17-fast-file-reader.py` (<15ms).
-- Added canonical `.lovable/folder-structure.md`, `.lovable/coding-guidelines.md`, and command specs.
+- Added canonical `.ai-memory/folder-structure.md`, `.ai-memory/coding-guidelines.md`, and command specs.
 
 ## [v1.38.0] - 2026-09-10
 
@@ -204,8 +204,8 @@ un script now silently strips Windows carriage returns (\\r) from every shell sc
 
 ### Install Prompt Architect v1.23.0
 To pin your repository to this exact version, run the following one-liner:
-**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.23.0/install.sh | bash -s -- ".lovable/prompts" "v1.23.0"`
-**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.23.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.23.0"`
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.23.0/install.sh | bash -s -- ".ai-memory/prompts" "v1.23.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.23.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".ai-memory/prompts" -Version "v1.23.0"`
 
 ### Fixed
 - **Markdown Case Conflict Resolution**: Removed duplicated uppercase `changelog.md` and `readme.md` from the Git index which were causing endless Git modifications on Windows due to case-insensitivity collisions with `changelog.md` and `readme.md`.
@@ -215,29 +215,29 @@ To pin your repository to this exact version, run the following one-liner:
 - **Git State Repair Tool**: Added `tools/fix-git-crlf-and-case.ps1` to automatically run `git add --renormalize .` and `git checkout .`. This allows Windows/WSL users to instantly fix their local physical files when their local Git working tree gets stuck with CRLF line endings or case-collision ghosts.
 
 ### Changed
-- Updated `.lovable/memory/release-architecture-map.md`.
+- Updated `.ai-memory/memory/release-architecture-map.md`.
 
 ## [v1.22.0] 2026-08-27 Hotfix: Global Unix LF Line Ending Normalization & Git Attributes Enforcement
 
 ### Install Prompt Architect v1.22.0
 To pin your repository to this exact version, run the following one-liner:
-**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.22.0/install.sh | bash -s -- ".lovable/prompts" "v1.22.0"`
-**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.22.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.22.0"`
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.22.0/install.sh | bash -s -- ".ai-memory/prompts" "v1.22.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.22.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".ai-memory/prompts" -Version "v1.22.0"`
 
 ### Fixed
 - **Root Cause Analysis (RCA) - CRLF Syntax Errors on Linux**: Resolved carriage return (`\r`) syntax errors in `scripts/run.sh` and all sub-scripts by converting all 479 shell script files to strict Unix LF line endings.
 - **Git Attributes Enforcement**: Added `.gitattributes` configuring `*.sh text eol=lf` and `run text eol=lf` to prevent automatic CRLF conversion upon Git checkouts on Windows workstations.
 
 ### Changed
-- Captured screenshot in `.lovable/assets/screenshots/06-crlf-syntax-error.png`.
-- Updated release architecture map in `.lovable/memory/release-architecture-map.md`.
+- Captured screenshot in `.ai-memory/assets/screenshots/06-crlf-syntax-error.png`.
+- Updated release architecture map in `.ai-memory/memory/release-architecture-map.md`.
 
 ## [v1.21.0] 2026-08-27 Unified AI Ecosystem, VS Code Settings Sync, Beyond Compare & Arch Suite
 
 ### Install Prompt Architect v1.21.0
 To pin your repository to this exact version, run the following one-liner:
-**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.21.0/install.sh | bash -s -- ".lovable/prompts" "v1.21.0"`
-**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.21.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.21.0"`
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.21.0/install.sh | bash -s -- ".ai-memory/prompts" "v1.21.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.21.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".ai-memory/prompts" -Version "v1.21.0"`
 
 ### Added
 - **Ubuntu Dynamic VS Code Settings & Extension Sync**: `scripts/os/ubuntu/dep-vscode-settings.sh` parses `extensions.json` to deploy `settings.json`, `keybindings.json`, and all project extensions across `ubuntu+vscode` and `ubuntu+small-dev`.
@@ -249,14 +249,14 @@ To pin your repository to this exact version, run the following one-liner:
 ### Changed
 - **Combo Shortcuts Visibility**: Fully visible in `./run.sh` help screen and case dispatchers (`vscode+settings`, `vms`, `frontend`, `backend`, `full-stack`, `ollama`, `bcompare`, `clean`).
 - **Under-the-Hood Tree View**: `scripts/shared/profile_tree.py` and `scripts/shared/list_installs.py` expanded with detailed nested components.
-- **Release Map Synchronized**: Updated `.lovable/memory/release-architecture-map.md` to reflect release v1.21.0.
+- **Release Map Synchronized**: Updated `.ai-memory/memory/release-architecture-map.md` to reflect release v1.21.0.
 
 ## [v1.20.0] 2026-08-27 Production Release: Full Ubuntu/Windows Feature Parity & AI Ecosystem
 
 ### Install Prompt Architect v1.20.0
 To pin your repository to this exact version, run the following one-liner:
-**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.20.0/install.sh | bash -s -- ".lovable/prompts" "v1.20.0"`
-**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.20.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.20.0"`
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.20.0/install.sh | bash -s -- ".ai-memory/prompts" "v1.20.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.20.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".ai-memory/prompts" -Version "v1.20.0"`
 
 ### Added
 - **Ubuntu Dynamic VS Code Settings Sync**: `scripts/os/ubuntu/dep-vscode-settings.sh` parses `extensions.json` to deploy `settings.json`, `keybindings.json`, and all project extensions across `ubuntu+vscode` and `ubuntu+small-dev`.
@@ -268,14 +268,14 @@ To pin your repository to this exact version, run the following one-liner:
 ### Changed
 - **Combo Shortcuts Visibility**: Fully visible in `./run.sh` help screen and case dispatchers.
 - **Under-the-Hood Tree View**: `scripts/shared/profile_tree.py` and `scripts/shared/list_installs.py` expanded with detailed nested components.
-- **Release Map Synchronized**: Updated `.lovable/memory/release-architecture-map.md` to reflect release v1.20.0.
+- **Release Map Synchronized**: Updated `.ai-memory/memory/release-architecture-map.md` to reflect release v1.20.0.
 
 ## [v1.19.0] 2026-08-27 Dynamic Extension Sync, Linux Models CLI, Beyond Compare & Arch Suite
 
 ### Install Prompt Architect v1.19.0
 To pin your repository to this exact version, run the following one-liner:
-**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.19.0/install.sh | bash -s -- ".lovable/prompts" "v1.19.0"`
-**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.19.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.19.0"`
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.19.0/install.sh | bash -s -- ".ai-memory/prompts" "v1.19.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.19.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".ai-memory/prompts" -Version "v1.19.0"`
 
 ### Added
 - **Dynamic Extension Sync for Ubuntu**: `scripts/os/ubuntu/dep-vscode-settings.sh` parses `scripts/11-vscode-settings-sync/extensions.json` to automatically install all enabled extensions and language servers for Go, Rust, Python, PHP, TypeScript, YAML, and Git.
@@ -287,14 +287,14 @@ To pin your repository to this exact version, run the following one-liner:
 ### Changed
 - Refactored `scripts/shared/profile_tree.py` to display the full nested VS Code settings hierarchy in `ubuntu+small-dev`.
 - Updated `scripts/shared/list_installs.py` with comprehensive metadata descriptions.
-- Synchronized release architecture map in `.lovable/memory/release-architecture-map.md`.
+- Synchronized release architecture map in `.ai-memory/memory/release-architecture-map.md`.
 
 ## [v1.18.0] 2026-08-27 VS Code Combo Shortcuts, Settings Visibility, Beyond Compare, Ollama LLM & Arch Suite
 
 ### Install Prompt Architect v1.18.0
 To pin your repository to this exact version, run the following one-liner:
-**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.18.0/install.sh | bash -s -- ".lovable/prompts" "v1.18.0"`
-**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.18.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.18.0"`
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.18.0/install.sh | bash -s -- ".ai-memory/prompts" "v1.18.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.18.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".ai-memory/prompts" -Version "v1.18.0"`
 
 ### Added
 - **VS Code Settings Visibility & Combo Shortcuts**: `scripts/run.sh` now features the complete `Combo Shortcuts` section in main help, exposing `vscode+settings`, `vscode+s`, `vms`, `vscode-settings`, `bcompare`, `ollama`, `clean`, and `fastfetch`.
@@ -307,14 +307,14 @@ To pin your repository to this exact version, run the following one-liner:
 ### Changed
 - Updated `scripts/shared/profile_tree.py` so `ubuntu+small-dev` and `ubuntu+vscode` display nested `vscode-settings` in their hierarchy tree.
 - Updated `scripts/shared/list_installs.py` with expanded metadata descriptions for all combinations.
-- Updated `.lovable/memory/release-architecture-map.md` to reflect release v1.18.0.
+- Updated `.ai-memory/memory/release-architecture-map.md` to reflect release v1.18.0.
 
 ## [v1.17.0] 2026-08-27 VS Code Settings Binding, Beyond Compare, Ollama LLM & System Cleanup
 
 ### Install Prompt Architect v1.17.0
 To pin your repository to this exact version, run the following one-liner:
-**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.17.0/install.sh | bash -s -- ".lovable/prompts" "v1.17.0"`
-**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.17.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.17.0"`
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.17.0/install.sh | bash -s -- ".ai-memory/prompts" "v1.17.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.17.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".ai-memory/prompts" -Version "v1.17.0"`
 
 ### Added
 - **Ubuntu VS Code Settings Sync**: `scripts/os/ubuntu/dep-vscode-settings.sh` synchronizes `settings.json`, `keybindings.json`, and installs curated extensions (Go, Rust Analyzer, Python, Intelephense, Prettier, GitLens) directly during `ubuntu+vscode` and `ubuntu+small-dev` installations.
@@ -332,8 +332,8 @@ To pin your repository to this exact version, run the following one-liner:
 
 ### Install Prompt Architect v1.16.0
 To pin your repository to this exact version, run the following one-liner:
-**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.16.0/install.sh | bash -s -- ".lovable/prompts" "v1.16.0"`
-**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.16.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".lovable/prompts" -Version "v1.16.0"`
+**Unix/Bash:** `curl -sL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.16.0/install.sh | bash -s -- ".ai-memory/prompts" "v1.16.0"`
+**PowerShell:** `Invoke-WebRequest -Uri https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/v1.16.0/install.ps1 -OutFile install.ps1; .\install.ps1 -TargetDir ".ai-memory/prompts" -Version "v1.16.0"`
 
 ### Added
 - **Under-the-Hood Profile Hierarchy Trees**: `scripts/shared/profile_tree.py` dynamically resolves both Windows and Ubuntu profiles (`ubuntu-basic`, `ubuntu+vscode`, `ubuntu+small-dev`, `ubuntu+dev`, `minimal`, `base`, `dev`, `small-dev`, etc.) into ASCII tree diagrams with step-by-step breakdowns.
@@ -343,7 +343,7 @@ To pin your repository to this exact version, run the following one-liner:
 
 ### Changed
 - Synchronized Windows (`run.ps1`) and Linux (`scripts/run.sh`) installation summary and logging pipelines.
-- Updated `.lovable/memory/release-architecture-map.md` to reflect release v1.16.0.
+- Updated `.ai-memory/memory/release-architecture-map.md` to reflect release v1.16.0.
 
 ## [v1.9.0] -- 2026-08-06
 
@@ -353,7 +353,7 @@ To pin your repository to this exact version, run the following one-liner:
 
 ### Added
 - **`tools/validate-json-configs.mjs`** -- parses every `config.json`, `log-messages.json`, `manifest.json`, and `registry.json` under `scripts/`, `scripts-linux/`, `core/`, `tools/`, and `scripts-orchestrator/`, reporting the exact path, line, column, and parser reason on failure. Wired into `.githooks/pre-commit` and a new `validate-json-configs` CI workflow. Runtime output folders (`.logs/`, `.summary/`, `.installed/`, `.resolved/`) are skipped.
-- **Script 71 -- install git-compact** (Windows + Linux/macOS): `scripts/71-install-git-compact/` (run.ps1, config, log-messages, manifest, helpers) and `scripts-linux/71-install-git-compact/` (run.sh, config, log-messages, manifest, readme). Commands: `install` (default), `check`, `repair` (Linux), `uninstall`, plus full `--help` / `-Help` text, `-Tag` / `--tag` ref pinning, triple-path logging, `.installed/` tracking, and ASCII status glyphs. Spec at `spec/71-install-git-compact/readme.md`.
+- **Script 71 -- install git-compact** (Windows + Linux/macOS): `scripts/71-install-git-compact/` (run.ps1, config, log-messages, manifest, helpers) and `scripts-linux/71-install-git-compact/` (run.sh, config, log-messages, manifest, readme). Commands: `install` (default), `check`, `repair` (Linux), `uninstall`, plus full `--help` / `-Help` text, `-Tag` / `--tag` ref pinning, triple-path logging, `.installed/` tracking, and ASCII status glyphs. Spec at `02-spec/71-install-git-compact/readme.md`.
 
 ### Changed
 - **GitMap (script 35) now points at `alimtvnetwork/gitmap-v28`** instead of `gitmap-v23`, across Windows config/run/log-messages/readme, Linux config/run.sh, the spec, and the root readme. Ref pinning behaviour is unchanged.
@@ -363,12 +363,12 @@ To pin your repository to this exact version, run the following one-liner:
 ## [v1.3.0] -- 2026-06-25
 
 ### Added
-- **`.lovable/what-to-read.md`** -- canonical AI-agent onboarding guide (folder map, read-first list, workflows for features/tests/bugs/specs, hard rules).
-- Root `readme.md` **🤖 For AI Agents & Contributors** section linking the onboarding guide, core `.lovable/` files, and per-folder purpose.
-- `.lovable/prompts/01-read-prompt.md` v1.1 -- includes `what-to-read.md` in Phase 1.1 and codifies the "bump minor on every code change" rule.
+- **`.ai-memory/what-to-read.md`** -- canonical AI-agent onboarding guide (folder map, read-first list, workflows for features/tests/bugs/specs, hard rules).
+- Root `readme.md` **🤖 For AI Agents & Contributors** section linking the onboarding guide, core `.ai-memory/` files, and per-folder purpose.
+- `01-prompts/01-read-prompt.md` v1.1 -- includes `what-to-read.md` in Phase 1.1 and codifies the "bump minor on every code change" rule.
 
 ### Changed
-- `.lovable/memory/index.md` indexes the new onboarding guide.
+- `.ai-memory/memory/index.md` indexes the new onboarding guide.
 
 
 ## [v1.2.4] -- 2026-06-19
@@ -377,7 +377,7 @@ To pin your repository to this exact version, run the following one-liner:
 - **`chrome-profile-copy` suite (Windows + Linux/macOS)** -- clone, export (JSON/CSV), import, and list Chrome/Chromium/Brave profiles offline-first. Strips GAIA IDs and sync/account bindings on copy/import. SQLite ledger at `%LOCALAPPDATA%\dev-server\chrome-profiles.sqlite` (Windows) / `~/.local/share/dev-server/chrome-profiles.sqlite` (Linux/macOS).
   - Windows: `scripts/58-install-chrome/helpers/profile-copy.ps1` + top-level aliases (`chrome-profile-copy`, `chrome-profile-export`, `chrome-profile-import`).
   - Linux/macOS: `scripts-linux/chrome-profile-copy/profile-copy.sh` wired into `scripts-linux/run.sh` (`chrome-profile-{list,copy,export,import}`).
-  - Spec: `spec/58-install-chrome/profile-copy.md`.
+  - Spec: `02-spec/58-install-chrome/profile-copy.md`.
 - **`taskbar-align-left.ps1`** -- one-shot Windows 11 Start-menu/taskbar left-alignment helper (`TaskbarAl=0` + explorer restart). Sample command pinned in root `readme.md`.
 - **Smoke tests** -- `scripts-linux/_shared/tests/chrome-profile-copy.test.sh` (19 assertions), `scripts-linux/_shared/tests/chrome-fix-ai.test.sh`, and Windows Pester `scripts/58-install-chrome/tests/profile-copy.test.ps1` (sandboxed `$env:LOCALAPPDATA`: copy/account-strip/Local-State-register/dry-run + export+import round-trip).
 
@@ -586,7 +586,7 @@ The pre-existing `install context-menu` keyword (= VSCode menu fix, script 10) i
 
 ### Added: Universal context-menu spec + shared action catalog (P1+P2 of spec 55)
 
-- New spec at `spec/55-universal-context-menu/readme.md` describing the cross-OS right-click menu (Windows registry + macOS Finder Quick Actions + Linux `.desktop`/KIO/Thunar).
+- New spec at `02-spec/55-universal-context-menu/readme.md` describing the cross-OS right-click menu (Windows registry + macOS Finder Quick Actions + Linux `.desktop`/KIO/Thunar).
 - New shared catalog at `scripts/shared/context-menu-actions.json` (+ JSON schema). 14 actions: install models here (A1), open installer (A2), OS update (A3), startup add/remove (A4/A5), set default app (A6), ENV add/remove path (A7/A8), bin add (A9), all-context-menu install/uninstall (B1/B2), ConEmu open-here + install (B3/B4), Windows tweaks open-here (B5).
 - New `os context-menu` dispatcher (read-only stub): `list` and `validate` work today; `install`/`uninstall`/`restore` print a "not yet implemented" notice with exit 64 (lands in P3+P6, separate commit).
 - Memory index now references the new feature at `mem://features/universal-context-menu`.
@@ -635,8 +635,8 @@ Read-only flows (`--dry-run-uninstall`, `--restore --dry-run`, `--list-snapshots
 
 **Files touched:**
 - `scripts/os/helpers/_schema.ps1` (new, 294 lines)
-- `.lovable/memory/features/windows-schema-validator.md` (new)
-- `.lovable/memory/index.md` (+1 entry)
+- `.ai-memory/memory/features/windows-schema-validator.md` (new)
+- `.ai-memory/memory/index.md` (+1 entry)
 - `scripts/version.json` 0.211.0 -> 0.212.0
 
 ## [v0.211.0] -- 2026-04-27
@@ -712,8 +712,8 @@ Closes the cross-OS gap: every operation the bash side gained in v0.198..v0.203 
 - `scripts/os/helpers/edit-user-from-json.ps1` (new)
 - `scripts/os/helpers/remove-user-from-json.ps1` (new)
 - `scripts/os/run.ps1` (+4 subverbs)
-- `.lovable/memory/features/windows-user-mgmt-shared-helpers.md` (new)
-- `.lovable/memory/index.md` (+1 entry)
+- `.ai-memory/memory/features/windows-user-mgmt-shared-helpers.md` (new)
+- `.ai-memory/memory/index.md` (+1 entry)
 - `scripts/version.json` 0.207.0 -> 0.208.0
 
 ## [v0.203.0] -- 2026-04-27
@@ -734,7 +734,7 @@ Closes the cross-OS gap: every operation the bash side gained in v0.198..v0.203 
 - `scripts-linux/68-user-mgmt/edit-user-from-json.sh` (in-process applicator loop)
 - `scripts-linux/68-user-mgmt/remove-user-from-json.sh` (in-process applicator loop)
 - `scripts-linux/68-user-mgmt/helpers/_common.sh` (+`um_user_modify` / `um_user_delete` / `um_purge_home`)
-- `.lovable/memory/features/user-mgmt-shared-helpers.md` (new)
+- `.ai-memory/memory/features/user-mgmt-shared-helpers.md` (new)
 - `scripts/version.json` 0.202.0 -> 0.203.0
 
 ## [v0.198.0] -- 2026-04-27
@@ -772,7 +772,7 @@ sudo bash run.sh remove-user-json examples/remove-users.json
 - `scripts-linux/68-user-mgmt/remove-user-from-json.sh` (new)
 - `scripts-linux/68-user-mgmt/run.sh` (+2 subverbs, expanded examples)
 - `scripts-linux/68-user-mgmt/readme.md` (Bulk edit / remove section)
-- `.lovable/memory/features/bulk-edit-remove-user-json.md` (new)
+- `.ai-memory/memory/features/bulk-edit-remove-user-json.md` (new)
 - `scripts/version.json` 0.197.0 -> 0.198.0
 
 ## [v0.74.0] -- 2026-04-22
@@ -815,7 +815,7 @@ sudo bash run.sh remove-user-json examples/remove-users.json
 - `scripts/49-install-whatsapp/config.json` (+30-line `uninstallCleanup` block)
 - `scripts/49-install-whatsapp/log-messages.json` (+11 cleanup message keys, downgraded uninstallFailed copy)
 - `scripts/49-install-whatsapp/helpers/whatsapp.ps1` (+4 new functions: `Expand-WaPath`, `Remove-WaRegistryKeys`, `Remove-WaShortcuts`, `Invoke-WaPostUninstallCleanup`; `Uninstall-WhatsApp` calls the sweep)
-- `spec/2025-batch/03-whatsapp.md` (uninstall-cleanup section + config block)
+- `02-spec/2025-batch/03-whatsapp.md` (uninstall-cleanup section + config block)
 - `scripts/49-install-whatsapp/readme.md` (uninstall section + version bump)
 - `scripts/version.json` 0.73.0 -> 0.74.0
 
@@ -823,7 +823,7 @@ sudo bash run.sh remove-user-json examples/remove-users.json
 
 ### Added: Script 49 (WhatsApp) -- direct-download fallback when Chocolatey fails
 
-Resolves the open question logged in `spec/2025-batch/03-whatsapp.md`: Chocolatey's `whatsapp` package occasionally lags or fails outright. Script 49 now silently falls back to the official Microsoft-published installer instead of bubbling a hard failure.
+Resolves the open question logged in `02-spec/2025-batch/03-whatsapp.md`: Chocolatey's `whatsapp` package occasionally lags or fails outright. Script 49 now silently falls back to the official Microsoft-published installer instead of bubbling a hard failure.
 
 **Trigger conditions (either one fires the fallback):**
 1. `Install-ChocoPackage -PackageName "whatsapp"` returns `$false`.
@@ -852,13 +852,13 @@ Resolves the open question logged in `spec/2025-batch/03-whatsapp.md`: Chocolate
 
 **Error visibility (CODE RED compliance):** every disk/network failure path in the fallback (mkdir, download, verify, exec) calls `Write-FileError` with the exact path + reason, never just `"failed"`.
 
-**Spec update:** `spec/2025-batch/03-whatsapp.md` "Open questions" section is now "Resolved questions" and documents the test recipe (point `chocoPackage` at a bogus name to force the fallback path end-to-end).
+**Spec update:** `02-spec/2025-batch/03-whatsapp.md` "Open questions" section is now "Resolved questions" and documents the test recipe (point `chocoPackage` at a bogus name to force the fallback path end-to-end).
 
 **Files touched:**
 - `scripts/49-install-whatsapp/config.json` (+11 lines fallback block)
 - `scripts/49-install-whatsapp/log-messages.json` (+11 message keys)
 - `scripts/49-install-whatsapp/helpers/whatsapp.ps1` (new `Invoke-WhatsAppOfficialInstaller`, `Install-WhatsApp` rewired to call it on both failure branches)
-- `spec/2025-batch/03-whatsapp.md` (config block + flow steps + resolved-questions section)
+- `02-spec/2025-batch/03-whatsapp.md` (config block + flow steps + resolved-questions section)
 - `scripts/version.json` 0.72.0 -> 0.73.0
 
 ## [v0.72.0] -- 2026-04-22
@@ -882,7 +882,7 @@ The §13 contributor parity contract added in v0.71.0 required every readme to c
 
 **Relative link strategy:**
 - Spec readmes (`spec/<name>/readme.md`) link `../../LICENSE` and `../00-spec-writing-guide/readme.md`.
-- Script readmes (`scripts/NN-name/readme.md`) link `../../LICENSE` and `../../spec/00-spec-writing-guide/readme.md`.
+- Script readmes (`scripts/NN-name/readme.md`) link `../../LICENSE` and `../../02-spec/00-spec-writing-guide/readme.md`.
 - All paths verified to resolve from each file's own directory.
 
 **Why a script and not 117 hand edits:** scoped Python pass at `/tmp/apply_footer.py` reads each readme, checks for `<!-- spec-footer:v1 -->`, and appends the canonical block only if absent. The header pass from v0.70.0 used the same pattern with `<!-- spec-header:v1 -->` — both markers now exist on every file, giving CI a simple grep-based audit hook.
@@ -891,7 +891,7 @@ The §13 contributor parity contract added in v0.71.0 required every readme to c
 
 ### Added: §13 "Contributing — Mandatory parity with the root template"
 
-Appended a new §13 to `spec/00-spec-writing-guide/readme.md` that codifies a hard requirement: every new readme (root, spec, script, settings) MUST include the same five canonical blocks the root template uses — icon, 6+ badges, Author section, Riseup Asia LLC company section, and License + footer.
+Appended a new §13 to `02-spec/00-spec-writing-guide/readme.md` that codifies a hard requirement: every new readme (root, spec, script, settings) MUST include the same five canonical blocks the root template uses — icon, 6+ badges, Author section, Riseup Asia LLC company section, and License + footer.
 
 The section spells out:
 
@@ -911,13 +911,13 @@ Three concrete user-facing references to the legacy `scripts-fixer-v20` repo slu
 | File | Line | Change |
 |------|------|--------|
 | `run.ps1` | 1894 | `--version` output Readme link → `gitmap-v6/blob/main/readme.md` |
-| `spec/install-bootstrap/readme.md` | 418 | Sample shell log "Cloning from" URL → `gitmap-v6.git` |
-| `spec/install-bootstrap/readme.md` | 429 | TEMP-fallback sample log "Cloning from" URL → `gitmap-v6.git` |
+| `02-spec/install-bootstrap/readme.md` | 418 | Sample shell log "Cloning from" URL → `gitmap-v6.git` |
+| `02-spec/install-bootstrap/readme.md` | 429 | TEMP-fallback sample log "Cloning from" URL → `gitmap-v6.git` |
 
 **Intentionally NOT changed (design-doc references, not install URLs):**
 
-- `spec/install-bootstrap/readme.md` line 45 — illustrates the historical `scripts-fixer-vN` family naming scheme inside `## Why this matters`. Renaming would invalidate the algorithm description.
-- `spec/install-bootstrap/readme.md` line 256 — release/bump checklist references the legacy `-vN` convention; the spec describes how a *future* `-vN` rollout would work.
+- `02-spec/install-bootstrap/readme.md` line 45 — illustrates the historical `scripts-fixer-vN` family naming scheme inside `## Why this matters`. Renaming would invalidate the algorithm description.
+- `02-spec/install-bootstrap/readme.md` line 256 — release/bump checklist references the legacy `-vN` convention; the spec describes how a *future* `-vN` rollout would work.
 - `changelog.md` — historical entries naming the old slug are preserved for audit accuracy.
 
 A repo-wide grep confirms zero remaining live install URLs point at `scripts-fixer-v20`.
@@ -951,7 +951,7 @@ Until the canonical repo question is resolved, the badge URLs in the readme will
 
 ### Added: Mandatory spec header rolled out to every spec + script readme
 
-Every readme under `spec/` (65 files) and `scripts/NN-*/` (52 new stub files) now opens with the mandatory header defined in `spec/00-spec-writing-guide`:
+Every readme under `02-spec/` (65 files) and `scripts/NN-*/` (52 new stub files) now opens with the mandatory header defined in `02-spec/00-spec-writing-guide`:
 
 - Centered icon (`assets/icon-v1-rocket-stack.svg`, reused project-wide).
 - 6-badge row: PowerShell, Windows, Script #NN, License, Version, Changelog, Repo.
@@ -959,9 +959,9 @@ Every readme under `spec/` (65 files) and `scripts/NN-*/` (52 new stub files) no
 - Idempotent marker (`<!-- spec-header:v1 -->`) so future runs skip already-headed files.
 
 **Coverage:**
-- 65 spec readmes updated (skipping `spec/00-spec-writing-guide/readme.md`, which is the guide itself).
+- 65 spec readmes updated (skipping `02-spec/00-spec-writing-guide/readme.md`, which is the guide itself).
 - 52 new `scripts/NN-*/readme.md` stubs created with header + 4-section body (Overview / Quick start / Layout / See also) linking back to the matching spec.
-- Existing per-script content (e.g. `spec/53-script-fixer-context-menu/readme.md`, 727 lines) is preserved — header is prepended, body is untouched.
+- Existing per-script content (e.g. `02-spec/53-script-fixer-context-menu/readme.md`, 727 lines) is preserved — header is prepended, body is untouched.
 
 **Why a script and not 117 hand edits:** scoped Python pass at `/tmp/apply_headers.py` reads each readme, checks for the marker, and prepends the canonical header block only if missing. Re-running it is a no-op.
 
@@ -999,7 +999,7 @@ Each variant ships as both `.svg` (used in markdown) and `.png` (256x256 fallbac
 - Badge row expanded from 5 to 10 shields: PowerShell, Windows, Scripts, Tools, Databases, License, Version, Changelog, CI, Maintained -- all with coordinated colors and logos.
 - New "At a Glance" 3x2 card grid covering: One-Liner Install, 51 Modular Scripts, Interactive Menu, Keyword Install, Smart Dev Directory, Self-Healing.
 
-**New: `spec/00-spec-writing-guide/readme.md`**
+**New: `02-spec/00-spec-writing-guide/readme.md`**
 
 A mandatory style guide that locks down how every readme in the repo is written so future contributors (and AI models handed the spec) produce consistent docs. It covers:
 

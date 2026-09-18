@@ -4193,7 +4193,7 @@ if ($hasCommand) {
             Write-Host "    search <pattern>" -ForegroundColor Green
             Write-Host "             Aliases: find, grep" -ForegroundColor $ThemeMuted
             Write-Host "             Substring/regex search across ~/.ssh files AND the" -ForegroundColor $ThemeMuted
-            Write-Host "             cross-OS ledger (~/.lovable/ssh-keys-state.json)." -ForegroundColor $ThemeMuted
+            Write-Host "             cross-OS ledger (~/.ai-memory/ssh-keys-state.json)." -ForegroundColor $ThemeMuted
             Write-Host "             -> os view-key --search <pattern> --ledger" -ForegroundColor $ThemeMuted
             Write-Host ""
             Write-Host "    install  --key '...' | --key-file PATH [--user N] [--dry-run]" -ForegroundColor Green
@@ -4220,7 +4220,7 @@ if ($hasCommand) {
             Write-Host "    .\run.ps1 ssh ledger" -ForegroundColor Green
             Write-Host ""
             Write-Host "  State ledger: " -ForegroundColor $ThemeMuted -NoNewline
-            Write-Host "%USERPROFILE%\.lovable\ssh-keys-state.json" -ForegroundColor White
+            Write-Host "%USERPROFILE%\.ai-memory\ssh-keys-state.json" -ForegroundColor White
             Write-Host ""
             exit 0
         }
@@ -5166,7 +5166,7 @@ if ($hasCommand) {
             Write-Host ""
             Write-Host "  [ PIPELINE ] " -ForegroundColor Cyan -NoNewline
             Write-Host "Checking pipeline execution ETA..."
-            $etaFile = Join-Path $RootDir ".lovable\temp\runner-eta.json"
+            $etaFile = Join-Path $RootDir ".ai-memory\temp\runner-eta.json"
             $waitSeconds = 5
             if (Test-Path $etaFile) {
                 try {

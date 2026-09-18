@@ -56,8 +56,8 @@ OS will be skipped if the file is later sync'd to the other OS.
 
 ## Cross-OS ledger
 
-`%USERPROFILE%\.lovable\ssh-keys-state.json` (Windows) and
-`~/.lovable/ssh-keys-state.json` (Linux/macOS) share one schema:
+`%USERPROFILE%\.ai-memory\ssh-keys-state.json` (Windows) and
+`~/.ai-memory/ssh-keys-state.json` (Linux/macOS) share one schema:
 
 ```json
 {

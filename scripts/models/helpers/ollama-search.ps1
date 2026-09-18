@@ -1,6 +1,6 @@
 # --------------------------------------------------------------------------
 #  Ollama Hub search -- queries ollama.com/search and parses results.
-#  Used by `.\run.ps1 models search <query>` (see spec/models/readme.md).
+#  Used by `.\run.ps1 models search <query>` (see 02-spec/models/readme.md).
 # --------------------------------------------------------------------------
 
 function Invoke-OllamaHubSearch {

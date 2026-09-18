@@ -51,7 +51,7 @@ test-reports/
 *.bin
 *.exe
 
-.lovable/temp/
+.ai-memory/temp/
 clean_text.py
 clean_ascii.txt
 clean_ascii.py
@@ -63,8 +63,8 @@ make_md.py
 make_v2.py
 make_v3.py
 
-.lovable/temp-scripts/
+.ai-memory/temp-scripts/
 
-.lovable/temp-agents/
+.ai-memory/temp-agents/
 __pycache__/
 *.pyc

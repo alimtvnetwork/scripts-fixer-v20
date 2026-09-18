@@ -4,7 +4,7 @@
 #
 #  Auto-discovery: probes scripts-fixer-vN repos (N = current+1..current+30)
 #  in parallel and redirects to the newest published version.
-#  Spec: spec/install-bootstrap/readme.md
+#  Spec: 02-spec/install-bootstrap/readme.md
 #  Disable with: -NoUpgrade  or  $env:SCRIPTS_FIXER_NO_UPGRADE = "1"
 #  Version check: -Version (shows current and latest, no install)
 # --------------------------------------------------------------------------

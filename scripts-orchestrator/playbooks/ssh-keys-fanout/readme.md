@@ -3,7 +3,7 @@
 Distribute one or more SSH public keys to a target user on every host
 in a group, **idempotently** (trim/split/compare key bodies — never blind
 appends, never duplicates). Records each install in
-`~<TARGET_USER>/.lovable/ssh-keys-state.json` so future audits can
+`~<TARGET_USER>/.ai-memory/ssh-keys-state.json` so future audits can
 reconstruct who has which key where.
 
 ## Prerequisite

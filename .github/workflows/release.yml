@@ -3,7 +3,7 @@ name: Release
 # ─────────────────────────────────────────────────────────────────────────────
 # Triggers on semver tags pushed to the repo (e.g. v0.30.1, v1.0.0).
 # Builds the release ZIP via release.ps1 and uploads it to the GitHub Release.
-# Implements Issue #7 from spec/ci-cd/readme.md.
+# Implements Issue #7 from 02-spec/ci-cd/readme.md.
 # ─────────────────────────────────────────────────────────────────────────────
 
 on:

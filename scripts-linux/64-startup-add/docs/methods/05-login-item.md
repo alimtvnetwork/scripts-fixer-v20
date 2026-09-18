@@ -9,11 +9,11 @@ identical to dragging an app into that list by hand.
 ```osascript
 tell application "System Events"
   make login item at end with properties \
-    {path:"<path>", hidden:false, name:"com.lovable-startup.<name>"}
+    {path:"<path>", hidden:false, name:"com.ai-memory-startup.<name>"}
 end tell
 ```
 
-The login item's `name` carries the `com.lovable-startup.` prefix so
+The login item's `name` carries the `com.ai-memory-startup.` prefix so
 `list` and `remove` can find it deterministically.
 
 ## When it runs
@@ -53,5 +53,5 @@ osascript -e 'tell application "System Events" to get the name of every login it
 ./run.sh -I 64 -- remove <name> --method login-item
 ```
 
-Calls `delete login item "com.lovable-startup.<name>"` via osascript.
+Calls `delete login item "com.ai-memory-startup.<name>"` via osascript.
 Idempotent — missing items return 0.

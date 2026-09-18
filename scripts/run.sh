@@ -539,7 +539,7 @@ case "$COMMAND" in
         if [[ "$ARGS" =~ (^|[[:space:]])-t([[:space:]]|$) || "$ARGS" == *"--time"* ]]; then
             echo -e "\n  \033[1;36m[ PIPELINE ]\033[0m Checking pipeline execution ETA..."
             WAIT_SECS=5
-            ETA_FILE=".lovable/temp/runner-eta.json"
+            ETA_FILE=".ai-memory/temp/runner-eta.json"
             if [ -f "$ETA_FILE" ]; then
                 PARSED_ETA=$($PYTHON_BIN -c "import json; print(json.load(open('$ETA_FILE')).get('eta_seconds', 5))" 2>/dev/null || echo 5)
                 WAIT_SECS=$PARSED_ETA

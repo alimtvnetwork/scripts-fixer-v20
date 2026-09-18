@@ -6,7 +6,7 @@ Writes a `launchd` user agent plist so the app starts at every user login
 ## Path
 
 ```
-~/Library/LaunchAgents/com.lovable-startup.<name>.plist
+~/Library/LaunchAgents/com.ai-memory-startup.<name>.plist
 ```
 
 ## Plist shape
@@ -17,7 +17,7 @@ Writes a `launchd` user agent plist so the app starts at every user login
   "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>Label</key><string>com.lovable-startup.<name></string>
+  <key>Label</key><string>com.ai-memory-startup.<name></string>
   <key>ProgramArguments</key>
   <array>
     <string><path></string>
@@ -61,9 +61,9 @@ normal use: menu-bar apps, sync daemons, dev servers.
 ## Verify manually
 
 ```bash
-ls -la ~/Library/LaunchAgents/com.lovable-startup.*
+ls -la ~/Library/LaunchAgents/com.ai-memory-startup.*
 launchctl list | grep lovable-startup
-launchctl print "gui/$(id -u)/com.lovable-startup.<name>"
+launchctl print "gui/$(id -u)/com.ai-memory-startup.<name>"
 ```
 
 ## Remove

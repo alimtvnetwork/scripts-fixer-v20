@@ -11,7 +11,7 @@
     "**GLM \u0026 Kimi Models Integration**: Added Zhipu AI GLM-4 (9B), GLM-Edge (4B), Moonshot AI Kimi K2 (8B), and Kimi Coder (8B) to both Ollama (`scripts/42-install-ollama/config.json`) and GGUF (`scripts/43-install-llama-cpp/models-catalog.json`) catalogs.",
     "**Cross-Platform High-Contrast Theming**: Replaced dark magenta colors with vibrant `LightGreen`, `Cyan`, and `LightGray` in `scripts/shared/theme.json`, `run.sh`, `run.ps1`, and `list_installs.py`.",
     "Synchronized Windows (`run.ps1`) and Linux (`scripts/run.sh`) installation summary and logging pipelines.",
-    "Updated `.lovable/memory/release-architecture-map.md` to reflect release v1.16.0."
+    "Updated `.ai-memory/memory/release-architecture-map.md` to reflect release v1.16.0."
   ],
   "isDraft": false,
   "isPreRelease": false,

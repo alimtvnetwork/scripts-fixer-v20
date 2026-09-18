@@ -21,14 +21,14 @@
       3. Compare incoming keys against existing key bodies + fingerprints.
       4. Append ONLY keys whose body is NOT already present.
       5. Never blindly append. Never duplicate. Never reorder existing keys.
-      6. Record every install in ~/.lovable/ssh-keys-state.json.
+      6. Record every install in ~/.ai-memory/ssh-keys-state.json.
 
     CODE-RED: every file/path error logs the EXACT path + reason.
 
     Dry-run effect per flag (with --dry-run, the diff against the
     target authorized_keys is computed and logged but NO file is
     rewritten, NO .bak is created, and the ledger at
-    ~/.lovable/ssh-keys-state.json is NOT updated):
+    ~/.ai-memory/ssh-keys-state.json is NOT updated):
       --key "<line>"     would log "[dry-run] would append key
                          <fingerprint> to <user>\.ssh\authorized_keys"
                          per unique incoming key. Keys whose body is
@@ -413,7 +413,7 @@ if (-not (Set-SshFileAcl -Path $authFile -User $targetUser)) {
 # ---- Ledger ----
 $hasLedger = [bool](Get-Command Add-SshLedgerEntry -ErrorAction SilentlyContinue)
 if (-not $hasLedger) {
-    Write-Log "SSH ledger helper not loaded -- audit trail at '~/.lovable/ssh-keys-state.json' will NOT record this install. Path: $ledgerHelper" -Level "warn"
+    Write-Log "SSH ledger helper not loaded -- audit trail at '~/.ai-memory/ssh-keys-state.json' will NOT record this install. Path: $ledgerHelper" -Level "warn"
 }
 foreach ($k in $toInstall) {
     $fp = Get-KeyFingerprint -Line $k

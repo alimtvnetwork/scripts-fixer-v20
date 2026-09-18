@@ -168,7 +168,7 @@ function Test-SpecCoverage {
     )
 
     $issues = @()
-    $specDir = Join-Path $RepoRoot "spec"
+    $specDir = Join-Path $RepoRoot "02-spec"
 
     foreach ($prop in $Registry.scripts.PSObject.Properties) {
         $id = $prop.Name

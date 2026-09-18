@@ -251,7 +251,7 @@ dispatcher routing, CLI parsing, JSON shape auto-detect (object / array /
 ## SSH key lifecycle (added in 0.192.0)
 
 Three new leaves give per-host SSH key control. All three update the
-cross-OS ledger at `~/.lovable/ssh-keys-state.json` so the same key state
+cross-OS ledger at `~/.ai-memory/ssh-keys-state.json` so the same key state
 can be inspected from Windows or Linux.
 
 | Subverb        | Leaf            | Purpose                                              |

@@ -17,13 +17,13 @@
 
     Idempotent: refuses to overwrite an existing private key unless --force
     is passed. When generated, the new public key's SHA-256 fingerprint is
-    appended to the cross-OS ledger at $HOME\.lovable\ssh-keys-state.json
+    appended to the cross-OS ledger at $HOME\.ai-memory\ssh-keys-state.json
     so future install-key / revoke-key calls can correlate it.
 
     CODE RED: every file/path error logs the EXACT path + reason.
 
     Dry-run effect per flag (with --dry-run, ssh-keygen.exe is NOT
-    invoked, the cross-OS ledger at $HOME\.lovable\ssh-keys-state.json
+    invoked, the cross-OS ledger at $HOME\.ai-memory\ssh-keys-state.json
     is NOT updated, and no files are written; the planned command is
     logged as "[dry-run] ssh-keygen ..." with the resolved arguments.
     The ssh-keygen-binary check is also SKIPPED so dry-run works on
@@ -237,7 +237,7 @@ try {
 # to later install/revoke calls.
 $hasLedger = [bool](Get-Command Add-SshLedgerEntry -ErrorAction SilentlyContinue)
 if (-not $hasLedger) {
-    Write-Log "SSH ledger helper not loaded -- audit trail at '~/.lovable/ssh-keys-state.json' will NOT record this generation. Path: $ledgerHelper" -Level "warn"
+    Write-Log "SSH ledger helper not loaded -- audit trail at '~/.ai-memory/ssh-keys-state.json' will NOT record this generation. Path: $ledgerHelper" -Level "warn"
 } else {
     Add-SshLedgerEntry -Action "generate" -Fingerprint $fingerprint -KeyPath "$out.pub" -Source "gen-key" -Comment $comment | Out-Null
 }

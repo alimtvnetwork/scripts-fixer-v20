@@ -15,7 +15,7 @@
 [![Changelog](https://img.shields.io/badge/Changelog-Latest-ec4899)](https://github.com/alimtvnetwork/gitmap-v6/blob/main/changelog.md)
 [![Repo](https://img.shields.io/badge/Repo-gitmap--v6-22c55e?logo=github&logoColor=white)](https://github.com/alimtvnetwork/gitmap-v6)
 
-*Mandatory spec header — see [spec/00-spec-writing-guide](../00-spec-writing-guide/readme.md).*
+*Mandatory spec header — see [02-spec/00-spec-writing-guide](../00-spec-writing-guide/readme.md).*
 
 </div>
 
@@ -399,7 +399,7 @@ capture time and again in the verification block).
 
 ## See also
 
-- [Full spec](../../spec/10-vscode-context-menu-fix/readme.md)
+- [Full spec](../../02-spec/10-vscode-context-menu-fix/readme.md)
 - [Script 52 — folder-only repair + rollback](../52-vscode-folder-repair/readme.md)
 - [Script 54 — modern menu installer](../54-vscode-menu-installer/readme.md)
 - [Changelog](../../changelog.md)
@@ -465,6 +465,6 @@ Copyright (c) 2026 Alim Ul Karim
 
 <div align="center">
 
-*Part of the Dev Tools Setup Scripts toolkit — see the [spec writing guide](../../spec/00-spec-writing-guide/readme.md) for the full readme contract.*
+*Part of the Dev Tools Setup Scripts toolkit — see the [spec writing guide](../../02-spec/00-spec-writing-guide/readme.md) for the full readme contract.*
 
 </div>

@@ -3,7 +3,7 @@
     Cross-OS SSH key state ledger helpers.
 
 .DESCRIPTION
-    Reads/writes a JSON ledger at ~/.lovable/ssh-keys-state.json that
+    Reads/writes a JSON ledger at ~/.ai-memory/ssh-keys-state.json that
     records every SSH key operation performed by the os subcommands
     (gen-key / install-key / revoke-key) on this host. The same schema
     is honoured by the Unix shell helpers so the ledger survives when
@@ -36,7 +36,7 @@
 #>
 
 function Get-SshLedgerPath {
-    $dir = Join-Path $env:USERPROFILE ".lovable"
+    $dir = Join-Path $env:USERPROFILE ".ai-memory"
     return (Join-Path $dir "ssh-keys-state.json")
 }
 

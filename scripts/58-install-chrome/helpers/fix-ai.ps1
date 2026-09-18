@@ -11,7 +11,7 @@
       2. Per-user Local State JSON patch (preserves every other chrome://flag)
       3. On-disk model cache sweep with bytes-freed report
 
-    See spec/58-install-chrome/fix-ai.md for the full contract.
+    See 02-spec/58-install-chrome/fix-ai.md for the full contract.
 
 .PARAMETER DryRun
     Report only -- no registry write, no JSON patch, no file delete.

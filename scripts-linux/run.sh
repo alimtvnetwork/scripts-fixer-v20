@@ -371,7 +371,7 @@ Chrome profile copy / export / import (Linux/macOS port of script 58 helper):
                 Recreate an OFFLINE profile from an exported JSON snapshot.
                 Aliases: chrome-profile-restore
   Close Chrome first (or pass --force). Spec:
-  spec/58-install-chrome/profile-copy.md ; details:
+  02-spec/58-install-chrome/profile-copy.md ; details:
   scripts-linux/chrome-profile-copy/readme.md
 
 Nginx Web Server & Virtual Host Domain Manager (script 76):

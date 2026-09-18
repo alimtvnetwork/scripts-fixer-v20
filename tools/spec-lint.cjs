@@ -12,7 +12,7 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
-const SPEC = path.join(ROOT, "spec");
+const SPEC = path.join(ROOT, "02-spec");
 const REQUIRED = ["Commands", "Flags", "Exit Codes", "Verification"];
 const SKIP_DIR = /^(00-|2025-batch|suggestions|shared|audit|doctor|kimodo|release-pipeline|bump-version|choco-update)/i;
 

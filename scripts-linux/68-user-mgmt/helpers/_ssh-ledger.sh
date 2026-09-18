@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Cross-OS SSH key state ledger (Unix side).
 # Mirrors scripts/os/helpers/_ssh-ledger.ps1 -- same JSON schema at
-# $HOME/.lovable/ssh-keys-state.json so a shared home dir keeps a unified
+# $HOME/.ai-memory/ssh-keys-state.json so a shared home dir keeps a unified
 # history regardless of which OS performed the operation.
 #
 # Schema (top-level object):
@@ -22,7 +22,7 @@ _um_ledger_log() {
 }
 
 um_ledger_path() {
-  printf '%s/.lovable/ssh-keys-state.json' "${HOME:-/root}"
+  printf '%s/.ai-memory/ssh-keys-state.json' "${HOME:-/root}"
 }
 
 um_ledger_now() {

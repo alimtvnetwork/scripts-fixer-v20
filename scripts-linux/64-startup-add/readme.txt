@@ -15,7 +15,7 @@ USAGE
 SAFE DEFAULTS
   Linux GUI session    -> autostart    (~/.config/autostart/lovable-startup-<name>.desktop)
   Linux headless       -> systemd-user (~/.config/systemd/user/lovable-startup-<name>.service)
-  macOS                -> launchagent  (~/Library/LaunchAgents/com.lovable.startup.<name>.plist)
+  macOS                -> launchagent  (~/Library/LaunchAgents/com.ai-memory.startup.<name>.plist)
   env (any OS)         -> shell-rc     (marker block in ~/.zshrc or ~/.bashrc)
 
 LOGS

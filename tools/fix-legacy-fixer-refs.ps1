@@ -68,7 +68,7 @@ if ($Paths -and $Paths.Count -gt 0) {
 }
 
 $skipDirs = @('.git', 'node_modules', 'dist', 'build', '.next', '.turbo',
-              '.cache', 'coverage', '.lovable', '.legacy-fix-backups')
+              '.cache', 'coverage', '.ai-memory', '.legacy-fix-backups')
 $skipExts = @('.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico', '.pdf',
               '.zip', '.gz', '.tgz', '.7z', '.rar', '.exe', '.dll',
               '.bin', '.lockb', '.woff', '.woff2', '.ttf', '.otf',

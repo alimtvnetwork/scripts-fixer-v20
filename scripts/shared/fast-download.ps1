@@ -3,7 +3,7 @@
 #
 #  Public function: Invoke-FastDownload
 #  Defaults:        Splits = 16, PieceSize = 1M (aria2c minimum)
-#  Spec:            spec/shared/fast-download.md
+#  Spec:            02-spec/shared/fast-download.md
 #
 #  Resolution order:
 #     1. aria2c (auto-installed via Chocolatey if missing)

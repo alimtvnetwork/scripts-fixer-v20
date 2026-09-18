@@ -584,7 +584,7 @@ function Install-SelectedModels {
         When DownloadConfig.parallelEnabled is true and 2+ models are pending,
         runs aria2c in batch (parallel) mode first, then falls back to the
         sequential per-file path for any items that did not succeed.
-        Spec: spec/2025-batch/suggestions/03-parallel-downloads.md.
+        Spec: 02-spec/2025-batch/suggestions/03-parallel-downloads.md.
     #>
     param(
         [Parameter(Mandatory)]

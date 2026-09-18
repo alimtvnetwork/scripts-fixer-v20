@@ -22,7 +22,7 @@
 param(
     [string]$Root = (Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Definition)),
     [int[]]$Versions = @(8, 9, 10),
-    [string[]]$ExcludeDirs = @('.git', 'node_modules', 'dist', 'build', '.next', '.lovable\compliance-reports', '.legacy-fix-backups'),
+    [string[]]$ExcludeDirs = @('.git', 'node_modules', 'dist', 'build', '.next', '.ai-memory\compliance-reports', '.legacy-fix-backups'),
     [string[]]$Paths = @(),
     [switch]$Quiet
 )

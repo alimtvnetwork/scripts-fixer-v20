@@ -248,7 +248,7 @@ function Show-OsHelp {
     Write-Host "      --show-private + interactive console. --search greps files" -ForegroundColor DarkGray
     Write-Host "      AND the ledger; pass a bare positional as the search pattern." -ForegroundColor DarkGray
     Write-Host "    search-key <pattern>  Alias for 'view-key --search <pattern> --ledger'" -ForegroundColor Green
-    Write-Host "      State ledger: %USERPROFILE%\.lovable\ssh-keys-state.json" -ForegroundColor DarkGray
+    Write-Host "      State ledger: %USERPROFILE%\.ai-memory\ssh-keys-state.json" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "  STARTUP MANAGEMENT (cross-OS feature, Windows side)" -ForegroundColor Cyan
     Write-Host "    startup-add app <path> [--method M] [--name N] [--args ...] [--interactive] [--elevated]" -ForegroundColor Green

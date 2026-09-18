@@ -1,6 +1,6 @@
 # --------------------------------------------------------------------------
 #  Chrome Profile Copy / Export / Import helpers
-#  Spec: spec/58-install-chrome/profile-copy.md
+#  Spec: 02-spec/58-install-chrome/profile-copy.md
 # --------------------------------------------------------------------------
 #
 # Public functions:

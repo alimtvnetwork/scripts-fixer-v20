@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Verifies every file/folder referenced by Phases 1-4 of
-# .lovable/prompts/01-read-prompt.md actually exists.
+# 01-prompts/01-read-prompt.md actually exists.
 # Exits 1 on the first missing path, printing the exact path + phase.
 set -uo pipefail
 
@@ -38,50 +38,50 @@ check() {
 }
 
 cyan "== Phase 1 - AI Context Layer =="
-check P1 file .lovable/overview.md
-check P1 file .lovable/what-to-read.md
-check P1 file .lovable/strictly-avoid.md
-check P1 file .lovable/memory/index.md
-check P1 file .lovable/plan.md
-check P1 file .lovable/suggestions.md
-check P1 file .lovable/cicd-index.md
-check P1 dir  .lovable/memory
-check P1 dir  .lovable/memory/constraints
-check P1 dir  .lovable/memory/features
-check P1 dir  .lovable/memory/preferences
-check P1 dir  .lovable/memory/specs
-check P1 dir  .lovable/memory/workflow
-check P1 dir  .lovable/cicd-issues
+check P1 file .ai-memory/overview.md
+check P1 file .ai-memory/what-to-read.md
+check P1 file .ai-memory/strictly-avoid.md
+check P1 file .ai-memory/memory/index.md
+check P1 file .ai-memory/plan.md
+check P1 file .ai-memory/suggestions.md
+check P1 file .ai-memory/cicd-index.md
+check P1 dir  .ai-memory/memory
+check P1 dir  .ai-memory/memory/constraints
+check P1 dir  .ai-memory/memory/features
+check P1 dir  .ai-memory/memory/preferences
+check P1 dir  .ai-memory/memory/specs
+check P1 dir  .ai-memory/memory/workflow
+check P1 dir  .ai-memory/cicd-issues
 
 cyan "== Phase 2 - Consolidated Guidelines (repo-specific) =="
 check P2 dir  spec/error-management
-check P2 file spec/error-management/powershell-error-management.md
-check P2 file spec/error-management/gap-audit.md
+check P2 file 02-spec/error-management/powershell-error-management.md
+check P2 file 02-spec/error-management/gap-audit.md
 check P2 dir  spec/shared
 for f in logging install-paths admin-check fast-download tool-version \
          registry-backup symlink-utils invoke-with-timeout ensure-summary \
          tool-version-parsers; do
-  check P2 file "spec/shared/${f}.md"
+  check P2 file "02-spec/shared/${f}.md"
 done
-check P2 file .lovable/memory/constraints/strictly-prohibited.md
+check P2 file .ai-memory/memory/constraints/strictly-prohibited.md
 
 cyan "== Phase 3 - Spec Authoring Rules =="
-check P3 dir  spec/00-spec-writing-guide
-check P3 file spec/00-spec-writing-guide/readme.md
+check P3 dir  02-spec/00-spec-writing-guide
+check P3 file 02-spec/00-spec-writing-guide/readme.md
 
 cyan "== Phase 4 - Deep-Dive Source Specs =="
 for d in \
-  spec/00-generic-install-script-behavior \
+  02-spec/00-generic-install-script-behavior \
   spec/root-dispatcher \
   spec/install-bootstrap \
   spec/doctor \
   spec/release-pipeline \
   spec/bump-version \
-  spec/68-user-mgmt \
-  spec/52-vscode-folder-repair \
-  spec/58-install-chrome \
+  02-spec/68-user-mgmt \
+  02-spec/52-vscode-folder-repair \
+  02-spec/58-install-chrome \
   spec/chrome-fix-ai \
-  spec/02-app-issues \
+  02-spec/02-app-issues \
   spec/2025-batch \
   spec/ci-cd \
   spec/models \
@@ -95,6 +95,6 @@ if [[ $FAIL -eq 0 ]]; then
   green "All read-memory paths present."
   exit 0
 else
-  red "$FAIL missing path(s). Fix or update .lovable/prompts/01-read-prompt.md."
+  red "$FAIL missing path(s). Fix or update 01-prompts/01-read-prompt.md."
   exit 1
 fi

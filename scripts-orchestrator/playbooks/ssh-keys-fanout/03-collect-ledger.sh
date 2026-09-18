@@ -7,7 +7,7 @@
 set -e
 TARGET_USER="${TARGET_USER:-$(id -un)}"
 HOME_DIR=$(getent passwd "$TARGET_USER" | cut -d: -f6)
-LEDGER="${HOME_DIR}/.lovable/ssh-keys-state.json"
+LEDGER="${HOME_DIR}/.ai-memory/ssh-keys-state.json"
 
 entries=0
 snapshot_b64=""

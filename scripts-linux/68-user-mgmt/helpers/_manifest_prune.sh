@@ -3,7 +3,7 @@
 #
 # Retention-based cleanup of ssh-key rollback manifests written by
 # add-user.sh / add-user-from-json.sh (see feature memory
-# .lovable/memory/features/17-script-68-ssh-key-rollback.md).
+# .ai-memory/memory/features/17-script-68-ssh-key-rollback.md).
 #
 # Sourced by:
 #   - remove-ssh-keys.sh   (--prune verb, operator-driven retention pass)

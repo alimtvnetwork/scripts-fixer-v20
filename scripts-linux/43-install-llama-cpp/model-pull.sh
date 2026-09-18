@@ -26,7 +26,7 @@
 #
 # Defaults: output dir = $HOME/models/gguf, splits=16, piece=1M.
 #
-# Spec: spec/shared/fast-download.md
+# Spec: 02-spec/shared/fast-download.md
 
 set -u
 

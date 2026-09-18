@@ -10,7 +10,7 @@
 #   . _shared/pkg-detect.sh
 #   . _shared/apt-install.sh
 #
-# Spec: spec/shared/fast-download.md
+# Spec: 02-spec/shared/fast-download.md
 
 FAST_DL_DEFAULT_SPLITS=16
 FAST_DL_DEFAULT_PIECE="1M"

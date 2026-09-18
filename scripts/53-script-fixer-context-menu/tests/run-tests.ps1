@@ -2,7 +2,7 @@
 #  Script 53 -- tests/run-tests.ps1
 #
 #  Plain PowerShell test harness for the Script Fixer context-menu install.
-#  Executes the registry assertions described in spec/53-.../readme.md
+#  Executes the registry assertions described in 02-spec/53-.../readme.md
 #  section 17 (cases 6 - 13) against a LIVE installation, prints a colored
 #  pass/fail summary, and exits 0 (all green) or 1 (any failure).
 #

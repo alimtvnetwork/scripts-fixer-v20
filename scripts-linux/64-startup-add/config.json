@@ -21,7 +21,7 @@
     },
     "macos": {
       "launchAgentsDir":"$HOME/Library/LaunchAgents",
-      "labelPrefix":    "com.lovable.startup"
+      "labelPrefix":    "com.ai-memory.startup"
     },
     "shellRc": {
       "candidates": ["$HOME/.zshrc", "$HOME/.bashrc", "$HOME/.profile"],

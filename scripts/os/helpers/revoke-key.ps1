@@ -18,14 +18,14 @@
         --yes             Skip confirmation for --all
 
     Idempotent: keys not present are reported as "already revoked", not
-    treated as errors. Removal logged to ~/.lovable/ssh-keys-state.json.
+    treated as errors. Removal logged to ~/.ai-memory/ssh-keys-state.json.
 
     CODE-RED: every file/path error logs the EXACT path + reason.
 
     Dry-run effect per flag (with --dry-run, the diff against the
     target authorized_keys is computed and logged but NO file is
     rewritten, NO .bak is created, and the ledger at
-    ~/.lovable/ssh-keys-state.json is NOT updated):
+    ~/.ai-memory/ssh-keys-state.json is NOT updated):
       --fingerprint "SHA256:..."  would log "[dry-run] would remove key
                                   <fingerprint> from <user>\.ssh\
                                   authorized_keys" per match. Keys not
@@ -286,7 +286,7 @@ if (-not (Set-SshFileAcl -Path $authFile -User $targetUser)) {
 # ---- Ledger ----
 $hasLedger = [bool](Get-Command Add-SshLedgerEntry -ErrorAction SilentlyContinue)
 if (-not $hasLedger) {
-    Write-Log "SSH ledger helper not loaded -- audit trail at '~/.lovable/ssh-keys-state.json' will NOT record this revocation. Path: $ledgerHelper" -Level "warn"
+    Write-Log "SSH ledger helper not loaded -- audit trail at '~/.ai-memory/ssh-keys-state.json' will NOT record this revocation. Path: $ledgerHelper" -Level "warn"
 }
 foreach ($r in $removed) {
     $fp = Get-KeyFingerprint -Line $r

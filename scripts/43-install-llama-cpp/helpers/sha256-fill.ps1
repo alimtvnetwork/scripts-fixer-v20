@@ -4,7 +4,7 @@
 #  each download URL and reading the X-Linked-Etag response header (which
 #  Hugging Face sets to the file's sha256 for all LFS-tracked GGUFs).
 #
-#  Implements spec/2025-batch/suggestions/02-sha256-population.md.
+#  Implements 02-spec/2025-batch/suggestions/02-sha256-population.md.
 #
 #  Public functions:
 #    Invoke-Sha256Fill  -- main entry point

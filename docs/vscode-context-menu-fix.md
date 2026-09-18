@@ -15,7 +15,7 @@
 [![Changelog](https://img.shields.io/badge/Changelog-Latest-ec4899)](https://github.com/alimtvnetwork/gitmap-v6/blob/main/changelog.md)
 [![Repo](https://img.shields.io/badge/Repo-gitmap--v6-22c55e?logo=github&logoColor=white)](https://github.com/alimtvnetwork/gitmap-v6)
 
-*User-facing companion to [spec/10-vscode-context-menu-fix](../spec/10-vscode-context-menu-fix/readme.md).*
+*User-facing companion to [02-spec/10-vscode-context-menu-fix](../02-spec/10-vscode-context-menu-fix/readme.md).*
 
 </div>
 
@@ -30,7 +30,7 @@ when the entries point at a stale path.
 
 This guide is the **operator's manual** for the fix. The full design contract,
 registry-path tables, and machine-readable assertions live in the
-[spec](../spec/10-vscode-context-menu-fix/readme.md).
+[spec](../02-spec/10-vscode-context-menu-fix/readme.md).
 
 > 🛡️ **Safety stance**: This page only describes operations against the
 > per-user registry hive (`HKCU\Software\Classes`). No machine-wide
@@ -199,15 +199,15 @@ scripts/10-vscode-context-menu-fix/helpers/restore-from-backup.ps1
 | Entry launches the wrong `Code.exe` | Multiple editions installed. | Re-run with `-Edition stable` / `-Edition insiders`. |
 | `Access is denied` writing `HKCU` | Roaming-profile lock or AV. | Close Explorer windows, retry; verify AV isn't blocking `reg.exe`. |
 | Backup folder empty after install | Run was a `-WhatIf` preview. | Re-run without `-WhatIf` to produce a real backup. |
-| Want machine-wide install | Out of scope for this guide. | See [spec/10-vscode-context-menu-fix](../spec/10-vscode-context-menu-fix/readme.md) §"Machine scope". |
+| Want machine-wide install | Out of scope for this guide. | See [02-spec/10-vscode-context-menu-fix](../02-spec/10-vscode-context-menu-fix/readme.md) §"Machine scope". |
 
 ---
 
 ## See also
 
-- [Spec — design contract](../spec/10-vscode-context-menu-fix/readme.md)
+- [Spec — design contract](../02-spec/10-vscode-context-menu-fix/readme.md)
 - [Script 10 implementation folder](../scripts/10-vscode-context-menu-fix/readme.md)
-- [Spec writing guide](../spec/00-spec-writing-guide/readme.md)
+- [Spec writing guide](../02-spec/00-spec-writing-guide/readme.md)
 - [Changelog](../changelog.md)
 
 ---
@@ -250,6 +250,6 @@ Copyright (c) 2026 Alim Ul Karim
 
 <div align="center">
 
-*Part of the Dev Tools Setup Scripts toolkit — see the [spec writing guide](../spec/00-spec-writing-guide/readme.md) for the full readme contract.*
+*Part of the Dev Tools Setup Scripts toolkit — see the [spec writing guide](../02-spec/00-spec-writing-guide/readme.md) for the full readme contract.*
 
 </div>

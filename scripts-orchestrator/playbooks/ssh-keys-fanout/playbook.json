@@ -1,7 +1,7 @@
 {
   "name": "ssh-keys-fanout",
   "version": "0.1.0",
-  "description": "Distribute one or more SSH public keys to a target user on every host. Idempotent (trim/split/compare). Records install in ~/.lovable/ssh-keys-state.json on each host. Aggregates per-host ledger snapshots back to the controller for central audit.",
+  "description": "Distribute one or more SSH public keys to a target user on every host. Idempotent (trim/split/compare). Records install in ~/.ai-memory/ssh-keys-state.json on each host. Aggregates per-host ledger snapshots back to the controller for central audit.",
   "osCompatibility": ["ubuntu", "debian", "rhel", "centos", "alpine", "macos"],
   "inputs": {
     "KEY_FILE":       "Local path to a file containing one or more pubkey lines",

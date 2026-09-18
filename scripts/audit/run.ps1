@@ -84,7 +84,7 @@ if ($checks.configLogMessages) {
 }
 
 if ($checks.staleRefsSpecs) {
-    $specDir = Join-Path $repoRoot "spec"
+    $specDir = Join-Path $repoRoot "02-spec"
     [void]$allResults.Add((Test-StaleRefsInMarkdown -SearchDir $specDir -CheckName "Stale refs in specs" -Registry $registry -LogMessages $logMessages))
 }
 

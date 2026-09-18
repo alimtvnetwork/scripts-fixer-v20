@@ -91,7 +91,7 @@ if command -v rg >/dev/null 2>&1; then
     # rg with --no-ignore so we audit EVERY tracked + untracked file.
     OUTPUT="$(cd "$ROOT" && rg --no-ignore --hidden --no-config \
         --glob '!.git' --glob '!node_modules' --glob '!dist' --glob '!build' \
-        --glob '!.lovable/compliance-reports/**' \
+        --glob '!.ai-memory/compliance-reports/**' \
         --glob '!tools/*-legacy-fixer-refs.*' \
         --glob '!tools/*legacy-refs.*' \
         --glob '!tools/readme.md' \
