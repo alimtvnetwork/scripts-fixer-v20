@@ -3910,15 +3910,23 @@ if ($hasCommand) {
         'profile','git-tools','gsa','reset','help','version','nginx',
         'startup','schedule','crontab','macro','async','storage','pipeline','cluster'
     )
+    $keywordsFileEarly = Join-Path $RootDir "scripts\shared\install-keywords.json"
+    $keywordMap = $null
+    if (Test-Path $keywordsFileEarly) {
+        try {
+            $keywordDataEarly = Get-Content $keywordsFileEarly -Raw | ConvertFrom-Json
+            $keywordMap = $keywordDataEarly.keywords
+        } catch { }
+    }
     $isFuzzyEligible = $normalizedCommand -and `
         ($normalizedCommand -notin $canonicalVerbs) -and `
         ($normalizedCommand -notmatch '^\d+$') -and `
         (-not $commandAliasMap.ContainsKey($normalizedCommand)) -and `
-        ($null -eq $keywordMap.$normalizedCommand)
+        ($null -eq $keywordMap -or $null -eq $keywordMap.$normalizedCommand)
     if ($isFuzzyEligible) {
-        $guess = Get-DidYouMean -Token $normalizedCommand -Candidates $canonicalVerbs -Top 1
-        if ($guess -and $guess.Count -gt 0) {
-            $best = $guess[0]
+        $guess = @(Get-DidYouMean -Token $normalizedCommand -Candidates $canonicalVerbs -Top 1)
+        if ($guess.Count -gt 0) {
+            $best = [string]$guess[0]
             # Only auto-redirect on a tight match (prefix or <=2 edits); otherwise
             # just hint and let the normal install-keyword path try.
             $isTightMatch = ($best.StartsWith($normalizedCommand)) -or `
@@ -3965,9 +3973,9 @@ if ($hasCommand) {
     $isBareChromeProfileCopyCommand   = $normalizedCommand -in @("chrome-profile-copy","chromeprofilecopy","chrome-clone-profile","clone-chrome-profile")
     $isBareChromeProfileExportCommand = $normalizedCommand -in @("chrome-profile-export","chrome-export-profile","chrome-profile-to-json","chrome-profile-to-csv")
     $isBareChromeProfileImportCommand = $normalizedCommand -in @("chrome-profile-import","chrome-import-profile")
-    $isBareTerminalTasksCommand = $normalizedCommand -eq "terminal-tasks"
     $isBareDbMenuCommand = $normalizedCommand -eq "db-menu"
-    $isBareProfileCommand = $normalizedCommand -eq "profile" -or $normalizedCommand -eq "profiles"
+    $isBareProfileCommand = $normalizedCommand -eq "profile" -or $normalizedCommand -eq "profiles" -or `
+        ($normalizedCommand -in @("dev", "developer", "dev-advance", "devadvance", "profile-dev", "profile-dev-advance"))
     $isBareGitToolsCommand = $normalizedCommand -eq "git-tools" -or $normalizedCommand -eq "gittools"
     $isBareGsaCommand     = $normalizedCommand -eq "gsa" -or $normalizedCommand -eq "git-safe-all" -or $normalizedCommand -eq "gitsafeall"
     $isBareResetCommand   = $normalizedCommand -in @("reset","fresh","fresh-start","wipe-state","clear-state")
@@ -4420,6 +4428,11 @@ if ($hasCommand) {
     }
 
     if ($isBareProfileCommand) {
+        if ($normalizedCommand -notin @("profile", "profiles")) {
+            $effectiveProf = $normalizedCommand
+            if ($effectiveProf -like 'profile-*') { $effectiveProf = $effectiveProf.Substring(8) }
+            $Install = @($effectiveProf) + @($Install | Where-Object { $_ })
+        }
         if ($Install -and $Install.Count -gt 0) {
             $firstProfArg = "$($Install[0])".Trim().ToLower()
             if ($firstProfArg -in @("help", "--help", "-help", "-h", "/?")) {

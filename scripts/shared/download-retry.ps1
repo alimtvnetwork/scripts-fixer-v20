@@ -28,6 +28,7 @@ function Invoke-DownloadWithRetry {
     #>
     param(
         [Parameter(Mandatory)]
+        [Alias("Url")]
         [string]$Uri,
 
         [Parameter(Mandatory)]

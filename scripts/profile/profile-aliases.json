@@ -18,10 +18,9 @@
     "term":             { "kind": "exact", "target": "terminal" },
     "cli":              { "kind": "exact", "target": "terminal" },
 
-    "dev":         { "kind": "fallback", "target": "base",    "reason": "'dev' profile not present locally; closest match is 'base' (full Windows dev setup)." },
-    "dev-advance": { "kind": "fallback", "target": "advance", "reason": "'dev-advance' profile not present locally; closest match is 'advance' (extended dev tooling)." },
-    "devadvance":  { "kind": "fallback", "target": "advance", "reason": "'devadvance' profile not present locally; closest match is 'advance'." },
-    "developer":   { "kind": "fallback", "target": "base",    "reason": "'developer' profile not present locally; closest match is 'base'." },
-    "full":        { "kind": "fallback", "target": "advance", "reason": "'full' profile not present locally; closest match is 'advance'." }
+    "developer":    { "kind": "exact",    "target": "dev" },
+    "devadvance":   { "kind": "exact",    "target": "dev-advance" },
+    "dev-advanced": { "kind": "exact",    "target": "dev-advance" },
+    "full":         { "kind": "exact",    "target": "dev-advance" }
   }
 }

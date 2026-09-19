@@ -157,7 +157,7 @@ function Execute-FreshRustInstall {
 
     try {
         Write-Log $LogMessages.messages.downloadingRustup -Level "info"
-        Invoke-DownloadWithRetry -Url $Config.rustupUrl -OutFile $rustupExe
+        Invoke-DownloadWithRetry -Uri $Config.rustupUrl -OutFile $rustupExe
 
         Write-Log ($LogMessages.messages.runningRustupInit -replace '\{toolchain\}', $Config.defaultToolchain) -Level "info"
         & $rustupExe -y --default-toolchain $Config.defaultToolchain --profile default 2>&1 | Out-Null

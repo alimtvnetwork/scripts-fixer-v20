@@ -349,9 +349,8 @@ $builtinAliases = @{
     "terminal-profile" = @{ kind = "exact";    target = "terminal" }
     "profile-terminal" = @{ kind = "exact";    target = "terminal" }
     "term"             = @{ kind = "exact";    target = "terminal" }
-    "cli"              = @{ kind = "exact";    target = "terminal" }
-    "dev"         = @{ kind = "fallback"; target = "base";    reason = "'dev' profile not present locally; closest match is 'base'." }
-    "dev-advance" = @{ kind = "fallback"; target = "advance"; reason = "'dev-advance' profile not present locally; closest match is 'advance'." }
+    "developer"   = @{ kind = "exact";    target = "dev" }
+    "devadvance"  = @{ kind = "exact";    target = "dev-advance" }
 }
 
 $aliasMap   = @{}

@@ -60,6 +60,30 @@
     "golang": [
       6
     ],
+    "rust": [
+      44
+    ],
+    "cargo": [
+      44
+    ],
+    "rustup": [
+      44
+    ],
+    "rustfmt": [
+      44
+    ],
+    "clippy": [
+      44
+    ],
+    "rust-analyzer": [
+      44
+    ],
+    "rustanalyzer": [
+      44
+    ],
+    "rust-lang": [
+      44
+    ],
     "git": [
       7
     ],
@@ -1289,8 +1313,23 @@
     "profile-smalldev": [
       "profile:small-dev"
     ],
+    "dev": [
+      "profile:dev"
+    ],
+    "developer": [
+      "profile:dev"
+    ],
     "profile-dev": [
       "profile:dev"
+    ],
+    "dev-advance": [
+      "profile:dev-advance"
+    ],
+    "devadvance": [
+      "profile:dev-advance"
+    ],
+    "dev-advanced": [
+      "profile:dev-advance"
     ],
     "profile-dev-advance": [
       "profile:dev-advance"
