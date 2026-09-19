@@ -49,7 +49,7 @@ Follow this sequence before and during any repository modification task:
 | **21** | `21-sequence-integrity-linter.py` | Verifies numeric sequences and headers across plans and subtasks | ~10ms | `sequence`, `linter`, `plans`, `integrity` |
 | **22** | `22-doc-path-linter.py` | Lints markdown references and verifies documentation paths | ~15ms | `paths`, `docs`, `linter`, `relative-paths` |
 | **23** | `23-coding-guideline-path-consolidator.py` | Consolidates coding guideline references to canonical specs | ~18ms | `guidelines`, `paths`, `consolidator` |
-| **24** | `24-spec-path-migrator.py` | Migrates legacy spec references to updated paths | ~15ms | `02-spec`, `migration`, `paths` |
+| **24** | `24-spec-path-migrator.py` | Migrates legacy spec references to updated paths | ~15ms | `spec`, `migration`, `paths` |
 | **25** | `25-repo-migrator.py` | Repository-wide asset and structural migration utility | ~25ms | `migrator`, `repo`, `assets` |
 | **26** | `26-go-code-formatter.py` | Cross-platform Go code formatter via gofmt with staged support | ~20ms | `go`, `gofmt`, `formatter`, `staged` |
 | **27** | `27-misspell-auditor.py` | Audits and auto-fixes British to American English spelling | ~15ms | `spelling`, `misspell`, `us-english`, `autofix` |
@@ -61,6 +61,8 @@ Follow this sequence before and during any repository modification task:
 | **33** | `33-test-inventory-generator.py` | Centralized test cataloging, duration tracking, and test resolution for releases | ~15ms | `test`, `inventory`, `cache`, `duration`, `release` |
 | **34** | `34-purge-github-actions-artifacts.py` | Purges stored GitHub Actions artifacts to enforce Zero-Storage Mandate | ~25ms | `ci-cd`, `artifacts`, `github-actions`, `quota`, `cleanup` |
 | **35** | `35-db-struct-enum-generator.py` | Inspects Go models, generates column enums and strongly-typed repository builders | ~20ms | `db`, `generator`, `scaffolder`, `repository`, `enums` |
+| **36** | `36-multi-repo-folder-migrator.py` | Migrates child repositories from `.lovable`/`spec` to `.ai-memory`/`02-spec` | ~50ms | `migrator`, `multi-repo`, `structure`, `ai-memory` |
+| **37** | `37-bump-version.py` | Repository-aware SemVer version bumper & manifest synchronizer | ~15ms | `version`, `bump`, `semver`, `sync`, `changelog` |
 
 ---
 
@@ -724,7 +726,7 @@ python 03-ai-scripts/22-doc-path-linter.py
 
 #### Why It Exists
 
-Autonomously consolidates references from the legacy nested path (`.ai-memory/coding-guidelines.md`) to the canonical path (`.ai-memory/coding-guidelines.md`) across all documentation, code, specs, and linters.
+Autonomously consolidates references from the legacy nested path (`.ai-memory/coding-guidelines/coding-guidelines.md`) to the canonical path (`.ai-memory/coding-guidelines.md`) across all documentation, code, specs, and linters.
 
 #### What It Does
 
@@ -768,7 +770,7 @@ python 03-ai-scripts/24-spec-path-migrator.py
 
 #### Why It Exists
 
-Provides a fully transactional, reversible engine to restructure repository layouts (such as migrating legacy `02-spec/` to `02-spec/`, `01-prompts/` to `01-prompts/`, and `03-ai-scripts/` to `03-ai-scripts/`) with 100% undo/redo safety.
+Provides a fully transactional, reversible engine to restructure repository layouts (such as migrating legacy `02-spec/` to `02-spec/`, `.ai-memory/prompts/` to `01-prompts/`, and `.ai-memory/ai-fix-scripts/` to `03-ai-scripts/`) with 100% undo/redo safety.
 
 #### What It Does
 
@@ -1076,6 +1078,9 @@ Maintains a single source of truth for repository test coverage at `.ai-memory/t
 # Scan repository and generate / update .ai-memory/test-inventory.json
 python 03-ai-scripts/33-test-inventory-generator.py
 
+# Check test inventory cache freshness (<= 5 days old and profiled)
+python 03-ai-scripts/33-test-inventory-generator.py --check-age --max-age-days 5
+
 # Safely record modified files under lock and resolve associated tests
 python 03-ai-scripts/33-test-inventory-generator.py --record "04-code/golang/pkg/appfault/appfault.go"
 
@@ -1136,6 +1141,40 @@ python 03-ai-scripts/35-db-struct-enum-generator.py --file 04-code/golang/pkg/mo
 
 # Generate enums into explicit output directory
 python 03-ai-scripts/35-db-struct-enum-generator.py --file 04-code/golang/pkg/models/item.go --out-dir 04-code/golang/pkg/generated/item
+```
+
+</details>
+
+<details>
+<summary><strong>37 — <code>37-bump-version.py</code>: Repository-Aware SemVer Version Bumper & Synchronizer</strong></summary>
+
+#### Why It Exists
+
+Automates accurate SemVer version bumping and synchronization across project manifests (`version.json`, `package.json`), documentation (`readme.md`), and changelogs (`changelog.md`), preventing manual version drift and ensuring release pipelines have a reliable cross-platform Python tool.
+
+#### What It Does
+
+- Discovers canonical version from `version.json` or `package.json`.
+- Calculates next SemVer version (`minor` by default per Rule 0, or `patch`/`major`).
+- Updates `version.json`, `package.json`, `prompt-version.template.json`, and `readme.md` version badges and install snippets.
+- Prepends formatted changelog entries to `changelog.md`.
+- Triggers `npm run sync` if defined to regenerate spec trees and health scores.
+- Supports `--dry-run` to preview all file modifications.
+
+#### CLI Usage & Examples
+
+```bash
+# Preview minor version bump without modifying files (check / dry-run mode)
+python 03-ai-scripts/37-bump-version.py --dry-run
+
+# Bump minor version (default) with custom scope
+python 03-ai-scripts/37-bump-version.py --tier minor --scope "Add release branching lifecycle"
+
+# Bump patch version
+python 03-ai-scripts/37-bump-version.py --tier patch --scope "Fix release orchestrator flow"
+
+# Explicit version bump
+python 03-ai-scripts/37-bump-version.py --version 6.42.0
 ```
 
 </details>
