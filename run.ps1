@@ -385,6 +385,8 @@ function Show-RootHelpRaw {
     Write-Host "    $(".\run.ps1 os browser <name>".PadRight($col))" -NoNewline; Write-Host "Set default web browser (chrome | firefox | edge | brave | opera | vivaldi | librewolf)" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 os email <name>".PadRight($col))" -NoNewline; Write-Host "Set default mail client (outlook | thunderbird | mailbird | em-client | windows-mail)" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 os clean | temp-clean".PadRight($col))" -NoNewline; Write-Host "Disk cleanup (categories, buckets, consent system) or just temp dirs" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 os dev-cleanup [-y]".PadRight($col))" -NoNewline; Write-Host "Clean dev tools caches (Go, pnpm, npm, choco, yarn, bun, pip, cargo, nuget)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 clean-dev [-y]".PadRight($col))" -NoNewline; Write-Host "Top-level shortcut for 'os dev-cleanup' (supports --dry-run, --yes)" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 os add-user | edit-user | remove-user".PadRight($col))" -NoNewline; Write-Host "Local Windows user management (add/edit/remove, JSON-bulk variants too)" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 ssh <verb>".PadRight($col))" -NoNewline; Write-Host "SSH keys: gen | view | read | cat | search | install | revoke | ledger ('ssh help')" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 ssh view".PadRight($col))" -NoNewline; Write-Host "Pretty-print ~/.ssh (public keys + masked private + ledger summary)" -ForegroundColor $ThemeMuted
@@ -3044,6 +3046,7 @@ if ($_isEarlyHelp) {
             @{ K = "settings";      D = "Settings sync + export commands across tools" },
             @{ K = "export";        D = "Export current settings (NPP, OBS, WT, DBeaver, ConEmu)" },
             @{ K = "os";            D = "OS-level subcommands (clean-*, browser, fixes)" },
+            @{ K = "clean-dev";     D = "Dev tools cache cleanup (Go, pnpm, npm, choco, etc.)" },
             @{ K = "doctor";        D = "Doctor / diagnostics commands" },
             @{ K = "logs";          D = "Log inspection (--tail, --grep, --since, --errors)" },
             @{ K = "report";        D = "Install report generation" },
@@ -3399,7 +3402,7 @@ if ($_isEarlyHelp) {
     $_completionPool = @(
         'chrome','chrome-fix-ai','fix-ai','chrome-profile-copy','chrome-profile-export','chrome-profile-import','ext','ext-url','ext-all','vscode','vscode-folder','conemu',
         'menu','context-menu','profile','install','uninstall','update',
-        'self-update','settings','export','os','doctor','logs','report','reset',
+        'self-update','settings','export','os','clean-dev','dev-cleanup','doctor','logs','report','reset',
         'path','models','models-download','download','url','git','git-tools','gsa','mysql','postgresql',
         'mariadb','mongodb','redis','sqlite','node','python','docker',
         'kubernetes','java','dotnet','rust','go','php','obs','npp','wt',
@@ -3884,9 +3887,13 @@ if ($hasCommand) {
         # ssh family
         'sshkeygen'            = 'ssh'
         'ssh-gen'              = 'ssh'
-        # menu / os
+        # menu / os / dev-cleanup
         'contextmenus'         = 'menu'
         'os-clean'             = 'os'
+        'dev-cleanup'          = 'clean-dev'
+        'cleandev'             = 'clean-dev'
+        'devcleanup'           = 'clean-dev'
+        'dev-clean'            = 'clean-dev'
         # misc
         'taskbar-left'         = 'startup-add'   # documented sample lives under startup-add helpers
     }
@@ -3905,7 +3912,7 @@ if ($hasCommand) {
     $canonicalVerbs = @(
         'install','update','uninstall','reinstall','self-update','path','scan',
         'export','status','doctor','report','models','models-download','menu',
-        'os','ssh','vscode-folder','vscode-context-menu','chrome','chrome-fix-ai',
+        'os','clean-dev','dev-cleanup','ssh','vscode-folder','vscode-context-menu','chrome','chrome-fix-ai',
         'chrome-profile-copy','chrome-profile-export','chrome-profile-import',
         'profile','git-tools','gsa','reset','help','version','nginx',
         'startup','schedule','crontab','macro','async','storage','pipeline','cluster'
@@ -3964,6 +3971,7 @@ if ($hasCommand) {
     # (isBareInstallCommand already set above at line 3679)
     $isBareMenuCommand    = $normalizedCommand -in @("menu","menus","context-menu","contextmenu","ctx-menu","ctxmenu")
     $isBareOsCommand      = $normalizedCommand -eq "os"
+    $isBareCleanDevCommand = $normalizedCommand -in @("clean-dev", "dev-cleanup", "cleandev", "devcleanup", "dev-clean")
     $isBareSshCommand     = $normalizedCommand -in @("ssh","sshkey","ssh-key","ssh-keys","sshkeys")
     $isBareVscodeFolderCommand = $normalizedCommand -in @("vscode-folder", "vscode-folder-repair", "vscodefolder", "vscodefolderrepair")
     $isBareVscodeContextMenuCommand = $normalizedCommand -in @("vscode-context-menu", "vscode-contextmenu", "vscodecontextmenu", "vscode-menu", "vscodemenu")
@@ -4010,7 +4018,7 @@ if ($hasCommand) {
     #   - any of $Install contains --no-pull / -no-pull / --offline
     #   - command is read-only (status/path/scan/export/doctor)
     $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareExportConfigCommand -or $isBareImportConfigCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand
-    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareTerminalTasksCommand -or $isBareDbMenuCommand -or $isBareNginxCommand
+    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareCleanDevCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareTerminalTasksCommand -or $isBareDbMenuCommand -or $isBareNginxCommand
     $isNoPullEnv = $env:SCRIPTS_FIXER_NO_PULL -eq "1"
     $isNoPullFlag = $false
     if ($null -ne $Install) {
@@ -4152,6 +4160,31 @@ if ($hasCommand) {
             & $osScript "--help"
             exit $LASTEXITCODE
         }
+        & $osScript @osArgs
+        exit $LASTEXITCODE
+    }
+
+    if ($isBareCleanDevCommand) {
+        Show-VersionHeader
+        $osScript = Join-Path $RootDir "scripts\os\run.ps1"
+        $isOsScriptPresent = Test-Path $osScript
+
+        if (-not $isOsScriptPresent) {
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
+            Write-Host "OS dispatcher missing at: $osScript"
+            exit 1
+        }
+
+        $osArgs = @("dev-cleanup")
+
+        if ($null -ne $Install) {
+            $osArgs += @($Install)
+        }
+
+        if ($Y -and -not ($osArgs | Where-Object { "$_".Trim().ToLower() -in @("--yes","-yes","-y","--force","-force") })) {
+            $osArgs += "--yes"
+        }
+
         & $osScript @osArgs
         exit $LASTEXITCODE
     }
@@ -4686,14 +4719,15 @@ if ($hasCommand) {
         }
         & $scanScript @Install
         exit $LASTEXITCODE
+    } elseif ($isBareDoctorCommand) {
         Show-VersionHeader
         # Detect --self-check / --fix / --json flags in remaining args
         $isSelfCheck = $false
         $isSkipNetwork = $false
         $isFix = $false
         if ($null -ne $Install -and $Install.Count -gt 0) {
-            foreach ($a in $Install) {
-                $low = "$a".Trim().ToLower()
+            foreach ($item in $Install) {
+                $low = "$item".Trim().ToLower()
                 if ($low -in @("--self-check", "-self-check", "selfcheck", "--selfcheck", "self-check")) { $isSelfCheck = $true }
                 if ($low -in @("--skip-network", "-skip-network", "skipnetwork", "--skipnetwork", "skip-network", "--offline", "-offline", "offline")) { $isSkipNetwork = $true }
                 if ($low -in @("--fix", "-fix", "fix", "--repair", "-repair")) { $isFix = $true }

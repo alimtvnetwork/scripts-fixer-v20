@@ -211,6 +211,7 @@ $catalog = @(
     @{ Cat = "mise-cache";          Bucket = "F"; Helper = "mise-cache.ps1" },
     @{ Cat = "npm-cache";           Bucket = "F"; Helper = "npm-cache.ps1" },
     @{ Cat = "pip-cache";           Bucket = "F"; Helper = "pip-cache.ps1" },
+    @{ Cat = "choco-cache";         Bucket = "F"; Helper = "choco-cache.ps1" },
     @{ Cat = "docker-dangling";     Bucket = "F"; Helper = "docker-dangling.ps1" },
     @{ Cat = "wsl";                 Bucket = "F"; Helper = "wsl.ps1" },
     # Bucket G -- Media (age-gated)

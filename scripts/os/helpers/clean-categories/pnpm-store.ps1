@@ -1,27 +1,34 @@
-<# Bucket F: pnpm-store -- pnpm's content-addressable store (CAS) of package tarballs.
-   Cleans:
-     %USERPROFILE%\.pnpm-store              (legacy / cross-platform default)
-     %LOCALAPPDATA%\pnpm\store              (Windows default since pnpm v6+)
-     %LOCALAPPDATA%\pnpm-cache              (transient HTTP cache, present on some installs)
-     'pnpm store prune' invoked first when CLI is on PATH (best effort -- removes only
-     unreferenced content, much safer than nuking the whole store).
-   SAFE: %LOCALAPPDATA%\pnpm\* outside of \store\ (the pnpm runtime itself,
-         shims under \pnpm-global, the .tool-versions / package.json files in projects,
-         project node_modules symlinks resolve back from the store on next install).
-   NOTE: project node_modules created with --frozen-lockfile may need a single
-         'pnpm install' afterwards to repopulate from the store.
+<#
+.SYNOPSIS
+    Bucket F: pnpm-store -- pnpm content-addressable store (CAS) and package cache.
+
+.DESCRIPTION
+    Cleans:
+      - %USERPROFILE%\.pnpm-store              (legacy / cross-platform default)
+      - %LOCALAPPDATA%\pnpm\store              (Windows default since pnpm v6+)
+      - %LOCALAPPDATA%\pnpm-cache              (transient HTTP cache)
+      - <DEV_DIR>\pnpm\store                   (configured dev-tool pnpm store)
+      - 'pnpm store prune' invoked first when CLI is on PATH.
+    SAFE: %LOCALAPPDATA%\pnpm\* outside of \store\ (the pnpm runtime itself,
+          shims under \pnpm-global, and project package.json files).
 #>
-param([switch]$DryRun, [switch]$Yes, [int]$Days = 30, [hashtable]$SharedResult)
+param(
+    [switch]$DryRun,
+    [switch]$Yes,
+    [int]$Days = 30,
+    [hashtable]$SharedResult
+)
 
 $here = Split-Path -Parent $MyInvocation.MyCommand.Definition
 . (Join-Path $here "_sweep.ps1")
 
 $result = New-CleanResult -Category "pnpm-store" -Label "pnpm CAS store (.pnpm-store + LOCALAPPDATA\pnpm\store; runtime SAFE)" -Bucket "F"
 
-# Best-effort 'pnpm store prune' first (only removes unreferenced content)
 if (-not $DryRun) {
     $pnpmCmd = Get-Command "pnpm" -ErrorAction SilentlyContinue
-    if ($null -ne $pnpmCmd) {
+    $hasPnpm = $null -ne $pnpmCmd
+
+    if ($hasPnpm) {
         try {
             & pnpm store prune 2>$null | Out-Null
             $result.Notes += "Invoked 'pnpm store prune' before path sweep (unreferenced content only)"
@@ -37,21 +44,36 @@ $candidates = @(
     (Join-Path (Get-LocalAppDataPath) "pnpm-cache")
 )
 
-$foundAny = $false
+$hasDevDir = -not [string]::IsNullOrWhiteSpace($env:DEV_DIR)
+if ($hasDevDir) {
+    $candidates += (Join-Path $env:DEV_DIR "pnpm\store")
+}
+
+foreach ($drive in @("C:", "D:", "E:")) {
+    $candidates += (Join-Path $drive "dev-tool\pnpm\store")
+}
+
+$candidates = @($candidates | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Select-Object -Unique)
+$hasFoundAny = $false
+
 foreach ($c in $candidates) {
-    $isPresent = Test-Path -LiteralPath $c
-    if (-not $isPresent) { continue }
-    $foundAny = $true
-    # Carve LogPrefix so it stays readable: pnpm-store/<lastTwoSegments>
+    $isPathPresent = Test-Path -LiteralPath $c
+    if (-not $isPathPresent) {
+        continue
+    }
+
+    $hasFoundAny = $true
+    $leaf = Split-Path -Leaf $c
     $parent = Split-Path -Parent $c
-    $leaf   = Split-Path -Leaf $c
     $parentLeaf = Split-Path -Leaf $parent
+
     Invoke-PathSweep -Path $c -Result $result -DryRun:$DryRun -LogPrefix "pnpm-store/$parentLeaf/$leaf"
 }
 
-if (-not $foundAny) {
+if (-not $hasFoundAny) {
     $result.Notes += "pnpm store not present (no .pnpm-store, LOCALAPPDATA\pnpm\store, LOCALAPPDATA\pnpm-cache)"
 }
 
 Set-CleanResultStatus -Result $result -DryRun:$DryRun
+
 return $result

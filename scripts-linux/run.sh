@@ -66,6 +66,8 @@ while [ $# -gt 0 ]; do
     startup-prune|startup-purge)
         VERB="startup-passthrough"; STARTUP_SUB="prune";  shift; STARTUP_REST=("$@"); break ;;
     # ---- top-level shortcuts to script 65 (cross-OS os-clean) ----
+    dev-cleanup|clean-dev|devcleanup|cleandev)
+        VERB="osclean-passthrough"; OSCLEAN_SUB="run"; shift; OSCLEAN_REST=("--only" "pkg-npm,pkg-pnpm,pkg-bun,pkg-yarn,pkg-pip,pkg-go,pkg-cargo" "$@"); break ;;
     os-clean|clean)
         VERB="osclean-passthrough"; OSCLEAN_SUB="run";              shift; OSCLEAN_REST=("$@"); break ;;
     os-clean-list|clean-list|clean-categories)
@@ -324,6 +326,7 @@ Cross-OS startup management (script 64 shortcuts):
       --yes                    Skip the interactive confirmation prompt
 
 Cross-OS cleanup (script 65 shortcuts):
+  clean-dev                    Sweep dev caches (npm, pnpm, bun, yarn, pip, go, cargo)
   os-clean                     Sweep temp/caches/trash/pkg-caches/logs (apply mode)
       --dry-run                Preview only, no deletions
       --only A,B,C             Limit to comma-separated category ids

@@ -182,6 +182,7 @@ Audit mode, health checks, settings sync, context-menu repair, and CI-tested ver
 | `async [-t <sec>] [-c <count>] <cmd>` | Background periodic command monitor & health check loop logged into `Async.db`. | `async`, `async ls` |
 | `storage [ls\|info\|partition]` | Storage footprint inspector for physical disks and split SQLite database files. | `storage` |
 | `pipeline errors [-t]` | Check pipeline errors with automated runner ETA wait countdown support. | `pipeline` |
+| `os dev-cleanup` / `clean-dev` | Clean dev tools build caches and package stores: Go (`GOCACHE`, `GOMODCACHE`, `dev-tool\go\pkg\mod`), pnpm store (`dev-tool\pnpm\store`), npm, Chocolatey, Yarn, Bun, pip, Cargo, NuGet, Gradle, and Maven. Supports `--dry-run` and `--yes`. | `dev-cleanup`, `clean-dev`, `cleandev`, `devcleanup`, `dev-clean` |
 
 > Every install/uninstall now persists state under `.installed/<tool>.json` (gitignored). `status` and `report` read from that folder, so you always know what's on the box.
 
@@ -1179,6 +1180,8 @@ dispatcher: [`scripts/os/run.ps1`](scripts/os/run.ps1).
 | `os advance-clean` | **Advanced cleaner** — full 59-category sweep (browsers, dev caches, OBS, recycle bin, DISM ResetBase, …). Aliases: `advanced-clean`, `clean-all` | 🛡️ Yes | [Examples](#os-commands) |
 | `os advance-clean --dry-run` | Preview every advanced category, deletes nothing | 👤 No | [Examples](#os-commands) |
 | `os clean-<category>` | Run a single advanced category — 59 available, e.g. `clean-chrome`, `clean-recycle`, `clean-obs-recordings`, `clean-chkdsk` (see `os --help`) | varies | [Examples](#os-commands) |
+| `os dev-cleanup` / `clean-dev` | **Dev tools cache cleaner** — sweeps build caches and stores for Go (`GOCACHE`, `GOMODCACHE`, `dev-tool\go\pkg\mod`), pnpm store (`dev-tool\pnpm\store`), npm, Chocolatey, Yarn, Bun, pip, Cargo/Rust, Gradle, Maven, and NuGet | 👤 No | [Examples](#os-commands) |
+| `os dev-cleanup --dry-run` | **Preview only** — calculates bytes reclaimable across dev caches without deleting | 👤 No | [Examples](#os-commands) |
 | `os temp-clean` | Standalone `%TEMP%` + `%LOCALAPPDATA%\Temp` + `C:\Windows\Temp` + per-user temp + chocolatey temp sweep | 🛡️ Yes | [Examples](#usage-examples-os-update-os-power-os-temp-clean) |
 | `os choco-clean` | Quarantine sweep for `lib-bad`, `lib-bkp`, stale `.backup`, leftover `.nupkg`, plus optional `choco-cleaner` | 🛡️ Yes | [Examples](#os-commands) |
 | **System tweaks** | | | |
@@ -1238,6 +1241,33 @@ windows-update-old) require typed-yes consent.
 All paths are declared in [`scripts/os/config.json`](scripts/os/config.json) —
 nothing else is deleted.
 
+### Developer tools cache remover (`os dev-cleanup` / `clean-dev`)
+
+Developers often accumulate tens of gigabytes in language build caches, dependency stores, and package manager archives. Running `.\run.ps1 clean-dev` (or `.\run.ps1 os dev-cleanup`) performs a comprehensive, safe sweep of all developer caches:
+
+| # | Tool / Ecosystem | Target Caches & Directories | Actions Performed |
+|---|------------------|-----------------------------|-------------------|
+| 1 | **Go** | `GOCACHE`, `GOMODCACHE`, `%USERPROFILE%\go\pkg\mod`, `C:\dev-tool\go\pkg\mod` | `go clean -cache -modcache -testcache -fuzzcache` + read-only attribute stripping |
+| 2 | **pnpm** | `%LOCALAPPDATA%\pnpm\store`, `~/.pnpm-store`, `C:\dev-tool\pnpm\store`, `C:\dev-tool\pnpm` | `pnpm store prune` + content-addressable store sweep |
+| 3 | **npm** | `%LOCALAPPDATA%\npm-cache`, `%APPDATA%\npm-cache`, `~/.npm` | `npm cache clean --force` + directory sweep |
+| 4 | **Chocolatey** | `%LOCALAPPDATA%\Chocolatey\Cache`, `%ProgramData%\chocolatey\cache`, `%TEMP%\chocolatey` | `choco cache clean -y` + installer download archives |
+| 5 | **Yarn** | `%LOCALAPPDATA%\Yarn\Cache`, `~/.cache/yarn` | `yarn cache clean` |
+| 6 | **Bun** | `~/.bun/install/cache` | `bun pm cache rm` |
+| 7 | **Python / pip** | `%LOCALAPPDATA%\pip\Cache`, `~/.cache/pip` | `pip cache purge` |
+| 8 | **Cargo / Rust** | `~/.cargo/registry/cache`, `~/.cargo/git/checkouts` | Registry `.crate` archives and bare git checkouts |
+| 9 | **.NET / NuGet** | `%LOCALAPPDATA%\NuGet\v3-cache`, `%LOCALAPPDATA%\NuGet\plugins-cache`, `~/.nuget/packages` | `dotnet nuget locals all --clear` + local cache sweep |
+| 10 | **Gradle / Maven** | `~/.gradle/caches`, `~/.m2/repository` | Build tool cache directories |
+
+Pass `--dry-run` to preview how many gigabytes will be freed without deleting anything:
+```powershell
+.\run.ps1 clean-dev --dry-run
+```
+
+Pass `-y` or `--yes` to proceed without interactive confirmation:
+```powershell
+.\run.ps1 clean-dev -y
+```
+
 <p align="center">
   <img src="assets/demos/run-os-clean-detailed.svg" alt="Demo: os clean --dry-run — preview reclaimable disk space across temp/cache/recycle folders" width="100%"/>
 </p>
@@ -1248,6 +1278,10 @@ One short example per subcommand listed in the OS table above. Add `--dry-run` t
 
 ```powershell
 # --- Cleaning ---
+.\run.ps1 clean-dev --dry-run                         # clean-dev          : preview reclaimable dev tools caches (Go, pnpm, npm, choco, etc.)
+.\run.ps1 clean-dev -y                                # clean-dev          : clean all dev tools caches without confirmation
+.\run.ps1 os dev-cleanup --dry-run                    # os dev-cleanup     : preview dev caches via os dispatcher
+.\run.ps1 os dev-cleanup --yes                        # os dev-cleanup     : clean dev caches via os dispatcher
 .\run.ps1 os clean --dry-run                          # os clean           : SIMPLE sweep, preview sizes only
 .\run.ps1 os clean --yes                              # os clean           : SIMPLE sweep (WU + temp + event logs + PSReadLine)
 .\run.ps1 os advance-clean --dry-run                  # os advance-clean   : preview the full 59-category sweep

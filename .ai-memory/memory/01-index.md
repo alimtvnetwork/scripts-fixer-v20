@@ -58,6 +58,7 @@
 - [Script 68 SSH key rollback](features/17-script-68-ssh-key-rollback.md) — Manifest-based per-run SSH key rollback.
 - [Script 68 macOS perms](features/18-script-68-macos-perms.md) — createhomedir + numeric-gid chown for macOS user creation.
 - [Change-port + DNS toolkit](features/19-change-port-and-dns.md) — Root-level change-port.sh / install-dns.sh dispatchers (v0.175.0).
+- [Dev tools cache cleanup](features/20-dev-tools-cache-cleanup.md) — Multi-ecosystem cache remover: Go, pnpm, npm, choco, yarn, bun, pip, cargo, nuget (v1.48.1+).
 - [Release v1.2.4](features/release-v1.2.4.md) — Pinned 2026-06-19: chrome-profile-copy suite (Win+Linux), taskbar-align-left, smoke tests.
 - [Script 68 shared schema validator](features/script-68-shared-schema.md) — helpers/_schema.sh deduplicates strict JSON validation across all four *-from-json.sh leaves.
 - [Windows user-mgmt shared helpers](features/windows-user-mgmt-shared-helpers.md) — Invoke-UserModify/Delete/PurgeHome in scripts/os/helpers/_common.ps1.

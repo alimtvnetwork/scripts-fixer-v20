@@ -164,8 +164,15 @@ function Invoke-PathSweep {
 
     if ($DryRun) {
         $files = @($items | Where-Object { -not $_.PSIsContainer })
-        $bytes = ($files | Measure-Object -Property Length -Sum).Sum
-        if ($null -eq $bytes) { $bytes = 0 }
+        $bytes = 0
+
+        if ($files.Count -gt 0) {
+            $meas = $files | Measure-Object -Property Length -Sum
+            if ($null -ne $meas -and $meas.Sum) {
+                $bytes = [long]$meas.Sum
+            }
+        }
+
         $Result.WouldCount += $files.Count
         $Result.WouldBytes += [long]$bytes
         $Result.Notes += "DRY-RUN: would remove $($files.Count) file(s) from $resolved"

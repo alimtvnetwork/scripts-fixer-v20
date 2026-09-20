@@ -124,6 +124,25 @@
       "dryCmd":   ["pip", "cache", "info"],
       "sizePath": "$HOME/.cache/pip"
     },
+    "pkg-go": {
+      "label": "Go build cache & mod cache",
+      "bucket": "C",
+      "destructive": false,
+      "command": "go",
+      "applyCmd": ["go", "clean", "-cache", "-modcache", "-testcache", "-fuzzcache"],
+      "dryCmd":   ["go", "env", "GOCACHE"],
+      "sizePath": "$HOME/.cache/go-build"
+    },
+    "pkg-cargo": {
+      "label": "Cargo registry & git cache",
+      "bucket": "C",
+      "destructive": false,
+      "paths": {
+        "linux": ["$HOME/.cargo/registry/cache", "$HOME/.cargo/git/checkouts"],
+        "macos": ["$HOME/.cargo/registry/cache", "$HOME/.cargo/git/checkouts"]
+      },
+      "mode": "contents"
+    },
     "logs-rotated": {
       "label": "Rotated system logs (.gz/.1/.old)",
       "bucket": "D",

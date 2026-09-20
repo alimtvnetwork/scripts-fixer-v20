@@ -143,6 +143,7 @@ $script:CleanCatalog = @(
     @{ B = "F"; Cat = "mise-cache";          Desc = "mise cache + downloads (installed tools + shims SAFE)" },
     @{ B = "F"; Cat = "npm-cache";           Desc = "npm cache clean --force" },
     @{ B = "F"; Cat = "pip-cache";           Desc = "pip cache purge" },
+    @{ B = "F"; Cat = "choco-cache";         Desc = "Chocolatey cache clean + installer downloads" },
     @{ B = "F"; Cat = "docker-dangling";     Desc = "docker system prune -f" },
     @{ B = "F"; Cat = "wsl";                 Desc = "WSL /tmp + apt cache + ~/.cache (rootfs SAFE)" },
     @{ B = "G"; Cat = "obs-recordings";      Desc = "~/Videos *.mkv|*.mp4 >N days (DESTRUCTIVE -- consent)" },
@@ -162,7 +163,11 @@ function Show-OsHelp {
     Write-Host "    clean [--dry-run] [--yes]                              SIMPLE cleaner (5 quick wins)" -ForegroundColor Green
     Write-Host "      WU download cache + %TEMP% + %LOCALAPPDATA%\Temp + C:\Windows\Temp + event logs + PSReadLine history" -ForegroundColor DarkGray
     Write-Host ""
-    Write-Host "    advance-clean [flags]                                  ADVANCED cleaner -- all 59 categories" -ForegroundColor Green
+    Write-Host "    dev-cleanup [--dry-run] [--yes]                        Developer tools cache cleaner" -ForegroundColor Green
+    Write-Host "      Aliases: clean-dev, devcleanup, cleandev, dev-clean" -ForegroundColor DarkGray
+    Write-Host "      Cleans Go (build + modcache), pnpm store, npm, Chocolatey, Yarn, Bun, pip, Cargo, NuGet, Gradle, Maven" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "    advance-clean [flags]                                  ADVANCED cleaner -- all 60 categories" -ForegroundColor Green
     Write-Host "      Aliases: advanced-clean, clean-all, clean-advanced" -ForegroundColor DarkGray
     Write-Host "      --yes                Auto-consent destructive categories" -ForegroundColor DarkGray
     Write-Host "      --dry-run            Report only (no deletions, no consent file written)" -ForegroundColor DarkGray
@@ -399,8 +404,13 @@ if ($normalizedAction -match '^clean-(.+)$') {
 switch ($normalizedAction) {
     "clean" {
         # SIMPLE clean: WU cache + temp dirs + event logs + PSReadLine history.
-        # For the full 59-category sweep use 'advance-clean' / 'advanced-clean'.
+        # For the full 60-category sweep use 'advance-clean' / 'advanced-clean'.
         & (Join-Path $scriptDir "helpers\simple-clean.ps1") -Argv $Rest
+        exit $LASTEXITCODE
+    }
+    { $_ -in @("dev-cleanup", "clean-dev", "cleandev", "devcleanup", "dev-clean", "cleanup-dev") } {
+        # Developer tools cache cleaner: Go, pnpm, npm, choco, yarn, bun, pip, cargo, nuget, etc.
+        & (Join-Path $scriptDir "helpers\dev-clean.ps1") -Argv $Rest
         exit $LASTEXITCODE
     }
     { $_ -in @("advance-clean", "advanced-clean", "clean-all", "clean-advanced", "clean-advance") } {
