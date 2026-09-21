@@ -9,3 +9,4 @@ bash scripts/os/ubuntu/install-pnpm.sh
 bash scripts/os/ubuntu/install-yarn.sh
 bash scripts/os/ubuntu/install-antigravity-manager.sh || true
 bash scripts/os/ubuntu/install-antigravity.sh
+bash scripts/os/ubuntu/install-bcompare.sh --version 5
