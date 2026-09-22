@@ -49,7 +49,8 @@ param(
     [switch]$Yes,
     [string]$Undo,
     [int]$Threshold = 200,
-    [switch]$Kill
+    [switch]$Kill,
+    [switch]$ListBackups
 )
 
 $ErrorActionPreference = "Stop"
@@ -129,6 +130,12 @@ function Main {
         Write-Host "  [XX] Python is required to run Antigravity optimization." -ForegroundColor Red
 
         exit 1
+    }
+
+    if ($ListBackups) {
+        & python $OptimizerPy --list-backups
+
+        return
     }
 
     $isUndo = -not [string]::IsNullOrWhiteSpace($Undo)

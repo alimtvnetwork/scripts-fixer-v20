@@ -40,7 +40,8 @@ param(
     [switch]$Yes,
     [string]$Undo,
     [int]$Threshold = 200,
-    [switch]$Kill
+    [switch]$Kill,
+    [switch]$ListBackups
 )
 
 $ErrorActionPreference = "Stop"
@@ -53,12 +54,13 @@ if (-not (Test-Path -LiteralPath $HelperScript)) {
 }
 
 $splat = @{
-    Keep      = $Keep
-    Predict   = $Predict
-    Yes       = $Yes
-    Undo      = $Undo
-    Threshold = $Threshold
-    Kill      = $Kill
+    Keep        = $Keep
+    Predict     = $Predict
+    Yes         = $Yes
+    Undo        = $Undo
+    Threshold   = $Threshold
+    Kill        = $Kill
+    ListBackups = $ListBackups
 }
 
 & $HelperScript @splat

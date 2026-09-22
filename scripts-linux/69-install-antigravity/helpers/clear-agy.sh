@@ -17,6 +17,7 @@ IS_PREDICT=1
 IS_YES=0
 IS_KILL=0
 IS_JSON=0
+IS_LIST_BACKUPS=0
 UNDO_TX=""
 THRESHOLD="200"
 KEEP_COUNT="0"
@@ -73,6 +74,10 @@ parse_arguments() {
       --undo)
         UNDO_TX="${2:-}"
         shift 2
+        ;;
+      --list-backups|list-backups|backups)
+        IS_LIST_BACKUPS=1
+        shift
         ;;
       --threshold|-t)
         THRESHOLD="${2:-200}"
@@ -176,6 +181,12 @@ main() {
   opt_script="$(resolve_optimizer_script)" || {
     exit 1
   }
+
+  if [ "$IS_LIST_BACKUPS" -eq 1 ]; then
+    "$py_bin" "$opt_script" --list-backups
+
+    exit $?
+  fi
 
   local has_undo=0
   if [ -n "$UNDO_TX" ]; then

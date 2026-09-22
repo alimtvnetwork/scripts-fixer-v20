@@ -1003,7 +1003,7 @@ if ($hasCommand) {
 
         $hasFirstArg = $agyArgs.Count -gt 0
         $firstArg = if ($hasFirstArg) { "$($agyArgs[0])".Trim().ToLower() } else { "" }
-        $isCleanVerb = $isBareCleanAgyCommand -or ($firstArg -in @("clean", "clear", "predict", "undo"))
+        $isCleanVerb = $isBareCleanAgyCommand -or ($firstArg -in @("clean", "clear", "predict", "undo", "list-backups", "backups", "history"))
 
         if ($isCleanVerb) {
             $isClearScriptPresent = Test-Path $clearAgyScript
@@ -1013,6 +1013,12 @@ if ($hasCommand) {
                 Write-Host "Antigravity clear helper missing at: $clearAgyScript"
 
                 exit 1
+            }
+
+            if ($firstArg -in @("list-backups", "backups", "history")) {
+                & $clearAgyScript -ListBackups
+
+                exit $LASTEXITCODE
             }
 
             if ($firstArg -eq "undo") {

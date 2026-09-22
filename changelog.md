@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.50.0] - 2026-09-22
+
+### Added
+- Enhance Antigravity cleaner with application cache scrubbing, undo engine, project attribution, and help documentation
+
+
 ## [v1.49.0] - 2026-09-22
 
 ### Added

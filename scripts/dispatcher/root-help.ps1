@@ -48,6 +48,11 @@ function Show-RootHelpRaw {
     Write-Host "    $(".\run.ps1 os clean | temp-clean".PadRight($col))" -NoNewline; Write-Host "Disk cleanup (categories, buckets, consent system) or just temp dirs" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 os dev-cleanup [-y]".PadRight($col))" -NoNewline; Write-Host "Clean dev tools caches (Go, pnpm, npm, choco, yarn, bun, pip, cargo, nuget)" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 clean-dev [-y]".PadRight($col))" -NoNewline; Write-Host "Top-level shortcut for 'os dev-cleanup' (supports --dry-run, --yes)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 agy <action>".PadRight($col))" -NoNewline; Write-Host "Antigravity maintenance: clear | clean | predict | undo | list-backups ('agy help')" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 agy clear --keep 10".PadRight($col))" -NoNewline; Write-Host "Prune conversations keeping latest 10 intact (safe predict mode by default)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 agy clear --keep 10 -y".PadRight($col))" -NoNewline; Write-Host "Apply conversation prune & cache scrub (keeps latest 10 intact)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 agy undo latest".PadRight($col))" -NoNewline; Write-Host "Rollback the most recent conversation pruning transaction" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 clean-agy 10".PadRight($col))" -NoNewline; Write-Host "Top-level shortcut for 'agy clear --keep 10' (supports -y, --dry-run)" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 os add-user | edit-user | remove-user".PadRight($col))" -NoNewline; Write-Host "Local Windows user management (add/edit/remove, JSON-bulk variants too)" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 ssh <verb>".PadRight($col))" -NoNewline; Write-Host "SSH keys: gen | view | read | cat | search | install | revoke | ledger ('ssh help')" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 ssh view".PadRight($col))" -NoNewline; Write-Host "Pretty-print ~/.ssh (public keys + masked private + ledger summary)" -ForegroundColor $ThemeMuted
@@ -302,6 +307,21 @@ function Show-RootHelpRaw {
     Write-Host "        .\run.ps1 cluster list".PadRight(60) -NoNewline; Write-Host "# List cluster nodes from SQLite" -ForegroundColor $ThemeMuted
     Write-Host "        .\run.ps1 cluster add <name> <role> <ip>".PadRight(60) -NoNewline; Write-Host "# Register node in SQLite" -ForegroundColor $ThemeMuted
     Write-Host "        .\run.ps1 cluster history".PadRight(60) -NoNewline; Write-Host "# View cluster remote command execution logs" -ForegroundColor $ThemeMuted
+    Write-Host ""
+    Write-Host "    Antigravity & Gemini Brain Maintenance (script 69) -- detailed examples:" -ForegroundColor $ThemePrimary
+    Write-Host "      Prediction, Pruning & Cache Scrubbing:" -ForegroundColor DarkYellow
+    Write-Host "        .\run.ps1 agy clear --keep 10".PadRight(60) -NoNewline; Write-Host "# Predict pruning keeping latest 10 conversations intact" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 agy clear keep 10".PadRight(60) -NoNewline; Write-Host "# Shorthand syntax without leading dashes" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 agy clean".PadRight(60) -NoNewline; Write-Host "# Alias for 'agy clear' (runs safe prediction)" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 agy clear --keep 5 --threshold 100".PadRight(60) -NoNewline; Write-Host "# Prune conversations >100KB keeping latest 5" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 clean-agy 10".PadRight(60) -NoNewline; Write-Host "# Direct root shortcut with positional retention count" -ForegroundColor $ThemeMuted
+    Write-Host "      Applying Cleanup & Pruning:" -ForegroundColor DarkYellow
+    Write-Host "        .\run.ps1 agy clear --keep 10 -y".PadRight(60) -NoNewline; Write-Host "# Apply conversation prune & scrub Electron/GPU caches" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 agy clear --keep 10 -y --kill".PadRight(60) -NoNewline; Write-Host "# Terminate Antigravity processes prior to applying" -ForegroundColor $ThemeMuted
+    Write-Host "      Rollback & Transaction History:" -ForegroundColor DarkYellow
+    Write-Host "        .\run.ps1 agy list-backups".PadRight(60) -NoNewline; Write-Host "# View all past pruning transactions & timestamps" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 agy undo latest".PadRight(60) -NoNewline; Write-Host "# Restore pruned steps from the latest transaction" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 agy undo <transaction-id>".PadRight(60) -NoNewline; Write-Host "# Rollback a specific historical transaction" -ForegroundColor $ThemeMuted
     Write-Host ""
     # ----- Dedicated Chrome & extensions cheatsheet ---------------------------
     # Surfaces every extension install mode (single, comma-list, all, raw URL,

@@ -9,7 +9,8 @@ param(
     [switch]$Yes,
     [string]$Undo,
     [int]$Threshold = 200,
-    [switch]$Kill
+    [switch]$Kill,
+    [switch]$ListBackups
 )
 
 $ErrorActionPreference = "Stop"
