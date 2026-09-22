@@ -323,7 +323,6 @@ No changes -- subcommands route via the `os` dispatcher, not via keyword IDs.
 5. **Naming**: `os clean-chrome` vs `os clean-browser-chrome` vs `os browser-clean chrome`? Flat is what you picked, but want to confirm the exact prefix.
 6. **`os clean -h`**: should it print all 32 subcommands inline, or just a summary + "see `os --help` for full list"?
 
-
 ---
 
 <!-- spec-footer:v1 -->

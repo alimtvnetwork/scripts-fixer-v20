@@ -110,7 +110,6 @@ The `uninstall` subcommand performs a full cleanup:
 | `jdk-17` |
 | `jdk-21` |
 
-
 ---
 
 <!-- spec-footer:v1 -->

@@ -161,7 +161,6 @@ On successful install, the script saves to `.resolved/21-install-sqlite/resolved
 .\run.ps1 install sqlite
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

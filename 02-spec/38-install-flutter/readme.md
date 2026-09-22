@@ -112,7 +112,6 @@ Flutter/Dart extensions. Runs `flutter doctor` post-install to verify setup.
 }
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

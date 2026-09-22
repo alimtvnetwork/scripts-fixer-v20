@@ -73,7 +73,6 @@ Wide-column distributed NoSQL database.
 .\run.ps1 install cassandra
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

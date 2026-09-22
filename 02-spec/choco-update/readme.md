@@ -141,7 +141,6 @@ The root `-Y` switch is also honored for auto-confirm.
 | Auto-confirm via both `-y` arg and `-Y` switch | Consistent with existing Defaults mode pattern |
 | Check-only exits cleanly | No side effects, safe for CI/scheduled checks |
 
-
 ---
 
 <!-- spec-footer:v1 -->

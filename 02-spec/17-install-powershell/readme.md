@@ -89,7 +89,6 @@ scripts/17-install-powershell/
 .\run.ps1 install powershell
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

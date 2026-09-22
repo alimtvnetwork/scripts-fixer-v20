@@ -84,7 +84,6 @@ Advanced open-source relational database.
 .\run.ps1 install backend
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

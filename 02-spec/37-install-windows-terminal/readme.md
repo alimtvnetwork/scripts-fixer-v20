@@ -157,7 +157,6 @@ Safety rules:
 .\run.ps1 install windows-terminal
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

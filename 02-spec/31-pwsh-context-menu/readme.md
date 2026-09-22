@@ -131,7 +131,6 @@ handles the elevation via `ShellExecute` with the `runas` verb internally.
 .\run.ps1 install pwsh-menu
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

@@ -108,7 +108,6 @@ Saved to `.resolved/42-install-ollama.json`:
 - `modelsDir` -- Configured models directory
 - `timestamp` -- ISO 8601 timestamp
 
-
 ---
 
 <!-- spec-footer:v1 -->

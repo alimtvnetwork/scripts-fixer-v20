@@ -80,7 +80,6 @@ full audit -- runs in < 2 seconds for quick sanity checks.
 | Color-coded output | Instant visual scan |
 | Summary line | Quick pass/fail count |
 
-
 ---
 
 <!-- spec-footer:v1 -->

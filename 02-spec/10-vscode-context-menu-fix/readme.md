@@ -346,7 +346,6 @@ See `log-messages.json` for the full selector mapping.
 .\run.ps1 install vscode+menu+settings
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

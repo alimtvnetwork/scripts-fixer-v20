@@ -73,7 +73,6 @@ Installs LiteDB with flexible installation path options.
 .\run.ps1 install litedb
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

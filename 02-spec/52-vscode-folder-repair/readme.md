@@ -123,7 +123,6 @@ project-wide error-management rule.
 - Administrator privileges
 - VS Code installed (script 01) so the executable can be resolved
 
-
 ---
 
 <!-- spec-footer:v1 -->

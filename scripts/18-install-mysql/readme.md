@@ -47,7 +47,6 @@ Implementation folder for **Script 18 — Install Mysql**. The full design contr
 - [Spec writing guide](../../02-spec/00-spec-writing-guide/readme.md)
 - [Changelog](../../changelog.md)
 
-
 ---
 
 <!-- spec-footer:v1 -->

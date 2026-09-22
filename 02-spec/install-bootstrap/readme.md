@@ -463,7 +463,6 @@ The bash bootstrap mirrors the PowerShell flow exactly:
 
 The same `[LOCATE]`/`[CD]`/`[CLEAN]`/`[GIT]`/`[OK]`/`[INFO]`/`[TEMP]`/`[COPY]`/`[ERROR]`/`[WARN]` log tags are used in both scripts.
 
-
 ---
 
 <!-- spec-footer:v1 -->

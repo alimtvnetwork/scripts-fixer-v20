@@ -47,7 +47,6 @@ Implementation folder for **Script 16 — Install Php**. The full design contrac
 - [Spec writing guide](../../02-spec/00-spec-writing-guide/readme.md)
 - [Changelog](../../changelog.md)
 
-
 ---
 
 <!-- spec-footer:v1 -->

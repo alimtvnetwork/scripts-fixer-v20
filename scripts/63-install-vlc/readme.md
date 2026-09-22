@@ -44,7 +44,6 @@ key to point at the real on-disk `vlc.exe` with a clean
 .\run.ps1 -I 63 uninstall
 ```
 
-
 ## Registry targets rewritten
 
 - `HKCU/HKLM\Software\Classes\Applications\vlc.exe\shell\Open\command`

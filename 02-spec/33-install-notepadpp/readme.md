@@ -145,7 +145,6 @@ Safety rules:
 .\run.ps1 install notepad++
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

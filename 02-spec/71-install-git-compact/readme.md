@@ -84,8 +84,6 @@ Numeric refs such as `1.2.0` are normalised to `v1.2.0`; branch names pass throu
 | `1` | Failure: missing dependency (git / curl), insufficient disk space, download failure, or `--version` verification failed |
 | `2` | Unknown verb passed to `run.sh` (see `--help`) |
 
-
-
 ## Config (`config.json`)
 
 | Key | Description |

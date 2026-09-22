@@ -237,7 +237,6 @@ Every script supports `-Help` which prints:
 | Dev dir | All tools install into `$env:DEV_DIR` subfolders |
 | No hardcoded paths | Everything in config.json with env var expansion |
 
-
 ---
 
 <!-- spec-footer:v1 -->

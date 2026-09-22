@@ -334,7 +334,6 @@ If `registry.json` is missing, the dispatcher falls back to globbing
 | No params = git pull + help | User discovers available scripts on first run |
 | Refactored into `Invoke-ScriptById` | Shared by both `-I` and install modes, reduces duplication |
 
-
 ---
 
 <!-- spec-footer:v1 -->

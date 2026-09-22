@@ -101,7 +101,6 @@ git commit -m "Refresh script-registry-summary"
 
 `bump-version.ps1` runs the same generator locally on every version bump, so a normal release flow never trips this gate.
 
-
 ---
 
 <!-- spec-footer:v1 -->

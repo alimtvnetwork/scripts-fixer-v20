@@ -35,7 +35,6 @@ this file (and any other surfaces) accordingly.
 | Classic "fix the code" -- a hex wrench cutting through `< >` brackets. Indigo -> cyan with amber tool. | Premium guardian -- a shield holding a lightning-bolt spark. Implies "protects + repairs". Slate background, cyan shield. | Toolbox aesthetic -- a terminal with prompt + checkmark and crossed wrench/screwdriver. Emerald -> sky gradient. |
 | `icon-v1-wrench-brackets.svg` / `.png` | `icon-v2-shield-spark.svg` / `.png` | `icon-v3-terminal-tools.svg` / `.png` |
 
-
 Plain-PowerShell test runner for spec section 17 (cases 6 - 13) of
 `02-spec/53-script-fixer-context-menu/readme.md`.
 

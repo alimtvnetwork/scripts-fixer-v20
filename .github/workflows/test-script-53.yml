@@ -49,11 +49,11 @@ jobs:
           Write-Host "Exit code: $LASTEXITCODE"
           exit $LASTEXITCODE
 
-      - name: Upload JSON results
+      - name: Surface test results
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: script-53-results
-          path: ${{ runner.temp }}/script-53-results.json
-          if-no-files-found: warn
-          retention-days: 30
+        shell: pwsh
+        run: |
+          $resPath = "$env:RUNNER_TEMP\script-53-results.json"
+          if (Test-Path $resPath) {
+            Get-Content $resPath | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+          }

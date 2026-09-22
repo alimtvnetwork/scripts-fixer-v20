@@ -69,4 +69,4 @@ jobs:
         run: bash scripts-linux/run.sh --list
 
       - name: Verify run.sh --version works
-        run: bash scripts-linux/run.sh --version || true
+        run: bash scripts-linux/run.sh --version

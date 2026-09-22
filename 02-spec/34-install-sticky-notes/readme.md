@@ -120,7 +120,6 @@ This ensures SSN reads/writes all data (notes database, settings) from the custo
 .\run.ps1 install sticky-notes
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

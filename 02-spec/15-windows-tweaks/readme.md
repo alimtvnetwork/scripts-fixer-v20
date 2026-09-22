@@ -101,7 +101,6 @@ Or via root dispatcher:
 .\run.ps1 install tweaks
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

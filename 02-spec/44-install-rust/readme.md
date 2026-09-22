@@ -89,7 +89,6 @@ and ensure `~/.cargo/bin` is in the user PATH.
   `path-utils.ps1`, `installed.ps1`, `download-retry.ps1`
 - Requires: Administrator privileges, internet access
 
-
 ---
 
 <!-- spec-footer:v1 -->

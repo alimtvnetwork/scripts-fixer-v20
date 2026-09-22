@@ -163,7 +163,6 @@ If new questions surface during implementation of any subdoc, append them to tha
 
 See subdocs `01-*.md` through `12-*.md` for full implementation details.
 
-
 ---
 
 <!-- spec-footer:v1 -->

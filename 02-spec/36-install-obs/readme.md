@@ -167,7 +167,6 @@ Safety rules:
 .\run.ps1 install obs
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

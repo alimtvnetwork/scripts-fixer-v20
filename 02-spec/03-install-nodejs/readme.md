@@ -105,7 +105,6 @@ scripts/03-install-nodejs/
 .\run.ps1 install pnpm
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

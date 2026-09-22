@@ -98,7 +98,6 @@ The `mingw` Chocolatey package installs MinGW-w64 which includes:
 .\run.ps1 install full-stack
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

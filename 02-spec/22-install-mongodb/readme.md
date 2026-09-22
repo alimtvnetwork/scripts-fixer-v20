@@ -74,7 +74,6 @@ Document-oriented NoSQL database.
 .\run.ps1 install mongodb
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

@@ -105,7 +105,6 @@ line endings, editor, and push behavior.
 .\run.ps1 install git+desktop
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

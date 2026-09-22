@@ -130,7 +130,6 @@ be installed individually or all at once.
 .\run.ps1 -I 41 -- uninstall numpy pandas  # Remove specific packages
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

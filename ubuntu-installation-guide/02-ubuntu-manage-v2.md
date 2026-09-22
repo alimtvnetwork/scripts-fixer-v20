@@ -690,7 +690,6 @@ rm -f latest.zip
 ls /var/www/wordpress | head -n 10
 ```
 
-
 ### AnyDesk (Cross-Platform Remote Desktop)
 Install the latest version of AnyDesk directly from their official APT repository.
 
@@ -722,7 +721,6 @@ Invoke-WebRequest -Uri "https://download.anydesk.com/AnyDesk.exe" -OutFile "AnyD
 # Install silently (runs in background)
 Start-Process -FilePath ".\AnyDesk.exe" -ArgumentList "--install", "$env:ProgramFiles\AnyDesk", "--start-with-win", "--silent" -Wait -NoNewWindow
 ```
-
 
 ## VMware Open VM Tools And Shared Folders
 

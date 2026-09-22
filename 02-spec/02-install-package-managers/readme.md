@@ -111,7 +111,6 @@ scripts/02-install-package-managers/
 .\run.ps1 install full-stack
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

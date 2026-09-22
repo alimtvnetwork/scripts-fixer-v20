@@ -59,14 +59,14 @@ jobs:
           Write-Host "Exit code: $LASTEXITCODE"
           exit $LASTEXITCODE
 
-      - name: Upload CurrentUser residue report
+      - name: Surface CurrentUser residue report
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: script-54-currentuser-report
-          path: ${{ runner.temp }}/script-54-currentuser-report.json
-          if-no-files-found: warn
-          retention-days: 30
+        shell: pwsh
+        run: |
+          $reportPath = "$env:RUNNER_TEMP\script-54-currentuser-report.json"
+          if (Test-Path $reportPath) {
+            Get-Content $reportPath | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+          }
 
   matrix-allusers:
     name: scope matrix -OnlyScope AllUsers (elevation-gated)
@@ -112,11 +112,11 @@ jobs:
           # in the probe -- surface it as a failure, don't silently swallow.
           exit $LASTEXITCODE
 
-      - name: Upload AllUsers residue report
+      - name: Surface AllUsers residue report
         if: always() && steps.elevation.outputs.is_admin == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: script-54-allusers-report
-          path: ${{ runner.temp }}/script-54-allusers-report.json
-          if-no-files-found: warn
-          retention-days: 30
+        shell: pwsh
+        run: |
+          $reportPath = "$env:RUNNER_TEMP\script-54-allusers-report.json"
+          if (Test-Path $reportPath) {
+            Get-Content $reportPath | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+          }

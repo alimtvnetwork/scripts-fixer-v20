@@ -88,7 +88,6 @@ editions with a runtime prompt for edition selection.
 .\run.ps1 install vscode+settings
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

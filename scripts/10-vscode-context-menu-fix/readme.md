@@ -404,7 +404,6 @@ capture time and again in the verification block).
 - [Script 54 — modern menu installer](../54-vscode-menu-installer/readme.md)
 - [Changelog](../../changelog.md)
 
-
 ---
 
 <!-- spec-footer:v1 -->

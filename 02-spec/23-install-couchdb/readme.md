@@ -73,7 +73,6 @@ Apache document database with REST API.
 .\run.ps1 install couchdb
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

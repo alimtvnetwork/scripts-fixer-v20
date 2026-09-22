@@ -87,7 +87,6 @@ development. Optionally installs Lens Kubernetes IDE.
   `choco-utils.ps1`, `path-utils.ps1`, `installed.ps1`
 - Requires: Administrator privileges, internet access
 
-
 ---
 
 <!-- spec-footer:v1 -->

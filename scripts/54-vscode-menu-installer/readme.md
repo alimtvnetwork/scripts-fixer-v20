@@ -249,7 +249,6 @@ code --diff .audit\audit-install-<old>.jsonl .audit\audit-install-<new>.jsonl
 - [Spec writing guide](../../02-spec/00-spec-writing-guide/readme.md)
 - [Changelog](../../changelog.md)
 
-
 ---
 
 <!-- spec-footer:v1 -->

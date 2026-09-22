@@ -243,26 +243,37 @@ def update_changelogs(next_version, scope, today_str, dry_run=False):
 
 
 def run_repo_sync_if_available(dry_run=False):
-    """Executes `npm run sync` if defined in package.json to regenerate spec trees and manifests."""
-    if not PACKAGE_JSON.is_file():
+    """Executes repo synchronization and documentation regeneration."""
+    if dry_run:
+        print("[DRY RUN] Would run: node tools/sync-version.cjs, docs-generate.cjs, gen-completions.cjs")
         return
 
-    try:
-        with open(PACKAGE_JSON, "r", encoding="utf-8") as f:
-            pkg = json.load(f)
+    sync_version = REPO_ROOT / "tools" / "sync-version.cjs"
+    if sync_version.is_file():
+        print("[*] Synchronizing versions via tools/sync-version.cjs...")
+        run_cmd(["node", str(sync_version)], check=False)
 
-        scripts = pkg.get("scripts", {})
-        if "sync" in scripts:
-            if dry_run:
-                print("[DRY RUN] Would run: npm run sync")
-                return
+    docs_gen = REPO_ROOT / "tools" / "docs-generate.cjs"
+    if docs_gen.is_file():
+        print("[*] Regenerating documentation via tools/docs-generate.cjs...")
+        run_cmd(["node", str(docs_gen)], check=False)
 
-            print("[*] Running npm run sync to regenerate spec trees and manifests...")
-            is_win = sys.platform == "win32"
-            run_cmd(["npm", "run", "sync"], check=False)
-            print("[*] Completed npm run sync.")
-    except Exception as e:
-        print(f"[!] Warning running npm run sync: {e}")
+    gen_comp = REPO_ROOT / "tools" / "gen-completions.cjs"
+    if gen_comp.is_file():
+        print("[*] Regenerating shell completions via tools/gen-completions.cjs...")
+        run_cmd(["node", str(gen_comp)], check=False)
+
+    if PACKAGE_JSON.is_file():
+        try:
+            with open(PACKAGE_JSON, "r", encoding="utf-8") as f:
+                pkg = json.load(f)
+            scripts = pkg.get("scripts", {})
+            if "sync" in scripts:
+                print("[*] Running npm run sync to regenerate spec trees and manifests...")
+                run_cmd(["npm", "run", "sync"], check=False)
+                print("[*] Completed npm run sync.")
+        except Exception as e:
+            print(f"[!] Warning running npm run sync: {e}")
 
 
 def execute_bump(tier="minor", explicit_version=None, scope=None, dry_run=False):

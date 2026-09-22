@@ -389,7 +389,6 @@ run.ps1 -DryRun
 | `litedb` | 29 | Direct install |
 | `data-dev`, `datadev` | 20, 24, 28, 32 | Group: PostgreSQL + Redis + DuckDB + DBeaver |
 
-
 ---
 
 <!-- spec-footer:v1 -->

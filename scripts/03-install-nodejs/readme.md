@@ -47,7 +47,6 @@ Implementation folder for **Script 03 — Install Nodejs**. The full design cont
 - [Spec writing guide](../../02-spec/00-spec-writing-guide/readme.md)
 - [Changelog](../../changelog.md)
 
-
 ---
 
 <!-- spec-footer:v1 -->

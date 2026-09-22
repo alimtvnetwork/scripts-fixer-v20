@@ -47,7 +47,6 @@ Implementation folder for **Script 23 — Install Couchdb**. The full design con
 - [Spec writing guide](../../02-spec/00-spec-writing-guide/readme.md)
 - [Changelog](../../changelog.md)
 
-
 ---
 
 <!-- spec-footer:v1 -->

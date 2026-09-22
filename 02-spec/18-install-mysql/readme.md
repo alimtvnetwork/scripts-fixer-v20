@@ -73,7 +73,6 @@ Popular open-source relational database.
 .\run.ps1 install mysql
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

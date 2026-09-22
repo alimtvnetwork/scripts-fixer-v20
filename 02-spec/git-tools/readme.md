@@ -187,7 +187,6 @@ Remove-Item C:\Users\Alim\GitHub\old-project -Recurse -Force
   template). Since v0.40.0, the default gitconfig template includes
   `safe.directory=*` out of the box for new installs.
 
-
 ---
 
 <!-- spec-footer:v1 -->

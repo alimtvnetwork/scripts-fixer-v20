@@ -81,7 +81,6 @@ Analytical file-based columnar database.
 .\run.ps1 install data-dev
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

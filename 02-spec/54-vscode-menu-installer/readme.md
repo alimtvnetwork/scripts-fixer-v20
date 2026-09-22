@@ -301,7 +301,6 @@ and "I want to know exactly what gets touched" workflows.
 - [x] Project version bumped (≥ minor) on first ship
 - [x] Changelog entry added
 
-
 ---
 
 <!-- spec-footer:v1 -->

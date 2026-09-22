@@ -132,7 +132,6 @@ The resolved path is passed as `-InstallDir` to the remote installer script.
 .\run.ps1 install gitmap
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

@@ -73,7 +73,6 @@ MySQL-compatible fork with extra features.
 .\run.ps1 install mariadb
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

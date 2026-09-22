@@ -47,7 +47,6 @@ Implementation folder for **Script 04 — Install Pnpm**. The full design contra
 - [Spec writing guide](../../02-spec/00-spec-writing-guide/readme.md)
 - [Changelog](../../changelog.md)
 
-
 ---
 
 <!-- spec-footer:v1 -->

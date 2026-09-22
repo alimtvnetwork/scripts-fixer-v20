@@ -102,8 +102,9 @@ Auto-generated from `registry.yaml`. Legend: ✅ supported, ⬜ not implemented.
 | 107 | Install CoreDNS (apt or binary fallback) | ⬜ | ✅ | ✅ |
 | 108 | Install NSD (NLnet authoritative-only DNS) | ⬜ | ✅ | ✅ |
 | 109 | Interactive DNS-install menu (dispatches to 100-108) | ⬜ | ✅ | ✅ |
+| 110 | 110-install-llvm | ✅ | ✅ | ✅ |
 
-**Coverage:** 49 on all three OSes · 24 Windows-only · 24 Linux/macOS-only · 97 total.
+**Coverage:** 50 on all three OSes · 24 Windows-only · 24 Linux/macOS-only · 98 total.
 
 ## Orchestrator playbooks (Linux/macOS fan-out over SSH)
 

@@ -53,7 +53,6 @@ Pin a different ref (branch / tag / commit) with `-Tag` / `--tag`:
 .\run.ps1 -I 35 -Tag dev
 ```
 
-
 ## Layout
 
 | File | Purpose |
@@ -68,7 +67,6 @@ Pin a different ref (branch / tag / commit) with `-Tag` / `--tag`:
 - [Full spec](../../02-spec/35-install-gitmap/readme.md)
 - [Spec writing guide](../../02-spec/00-spec-writing-guide/readme.md)
 - [Changelog](../../changelog.md)
-
 
 ---
 

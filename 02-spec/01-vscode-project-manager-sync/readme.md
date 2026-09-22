@@ -194,7 +194,6 @@ scripts/scan/
   readme.md              # this file
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

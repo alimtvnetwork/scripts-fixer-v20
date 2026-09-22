@@ -199,7 +199,6 @@ for their own subcommands (`install`, `pull`, `models`, `uninstall`).
   shouldn't have to split the call.
 - Single help surface: one `--help` lists every model id from every backend.
 
-
 ---
 
 <!-- spec-footer:v1 -->

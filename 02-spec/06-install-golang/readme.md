@@ -137,7 +137,6 @@ The binary is placed in `GOPATH\bin` which should already be in PATH
 .\run.ps1 install backend
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

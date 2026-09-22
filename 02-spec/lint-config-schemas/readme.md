@@ -242,7 +242,6 @@ Add a dispatcher folder in `DISPATCHER_SCHEMAS` with its own allowed-keys list.
 - `02-spec/release-pipeline/readme.md` -- CI workflow documentation. The schema lint step is documented there in the "Drift Detection" section.
 - `scripts/_internal/readme.md` -- explains the role of `_internal/` maintenance scripts in general.
 
-
 ---
 
 <!-- spec-footer:v1 -->

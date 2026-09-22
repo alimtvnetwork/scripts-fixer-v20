@@ -12,7 +12,7 @@
 [![Tools Installed](https://img.shields.io/badge/Tools-46%2B-8b5cf6?logo=tools&logoColor=white)](#what-it-does)
 [![Databases](https://img.shields.io/badge/Databases-12-0ea5e9?logo=databricks&logoColor=white)](#databases-18-29)
 [![License](https://img.shields.io/badge/License-MIT-eab308)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-v1.50.0-f97316)](scripts/version.json)
+[![Version](https://img.shields.io/badge/Version-v1.51.0-f97316)](scripts/version.json)
 [![AI Models](https://img.shields.io/badge/AI%20Models-90-ef4444?logo=huggingface&logoColor=white)](scripts/43-install-llama-cpp/models-list.md)
 [![Changelog](https://img.shields.io/badge/Changelog-Latest-ec4899)](changelog.md)
 [![CI](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)](.github/workflows)
@@ -286,7 +286,6 @@ Check CI/CD pipeline error statuses with automated ETA wait capabilities.
 ```
 
 ---
-
 
 ## 🌐 Chrome & Extensions (script 58)
 
@@ -1306,8 +1305,6 @@ New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer
 .\scripts\taskbar-align-left.ps1                       # taskbar-align-left : Start menu + icons -> LEFT
 .\scripts\taskbar-align-left.ps1 -Center               # taskbar-align-left : restore CENTER alignment
 
-
-
 # --- Local users & groups ---
 .\run.ps1 os add-user alice MyP@ss123                 # os add-user        : create a local user
 .\run.ps1 os edit-user alice --password NewP@ss1      # os edit-user       : change password / groups / flags
@@ -1613,7 +1610,6 @@ The repair targets a specific VS Code build. Pick one with `-Edition`:
   visually and download a merged `config.json` you can drop into
   `scripts/52-vscode-folder-repair/`.
 
-
 ```powershell
 # Default: auto-detect edition, repair, restart Explorer
 .\run.ps1 vscode-folder
@@ -1890,7 +1886,6 @@ sudo bash scripts-linux/run.sh install <keyword>
 
 To open the full toolkit menu instead, use `./run.ps1 -d` on Windows or `bash scripts-linux/run.sh --list` on Unix / macOS.
 
-
 ### Manual clone
 
 ```powershell
@@ -1944,9 +1939,6 @@ For a single command without changing the current shell policy:
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "irm https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/main/install.ps1 | iex"
 ```
-
-
-
 
 To make local scripts permanent for your user (still no admin):
 
@@ -2094,7 +2086,6 @@ curl -fsSL https://raw.githubusercontent.com/alimtvnetwork/gitmap-v28/main/insta
 > your dev-dir config and forwards it as `-InstallDir` / `--dir` for you, plus
 > requires **≥ 200 MB free** on the target drive before downloading.
 
-
 ### Toolkit-managed install (recommended)
 
 ```powershell
@@ -2194,7 +2185,6 @@ UNIX equivalent:
 - Upstream repo: <https://github.com/alimtvnetwork/gitmap-v28>
 
 ---
-
 
 ## Root Dispatcher
 

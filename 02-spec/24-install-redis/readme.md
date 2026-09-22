@@ -98,7 +98,6 @@ immediately retries with the fallback package before reporting failure.
 .\run.ps1 install data-dev
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

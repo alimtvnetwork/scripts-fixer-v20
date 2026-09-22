@@ -144,7 +144,6 @@ Defined in `log-messages.json`. Key messages:
 .\run.ps1 install full-stack
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

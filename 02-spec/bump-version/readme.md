@@ -100,7 +100,6 @@ fields are needed.
 | Skip on same version | Avoids unnecessary file writes |
 | Root-level placement | Easy to find alongside `run.ps1` |
 
-
 ---
 
 <!-- spec-footer:v1 -->

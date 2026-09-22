@@ -73,7 +73,6 @@ Graph database for connected data.
 .\run.ps1 install neo4j
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

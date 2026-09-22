@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "updated_at": "2026-09-22T13:12:19Z",
+  "total_tests": 1,
+  "summary": {
+    "total": 1,
+    "cached": 0,
+    "dirty": 1,
+    "packages": 1,
+    "slow_tests": 0,
+    "fast_tests": 1,
+    "heavy_tests": 0,
+    "unit_tests": 1,
+    "slow_threshold_sec": 4.0,
+    "estimated_slow_sec": 0,
+    "estimated_fast_sec": 0.01,
+    "estimated_heavy_sec": 0,
+    "estimated_unit_sec": 0.01
+  },
+  "tests": {
+    "src/test.should pass": {
+      "id": "src/test.should pass",
+      "package": "src/test",
+      "test_file": "src/test/example.test.ts",
+      "test_func": "should pass",
+      "test_hash": "d25d5e2e0624849e",
+      "target_file": "src/test/example.ts",
+      "target_func": "",
+      "code_hash": "d25d5e2e0624849e",
+      "duration_sec": 0.005,
+      "tier": "fast",
+      "is_slow": false,
+      "last_status": "never_run",
+      "last_run_at": "",
+      "needs_run": true
+    }
+  }
+}

@@ -87,7 +87,6 @@ When `-Report` is passed, a JSON file is saved to `logs/health-check_<timestamp>
 | `status` | `"healthy"` or `"unhealthy"` |
 | `checks` | Array of per-check results with `passed` and `issues` |
 
-
 ---
 
 <!-- spec-footer:v1 -->

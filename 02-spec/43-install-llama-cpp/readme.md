@@ -106,7 +106,6 @@ scripts/43-install-llama-cpp/
 - Optional: aria2c (auto-installed via Chocolatey; falls back to Invoke-WebRequest)
 - Requires: Administrator privileges, internet access
 
-
 ---
 
 <!-- spec-footer:v1 -->

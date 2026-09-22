@@ -164,8 +164,6 @@ Exit codes:
 | `1`  | scanner reports FAIL; auto-rollback was attempted unless `-NoBackup` / `-NoRollback`   |
 | `2`  | dry-run, apply, rollback, or required-script error (exact file + reason logged)        |
 
-
-
 ---
 
 ## check-required-packages

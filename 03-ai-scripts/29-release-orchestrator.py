@@ -281,26 +281,8 @@ def stage_and_commit_release(next_version, scope, dry_run=False):
         print(f"[DRY RUN] Would stage changes and commit on release branch: '{commit_msg}'")
         return "dryrun_commit_sha"
 
-    # Stage release-specific and sync-regenerated files
-    release_candidates = [
-        VERSION_JSON,
-        REPO_ROOT / "scripts" / "version.json",
-        PACKAGE_JSON,
-        CHANGELOG_MD,
-        README_MD,
-        NODE_BUMP_SCRIPT,
-        PYTHON_BUMP_SCRIPT,
-        AI_BUMP_SCRIPT,
-        REPO_ROOT / "03-ai-scripts" / "29-release-orchestrator.py",
-        REPO_ROOT / ".gitmap" / "release",
-        REPO_ROOT / "public" / "health-score.json",
-        REPO_ROOT / "src" / "data" / "specTree.json",
-        REPO_ROOT / "02-spec" / "19-main-worker-service" / "98-changelog.md",
-        REPO_ROOT / "reports" / "spec-verification" / "coverage.md",
-    ]
-    for vf in release_candidates:
-        if vf.exists():
-            run_cmd(["git", "add", str(vf)])
+    # Stage all repository changes (atomic grouped commit)
+    run_cmd(["git", "add", "-A"])
 
     # Commit
     run_cmd(["git", "commit", "-m", commit_msg])
@@ -351,6 +333,56 @@ def push_release(release_branch, tag_name, main_branch="main", dry_run=False):
 
     print(f"[*] Pushing tag '{tag_name}' to origin...")
     run_cmd(["git", "push", "origin", tag_name])
+
+
+def create_github_release(next_version, scope, dry_run=False):
+    """Creates a GitHub release using gh release create with Quick Install One-Liners and notes-file."""
+    tag_name = f"v{next_version}"
+    notes_dir = REPO_ROOT / ".ai-memory" / "release"
+    notes_dir.mkdir(parents=True, exist_ok=True)
+    notes_file = notes_dir / f"release-notes-{tag_name}.md"
+
+    # Extract changelog section for v{next_version}
+    changelog_section = ""
+    if CHANGELOG_MD.is_file():
+        cl_text = CHANGELOG_MD.read_text(encoding="utf-8")
+        m = re.search(r"(##\s*\[?v?" + re.escape(next_version) + r"\]?.*?(?=\n##\s*\[|\Z))", cl_text, re.DOTALL)
+        if m:
+            changelog_section = m.group(1).strip()
+
+    body = f"""## Quick Install {tag_name}
+
+### Windows (PowerShell)
+```powershell
+irm https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/{tag_name}/install.ps1 | iex
+```
+
+### Linux / macOS (Bash)
+```bash
+curl -fsSL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/{tag_name}/install.sh | bash
+```
+
+---
+
+{changelog_section if changelog_section else f"### Changes in {tag_name}\\n- {scope}"}
+"""
+    notes_file.write_text(body, encoding="utf-8")
+    print(f"[*] Generated release notes file: {notes_file.relative_to(REPO_ROOT)}")
+
+    if dry_run:
+        print(f"[DRY RUN] Would create GitHub release: gh release create '{tag_name}' --title '{tag_name}' --notes-file '{notes_file}' --generate-notes")
+        return
+
+    # Check if gh is installed and authenticated
+    try:
+        cmd = ["gh", "release", "create", tag_name, "--title", tag_name, "--notes-file", str(notes_file), "--generate-notes"]
+        res = run_cmd(cmd, check=False)
+        if res.returncode == 0:
+            print(f"[OK] Successfully created GitHub release: {tag_name}")
+        else:
+            print(f"[!] Warning: 'gh release create' exited with code {res.returncode}: {res.stderr.strip() or res.stdout.strip()}")
+    except Exception as e:
+        print(f"[!] Warning: Failed to run 'gh release create': {e}")
 
 
 def revert_to_original_branch(original_branch, dry_run=False):
@@ -432,6 +464,7 @@ def orchestrate_release(tier="minor", explicit_version=None, scope=None, dry_run
         is_push_enabled = push and not dry_run
         if is_push_enabled:
             push_release(release_branch, tag_name, main_branch=main_branch, dry_run=dry_run)
+            create_github_release(next_ver, default_scope, dry_run=dry_run)
 
     finally:
         # Restore original starting branch if different from current

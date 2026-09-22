@@ -98,7 +98,6 @@ Or via root dispatcher:
 .\run.ps1 install winget
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

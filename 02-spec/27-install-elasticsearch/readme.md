@@ -73,7 +73,6 @@ Full-text search and analytics engine.
 .\run.ps1 install elasticsearch
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

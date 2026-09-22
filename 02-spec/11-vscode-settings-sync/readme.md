@@ -269,7 +269,6 @@ what was extracted from it, and which fallback JSON files were used.
 .\run.ps1 install vscode+settings
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

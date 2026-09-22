@@ -762,7 +762,6 @@ This script is "done" when **all** of the following hold:
 - [x] All 7 test-plan items pass on a fresh Windows 10/11 admin shell
 - [x] CODE RED rule satisfied: every failure path logs exact path + reason
 
-
 ---
 
 <!-- spec-footer:v1 -->

@@ -408,7 +408,6 @@ This rule is non-negotiable -- it is part of the project's core memory.
 - Project memory index      : `.ai-memory/memory/index.md`
 - Strictly-avoid list       : `.ai-memory/strictly-avoid.md`
 
-
 ---
 
 <!-- spec-footer:v1 -->

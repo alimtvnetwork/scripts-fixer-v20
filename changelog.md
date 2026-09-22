@@ -1,70 +1,62 @@
 # Changelog
 
+## [v1.51.0] - 2026-09-22
+
+### Added
+- CI/CD quality gates hardening, zero-storage workflows, and release automation
+
+
 ## [v1.50.0] - 2026-09-22
 
 ### Added
 - Enhance Antigravity cleaner with application cache scrubbing, undo engine, project attribution, and help documentation
-
 
 ## [v1.49.0] - 2026-09-22
 
 ### Added
 - Modularize root run.ps1 dispatcher and enhance Antigravity maintenance suite
 
-
 ## [v1.48.1] - 2026-09-15
 
 ### Added
 - Add cargo and rust toolchain installer with components, aliases, and dev profiles integration
-
 
 ## [v1.48.0] - 2026-09-15
 
 ### Added
 - Adopt coding-guidelines folder structure, sync prompts, skills, ai-scripts, and clean root scratch files
 
-
 ## [v1.47.0] - 2026-09-14
 
 ### Added
 - Fix duplicate Antigravity launchers, restore official icon, and integrate k8s cluster node tooling with SQLite and SSH RSA
-
 
 ## [v1.46.0] - 2026-09-14
 
 ### Added
 - Windows Server OS detection, Store prerequisites for PlotCode and Codex, Antigravity CLI in dev profile, and repo-relative SQLite database
 
-
 ## [v1.45.0] - 2026-09-14
 
 ### Added
 - Enhance run install help, support profile --tree inspection, and fix Antigravity IDE and CLI installer
-
 
 ## [v1.44.0] - 2026-09-13
 
 ### Added
 - Fix script installation for ubuntu small dev and PHP 404 archive errors
 
-
 ## [v1.43.0] - 2026-09-13
 
 ### Added
 - automated release orchestrator and branch lifecycle suite
-
 
 ## [v1.42.0] - 2026-09-13
 
 ### Added
 - intelligent linux archive installer for tar, gz, and zip packages
 
-
 All notable changes to this project are documented in this file.
-
-
-
-
 
 ## [v1.41.0] - 2026-09-13
 
@@ -371,7 +363,6 @@ To pin your repository to this exact version, run the following one-liner:
 - **GitMap (script 35) now points at `alimtvnetwork/gitmap-v28`** instead of `gitmap-v23`, across Windows config/run/log-messages/readme, Linux config/run.sh, the spec, and the root readme. Ref pinning behaviour is unchanged.
 - `registry.yaml` and both generated registries include id `71`.
 
-
 ## [v1.3.0] -- 2026-06-25
 
 ### Added
@@ -381,7 +372,6 @@ To pin your repository to this exact version, run the following one-liner:
 
 ### Changed
 - `.ai-memory/memory/index.md` indexes the new onboarding guide.
-
 
 ## [v1.2.4] -- 2026-06-19
 
@@ -395,8 +385,6 @@ To pin your repository to this exact version, run the following one-liner:
 
 ### Changed
 - **Root `readme.md`** -- Version badge pinned to `v1.2.4`; Linux/macOS `chrome-profile-copy` examples cross-linked to `scripts-linux/chrome-profile-copy/readme.md`.
-
-
 
 ## [v1.2.1] -- 2026-05-16
 
@@ -433,7 +421,6 @@ To pin your repository to this exact version, run the following one-liner:
 
 ### Added
 - **`already-downloaded` short-circuit in `Invoke-FastDownload`** (`scripts/shared/fast-download.ps1`) -- before launching aria2c, the helper checks whether the target file already exists, is non-empty, and has no `.aria2` control file (i.e. not a partial). When true it logs `[fast-download] already-downloaded: <label> (<MB> MB) -- skipping. Path: <abs>` at `success` level and returns `$true` without touching the network. Matches the project-wide "already-installed" convention from `mem://features/already-installed-status`. Every consumer of `Invoke-FastDownload` (`run download`, `install model <id>`, llama.cpp model picker, ollama registry pull, batch fallback) inherits the skip automatically -- re-running an install on a file you already have is now instant.
-
 
 ## [v0.226.0] -- 2026-05-08
 
@@ -544,8 +531,6 @@ There was also no "browser is running" gate, so the sweep regularly orphaned ent
 - `chrome.ps1`, `brave.ps1`, `edge.ps1` rewritten as 20-line wrappers that delegate to `Invoke-ChromiumCacheSweep` with the right root + process name. No category helper writes a sweep list directly anymore -- there is exactly one place to audit chromium safety.
 - Each result now carries a `Skipped (preserved by design): ...` note so the JSON log explains *why* the SW data store was left alone.
 
-
-
 ## [v0.217.0] -- 2026-05-08
 
 ### Added: shared `ai-models` directory + `models path` overrides + Chrome extension installer
@@ -574,8 +559,6 @@ There was also no "browser is running" gate, so the sweep regularly orphaned ent
   - `install chrome ext vpn,adblocker` -- install named extensions (CSV or space-separated).
   - `install chrome ext-all` -- install every catalog extension.
   - `-Method registry|webstore|auto` flag controls install mechanism.
-
-
 
 ## [v0.216.0] -- 2026-05-08
 
@@ -976,7 +959,6 @@ Every readme under `02-spec/` (65 files) and `scripts/NN-*/` (52 new stub files)
 - Existing per-script content (e.g. `02-spec/53-script-fixer-context-menu/readme.md`, 727 lines) is preserved — header is prepended, body is untouched.
 
 **Why a script and not 117 hand edits:** scoped Python pass at `/tmp/apply_headers.py` reads each readme, checks for the marker, and prepends the canonical header block only if missing. Re-running it is a no-op.
-
 
 ## [v0.69.0] -- 2026-04-22
 

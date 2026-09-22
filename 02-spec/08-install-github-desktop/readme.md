@@ -100,7 +100,6 @@ internal repo list.
 .\run.ps1 install git+desktop
 ```
 
-
 ---
 
 <!-- spec-footer:v1 -->

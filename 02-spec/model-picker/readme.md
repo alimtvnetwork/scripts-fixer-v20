@@ -530,7 +530,6 @@ Write-FileError -FilePath $outputPath -Operation "download" `
 | `path-utils.ps1`          | PATH manipulation for executables             |
 | `hardware-detect.ps1`     | `Get-HardwareProfile` (RAM detection for filter) |
 
-
 ---
 
 <!-- spec-footer:v1 -->

@@ -109,7 +109,6 @@ The `uninstall` subcommand performs a full cleanup:
 | `dotnet-8` |
 | `dotnet-9` |
 
-
 ---
 
 <!-- spec-footer:v1 -->

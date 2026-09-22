@@ -83,7 +83,7 @@ if (-not $Quiet) {
 }
 
 # ---- Walk files -------------------------------------------------------------
-$matches = New-Object System.Collections.Generic.List[object]
+$foundMatches = New-Object System.Collections.Generic.List[object]
 $scriptSelf = $MyInvocation.MyCommand.Definition
 
 try {
@@ -132,7 +132,7 @@ foreach ($file in $files) {
     }
 
     foreach ($h in $hits) {
-        $matches.Add([pscustomobject]@{
+        $foundMatches.Add([pscustomobject]@{
             File   = $rel
             Line   = $h.LineNumber
             Match  = $h.Matches[0].Value
@@ -143,15 +143,15 @@ foreach ($file in $files) {
 
 # ---- Report -----------------------------------------------------------------
 Write-Host ""
-if ($matches.Count -eq 0) {
+if ($foundMatches.Count -eq 0) {
     Write-Host "  [ PASS ] No references to scripts-fixer-v$($Versions -join '/v') found." -ForegroundColor Green
     Write-Host ""
     exit 0
 }
 
-Write-Host ("  [ FAIL ] Found {0} reference(s):" -f $matches.Count) -ForegroundColor Red
+Write-Host ("  [ FAIL ] Found {0} reference(s):" -f $foundMatches.Count) -ForegroundColor Red
 Write-Host ""
-$grouped = $matches | Group-Object File | Sort-Object Name
+$grouped = $foundMatches | Group-Object File | Sort-Object Name
 foreach ($g in $grouped) {
     Write-Host ("  {0}" -f $g.Name) -ForegroundColor Yellow
     foreach ($m in $g.Group) {
@@ -162,7 +162,7 @@ foreach ($g in $grouped) {
 }
 
 # Brief summary by version
-$byVer = $matches | Group-Object Match | Sort-Object Name
+$byVer = $foundMatches | Group-Object Match | Sort-Object Name
 Write-Host "  Summary:" -ForegroundColor Cyan
 foreach ($v in $byVer) {
     Write-Host ("    {0,-22} {1}" -f $v.Name, $v.Count) -ForegroundColor DarkGray

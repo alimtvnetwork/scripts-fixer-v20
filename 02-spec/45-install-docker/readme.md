@@ -82,7 +82,6 @@ Docker Compose v2 (bundled), daemon status checking, and PATH setup.
   `choco-utils.ps1`, `path-utils.ps1`, `installed.ps1`
 - Requires: Administrator privileges, internet access, WSL2 (recommended)
 
-
 ---
 
 <!-- spec-footer:v1 -->
