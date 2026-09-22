@@ -38,6 +38,8 @@
 | 27 | `27-dev-profile-git-compact.md` | Dev Profile Git-Compact CLI Integration (ubuntu+dev, ubuntu+simple-dev) | `completed` | 2026-09-14 |
 | 28 | `28-sqlite-db-profile-vmware.md` | SQLite DB Tracking, Profile Idempotency & VMware Shared Folder | `completed` | 2026-09-14 |
 | 29 | `29-windows-server-store-plot-antigravity.md` | Windows Server OS Detection, Store Prerequisites, PlotCode/Codex Compatibility & Antigravity CLI Dev Profile | `completed` | 2026-09-14 |
+| 30 | `30-antigravity-clean-and-conversation-pruner.md` | Antigravity Clean, SQLite Conversation Pruner & Gemini Brain Reducer | `completed` | 2026-09-22 |
+| 31 | `31-antigravity-keep-conversations-flag.md` | Antigravity Clear `--keep <N>` Flag, Positional Retention & Modular Decomposition | `completed` | 2026-09-22 |
 
 ---
 

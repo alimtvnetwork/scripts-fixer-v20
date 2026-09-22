@@ -223,6 +223,11 @@ while [ $# -gt 0 ]; do
     # Wipes per-run state from the repo root so the next run starts fresh.
     reset|fresh|fresh-start|wipe-state|clear-state)
         VERB="reset"; shift; RESET_REST=("$@"); break ;;
+    # ---- top-level shortcuts to script 69 (Antigravity IDE & agy CLI) ----
+    agy|antigravity)
+        VERB="agy-passthrough"; shift; AGY_REST=("$@"); break ;;
+    clean-agy|clear-agy|agy-clean|agy-clear)
+        VERB="agy-passthrough"; shift; AGY_REST=("clean" "$@"); break ;;
     *)
         # `./run.sh install wordpress [args]` lands here AFTER install was consumed.
         # Re-route it through the wp passthrough so the user-friendly form works.
@@ -241,6 +246,12 @@ while [ $# -gt 0 ]; do
         fi
         if [ "$VERB" = "uninstall" ] && { [ "$1" = "nginx" ] || [ "$1" = "nginx-server" ]; }; then
             VERB="nginx-passthrough"; shift; NGINX_REST=("uninstall" "$@"); break
+        fi
+        if [ "$VERB" = "install" ] && { [ "$1" = "agy" ] || [ "$1" = "antigravity" ]; }; then
+            VERB="agy-passthrough"; shift; AGY_REST=("install" "$@"); break
+        fi
+        if [ "$VERB" = "uninstall" ] && { [ "$1" = "agy" ] || [ "$1" = "antigravity" ]; }; then
+            VERB="agy-passthrough"; shift; AGY_REST=("uninstall" "$@"); break
         fi
         log_warn "Unknown arg: $1"; shift ;;
   esac
@@ -896,6 +907,12 @@ case "${VERB:-help}" in
       _nginx_filtered=("help")
     fi
     bash "$ROOT/76-install-nginx/run.sh" "${_nginx_filtered[@]}"
+    exit $?
+    ;;
+  agy-passthrough)
+    _agy_filtered=()
+    for _a in "${AGY_REST[@]:-}"; do [ -n "$_a" ] && _agy_filtered+=("$_a"); done
+    bash "$ROOT/69-install-antigravity/run.sh" "${_agy_filtered[@]}"
     exit $?
     ;;
   grp-passthrough)

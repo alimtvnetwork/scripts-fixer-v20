@@ -1,4 +1,12 @@
 {
+  "agy": {
+    "id": "69",
+    "folder": "69-install-antigravity"
+  },
+  "antigravity": {
+    "id": "69",
+    "folder": "69-install-antigravity"
+  },
   "artisan": {
     "id": "77",
     "folder": "77-install-laravel"
@@ -6,6 +14,14 @@
   "cargo": {
     "id": "44",
     "folder": "44-install-rust"
+  },
+  "clang": {
+    "id": "110",
+    "folder": "110-install-llvm"
+  },
+  "clang-cl": {
+    "id": "110",
+    "folder": "110-install-llvm"
   },
   "clippy": {
     "id": "44",
@@ -34,6 +50,18 @@
   "laravel": {
     "id": "77",
     "folder": "77-install-laravel"
+  },
+  "libclang": {
+    "id": "110",
+    "folder": "110-install-llvm"
+  },
+  "lld": {
+    "id": "110",
+    "folder": "110-install-llvm"
+  },
+  "llvm": {
+    "id": "110",
+    "folder": "110-install-llvm"
   },
   "nginx": {
     "id": "76",

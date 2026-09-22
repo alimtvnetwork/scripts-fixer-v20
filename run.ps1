@@ -49,6 +49,7 @@
     .\run.ps1 -I 1                   # run scripts/01-*/run.ps1
     .\run.ps1 -I 1 -Clean           # wipe .resolved/, then run script 01
     .\run.ps1 -CleanOnly             # wipe .resolved/ and exit
+    .\run.ps1 agy clear 10           # predict pruning keeping latest 10 conversations
     .\run.ps1 -Help                  # show all available scripts
 
 .NOTES
@@ -3400,6 +3401,7 @@ if ($_isEarlyHelp) {
     }
 
     $_completionPool = @(
+        'agy','clear-agy','clean-agy',
         'chrome','chrome-fix-ai','fix-ai','chrome-profile-copy','chrome-profile-export','chrome-profile-import','ext','ext-url','ext-all','vscode','vscode-folder','conemu',
         'menu','context-menu','profile','install','uninstall','update',
         'self-update','settings','export','os','clean-dev','dev-cleanup','doctor','logs','report','reset',
@@ -3915,7 +3917,8 @@ if ($hasCommand) {
         'os','clean-dev','dev-cleanup','ssh','vscode-folder','vscode-context-menu','chrome','chrome-fix-ai',
         'chrome-profile-copy','chrome-profile-export','chrome-profile-import',
         'profile','git-tools','gsa','reset','help','version','nginx',
-        'startup','schedule','crontab','macro','async','storage','pipeline','cluster'
+        'startup','schedule','crontab','macro','async','storage','pipeline','cluster',
+        'agy','clear-agy','clean-agy'
     )
     $keywordsFileEarly = Join-Path $RootDir "scripts\shared\install-keywords.json"
     $keywordMap = $null
@@ -3987,6 +3990,8 @@ if ($hasCommand) {
     $isBareGitToolsCommand = $normalizedCommand -eq "git-tools" -or $normalizedCommand -eq "gittools"
     $isBareGsaCommand     = $normalizedCommand -eq "gsa" -or $normalizedCommand -eq "git-safe-all" -or $normalizedCommand -eq "gitsafeall"
     $isBareResetCommand   = $normalizedCommand -in @("reset","fresh","fresh-start","wipe-state","clear-state")
+    $isBareAgyCommand     = $normalizedCommand -in @("agy", "antigravity")
+    $isBareCleanAgyCommand = $normalizedCommand -in @("clean-agy", "clear-agy", "agy-clean", "agy-clear", "antigravity-clean", "antigravity-clear")
     $isBareStartupCommand  = $normalizedCommand -eq "startup"
     $isBareScheduleCommand = $normalizedCommand -in @("schedule", "crontab", "cron")
     $isBareMacroCommand    = $normalizedCommand -eq "macro"
@@ -4018,7 +4023,7 @@ if ($hasCommand) {
     #   - any of $Install contains --no-pull / -no-pull / --offline
     #   - command is read-only (status/path/scan/export/doctor)
     $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareExportConfigCommand -or $isBareImportConfigCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand
-    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareCleanDevCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareTerminalTasksCommand -or $isBareDbMenuCommand -or $isBareNginxCommand
+    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareCleanDevCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareTerminalTasksCommand -or $isBareDbMenuCommand -or $isBareNginxCommand -or $isBareAgyCommand -or $isBareCleanAgyCommand
     $isNoPullEnv = $env:SCRIPTS_FIXER_NO_PULL -eq "1"
     $isNoPullFlag = $false
     if ($null -ne $Install) {
@@ -4321,6 +4326,129 @@ if ($hasCommand) {
         Write-Host "Routing 'nginx $($nginxArgs -join ' ')' to: " -NoNewline
         Write-Host $nginxScript -ForegroundColor White
         & $nginxScript @nginxArgs
+        exit $LASTEXITCODE
+    }
+
+    if ($isBareAgyCommand -or $isBareCleanAgyCommand) {
+        Show-VersionHeader
+        $agyScript = Join-Path $RootDir "scripts\69-install-antigravity\run.ps1"
+        $clearAgyScript = Join-Path $RootDir "scripts\69-install-antigravity\helpers\clear-agy.ps1"
+
+        $agyArgs = @()
+        if ($null -ne $Install) { $agyArgs = @($Install) }
+
+        $hasFirstArg = $agyArgs.Count -gt 0
+        $firstArg = if ($hasFirstArg) { "$($agyArgs[0])".Trim().ToLower() } else { "" }
+        $isCleanVerb = $isBareCleanAgyCommand -or ($firstArg -in @("clean", "clear", "predict", "undo"))
+
+        if ($isCleanVerb) {
+            $isClearScriptPresent = Test-Path $clearAgyScript
+
+            if (-not $isClearScriptPresent) {
+                Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
+                Write-Host "Antigravity clear helper missing at: $clearAgyScript"
+
+                exit 1
+            }
+
+            if ($firstArg -eq "undo") {
+                $undoTx = if ($agyArgs.Count -gt 1) { $agyArgs[1] } else { "" }
+                & $clearAgyScript -Undo $undoTx
+
+                exit $LASTEXITCODE
+            }
+
+            $splat = @{}
+            $hasExplicitPredict = $false
+            $hasExplicitKill = $false
+            $hasExplicitYes = $false
+            $thresholdValue = 200
+            $keepValue = 0
+
+            for ($i = 0; $i -lt $agyArgs.Count; $i++) {
+                $argToken = "$($agyArgs[$i])".Trim()
+                $low = $argToken.ToLower()
+
+                if ($low -in @("clean", "clear")) { continue }
+
+                if ($low -in @("predict", "-predict", "--predict")) {
+                    $hasExplicitPredict = $true
+                    continue
+                }
+
+                if ($low -in @("-kill", "--kill")) {
+                    $hasExplicitKill = $true
+                    continue
+                }
+
+                if ($low -in @("-yes", "--yes", "-y")) {
+                    $hasExplicitYes = $true
+                    continue
+                }
+
+                if ($low -in @("-undo", "--undo") -and ($i + 1) -lt $agyArgs.Count) {
+                    $splat["Undo"] = "$($agyArgs[$i + 1])".Trim()
+                    $i++
+                    continue
+                }
+
+                if ($low -in @("-threshold", "--threshold", "-t") -and ($i + 1) -lt $agyArgs.Count) {
+                    $thresholdValue = [int]$agyArgs[$i + 1]
+                    $i++
+                    continue
+                }
+
+                if ($low -in @("-keep", "--keep", "-k") -and ($i + 1) -lt $agyArgs.Count) {
+                    $keepValue = [int]$agyArgs[$i + 1]
+                    $i++
+                    continue
+                }
+
+                if ($argToken -match '^\d+$') {
+                    $keepValue = [int]$argToken
+                    continue
+                }
+            }
+
+            if ($hasExplicitKill) {
+                $splat["Kill"] = $true
+            }
+
+            if ($hasExplicitYes) {
+                $splat["Yes"] = $true
+            }
+
+            $isUndoActive = $splat.ContainsKey("Undo")
+            $isPredictNeeded = -not $isUndoActive -and ($hasExplicitPredict -or (-not $hasExplicitKill -and -not $hasExplicitYes))
+
+            if ($isPredictNeeded) {
+                $splat["Predict"] = $true
+            }
+
+            if ($thresholdValue -gt 0) {
+                $splat["Threshold"] = $thresholdValue
+            }
+
+            if ($keepValue -gt 0) {
+                $splat["Keep"] = $keepValue
+            }
+
+            & $clearAgyScript @splat
+
+            exit $LASTEXITCODE
+        }
+
+        $isAgyScriptPresent = Test-Path $agyScript
+
+        if (-not $isAgyScriptPresent) {
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
+            Write-Host "Antigravity dispatcher missing at: $agyScript"
+
+            exit 1
+        }
+
+        & $agyScript @agyArgs
+
         exit $LASTEXITCODE
     }
 

@@ -91,10 +91,26 @@ verb_uninstall() {
   log_ok "[69] Antigravity uninstalled"
 }
 
+verb_clean() {
+  local helper="$SCRIPT_DIR/helpers/clear-agy.sh"
+
+  if [ ! -f "$helper" ]; then
+    log_file_error "$helper" "clear-agy.sh missing"
+
+    return 1
+  fi
+
+  bash "$helper" "$@"
+}
+
 case "${1:-install}" in
   install)   verb_install;;
   check)     verb_check;;
   repair)    verb_repair;;
   uninstall) verb_uninstall;;
+  clean)     verb_clean "${@:2}";;
+  clear)     verb_clean "${@:2}";;
+  predict)   verb_clean "--predict";;
   *)         log_err "[69] Unknown verb: $1"; exit 2;;
 esac
+

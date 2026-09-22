@@ -386,6 +386,23 @@ $normalizedAction = ""
 $hasAction = -not [string]::IsNullOrWhiteSpace($Action)
 if ($hasAction) { $normalizedAction = $Action.Trim().ToLower() }
 
+# ---- clean-agy / clear-agy dispatch ----
+if ($normalizedAction -in @("clean-agy", "clear-agy", "agy-clean", "agy-clear", "clean-antigravity", "clear-antigravity", "antigravity-clean", "antigravity-clear")) {
+    $clearScript = Join-Path (Split-Path -Parent $scriptDir) "69-install-antigravity\helpers\clear-agy.ps1"
+    $isClearScriptPresent = Test-Path $clearScript
+
+    if (-not $isClearScriptPresent) {
+        Write-Host "  [ FAIL ] " -ForegroundColor Red -NoNewline
+        Write-Host "Antigravity clear helper missing at: $clearScript"
+
+        exit 1
+    }
+
+    & $clearScript @Rest
+
+    exit $LASTEXITCODE
+}
+
 # ---- clean-<name> dynamic dispatch ----
 if ($normalizedAction -match '^clean-(.+)$') {
     $cat = $Matches[1]
