@@ -80,7 +80,7 @@ for (const [name, body] of Object.entries(files)) {
   const p = path.join(OUT, name);
   const existing = fs.existsSync(p) ? fs.readFileSync(p, "utf8") : "";
   if (check) {
-    if (existing !== body) { console.error(`[DRIFT] completions/${name}`); drift++; }
+    if (existing.replace(/\r\n/g, "\n") !== body.replace(/\r\n/g, "\n")) { console.error(`[DRIFT] completions/${name}`); drift++; }
   } else {
     fs.writeFileSync(p, body);
     console.log(`[OK] wrote completions/${name}`);

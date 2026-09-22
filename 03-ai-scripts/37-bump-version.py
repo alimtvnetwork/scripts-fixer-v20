@@ -221,6 +221,8 @@ def update_changelogs(next_version, scope, today_str, dry_run=False):
                 else:
                     cl_content = f"# Changelog\n\n{entry_header}{cl_content}"
 
+                cl_content = re.sub(r"\n{3,}", "\n\n", cl_content)
+
                 with open(CHANGELOG_MD, "w", encoding="utf-8", newline="\n") as f:
                     f.write(cl_content)
 

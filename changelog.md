@@ -5,7 +5,6 @@
 ### Added
 - CI/CD quality gates hardening, zero-storage workflows, and release automation
 
-
 ## [v1.50.0] - 2026-09-22
 
 ### Added
