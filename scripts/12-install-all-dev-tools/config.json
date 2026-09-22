@@ -6,7 +6,8 @@
   },
   "groups": [
     { "letter": "a", "label": "All Core (01-09,58)",          "ids": ["01", "02", "03", "04", "05", "06", "07", "08", "09", "58"] },
-    { "letter": "b", "label": "Dev Runtimes (03-08,44)",        "ids": ["03", "04", "05", "06", "07", "08", "44"] },
+    { "letter": "b", "label": "Dev Runtimes (03-08)",           "ids": ["03", "04", "05", "06", "07", "08"] },
+    { "letter": "rs", "label": "Dev Rust (44,110)",            "ids": ["44", "110"] },
     { "letter": "c", "label": "JS Stack (03-04)",               "ids": ["03", "04"] },
     { "letter": "d", "label": "Languages (05-06,16,44)",        "ids": ["05", "06", "16", "44"] },
     { "letter": "e", "label": "Git Tools (07-08,72)",           "ids": ["07", "08", "72"] },
@@ -76,7 +77,8 @@
     "46": { "enabled": true, "folder": "46-install-kubernetes",        "name": "Kubernetes Tools",     "desc": "Install kubectl, minikube, Helm, k9s" },
     "48": { "enabled": true, "folder": "48-install-conemu",            "name": "ConEmu + Settings",    "desc": "Install ConEmu console emulator and sync ConEmu.xml settings" },
     "58": { "enabled": true, "folder": "58-install-chrome",            "name": "Google Chrome",        "desc": "Install Google Chrome browser via Chocolatey (with official installer fallback)" },
-    "72": { "enabled": true, "folder": "72-install-bcompare",          "name": "Beyond Compare 5",     "desc": "Install Beyond Compare 5 pro diff and merge tool" }
+    "72": { "enabled": true, "folder": "72-install-bcompare",          "name": "Beyond Compare 5",     "desc": "Install Beyond Compare 5 pro diff and merge tool" },
+    "110": { "enabled": true, "folder": "110-install-llvm",            "name": "LLVM & Clang",         "desc": "Install LLVM, Clang compiler toolchain and tools" }
   },
-  "sequence": ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "48", "58", "72"]
+  "sequence": ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "48", "58", "72", "110"]
 }

@@ -439,6 +439,12 @@
       "folder": "109-install-dns-menu",
       "phase": "16",
       "title": "Interactive DNS-install menu (dispatches to 100-108)"
+    },
+    {
+      "id": "110",
+      "folder": "110-install-llvm",
+      "phase": "05",
+      "title": "LLVM & Clang compiler toolchain"
     }
   ]
 }

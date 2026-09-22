@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0",
+  "id": "110",
+  "name": "LLVM & Clang",
+  "summary": "LLVM compiler infrastructure, Clang C/C++ compiler and tools",
+  "aliases": [
+    "clang",
+    "clang-cl",
+    "libclang",
+    "lld",
+    "llvm"
+  ],
+  "platforms": {
+    "windows": {
+      "folder": "110-install-llvm",
+      "entrypoint": "run.ps1"
+    },
+    "linux": {
+      "folder": "110-install-llvm",
+      "entrypoint": "run.sh"
+    },
+    "macos": {
+      "folder": "110-install-llvm",
+      "entrypoint": "run.sh"
+    }
+  },
+  "depends_on": [],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "all",
+    "check",
+    "install",
+    "uninstall"
+  ],
+  "phase": "05",
+  "tags": [
+    "clang",
+    "compiler",
+    "cpp",
+    "libclang",
+    "llvm"
+  ]
+}

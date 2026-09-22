@@ -830,3 +830,14 @@ scripts:
       folder: 109-install-dns-menu
       phase: '16'
       title: Interactive DNS-install menu (dispatches to 100-108)
+  - id: '110'
+    windows:
+      folder: 110-install-llvm
+    linux:
+      folder: 110-install-llvm
+      phase: '05'
+      title: LLVM & Clang compiler toolchain
+    macos:
+      folder: 110-install-llvm
+      phase: '05'
+      title: LLVM & Clang compiler toolchain

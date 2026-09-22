@@ -1,0 +1,36 @@
+{
+  "scriptName": "Install LLVM & Clang",
+  "description": "Installs LLVM compiler toolchain, Clang, and configures LLVM/bin in PATH.",
+  "messages": {
+    "llvmAlreadyInstalled": "LLVM/Clang is already installed: {version}",
+    "llvmInstallSuccess": "LLVM/Clang installed successfully: {version}",
+    "llvmNotFound": "LLVM/Clang not found, installing via Winget/Chocolatey...",
+    "addingToPath": "Adding LLVM\\bin to PATH: {path}",
+    "pathAlreadyContains": "PATH already contains: {path}",
+    "scriptDisabled": "LLVM installation is disabled in config.",
+    "savingResolved": "Saving resolved state...",
+    "notAdmin": "This script requires administrator privileges.",
+    "unknownCommand": "Unknown command: {command}. Use -Help for usage.",
+    "llvmSetupComplete": "LLVM & Clang setup complete.",
+    "uninstalling": "Uninstalling LLVM...",
+    "uninstallSuccess": "LLVM uninstalled successfully.",
+    "uninstallComplete": "Uninstall complete."
+  },
+  "versionDetect": [
+    { "command": "clang", "flag": "--version", "label": "clang" },
+    { "command": "llvm-config", "flag": "--version", "label": "llvm" }
+  ],
+  "help": {
+    "commands": {
+      "all": "Install LLVM + Clang + PATH setup (default)",
+      "install": "Install LLVM only",
+      "uninstall": "Uninstall LLVM"
+    },
+    "examples": [
+      ".\\run.ps1",
+      ".\\run.ps1 install",
+      ".\\run.ps1 -Help",
+      ".\\run.ps1 uninstall"
+    ]
+  }
+}

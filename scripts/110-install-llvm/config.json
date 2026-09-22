@@ -1,0 +1,7 @@
+{
+  "enabled": true,
+  "defaultPackage": "LLVM.LLVM",
+  "chocoPackage": "llvm",
+  "installDir": "C:\\Program Files\\LLVM",
+  "addToPath": true
+}
