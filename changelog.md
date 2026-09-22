@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.49.0] - 2026-09-22
+
+### Added
+- Modularize root run.ps1 dispatcher and enhance Antigravity maintenance suite
+
+
 ## [v1.48.1] - 2026-09-15
 
 ### Added

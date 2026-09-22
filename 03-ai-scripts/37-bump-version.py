@@ -32,6 +32,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 
 # Canonical version files
 VERSION_JSON = REPO_ROOT / "version.json"
+SCRIPTS_VERSION_JSON = REPO_ROOT / "scripts" / "version.json"
 PACKAGE_JSON = REPO_ROOT / "package.json"
 README_MD = REPO_ROOT / "readme.md"
 CHANGELOG_MD = REPO_ROOT / "changelog.md"
@@ -111,27 +112,28 @@ def calculate_next_version(current_ver, tier):
 
 
 def update_version_json(next_version, today_str, dry_run=False):
-    """Updates version and releaseDate in version.json."""
-    if not VERSION_JSON.is_file():
-        return
+    """Updates version and releaseDate in version.json and scripts/version.json."""
+    for v_path in [VERSION_JSON, SCRIPTS_VERSION_JSON]:
+        if not v_path.is_file():
+            continue
 
-    with open(VERSION_JSON, "r", encoding="utf-8") as f:
-        data = json.load(f)
+        with open(v_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
 
-    data["version"] = next_version
-    if "Version" in data:
-        data["Version"] = next_version
-    data["releaseDate"] = today_str
+        data["version"] = next_version
+        if "Version" in data:
+            data["Version"] = next_version
+        data["releaseDate"] = today_str
 
-    if dry_run:
-        print(f"[DRY RUN] Would update version.json to {next_version} ({today_str})")
-        return
+        if dry_run:
+            print(f"[DRY RUN] Would update {v_path.name} to {next_version} ({today_str})")
+            continue
 
-    with open(VERSION_JSON, "w", encoding="utf-8", newline="\n") as f:
-        json.dump(data, f, indent=2)
-        f.write("\n")
+        with open(v_path, "w", encoding="utf-8", newline="\n") as f:
+            json.dump(data, f, indent=2)
+            f.write("\n")
 
-    print(f"[*] Updated version.json -> {next_version}")
+        print(f"[*] Updated {v_path.relative_to(REPO_ROOT)} -> {next_version}")
 
 
 def update_package_json(next_version, dry_run=False):

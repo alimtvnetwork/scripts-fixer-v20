@@ -238,14 +238,15 @@ def execute_version_bump(next_version, scope, dry_run=False):
     today_str = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d")
 
     # Fallback in-place updates: version.json
-    if VERSION_JSON.is_file():
-        with open(VERSION_JSON, "r", encoding="utf-8") as f:
-            v_data = json.load(f)
-        v_data["version"] = next_version
-        v_data["releaseDate"] = today_str
-        with open(VERSION_JSON, "w", encoding="utf-8") as f:
-            json.dump(v_data, f, indent=2)
-            f.write("\n")
+    for v_target in [VERSION_JSON, REPO_ROOT / "scripts" / "version.json"]:
+        if v_target.is_file():
+            with open(v_target, "r", encoding="utf-8") as f:
+                v_data = json.load(f)
+            v_data["version"] = next_version
+            v_data["releaseDate"] = today_str
+            with open(v_target, "w", encoding="utf-8") as f:
+                json.dump(v_data, f, indent=2)
+                f.write("\n")
 
     # Fallback: package.json
     if PACKAGE_JSON.is_file():
@@ -283,12 +284,14 @@ def stage_and_commit_release(next_version, scope, dry_run=False):
     # Stage release-specific and sync-regenerated files
     release_candidates = [
         VERSION_JSON,
+        REPO_ROOT / "scripts" / "version.json",
         PACKAGE_JSON,
         CHANGELOG_MD,
         README_MD,
         NODE_BUMP_SCRIPT,
         PYTHON_BUMP_SCRIPT,
         AI_BUMP_SCRIPT,
+        REPO_ROOT / "03-ai-scripts" / "29-release-orchestrator.py",
         REPO_ROOT / ".gitmap" / "release",
         REPO_ROOT / "public" / "health-score.json",
         REPO_ROOT / "src" / "data" / "specTree.json",
