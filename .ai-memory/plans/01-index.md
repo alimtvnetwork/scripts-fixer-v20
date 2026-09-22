@@ -40,6 +40,7 @@
 | 29 | `29-windows-server-store-plot-antigravity.md` | Windows Server OS Detection, Store Prerequisites, PlotCode/Codex Compatibility & Antigravity CLI Dev Profile | `completed` | 2026-09-14 |
 | 30 | `30-antigravity-clean-and-conversation-pruner.md` | Antigravity Clean, SQLite Conversation Pruner & Gemini Brain Reducer | `completed` | 2026-09-22 |
 | 31 | `31-antigravity-keep-conversations-flag.md` | Antigravity Clear `--keep <N>` Flag, Positional Retention & Modular Decomposition | `completed` | 2026-09-22 |
+| 32 | `32-root-dispatcher-modularization.md` | Modular Decomposition of Root run.ps1 Dispatcher into scripts/dispatcher Subsystems | `completed` | 2026-09-22 |
 
 ---
 
