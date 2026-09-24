@@ -12,9 +12,10 @@ from agy_optimizer.models import BrainCleanupItem, ConversationInfo, format_byte
 from agy_optimizer.predictor import predict_optimization
 from agy_optimizer.pruner import prune_conversation
 from agy_optimizer.rollback import undo_transaction
-from agy_optimizer.scanner import get_dir_stats, scan_app_cache_items, scan_brain_cleanup_items
-from agy_optimizer.shared.database import init_backup_database, list_backup_transactions, load_conversation_summaries
+from agy_optimizer.shared.database import init_backup_database, load_conversation_summaries
+from agy_optimizer.shared.list_backups import list_backup_transactions
 from agy_optimizer.shared.paths import extract_project_slug, get_backup_db_path, get_cache_directories, get_gemini_base_dir
+
 
 __all__ = [
     "ConversationInfo",

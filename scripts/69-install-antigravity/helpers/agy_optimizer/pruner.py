@@ -1,5 +1,5 @@
 """
-Conversation step pruner and SQLite transaction archiver.
+Conversation step pruner coordinator.
 """
 
 from __future__ import annotations
@@ -9,6 +9,7 @@ import time
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+from agy_optimizer.archive import archive_pruned_rows, record_prune_transaction
 from agy_optimizer.models import ConversationInfo
 from agy_optimizer.shared.database import init_backup_database
 from agy_optimizer.shared.paths import get_backup_db_path
@@ -33,41 +34,6 @@ def _fetch_prune_rows(c_target: sqlite3.Cursor, cutoff_idx: int) -> list:
             (cutoff_idx,),
         )
         return c_target.fetchall()
-
-
-def _archive_rows(backup_db: Path, tx_id: str, cid: str, rows: list) -> None:
-    conn_backup = sqlite3.connect(str(backup_db))
-    c_backup = conn_backup.cursor()
-
-    for row in rows:
-        idx, stype, stat, payload, meta, gm_data, gm_size = row
-        c_backup.execute(
-            """
-            INSERT OR REPLACE INTO pruned_steps
-            (transaction_id, conversation_id, idx, step_type, status, step_payload, metadata, gen_metadata_data, gen_metadata_size)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (tx_id, cid, idx, stype, stat, payload, meta, gm_data, gm_size),
-        )
-
-    conn_backup.commit()
-    conn_backup.close()
-
-
-def _record_transaction(backup_db: Path, tx_id: str, ts: str, c_info: ConversationInfo, new_sz: int, count: int) -> None:
-    conn_backup = sqlite3.connect(str(backup_db))
-    c_backup = conn_backup.cursor()
-
-    c_backup.execute(
-        """
-        INSERT INTO prune_transactions
-        (transaction_id, timestamp, conversation_id, workspace_uri, project_slug, original_size, pruned_size, steps_archived, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """,
-        (tx_id, ts, c_info.conversation_id, c_info.workspace_uri, c_info.project_slug, c_info.file_size, new_sz, count, "applied"),
-    )
-    conn_backup.commit()
-    conn_backup.close()
 
 
 def prune_conversation(c_info: ConversationInfo, keep_turns: int = 2) -> Optional[Dict[str, Any]]:
@@ -96,7 +62,7 @@ def prune_conversation(c_info: ConversationInfo, keep_turns: int = 2) -> Optiona
         conn_target.close()
         return None
 
-    _archive_rows(backup_db, tx_id, c_info.conversation_id, prune_rows)
+    archive_pruned_rows(backup_db, tx_id, c_info.conversation_id, prune_rows)
     c_target.execute("DELETE FROM steps WHERE idx < ?", (cutoff_idx,))
     conn_target.commit()
 
@@ -107,7 +73,7 @@ def prune_conversation(c_info: ConversationInfo, keep_turns: int = 2) -> Optiona
 
     conn_target.close()
     new_sz = db_path.stat().st_size
-    _record_transaction(backup_db, tx_id, timestamp, c_info, new_sz, len(prune_rows))
+    record_prune_transaction(backup_db, tx_id, timestamp, c_info, new_sz, len(prune_rows))
 
     return {
         "transaction_id": tx_id,

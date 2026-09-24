@@ -36,36 +36,50 @@ Can you please follow the Git map? Also do a Git pull first. So Git map has an a
 - Registered `autologin` in `scripts-linux/68-user-mgmt/run.sh`.
 - Documented in `scripts-linux/68-user-mgmt/readme.md`.
 
-### Subtask 03: AGY Python Package Modularization
+### Subtask 03: AGY Python Package Modularization & Strict Sub-100 Line Decomposition
 - Decomposed monolithic 882-line `agy_optimizer.py` into a modular package:
   - `scripts/69-install-antigravity/helpers/agy_optimizer/` (and synchronized Linux mirror):
-    - `__init__.py` (38 lines): Public API and top-level exports
-    - `models.py` (54 lines): `ConversationInfo`, `BrainCleanupItem` dataclasses, ANSI colors, `format_bytes`
-    - `shared/paths.py` (61 lines): Path discovery, cache paths, slug extraction
-    - `shared/database.py` (79 lines): SQLite backup database schema, summary loader, query helpers
-    - `rollback.py` (72 lines): Transaction rollback and undo engine
-    - `scanner.py` (71 lines): Directory stat calculator, cache items scanner, brain targets scanner
-    - `conversations.py` (56 lines): Conversation discovery and sorting
-    - `cache_cleaner.py` (71 lines): Cache purge and brain backup cleaner
-    - `pruner.py` (96 lines): Step pruner and database vaccum coordinator
-    - `predictor.py` (81 lines): Space reclamation prediction and summary renderer
-    - `applier.py` (55 lines): Applied optimization orchestrator
-    - `cli.py` (57 lines): Argument parsing and command routing
-  - Every file is strictly **<= 100 lines**!
-  - Replaced root `agy_optimizer.py` with a lightweight, backward-compatible facade (38 lines).
+    - `__init__.py` (45 lines): Public API and top-level exports
+    - `models.py` (68 lines): `ConversationInfo`, `BrainCleanupItem` dataclasses, ANSI colors, `format_bytes`
+    - `shared/paths.py` (83 lines): Path discovery, cache paths, slug extraction
+    - `shared/database.py` (76 lines): SQLite backup database schema and connection management
+    - `shared/list_backups.py` (28 lines): Backup listing queries
+    - `rollback.py` (62 lines): Transaction rollback and undo engine
+    - `scanner.py` (90 lines): Directory stat calculator, cache items scanner, brain targets scanner
+    - `conversations.py` (69 lines): Conversation discovery and sorting
+    - `cache_cleaner.py` (89 lines): Cache purge and brain backup cleaner
+    - `pruner.py` (84 lines): Step pruner and database vacuum coordinator
+    - `archive.py` (46 lines): Database and conversation archiving
+    - `restore.py` (42 lines): Database and conversation restore
+    - `predictor.py` (66 lines): Space reclamation prediction
+    - `summary.py` (54 lines): Summary calculation and ANSI table rendering
+    - `applier.py` (70 lines): Applied optimization orchestrator
+    - `cli.py` (75 lines): Argument parsing and command routing
+  - Every file is strictly **< 95 lines** without stripping vertical spacing or compressing lines.
+  - Replaced root `agy_optimizer.py` with a lightweight facade (44 lines).
+  - Decomposed `clear-agy.ps1` into `_clear-agy-ops.ps1` (77 and 76 lines).
+  - Decomposed `clear-agy.sh` into `_clear-agy-args.sh` and `_clear-agy-ops.sh` (68, 66, 92 lines).
+  - Decomposed `autologin.ps1` into `_autologin-registry.ps1`, `_autologin-status.ps1`, and `_autologin-actions.ps1` (81, 68, 68, 78 lines).
+  - Decomposed `autologin.sh` into `_autologin-detect.sh` and `_autologin-apply.sh` (67, 85, 93 lines).
+  - Decomposed `scripts-linux/68-user-mgmt/run.sh` with `helpers/_usage.sh` (63 and 82 lines).
+  - Decomposed `03-ai-scripts/34-purge-github-actions-artifacts.py` with `helpers/_purge_artifacts.py` and `helpers/_purge_caches.py` (59, 89, 89 lines).
 
-### Subtask 04: AGY Python Verification & Testing
-- Authored `scripts/69-install-antigravity/helpers/test_agy_optimizer.py` (mirrored to Linux).
-- Ran all 7 unit test suites: `Ran 7 tests in 0.019s — OK`.
-- Verified compilation with `python -m py_compile` across all package files: 100% clean, 0 warnings.
-- Tested end-to-end command execution: `python agy_optimizer.py --predict --json` and `python agy_optimizer.py --predict`.
+### Subtask 04: Verification & Modular Unit Tests
+- Modularized unit tests into discrete suites:
+  - `test_agy_optimizer.py` (35 lines): Root suite runner
+  - `test_agy_cli.py` (29 lines): Argument parsing tests
+  - `test_agy_db.py` (61 lines): Path resolution and DB tests
+  - `test_agy_models.py` (48 lines): Data model and byte formatting tests
+- Ran all 7 unit test suites across Windows and Linux: 7/7 tests passed in 0.009s.
+- Verified bash syntax with `bash -n` across all 8 shell scripts: 0 errors.
 
 ---
 
 ## 3. Verification Evidence
 
-- `pwsh scripts/os/run.ps1 autologin status`: Verified detection of Windows Server, Winlogon display manager, and CAD bypass.
+- `pwsh scripts/os/helpers/autologin.ps1 status`: Verified detection of Windows Server, Winlogon display manager, and CAD bypass.
 - `pwsh scripts/os/run.ps1 autologin enable -u testuser -DryRun`: Verified dry-run execution with zero side effects.
 - `bash -n scripts-linux/68-user-mgmt/autologin.sh`: Verified bash syntax clean.
 - `python scripts/69-install-antigravity/helpers/test_agy_optimizer.py`: 7/7 tests passed.
-- Package file line counts: 13 files, all <= 100 lines (max 96 lines in `pruner.py`).
+- Python audit: 46/46 code files strictly under 100 lines (0 violations).
+

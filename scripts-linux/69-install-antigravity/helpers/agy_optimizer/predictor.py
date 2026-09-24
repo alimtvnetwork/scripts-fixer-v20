@@ -6,23 +6,11 @@ from __future__ import annotations
 
 import json
 from dataclasses import asdict
-from typing import List
 
 from agy_optimizer.conversations import discover_conversations
-from agy_optimizer.models import (
-    BOLD,
-    CYAN,
-    DIM,
-    GRAY,
-    GREEN,
-    MAGENTA,
-    RED,
-    RESET,
-    WHITE,
-    YELLOW,
-    format_bytes,
-)
+from agy_optimizer.models import BOLD, CYAN, RESET, WHITE
 from agy_optimizer.scanner import scan_app_cache_items, scan_brain_cleanup_items
+from agy_optimizer.summary import render_heavy_table, render_summary_box
 
 
 def _filter_heavy_convs(convs: list, min_steps: int, filter_slug: str) -> list:
@@ -35,25 +23,6 @@ def _filter_heavy_convs(convs: list, min_steps: int, filter_slug: str) -> list:
 
     heavy.sort(key=lambda x: x.file_size, reverse=True)
     return heavy
-
-
-def _render_summary(total_convs: int, total_b: int, p_convs: list, h_convs: list, c_items: list, b_items: list, proj_save: int, keep_cnt: int) -> None:
-    p_bytes = sum(c.file_size for c in p_convs)
-    h_bytes = sum(c.file_size for c in h_convs)
-    c_bytes = sum(c.total_bytes for c in c_items)
-    b_bytes = sum(b.total_bytes for b in b_items)
-
-    print(f"\n{BOLD}{CYAN}{'=' * 80}{RESET}\n {BOLD}{GREEN}[*] DISK SPACE RECLAMATION & CONVERSATION SUMMARY{RESET}\n{BOLD}{CYAN}{'=' * 80}{RESET}")
-    print(f"  {BOLD}{WHITE}Total Conversations Scanned  :{RESET} {BOLD}{CYAN}{total_convs}{RESET} {DIM}({format_bytes(total_b)}){RESET}")
-    if keep_cnt > 0:
-        print(f"  {BOLD}{WHITE}Retention Policy             :{RESET} {BOLD}{YELLOW}Keeping latest {keep_cnt} conversations intact{RESET}")
-        print(f"  {BOLD}{WHITE}Preserved Recent Convs       :{RESET} {BOLD}{GREEN}{len(p_convs)}{RESET} {DIM}({format_bytes(p_bytes)}){RESET}")
-
-    print(f"  {BOLD}{WHITE}Heavy Older Convs            :{RESET} {BOLD}{YELLOW}{len(h_convs)}{RESET} {DIM}({format_bytes(h_bytes)}){RESET}")
-    print(f"  {BOLD}{WHITE}Application Cache Targets    :{RESET} {BOLD}{CYAN}{len(c_items)} folders{RESET} {DIM}({format_bytes(c_bytes)}){RESET}")
-    print(f"  {BOLD}{WHITE}Gemini Brain Cleanup Targets :{RESET} {BOLD}{CYAN}{len(b_items)} folders{RESET} {DIM}({format_bytes(b_bytes)}){RESET}")
-    print(f"  {GRAY}{'-' * 80}{RESET}\n  {BOLD}{WHITE}PROJECTED DISK RECLAMATION   :{RESET} {BOLD}{GREEN}~{format_bytes(proj_save)}{RESET}")
-    print(f"{BOLD}{CYAN}{'=' * 80}{RESET}")
 
 
 def _build_json_payload(convs: list, preserved: list, heavy: list, brain: list, cache: list, proj_save: int, keep_cnt: int) -> dict:
@@ -92,10 +61,6 @@ def predict_optimization(threshold_bytes: int = 200 * 1024, keep_count: int = 0,
         return 0
 
     print(f"\n{BOLD}{CYAN}{'=' * 80}{RESET}\n {BOLD}{CYAN}[==]{RESET} {BOLD}{WHITE}Antigravity Optimizer & Conversation Prediction Engine{RESET}\n{BOLD}{CYAN}{'=' * 80}{RESET}")
-    if heavy:
-        print(f"\n {BOLD}{YELLOW}[==] Top Heavy Conversations to Prune:{RESET}")
-        for c in heavy[:10]:
-            print(f"  {CYAN}{c.conversation_id[:36]:<38}{RESET} {WHITE}{c.project_slug[:18]:<20}{RESET} {YELLOW}{c.step_count:<8}{RESET} {GREEN}{format_bytes(c.file_size):<10}{RESET}")
-
-    _render_summary(len(convs), sum(c.file_size for c in convs), preserved, heavy, cache_items, brain_items, proj_savings, keep_count)
+    render_heavy_table(heavy)
+    render_summary_box(len(convs), sum(c.file_size for c in convs), preserved, heavy, cache_items, brain_items, proj_savings, keep_count)
     return 0
