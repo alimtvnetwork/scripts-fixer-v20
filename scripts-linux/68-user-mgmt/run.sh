@@ -54,6 +54,8 @@ Subverbs:
                                              bare-string list; --yes is
                                              always added; missing user
                                              is a no-op)
+  autologin       [status|enable|disable]   manage Ubuntu auto-login
+                                            (GDM3, LightDM, systemd console)
   bootstrap       [orchestrator flags]      parse-only orchestrator: runs all
                                             four leaves in correct order with
                                             a shared summary. See:
@@ -132,6 +134,8 @@ case "$SUBVERB" in
     exec bash "$SCRIPT_DIR/remove-user-from-json.sh" "$@" ;;
   gen-key|genkey|ssh-keygen)
     exec bash "$SCRIPT_DIR/gen-key.sh" "$@" ;;
+  autologin|auto-login)
+    exec bash "$SCRIPT_DIR/autologin.sh" "$@" ;;
   bootstrap|orchestrate|all)
     exec bash "$SCRIPT_DIR/orchestrate.sh" "$@" ;;
   verify|check|verify-state)

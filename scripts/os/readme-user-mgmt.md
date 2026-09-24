@@ -19,6 +19,7 @@ same JSON shapes, same cross-OS ledger.
 | `gen-key`          | `gen-key.ps1`                 | generate ed25519 / rsa / ecdsa keypair |
 | `install-key`      | `install-key.ps1`             | append public key to `authorized_keys` |
 | `revoke-key`       | `revoke-key.ps1`              | remove by fingerprint / comment / body |
+| `autologin`        | `autologin.ps1`               | configure Windows 11 & Server auto-logon|
 
 All leaves accept `--ask` (interactive prompts for missing fields) and
 `--dry-run` (no host mutation, full log trail).
@@ -38,7 +39,17 @@ pwsh scripts/os/run.ps1 install-key --user alice --key-file C:\keys\alice.pub
 
 # remove all of bob's keys
 pwsh scripts/os/run.ps1 revoke-key --user bob --all
+
+# check auto-login status (Win11 / Windows Server)
+pwsh scripts/os/run.ps1 autologin status
+
+# enable auto-login for alice
+pwsh scripts/os/run.ps1 autologin enable --user alice --ask
+
+# disable auto-login
+pwsh scripts/os/run.ps1 autologin disable
 ```
+
 
 ## Idempotency contract — `install-key`
 

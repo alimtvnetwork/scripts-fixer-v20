@@ -19,6 +19,7 @@ if you prefer to bypass the dispatcher.
 ├── add-group.sh                 # leaf: one group
 ├── add-user-from-json.sh        # leaf: bulk users from JSON
 ├── add-group-from-json.sh       # leaf: bulk groups from JSON
+├── autologin.sh                 # leaf: Ubuntu auto-login (GDM3, LightDM, getty)
 ├── config.json                  # OS defaults (shell, home base, sudo group)
 ├── log-messages.json            # message catalogue
 ├── helpers/_common.sh           # OS detect, password resolver, idempotent probes
@@ -38,6 +39,7 @@ if you prefer to bypass the dispatcher.
 | `edit-user-json`  | `edit-user-from-json.sh`      | bulk user edits from JSON            |
 | `remove-user`     | `remove-user.sh`              | delete one user                      |
 | `remove-user-json`| `remove-user-from-json.sh`    | bulk user removal from JSON          |
+| `autologin`       | `autologin.sh`                | manage Ubuntu auto-login             |
 
 ## CLI examples
 
@@ -51,6 +53,15 @@ sudo bash run.sh add-user bob --password-file /etc/secrets/bob.pw \
 
 # Single group
 sudo bash run.sh add-group devs --gid 2000
+
+# Ubuntu auto-login status (GDM3 / LightDM / systemd getty)
+bash run.sh autologin status
+
+# Enable auto-login for user alice
+sudo bash run.sh autologin enable --user alice
+
+# Disable auto-login
+sudo bash run.sh autologin disable
 
 # Dry-run (no root needed; prints what WOULD happen)
 bash run.sh add-user carol --password 'x' --sudo --dry-run

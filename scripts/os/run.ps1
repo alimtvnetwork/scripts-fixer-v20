@@ -202,6 +202,9 @@ function Show-OsHelp {
     Write-Host "    remove-user-json <file.json> [--dry-run]               Bulk user removals from JSON" -ForegroundColor Green
     Write-Host "    add-group <name> [--description T] [--ask] [--dry-run] Create a local group" -ForegroundColor Green
     Write-Host "    add-group-json <file.json> [--dry-run]                 Bulk groups from JSON" -ForegroundColor Green
+    Write-Host "    autologin [status|enable|disable] [flags]              Configure OS auto-login (Win11 / Server)" -ForegroundColor Green
+    Write-Host "      --user <name> | --password <pass> | --domain <domain>  Credentials for automated sign-in" -ForegroundColor DarkGray
+    Write-Host "      --dry-run | --json | --server | --win11                Inspection & target overrides" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "  DEFAULT APPS (open Settings deeplink scoped to the app, then verify)" -ForegroundColor Cyan
     Write-Host "    browser <name> [--list] [--dry-run] [--yes]            Set default web browser" -ForegroundColor Green
@@ -483,6 +486,11 @@ switch ($normalizedAction) {
         & (Join-Path $scriptDir "helpers\add-group-from-json.ps1") @Rest
         exit $LASTEXITCODE
     }
+    { $_ -in @("autologin", "auto-login", "auto_login") } {
+        & (Join-Path $scriptDir "helpers\autologin.ps1") @Rest
+        exit $LASTEXITCODE
+    }
+
     { $_ -in @("gen-key", "genkey", "ssh-keygen") } {
         & (Join-Path $scriptDir "helpers\gen-key.ps1") @Rest
         exit $LASTEXITCODE
