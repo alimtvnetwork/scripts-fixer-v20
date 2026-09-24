@@ -73,6 +73,7 @@ Write-Host "    7. Python / pip   pip HTTP download cache" -ForegroundColor Dark
 Write-Host "    8. Cargo / Rust   Cargo registry cache and git checkouts" -ForegroundColor DarkGray
 Write-Host "    9. .NET / NuGet   NuGet local HTTP and package caches" -ForegroundColor DarkGray
 Write-Host "    10. Gradle/Maven  Build tool caches and temp repositories" -ForegroundColor DarkGray
+Write-Host "    11. Antigravity   IDE/CLI app caches and conversation pruning" -ForegroundColor DarkGray
 Write-Host ""
 
 if ($isHelp) {
@@ -183,6 +184,37 @@ function Invoke-DevStep {
     }
 }
 
+function Invoke-AntigravityDevStep {
+    param(
+        [bool]$IsDryMode,
+        [bool]$IsYesMode
+    )
+
+    Write-Host ""
+    Write-Host "  ---- 12. Antigravity & AI Developer Cache ----" -ForegroundColor Cyan
+
+    $agyHelper = Join-Path (Split-Path -Parent (Split-Path -Parent $helpersDir)) "69-install-antigravity\helpers\clear-agy.ps1"
+    $isAgyMissing = -not (Test-Path -LiteralPath $agyHelper)
+    if ($isAgyMissing) {
+        Write-Host "  [ SKIP ] Antigravity clear helper not found" -ForegroundColor DarkGray
+        return
+    }
+
+    if ($IsDryMode) {
+        Write-Host "  [DRY-RUN] Running Antigravity conversation and cache prediction..." -ForegroundColor Yellow
+        & $agyHelper -Predict -Keep 10
+        return
+    }
+
+    try {
+        Write-Host "  [  OK  ] Optimizing Antigravity conversation DB & scrubbing caches..." -ForegroundColor Green
+        & $agyHelper -Yes -Keep 10
+    } catch {
+        Write-Host "  [ WARN ] Antigravity cache cleanup failed: $($_.Exception.Message)" -ForegroundColor Yellow
+        $script:StepIssuesCount++
+    }
+}
+
 # Run all developer categories
 Invoke-DevStep -CategoryName "go-buildcache"   -StepLabel "1. Go (build cache & module downloads)"
 Invoke-DevStep -CategoryName "pnpm-store"      -StepLabel "2. pnpm (CAS store & cache)"
@@ -215,6 +247,8 @@ if ($hasDotnet) {
 } else {
     Write-Host "  [ SKIP ] dotnet CLI not present on PATH" -ForegroundColor DarkGray
 }
+
+Invoke-AntigravityDevStep -IsDryMode $isDryRun -IsYesMode $hasAutoYes
 
 Write-Host ""
 Write-Host "  ==============================================" -ForegroundColor DarkGray

@@ -912,6 +912,9 @@ case "${VERB:-help}" in
   agy-passthrough)
     _agy_filtered=()
     for _a in "${AGY_REST[@]:-}"; do [ -n "$_a" ] && _agy_filtered+=("$_a"); done
+    if [ "${#_agy_filtered[@]}" -eq 0 ]; then
+      _agy_filtered=("help")
+    fi
     bash "$ROOT/69-install-antigravity/run.sh" "${_agy_filtered[@]}"
     exit $?
     ;;

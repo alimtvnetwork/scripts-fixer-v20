@@ -44,14 +44,32 @@
 #>
 param(
     [Parameter(Position = 0)]
+    [Alias("k")]
     [int]$Keep = 0,
     [switch]$Predict,
     [switch]$Yes,
     [string]$Undo,
+    [Alias("t")]
     [int]$Threshold = 200,
     [switch]$Kill,
-    [switch]$ListBackups
+    [switch]$ListBackups,
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]]$RemainingArgs
 )
+
+if ($RemainingArgs) {
+    foreach ($arg in $RemainingArgs) {
+        $low = "$arg".Trim().ToLower()
+
+        if ($low -match '^(-k|--keep=?)(\d+)$') {
+            $Keep = [int]$matches[2]
+        }
+
+        if ($low -match '^(-t|--threshold=?)(\d+)$') {
+            $Threshold = [int]$matches[2]
+        }
+    }
+}
 
 $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition

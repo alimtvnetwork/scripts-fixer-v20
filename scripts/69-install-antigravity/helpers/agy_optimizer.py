@@ -22,6 +22,28 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, List, Optional, Tuple
 
+# Cross-platform ANSI terminal color palette and safe UTF-8 output
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
+if sys.platform == "win32":
+    os.system("")  # Initialize Windows VT100 / ANSI escape sequence handler
+
+RESET = "\033[0m"
+BOLD = "\033[1m"
+DIM = "\033[2m"
+CYAN = "\033[96m"
+GREEN = "\033[92m"
+YELLOW = "\033[93m"
+MAGENTA = "\033[95m"
+WHITE = "\033[97m"
+BLUE = "\033[94m"
+RED = "\033[91m"
+GRAY = "\033[90m"
+
 
 @dataclass
 class ConversationInfo:
@@ -442,70 +464,72 @@ def predict_optimization(
         print(json.dumps(payload, indent=2))
         return 0
 
-    print("================================================================================")
-    print(" [==] Antigravity Optimizer & Conversation Prediction Engine")
-    print("================================================================================")
-    print(f" Total Conversations Scanned : {len(convs)} ({format_bytes(total_conv_bytes)})")
-    if keep_count > 0:
-        print(f" Retention Policy            : Keeping latest {keep_count} conversations intact")
-        print(f" Preserved Recent Convs      : {len(preserved_convs)} ({format_bytes(preserved_bytes)})")
-        print(f" Older Convs Scanned         : {len(older_convs)} ({format_bytes(older_bytes)})")
-    print(f" Heavy Older Convs (> {format_bytes(threshold_bytes)}): {len(heavy_convs)} ({format_bytes(heavy_bytes)})")
-    print(f" Application Cache Targets   : {len(cache_items)} folders, {cache_files} files ({format_bytes(cache_bytes)})")
-    print(f" Gemini Brain Cleanup Targets : {len(brain_items)} folders, {brain_files} files ({format_bytes(brain_bytes)})")
-    print(f" Projected Disk Reclamation  : ~{format_bytes(projected_total_savings)}")
-    if keep_count > 0:
-        print("--------------------------------------------------------------------------------")
-        print(f" Preserved Storage Insight   : {format_bytes(preserved_bytes)} remains in the latest {keep_count} active conversations.")
-        print(f"                               Use --keep 5 to prune more, or --keep 0 to prune all heavy.")
-    print("--------------------------------------------------------------------------------")
+    print(f"\n{BOLD}{CYAN}================================================================================{RESET}")
+    print(f" {BOLD}{CYAN}[==]{RESET} {BOLD}{WHITE}Antigravity Optimizer & Conversation Prediction Engine{RESET}")
+    print(f"{BOLD}{CYAN}================================================================================{RESET}")
 
     if heavy_convs:
-        print("\n [==] Top Heavy Conversations to Prune:")
-        print(f"  {'CONVERSATION ID':<38} {'SLUG':<20} {'STEPS':<8} {'SIZE':<10}")
-        print("  " + ("-" * 78))
+        print(f"\n {BOLD}{YELLOW}[==] Top Heavy Conversations to Prune:{RESET}")
+        print(f"  {BOLD}{WHITE}{'CONVERSATION ID':<38} {'SLUG':<20} {'STEPS':<8} {'SIZE':<10}{RESET}")
+        print(f"  {GRAY}{'-' * 78}{RESET}")
         display_heavy = heavy_convs[:15]
         for c in display_heavy:
-            print(f"  {c.conversation_id:<38} {c.project_slug[:18]:<20} {c.step_count:<8} {format_bytes(c.file_size):<10}")
+            print(f"  {CYAN}{c.conversation_id:<38}{RESET} {WHITE}{c.project_slug[:18]:<20}{RESET} {YELLOW}{c.step_count:<8}{RESET} {GREEN}{format_bytes(c.file_size):<10}{RESET}")
         if len(heavy_convs) > len(display_heavy):
-            print(f"  ... and {len(heavy_convs) - len(display_heavy)} more heavy conversations")
+            print(f"  {GRAY}... and {len(heavy_convs) - len(display_heavy)} more heavy conversations{RESET}")
 
     if cache_items:
-        print("\n [==] Antigravity Application Caches to Scrub (Electron / GPU / Code Cache):")
-        print(f"  {'CACHE TARGET':<42} {'FILES':<8} {'SIZE':<10}")
-        print("  " + ("-" * 62))
+        print(f"\n {BOLD}{YELLOW}[==] Antigravity Application Caches to Scrub (Electron / GPU / Code Cache):{RESET}")
+        print(f"  {BOLD}{WHITE}{'CACHE TARGET':<42} {'FILES':<8} {'SIZE':<10}{RESET}")
+        print(f"  {GRAY}{'-' * 62}{RESET}")
         for c in cache_items:
-            print(f"  {c.category:<42} {c.file_count:<8} {format_bytes(c.total_bytes):<10}")
+            print(f"  {CYAN}{c.category:<42}{RESET} {YELLOW}{c.file_count:<8}{RESET} {GREEN}{format_bytes(c.total_bytes):<10}{RESET}")
 
     if brain_items:
-        print("\n [==] Gemini Brain Cleanup Targets:")
-        print(f"  {'CATEGORY':<42} {'FILES':<8} {'SIZE':<10}")
-        print("  " + ("-" * 62))
+        print(f"\n {BOLD}{YELLOW}[==] Gemini Brain Cleanup Targets:{RESET}")
+        print(f"  {BOLD}{WHITE}{'CATEGORY':<42} {'FILES':<8} {'SIZE':<10}{RESET}")
+        print(f"  {GRAY}{'-' * 62}{RESET}")
         display_brain = brain_items[:15]
         for b in display_brain:
-            print(f"  {b.category:<42} {b.file_count:<8} {format_bytes(b.total_bytes):<10}")
+            print(f"  {CYAN}{b.category:<42}{RESET} {YELLOW}{b.file_count:<8}{RESET} {GREEN}{format_bytes(b.total_bytes):<10}{RESET}")
         if len(brain_items) > len(display_brain):
-            print(f"  ... and {len(brain_items) - len(display_brain)} more brain directories")
+            print(f"  {GRAY}... and {len(brain_items) - len(display_brain)} more brain directories{RESET}")
 
-    print("\n--------------------------------------------------------------------------------")
-    print(" [TIP] Undo / Rollback Capability:")
-    print("  Pruned conversation steps are backed up to ~/.scripts-fixer/antigravity-backup.db.")
-    print("  To revert any operation after applying, simply run:")
-    print("    ./run agy undo latest")
-    print("    ./run agy undo <transaction_id>")
-    print("    ./run agy list-backups")
-    print("--------------------------------------------------------------------------------")
-    print(" [TIP] Advanced Filtering & Space Reclamation Options:")
-    print("  Filter by min steps : ./run agy clear --keep 10 --min-steps 200")
-    print("  Filter by min size  : ./run agy clear --keep 10 --threshold 500")
-    print("  Apply optimization  : ./run agy clear --keep 10 -y")
-    print("  Scrub caches & kill : ./run agy clear --keep 10 -y --kill")
+    # Summary box placed at the end as requested
+    print(f"\n{BOLD}{CYAN}================================================================================{RESET}")
+    print(f" {BOLD}{GREEN}[*] DISK SPACE RECLAMATION & CONVERSATION SUMMARY{RESET}")
+    print(f"{BOLD}{CYAN}================================================================================{RESET}")
+    print(f"  {BOLD}{WHITE}Total Conversations Scanned  :{RESET} {BOLD}{CYAN}{len(convs)}{RESET} {DIM}({format_bytes(total_conv_bytes)}){RESET}")
+    if keep_count > 0:
+        print(f"  {BOLD}{WHITE}Retention Policy             :{RESET} {BOLD}{YELLOW}Keeping latest {keep_count} conversations intact{RESET}")
+        print(f"  {BOLD}{WHITE}Preserved Recent Convs       :{RESET} {BOLD}{GREEN}{len(preserved_convs)}{RESET} {DIM}({format_bytes(preserved_bytes)}){RESET}")
+        print(f"  {BOLD}{WHITE}Older Convs Scanned          :{RESET} {BOLD}{CYAN}{len(older_convs)}{RESET} {DIM}({format_bytes(older_bytes)}){RESET}")
+    print(f"  {BOLD}{WHITE}Heavy Older Convs (> {format_bytes(threshold_bytes)})  :{RESET} {BOLD}{YELLOW}{len(heavy_convs)}{RESET} {DIM}({format_bytes(heavy_bytes)}){RESET}")
+    print(f"  {BOLD}{WHITE}Application Cache Targets    :{RESET} {BOLD}{CYAN}{len(cache_items)} folders{RESET}, {YELLOW}{cache_files} files{RESET} {DIM}({format_bytes(cache_bytes)}){RESET}")
+    print(f"  {BOLD}{WHITE}Gemini Brain Cleanup Targets :{RESET} {BOLD}{CYAN}{len(brain_items)} folders{RESET}, {YELLOW}{brain_files} files{RESET} {DIM}({format_bytes(brain_bytes)}){RESET}")
+    print(f"  {GRAY}{'-' * 80}{RESET}")
+    print(f"  {BOLD}{WHITE}PROJECTED DISK RECLAMATION   :{RESET} {BOLD}{GREEN}~{format_bytes(projected_total_savings)}{RESET}")
+    if keep_count > 0:
+        print(f"  {GRAY}{'-' * 80}{RESET}")
+        print(f"  {MAGENTA}Preserved Storage Insight    :{RESET} {format_bytes(preserved_bytes)} remains in the latest {keep_count} active conversations.")
+        print(f"                                 Use --keep 5 to prune more, or --keep 0 to prune all heavy.")
+    print(f"{BOLD}{CYAN}================================================================================{RESET}")
 
-    print("")
-    print("================================================================================")
-    print(" [NOTE] Prediction mode active. No Antigravity processes killed. No files modified.")
-    print("================================================================================")
-    print("")
+    print(f"\n {BOLD}{YELLOW}[TIP] Undo / Rollback Capability:{RESET}")
+    print(f"  Pruned conversation steps are backed up to {CYAN}~/.scripts-fixer/antigravity-backup.db{RESET}.")
+    print(f"  To revert any operation after applying, simply run:")
+    print(f"    {BOLD}{CYAN}./run agy undo latest{RESET}")
+    print(f"    {BOLD}{CYAN}./run agy undo <transaction_id>{RESET}")
+    print(f"    {BOLD}{CYAN}./run agy list-backups{RESET}")
+    print(f"\n {BOLD}{YELLOW}[TIP] Advanced Filtering & Space Reclamation Options:{RESET}")
+    print(f"  Filter by min steps : {CYAN}./run agy clear --keep 10 --min-steps 200{RESET}")
+    print(f"  Filter by min size  : {CYAN}./run agy clear --keep 10 --threshold 500{RESET}")
+    print(f"  Apply optimization  : {GREEN}./run agy clear --keep 10 -y{RESET}")
+    print(f"  Scrub caches & kill : {RED}./run agy clear --keep 10 -y --kill{RESET}")
+
+    print(f"\n{BOLD}{CYAN}================================================================================{RESET}")
+    print(f" {BOLD}{MAGENTA}[NOTE] Prediction mode active. No Antigravity processes killed. No files modified.{RESET}")
+    print(f"{BOLD}{CYAN}================================================================================{RESET}\n")
     return 0
 
 
@@ -748,40 +772,50 @@ def apply_optimization(
     brain_items = scan_brain_cleanup_items(protected_cids=protected_cids, cid_to_slug=cid_to_slug)
     cache_items = scan_app_cache_items()
 
-    print("================================================================================")
-    print(" [==] Applying Antigravity Optimization & Conversation Pruning")
-    print("================================================================================")
+    print(f"\n{BOLD}{CYAN}================================================================================{RESET}")
+    print(f" {BOLD}{CYAN}[==]{RESET} {BOLD}{WHITE}Applying Antigravity Optimization & Conversation Pruning{RESET}")
+    print(f"{BOLD}{CYAN}================================================================================{RESET}")
     if keep_count > 0:
-        print(f" Retention Policy       : Keeping latest {keep_count} conversations intact")
-        print(f" Preserved Conversations: {len(preserved_convs)}")
-    print(f" Heavy Conversations    : {len(heavy_convs)} will be pruned (latest {keep_turns} turns kept)")
-    print(f" Brain Cleanup Items    : {len(brain_items)} directories backed up to OS temp")
-    print(f" Application Caches     : {len(cache_items)} cache directories to scrub")
-    print("--------------------------------------------------------------------------------")
+        print(f"  {WHITE}Retention Policy        :{RESET} {BOLD}{YELLOW}Keeping latest {keep_count} conversations intact{RESET}")
+        print(f"  {WHITE}Preserved Conversations :{RESET} {BOLD}{GREEN}{len(preserved_convs)}{RESET}")
+    print(f"  {WHITE}Heavy Conversations     :{RESET} {BOLD}{YELLOW}{len(heavy_convs)}{RESET} will be pruned (latest {keep_turns} turns kept)")
+    print(f"  {WHITE}Brain Cleanup Items     :{RESET} {BOLD}{CYAN}{len(brain_items)}{RESET} directories backed up to OS temp")
+    print(f"  {WHITE}Application Caches      :{RESET} {BOLD}{CYAN}{len(cache_items)}{RESET} cache directories to scrub")
+    print(f"  {GRAY}{'-' * 80}{RESET}\n")
 
     pruned_results = []
     for c in heavy_convs:
         res = prune_conversation(c, keep_turns=keep_turns)
         if res:
             pruned_results.append(res)
-            print(f"  [OK] Pruned {c.conversation_id[:16]}... ({c.project_slug}): {format_bytes(res['original_size'])} -> {format_bytes(res['pruned_size'])}")
+            print(f"  {GREEN}[OK]{RESET} Pruned {CYAN}{c.conversation_id[:16]}...{RESET} ({WHITE}{c.project_slug}{RESET}): {YELLOW}{format_bytes(res['original_size'])}{RESET} -> {GREEN}{format_bytes(res['pruned_size'])}{RESET}")
 
     freed_brain, backup_bundle = backup_and_clean_brain_items(brain_items, is_apply=True)
     freed_cache_files, freed_cache_bytes = clean_app_cache_items(cache_items, is_apply=True)
 
-    print(f"  [OK] Gemini brain items backed up to: {backup_bundle}")
-    print(f"       Brain space reclaimed: {format_bytes(freed_brain)}")
-    print(f"  [OK] Application caches scrubbed: {freed_cache_files} files ({format_bytes(freed_cache_bytes)})")
+    print(f"\n  {GREEN}[OK]{RESET} Gemini brain items backed up to: {CYAN}{backup_bundle}{RESET}")
+    print(f"       Brain space reclaimed: {BOLD}{GREEN}{format_bytes(freed_brain)}{RESET}")
+    print(f"  {GREEN}[OK]{RESET} Application caches scrubbed: {CYAN}{freed_cache_files} files{RESET} ({BOLD}{GREEN}{format_bytes(freed_cache_bytes)}{RESET})")
+
+    freed_conv_bytes = sum(r["original_size"] - r["pruned_size"] for r in pruned_results)
+    total_freed_bytes = freed_conv_bytes + freed_brain + freed_cache_bytes
+
+    print(f"\n{BOLD}{CYAN}================================================================================{RESET}")
+    print(f" {BOLD}{GREEN}[*] DISK SPACE RECLAMATION COMPLETED{RESET}")
+    print(f"{BOLD}{CYAN}================================================================================{RESET}")
+    print(f"  {BOLD}{WHITE}Conversations Pruned        :{RESET} {BOLD}{CYAN}{len(pruned_results)}{RESET} {DIM}({format_bytes(freed_conv_bytes)} saved){RESET}")
+    print(f"  {BOLD}{WHITE}Brain Artifacts Reclaimed   :{RESET} {BOLD}{CYAN}{len(brain_items)} dirs{RESET} {DIM}({format_bytes(freed_brain)} saved){RESET}")
+    print(f"  {BOLD}{WHITE}Application Caches Scrubbed :{RESET} {BOLD}{CYAN}{freed_cache_files} files{RESET} {DIM}({format_bytes(freed_cache_bytes)} saved){RESET}")
+    print(f"  {GRAY}{'-' * 80}{RESET}")
+    print(f"  {BOLD}{WHITE}TOTAL DISK SPACE RECLAIMED  :{RESET} {BOLD}{GREEN}{format_bytes(total_freed_bytes)}{RESET}")
+    print(f"{BOLD}{CYAN}================================================================================{RESET}")
 
     latest_tx = pruned_results[0]["transaction_id"] if pruned_results else "latest"
-    print("================================================================================")
-    print(" [TIP] Undo / Rollback Capability:")
-    print(f"      To revert conversations from this operation, run:")
-    print(f"        ./run agy undo {latest_tx}")
-    print("        ./run agy undo latest")
-    print(" [!!] NOTE: Brain backups are in OS temp and will expire based on OS temp policies.")
-    print("================================================================================")
-    print("")
+    print(f"\n {BOLD}{YELLOW}[TIP] Undo / Rollback Capability:{RESET}")
+    print(f"  To revert conversations from this operation, run:")
+    print(f"    {BOLD}{CYAN}./run agy undo {latest_tx}{RESET}")
+    print(f"    {BOLD}{CYAN}./run agy undo latest{RESET}")
+    print(f" {BOLD}{MAGENTA}[!!] NOTE: Brain backups are in OS temp and will expire based on OS temp policies.{RESET}\n")
     return 0
 
 

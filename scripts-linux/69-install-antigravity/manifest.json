@@ -28,7 +28,12 @@
     "uninstall",
     "clean",
     "clear",
-    "predict"
+    "cache",
+    "cache-clear",
+    "predict",
+    "list-backups",
+    "undo",
+    "help"
   ],
   "phase": "04",
   "tags": ["ai", "ide", "cli", "antigravity"]

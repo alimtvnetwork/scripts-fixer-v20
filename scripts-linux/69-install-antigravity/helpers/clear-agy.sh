@@ -79,9 +79,21 @@ parse_arguments() {
         IS_LIST_BACKUPS=1
         shift
         ;;
+      -t[0-9]*|--threshold=[0-9]*)
+        _val="${1#*-t}"
+        _val="${_val#*=}"
+        THRESHOLD="$_val"
+        shift
+        ;;
       --threshold|-t)
         THRESHOLD="${2:-200}"
         shift 2
+        ;;
+      -k[0-9]*|--keep=[0-9]*)
+        _val="${1#*-k}"
+        _val="${_val#*=}"
+        KEEP_COUNT="$_val"
+        shift
         ;;
       --keep|-k)
         KEEP_COUNT="${2:-0}"

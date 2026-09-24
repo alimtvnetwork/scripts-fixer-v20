@@ -91,6 +91,43 @@ verb_uninstall() {
   log_ok "[69] Antigravity uninstalled"
 }
 
+show_help() {
+  local CYAN="\033[96m"
+  local GREEN="\033[92m"
+  local YELLOW="\033[93m"
+  local BOLD="\033[1m"
+  local RESET="\033[0m"
+  local WHITE="\033[97m"
+
+  printf "\n${BOLD}${CYAN}Antigravity (agy) -- Google Antigravity IDE & CLI Manager (Linux/macOS)${RESET}\n"
+  printf "${BOLD}${CYAN}========================================================================${RESET}\n"
+  printf "${BOLD}${WHITE}USAGE:${RESET} ./run.sh agy <action> [flags]\n\n"
+  printf "${BOLD}${WHITE}ACTIONS:${RESET}\n"
+  printf "  ${GREEN}clear | clean${RESET}          Clear Antigravity/Gemini caches & optimize conversation databases\n"
+  printf "  ${GREEN}cache clear${RESET}            Alias for 'agy clear' (prunes heavy convs & scrubs caches)\n"
+  printf "  ${GREEN}cache-clear${RESET}            Alias for 'agy clear'\n"
+  printf "  ${GREEN}predict${RESET}                Preview database pruning and cache savings without modifying files\n"
+  printf "  ${GREEN}list-backups${RESET}           List available conversation prune backups\n"
+  printf "  ${GREEN}undo [tx-id]${RESET}           Restore pruned conversation turns from 'latest' or a specific transaction ID\n"
+  printf "  ${CYAN}install${RESET}                Install Antigravity IDE and CLI (agy)\n"
+  printf "  ${CYAN}cli${RESET}                    Install Antigravity CLI only (agy)\n"
+  printf "  ${CYAN}check${RESET}                  Check if Antigravity is installed and on PATH\n"
+  printf "  ${CYAN}uninstall${RESET}              Uninstall Antigravity IDE and CLI\n"
+  printf "  ${WHITE}help${RESET}                   Show this help screen\n\n"
+  printf "${BOLD}${WHITE}FLAGS (for clear / clean / cache clear):${RESET}\n"
+  printf "  ${YELLOW}--keep <N> | -k <N> | -k<N> | <N>${RESET}  Keep latest N conversations intact (e.g. -k1, --keep 10)\n"
+  printf "  ${YELLOW}-y | --yes${RESET}                         Apply modifications without prompting\n"
+  printf "  ${YELLOW}--kill${RESET}                             Terminate active Antigravity processes before cache removal\n"
+  printf "  ${YELLOW}--threshold <KB> | -t<KB>${RESET}          Size threshold in KB to trigger pruning (default: 200 KB)\n\n"
+  printf "${BOLD}${WHITE}EXAMPLES:${RESET}\n"
+  printf "  ./run.sh agy clear                     # Preview cleanup savings without modifying files\n"
+  printf "  ./run.sh agy cache clear -k1           # Preview mode keeping latest 1 conversation intact\n"
+  printf "  ./run.sh agy clear -k10 -y             # Apply: keep latest 10 conversations, scrub caches\n"
+  printf "  ./run.sh agy cache clear -y --kill     # Terminate running agy processes & scrub caches\n"
+  printf "  ./run.sh agy undo latest               # Revert the last pruning transaction\n"
+  printf "  ./run.sh agy list-backups              # View past backup transaction IDs\n\n"
+}
+
 verb_clean() {
   local helper="$SCRIPT_DIR/helpers/clear-agy.sh"
 
@@ -103,14 +140,24 @@ verb_clean() {
   bash "$helper" "$@"
 }
 
-case "${1:-install}" in
+case "${1:-help}" in
+  help|--help|-help|-h) show_help;;
   install)   verb_install;;
   check)     verb_check;;
   repair)    verb_repair;;
   uninstall) verb_uninstall;;
-  clean)     verb_clean "${@:2}";;
-  clear)     verb_clean "${@:2}";;
-  predict)   verb_clean "--predict";;
-  *)         log_err "[69] Unknown verb: $1"; exit 2;;
+  clean|clear) verb_clean "${@:2}";;
+  cache)
+    if [ "${2:-}" = "clear" ] || [ "${2:-}" = "clean" ]; then
+      verb_clean "${@:3}"
+    else
+      verb_clean "${@:2}"
+    fi
+    ;;
+  cache-clear|clear-cache|clean-cache|cache-clean) verb_clean "${@:2}";;
+  predict)   verb_clean "--predict" "${@:2}";;
+  list-backups|backups|history) verb_clean "--list-backups";;
+  undo)      verb_clean "--undo" "${2:-latest}";;
+  *)         log_err "[69] Unknown verb: $1"; show_help; exit 2;;
 esac
 

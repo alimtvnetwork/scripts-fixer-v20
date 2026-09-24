@@ -686,7 +686,8 @@ if ($hasCommand) {
     #   - SCRIPTS_FIXER_NO_PULL=1 env var is set
     #   - any of $Install contains --no-pull / -no-pull / --offline
     #   - command is read-only (status/path/scan/export/doctor)
-    $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareExportConfigCommand -or $isBareImportConfigCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand
+    $isAgyHelp = ($isBareAgyCommand -or $isBareCleanAgyCommand) -and ($h -or $Help -or ($null -eq $Install) -or ($Install.Count -eq 0) -or ($Install[0].ToLower() -in @("help", "--help", "-help", "-h", "/?", "?")))
+    $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareExportConfigCommand -or $isBareImportConfigCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand -or $isAgyHelp
     $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareCleanDevCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareTerminalTasksCommand -or $isBareDbMenuCommand -or $isBareNginxCommand -or $isBareAgyCommand -or $isBareCleanAgyCommand
     $isNoPullEnv = $env:SCRIPTS_FIXER_NO_PULL -eq "1"
     $isNoPullFlag = $false
@@ -1003,7 +1004,18 @@ if ($hasCommand) {
 
         $hasFirstArg = $agyArgs.Count -gt 0
         $firstArg = if ($hasFirstArg) { "$($agyArgs[0])".Trim().ToLower() } else { "" }
-        $isCleanVerb = $isBareCleanAgyCommand -or ($firstArg -in @("clean", "clear", "predict", "undo", "list-backups", "backups", "history"))
+
+        $isHelpRequested = ($h -or $Help -or ($firstArg -in @("", "help", "--help", "-help", "-h", "/?", "?")))
+        if ($isHelpRequested -and -not $isBareCleanAgyCommand) {
+            Show-AgyHelp
+            exit 0
+        }
+
+        $isCleanVerb = $isBareCleanAgyCommand -or ($firstArg -in @(
+            "clean", "clear", "cache", "cache-clear", "clear-cache",
+            "clean-cache", "cache-clean", "predict", "prune", "undo",
+            "list-backups", "backups", "history"
+        ))
 
         if ($isCleanVerb) {
             $isClearScriptPresent = Test-Path $clearAgyScript
@@ -1039,36 +1051,48 @@ if ($hasCommand) {
                 $argToken = "$($agyArgs[$i])".Trim()
                 $low = $argToken.ToLower()
 
-                if ($low -in @("clean", "clear")) { continue }
+                if ($low -in @("clean", "clear", "cache", "cache-clear", "clear-cache", "clean-cache", "cache-clean", "prune")) {
+                    continue
+                }
 
-                if ($low -in @("predict", "-predict", "--predict")) {
+                if ($low -in @("predict", "-predict", "--predict", "--dry-run", "-dry-run", "dry-run")) {
                     $hasExplicitPredict = $true
                     continue
                 }
 
-                if ($low -in @("-kill", "--kill")) {
+                if ($low -in @("-kill", "--kill", "kill")) {
                     $hasExplicitKill = $true
                     continue
                 }
 
-                if ($low -in @("-yes", "--yes", "-y")) {
+                if ($low -in @("-yes", "--yes", "-y", "yes")) {
                     $hasExplicitYes = $true
                     continue
                 }
 
-                if ($low -in @("-undo", "--undo") -and ($i + 1) -lt $agyArgs.Count) {
+                if ($low -in @("-undo", "--undo", "undo") -and ($i + 1) -lt $agyArgs.Count) {
                     $splat["Undo"] = "$($agyArgs[$i + 1])".Trim()
                     $i++
                     continue
                 }
 
-                if ($low -in @("-threshold", "--threshold", "-t") -and ($i + 1) -lt $agyArgs.Count) {
+                if ($low -match '^(-t|--threshold=?)(\d+)$') {
+                    $thresholdValue = [int]$matches[2]
+                    continue
+                }
+
+                if ($low -in @("-threshold", "--threshold", "-t", "threshold") -and ($i + 1) -lt $agyArgs.Count) {
                     $thresholdValue = [int]$agyArgs[$i + 1]
                     $i++
                     continue
                 }
 
-                if ($low -in @("-keep", "--keep", "-k") -and ($i + 1) -lt $agyArgs.Count) {
+                if ($low -match '^(-k|--keep=?)(\d+)$') {
+                    $keepValue = [int]$matches[2]
+                    continue
+                }
+
+                if ($low -in @("-keep", "--keep", "-k", "keep") -and ($i + 1) -lt $agyArgs.Count) {
                     $keepValue = [int]$agyArgs[$i + 1]
                     $i++
                     continue
@@ -1108,18 +1132,25 @@ if ($hasCommand) {
             exit $LASTEXITCODE
         }
 
-        $isAgyScriptPresent = Test-Path $agyScript
+        if ($firstArg -in @("install", "setup", "reinstall", "full", "all", "cli", "check", "verify", "uninstall", "remove")) {
+            $isAgyScriptPresent = Test-Path $agyScript
 
-        if (-not $isAgyScriptPresent) {
-            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
-            Write-Host "Antigravity dispatcher missing at: $agyScript"
+            if (-not $isAgyScriptPresent) {
+                Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
+                Write-Host "Antigravity dispatcher missing at: $agyScript"
 
-            exit 1
+                exit 1
+            }
+
+            & $agyScript @agyArgs
+
+            exit $LASTEXITCODE
         }
 
-        & $agyScript @agyArgs
-
-        exit $LASTEXITCODE
+        Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
+        Write-Host "Unknown Antigravity action: '$firstArg'"
+        Show-AgyHelp
+        exit 1
     }
 
     if ($isBareChromeCommand) {

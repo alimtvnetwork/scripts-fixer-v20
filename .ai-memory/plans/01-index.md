@@ -42,6 +42,7 @@
 | 31 | `31-antigravity-keep-conversations-flag.md` | Antigravity Clear `--keep <N>` Flag, Positional Retention & Modular Decomposition | `completed` | 2026-09-22 |
 | 32 | `32-root-dispatcher-modularization.md` | Modular Decomposition of Root run.ps1 Dispatcher into scripts/dispatcher Subsystems | `completed` | 2026-09-22 |
 | 33 | `33-antigravity-clean-enhancements.md` | Antigravity Application Cache Purge, Undo Engine & CLI UX Polish | `completed` | 2026-09-22 |
+| 34 | `20-agy-cache-clear-and-dev-clean.md` | Antigravity Cache Clear -k<N> Syntax, Bottom Summary, Cross-OS & Dev-Clean | `completed` | 2026-09-24 |
 
 ---
 

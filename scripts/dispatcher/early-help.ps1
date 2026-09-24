@@ -181,7 +181,7 @@ function Invoke-EarlyHelpIntercept {
         $_isEarlyHelp = $true
         $_rest = @($_installList | Select-Object -Skip 1)
         if ($_rest.Count -gt 0) { $_earlyHelpFilter = ($_rest -join ' ').Trim() }
-    } elseif (($Help -or $h) -and -not $I -and ($_cmdLow -notin @("nginx", "os", "ssh", "menu", "vscode-folder", "git-tools"))) {
+    } elseif (($Help -or $h) -and -not $I -and ($_cmdLow -notin @("nginx", "os", "ssh", "menu", "vscode-folder", "git-tools", "agy", "antigravity", "clean-agy", "clear-agy"))) {
         $_isEarlyHelp = $true
         if ($_cmdLow -and ($_cmdLow -notin $_helpAliases)) {
             $_earlyHelpFilter = $Command.Trim()
@@ -221,6 +221,7 @@ function Invoke-EarlyHelpIntercept {
             if (-not $nl) { [void]$_lines.Add($_buf.ToString()); $_buf.Clear() }
         }
         $_filters = @(
+            @{ K = "agy";           D = "Antigravity IDE & CLI cache, prune, and maintenance" },
             @{ K = "chrome";        D = "Google Chrome browser + extensions" },
             @{ K = "ext";           D = "Every Chrome extension installer/updater" },
             @{ K = "ext-url";       D = "Ad-hoc Chrome extension URL / ID examples" },
