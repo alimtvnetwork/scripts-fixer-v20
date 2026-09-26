@@ -78,7 +78,7 @@ class PipelineSummary:
 
 CI_JOB_DEFAULT_ARGS: dict[str, list[str]] = {
     "Sequence & Title Check": ["01-prompts"],
-    "Boolean Naming Check": ["scripts"],
+    "Boolean Naming Check": ["04-code"],
     "Misspell Check": ["--staged"],
 }
 
@@ -851,7 +851,7 @@ Examples:
     return parser.parse_args()
 
 
-CICD_LAST_RUN_CACHE = Path(".ai-memory/temp/last_run_cache.json")
+CICD_LAST_RUN_CACHE = Path(".ai-memory/cicd/last_run_cache.json")
 
 
 def check_recent_run_cache(cache_file: Path, signature: str, normal_ttl: float = 15.0) -> int | None:

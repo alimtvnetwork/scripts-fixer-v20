@@ -22,7 +22,7 @@ PLACEHOLDER_TOKENS = (
     "XX-", "NN-", "01-<", "00-<", "{", "}", "*", "path/to/", "...",
     "<version-slug>", "<work_slug>", "<subtask_slug>", "<target>", "<module>",
     "/XX/", "xx-", "vX.Y.Z", "vX.", "/<", "XX", "recent-file-changes.json", "recent-file-changes.lock", "runner-eta.json",
-    "bump_versions.py", "release-method.md", "02-spec/13-generic-cli/01-index.md"
+    "test-heatmap.json", "02-macro-step-open-command-behavior.md"
 )
 
 # Target directories to audit for sequence integrity

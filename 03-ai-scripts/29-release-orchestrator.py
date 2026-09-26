@@ -238,15 +238,14 @@ def execute_version_bump(next_version, scope, dry_run=False):
     today_str = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d")
 
     # Fallback in-place updates: version.json
-    for v_target in [VERSION_JSON, REPO_ROOT / "scripts" / "version.json"]:
-        if v_target.is_file():
-            with open(v_target, "r", encoding="utf-8") as f:
-                v_data = json.load(f)
-            v_data["version"] = next_version
-            v_data["releaseDate"] = today_str
-            with open(v_target, "w", encoding="utf-8") as f:
-                json.dump(v_data, f, indent=2)
-                f.write("\n")
+    if VERSION_JSON.is_file():
+        with open(VERSION_JSON, "r", encoding="utf-8") as f:
+            v_data = json.load(f)
+        v_data["version"] = next_version
+        v_data["releaseDate"] = today_str
+        with open(VERSION_JSON, "w", encoding="utf-8") as f:
+            json.dump(v_data, f, indent=2)
+            f.write("\n")
 
     # Fallback: package.json
     if PACKAGE_JSON.is_file():
@@ -273,15 +272,51 @@ def execute_version_bump(next_version, scope, dry_run=False):
                 f.write(cl_content)
 
 
+def build_release_notes_file(next_version, scope):
+    """Builds release notes file with mandatory Quick Install one-liners."""
+    v_string = f"v{next_version}"
+    try:
+        url = get_git_output("config", "--get", "remote.origin.url")
+        m = re.search(r'github\.com[:/]([^/]+/[^/.]+)', url)
+        raw_slug = m.group(1) if m else "alimtvnetwork/coding-guidelines-v24"
+        repo_slug = raw_slug[:-4] if raw_slug.endswith(".git") else raw_slug
+    except Exception:
+        repo_slug = "alimtvnetwork/coding-guidelines-v24"
+
+    notes_dir = REPO_ROOT / ".ai-memory" / "release"
+    notes_dir.mkdir(parents=True, exist_ok=True)
+    notes_path = notes_dir / f"release-notes-{v_string}.md"
+
+    lines = [
+        f"## Quick Install {v_string}\n",
+        "### Windows (PowerShell)\n",
+        "```powershell",
+        f'Invoke-WebRequest -Uri https://raw.githubusercontent.com/{repo_slug}/{v_string}/install.ps1 -OutFile install.ps1; .\\install.ps1 -TargetDir ".ai-memory/prompts" -Version "{v_string}"',
+        "```\n",
+        "### Unix / Linux / macOS (Bash)\n",
+        "```bash",
+        f'curl -sL https://raw.githubusercontent.com/{repo_slug}/{v_string}/install.sh | bash -s -- ".ai-memory/prompts" "{v_string}"',
+        "```\n",
+        "---\n",
+        f"## What's Changed in {v_string}\n",
+        f"### Added\n- {scope}\n",
+    ]
+    notes_path.write_text("\n".join(lines), encoding="utf-8")
+    print(f"[*] Generated release notes at {notes_path.relative_to(REPO_ROOT)}")
+    return notes_path
+
+
 def stage_and_commit_release(next_version, scope, dry_run=False):
     """Step 3: Stages release files and commits on the release branch."""
     commit_msg = f"release: v{next_version} {scope}"
 
     if dry_run:
         print(f"[DRY RUN] Would stage changes and commit on release branch: '{commit_msg}'")
-        return "dryrun_commit_sha"
+        return "dryrun_commit_sha", None
 
-    # Stage all repository changes (atomic grouped commit)
+    notes_path = build_release_notes_file(next_version, scope)
+
+    # Stage all modified and generated release files
     run_cmd(["git", "add", "-A"])
 
     # Commit
@@ -289,7 +324,7 @@ def stage_and_commit_release(next_version, scope, dry_run=False):
     commit_sha = get_git_output("rev-parse", "HEAD")
     print(f"[*] Step 3: Committed release changes on release branch: {commit_sha[:8]} ('{commit_msg}')")
 
-    return commit_sha
+    return commit_sha, notes_path
 
 
 def create_release_tag(next_version, commit_sha, dry_run=False):
@@ -335,54 +370,24 @@ def push_release(release_branch, tag_name, main_branch="main", dry_run=False):
     run_cmd(["git", "push", "origin", tag_name])
 
 
-def create_github_release(next_version, scope, dry_run=False):
-    """Creates a GitHub release using gh release create with Quick Install One-Liners and notes-file."""
-    tag_name = f"v{next_version}"
-    notes_dir = REPO_ROOT / ".ai-memory" / "release"
-    notes_dir.mkdir(parents=True, exist_ok=True)
-    notes_file = notes_dir / f"release-notes-{tag_name}.md"
-
-    # Extract changelog section for v{next_version}
-    changelog_section = ""
-    if CHANGELOG_MD.is_file():
-        cl_text = CHANGELOG_MD.read_text(encoding="utf-8")
-        m = re.search(r"(##\s*\[?v?" + re.escape(next_version) + r"\]?.*?(?=\n##\s*\[|\Z))", cl_text, re.DOTALL)
-        if m:
-            changelog_section = m.group(1).strip()
-
-    body = f"""## Quick Install {tag_name}
-
-### Windows (PowerShell)
-```powershell
-irm https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/{tag_name}/install.ps1 | iex
-```
-
-### Linux / macOS (Bash)
-```bash
-curl -fsSL https://raw.githubusercontent.com/alimtvnetwork/scripts-fixer-v20/{tag_name}/install.sh | bash
-```
-
----
-
-{changelog_section if changelog_section else f"### Changes in {tag_name}\\n- {scope}"}
-"""
-    notes_file.write_text(body, encoding="utf-8")
-    print(f"[*] Generated release notes file: {notes_file.relative_to(REPO_ROOT)}")
-
-    if dry_run:
-        print(f"[DRY RUN] Would create GitHub release: gh release create '{tag_name}' --title '{tag_name}' --notes-file '{notes_file}' --generate-notes")
+def create_github_release(tag_name, notes_path, dry_run=False):
+    """Publishes a GitHub release using gh release create with mandatory notes file."""
+    if dry_run or not notes_path or not notes_path.is_file():
         return
-
-    # Check if gh is installed and authenticated
     try:
-        cmd = ["gh", "release", "create", tag_name, "--title", tag_name, "--notes-file", str(notes_file), "--generate-notes"]
-        res = run_cmd(cmd, check=False)
+        print(f"[*] Publishing GitHub Release for {tag_name} with notes from {notes_path.relative_to(REPO_ROOT)}...")
+        res = run_cmd([
+            "gh", "release", "create", tag_name,
+            "--title", tag_name,
+            "--notes-file", str(notes_path),
+            "--generate-notes"
+        ], check=False)
         if res.returncode == 0:
-            print(f"[OK] Successfully created GitHub release: {tag_name}")
+            print(f"[OK] GitHub Release {tag_name} successfully published.")
         else:
-            print(f"[!] Warning: 'gh release create' exited with code {res.returncode}: {res.stderr.strip() or res.stdout.strip()}")
+            print(f"[!] Warning publishing GitHub release: {res.stderr.strip()}")
     except Exception as e:
-        print(f"[!] Warning: Failed to run 'gh release create': {e}")
+        print(f"[!] Warning publishing GitHub release: {e}")
 
 
 def revert_to_original_branch(original_branch, dry_run=False):
@@ -453,7 +458,7 @@ def orchestrate_release(tier="minor", explicit_version=None, scope=None, dry_run
         execute_version_bump(next_ver, default_scope, dry_run=dry_run)
 
         # STEP 3: Commit bump changes in the release branch
-        commit_sha = stage_and_commit_release(next_ver, default_scope, dry_run=dry_run)
+        commit_sha, notes_path = stage_and_commit_release(next_ver, default_scope, dry_run=dry_run)
 
         # STEP 4: Create annotated tag on that release commit
         create_release_tag(next_ver, commit_sha, dry_run=dry_run)
@@ -464,7 +469,7 @@ def orchestrate_release(tier="minor", explicit_version=None, scope=None, dry_run
         is_push_enabled = push and not dry_run
         if is_push_enabled:
             push_release(release_branch, tag_name, main_branch=main_branch, dry_run=dry_run)
-            create_github_release(next_ver, default_scope, dry_run=dry_run)
+            create_github_release(tag_name, notes_path, dry_run=dry_run)
 
     finally:
         # Restore original starting branch if different from current

@@ -32,7 +32,6 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 
 # Canonical version files
 VERSION_JSON = REPO_ROOT / "version.json"
-SCRIPTS_VERSION_JSON = REPO_ROOT / "scripts" / "version.json"
 PACKAGE_JSON = REPO_ROOT / "package.json"
 README_MD = REPO_ROOT / "readme.md"
 CHANGELOG_MD = REPO_ROOT / "changelog.md"
@@ -112,28 +111,27 @@ def calculate_next_version(current_ver, tier):
 
 
 def update_version_json(next_version, today_str, dry_run=False):
-    """Updates version and releaseDate in version.json and scripts/version.json."""
-    for v_path in [VERSION_JSON, SCRIPTS_VERSION_JSON]:
-        if not v_path.is_file():
-            continue
+    """Updates version and releaseDate in version.json."""
+    if not VERSION_JSON.is_file():
+        return
 
-        with open(v_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
+    with open(VERSION_JSON, "r", encoding="utf-8") as f:
+        data = json.load(f)
 
-        data["version"] = next_version
-        if "Version" in data:
-            data["Version"] = next_version
-        data["releaseDate"] = today_str
+    data["version"] = next_version
+    if "Version" in data:
+        data["Version"] = next_version
+    data["releaseDate"] = today_str
 
-        if dry_run:
-            print(f"[DRY RUN] Would update {v_path.name} to {next_version} ({today_str})")
-            continue
+    if dry_run:
+        print(f"[DRY RUN] Would update version.json to {next_version} ({today_str})")
+        return
 
-        with open(v_path, "w", encoding="utf-8", newline="\n") as f:
-            json.dump(data, f, indent=2)
-            f.write("\n")
+    with open(VERSION_JSON, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(data, f, indent=2)
+        f.write("\n")
 
-        print(f"[*] Updated {v_path.relative_to(REPO_ROOT)} -> {next_version}")
+    print(f"[*] Updated version.json -> {next_version}")
 
 
 def update_package_json(next_version, dry_run=False):
@@ -206,7 +204,7 @@ def update_readme_pins(current_ver, next_version, dry_run=False):
 
 def update_changelogs(next_version, scope, today_str, dry_run=False):
     """Prepends release entries to changelog.md and spec19 changelog if present."""
-    entry_header = f"## [v{next_version}] - {today_str}\n\n### Added\n- {scope}\n\n"
+    entry_header = f"## [v{next_version}] - {today_str}\n\n### Added\n- {scope}\n\n---\n\n"
 
     if CHANGELOG_MD.is_file():
         with open(CHANGELOG_MD, "r", encoding="utf-8") as f:
@@ -216,12 +214,14 @@ def update_changelogs(next_version, scope, today_str, dry_run=False):
             if dry_run:
                 print(f"[DRY RUN] Would prepend changelog entry to changelog.md for v{next_version}")
             else:
-                if "# Changelog\n" in cl_content:
+                if "# Changelog\n\n" in cl_content:
+                    cl_content = cl_content.replace("# Changelog\n\n", f"# Changelog\n\n{entry_header}", 1)
+                elif "# Changelog\n" in cl_content:
                     cl_content = cl_content.replace("# Changelog\n", f"# Changelog\n\n{entry_header}", 1)
                 else:
                     cl_content = f"# Changelog\n\n{entry_header}{cl_content}"
 
-                cl_content = re.sub(r"\n{3,}", "\n\n", cl_content)
+                cl_content = re.sub(r'\n{3,}', '\n\n', cl_content)
 
                 with open(CHANGELOG_MD, "w", encoding="utf-8", newline="\n") as f:
                     f.write(cl_content)
@@ -245,37 +245,26 @@ def update_changelogs(next_version, scope, today_str, dry_run=False):
 
 
 def run_repo_sync_if_available(dry_run=False):
-    """Executes repo synchronization and documentation regeneration."""
-    if dry_run:
-        print("[DRY RUN] Would run: node tools/sync-version.cjs, docs-generate.cjs, gen-completions.cjs")
+    """Executes `npm run sync` if defined in package.json to regenerate spec trees and manifests."""
+    if not PACKAGE_JSON.is_file():
         return
 
-    sync_version = REPO_ROOT / "tools" / "sync-version.cjs"
-    if sync_version.is_file():
-        print("[*] Synchronizing versions via tools/sync-version.cjs...")
-        run_cmd(["node", str(sync_version)], check=False)
+    try:
+        with open(PACKAGE_JSON, "r", encoding="utf-8") as f:
+            pkg = json.load(f)
 
-    docs_gen = REPO_ROOT / "tools" / "docs-generate.cjs"
-    if docs_gen.is_file():
-        print("[*] Regenerating documentation via tools/docs-generate.cjs...")
-        run_cmd(["node", str(docs_gen)], check=False)
+        scripts = pkg.get("scripts", {})
+        if "sync" in scripts:
+            if dry_run:
+                print("[DRY RUN] Would run: npm run sync")
+                return
 
-    gen_comp = REPO_ROOT / "tools" / "gen-completions.cjs"
-    if gen_comp.is_file():
-        print("[*] Regenerating shell completions via tools/gen-completions.cjs...")
-        run_cmd(["node", str(gen_comp)], check=False)
-
-    if PACKAGE_JSON.is_file():
-        try:
-            with open(PACKAGE_JSON, "r", encoding="utf-8") as f:
-                pkg = json.load(f)
-            scripts = pkg.get("scripts", {})
-            if "sync" in scripts:
-                print("[*] Running npm run sync to regenerate spec trees and manifests...")
-                run_cmd(["npm", "run", "sync"], check=False)
-                print("[*] Completed npm run sync.")
-        except Exception as e:
-            print(f"[!] Warning running npm run sync: {e}")
+            is_win = sys.platform == "win32"
+            npm_bin = "npm.cmd" if is_win else "npm"
+            run_cmd([npm_bin, "run", "sync"], check=False)
+            print("[*] Completed npm run sync.")
+    except Exception as e:
+        print(f"[!] Warning running npm run sync: {e}")
 
 
 def execute_bump(tier="minor", explicit_version=None, scope=None, dry_run=False):
