@@ -1904,7 +1904,7 @@ if ($hasCommand) {
         $hasArgs = $null -ne $Install -and $Install.Count -gt 0
         if (-not $hasArgs) {
             Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
-            Write-Host "No target provided. Usage: .\run.ps1 $normalizedCommand <chrome|...>"
+            Write-Host "No target provided. Usage: .\run.ps1 $normalizedCommand <agy|agy-all|agm|agm-all|copilot|edge|chrome|...>"
             exit 1
         }
         $targetRaw = "$($Install[0])".Trim().ToLower()
