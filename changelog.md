@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.52.0] - 2026-09-28
+
+### Added
+- Antigravity deep uninstaller, AGM, Copilot, Edge and enhanced dev-clean
+
+---
+
 ## [v1.51.0] - 2026-09-22
 
 ### Added

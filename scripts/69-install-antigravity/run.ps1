@@ -119,32 +119,59 @@ function Install-Antigravity {
     Write-Host "Antigravity installation complete." -ForegroundColor Green
 }
 
+function Invoke-AntigravityUninstall {
+    param([string[]]$ExtraArgs)
+
+    $isAllRequested = $false
+    foreach ($arg in $ExtraArgs) {
+        $low = "$arg".Trim().ToLowerInvariant()
+        $hasAllFlag = $low -in @("all", "--all", "-all", "agy-all", "-deep", "--deep")
+
+        if ($hasAllFlag) {
+            $isAllRequested = $true
+            break
+        }
+    }
+
+    if ($isAllRequested) {
+        Uninstall-Antigravity -All
+        return
+    }
+
+    Uninstall-Antigravity
+}
+
 $action = if ($env:ANTIGRAVITY_MODE) { $env:ANTIGRAVITY_MODE } else { $Command }
 
 switch ($action.ToLowerInvariant()) {
-    "cli"          { Install-AntigravityCLIOnly }
-    "check"        { Check-Antigravity }
-    "verify"       { Check-Antigravity }
-    "uninstall"    { Uninstall-Antigravity }
-    "remove"       { Uninstall-Antigravity }
-    "clean"        { Clear-AntigravityCache -ExtraArgs $Rest }
-    "clear"        { Clear-AntigravityCache -ExtraArgs $Rest }
-    "cache"        { Clear-AntigravityCache -ExtraArgs $Rest }
-    "cache-clear"  { Clear-AntigravityCache -ExtraArgs $Rest }
-    "clear-cache"  { Clear-AntigravityCache -ExtraArgs $Rest }
-    "clean-cache"  { Clear-AntigravityCache -ExtraArgs $Rest }
-    "cache-clean"  { Clear-AntigravityCache -ExtraArgs $Rest }
-    "prune"        { Clear-AntigravityCache -ExtraArgs $Rest }
-    "predict"      { Clear-AntigravityCache -ExtraArgs (@("-Predict") + $Rest) }
-    "list-backups" { Clear-AntigravityCache -ExtraArgs @("-ListBackups") }
-    "backups"      { Clear-AntigravityCache -ExtraArgs @("-ListBackups") }
-    "history"      { Clear-AntigravityCache -ExtraArgs @("-ListBackups") }
-    "undo"         { Clear-AntigravityCache -ExtraArgs (@("-Undo") + $Rest) }
-    "all"          { Install-Antigravity }
-    "install"      { Install-Antigravity }
-    "setup"        { Install-Antigravity }
-    "reinstall"    { Install-Antigravity }
-    "full"         { Install-Antigravity }
+    "cli"               { Install-AntigravityCLIOnly }
+    "check"             { Check-Antigravity }
+    "verify"            { Check-Antigravity }
+    "uninstall"         { Invoke-AntigravityUninstall -ExtraArgs $Rest }
+    "remove"            { Invoke-AntigravityUninstall -ExtraArgs $Rest }
+    "uninstall-all"     { Uninstall-Antigravity -All }
+    "remove-all"        { Uninstall-Antigravity -All }
+    "agy-all"           { Uninstall-Antigravity -All }
+    "uninstall agy-all" { Uninstall-Antigravity -All }
+    "uninstall --all"   { Uninstall-Antigravity -All }
+    "clean"             { Clear-AntigravityCache -ExtraArgs $Rest }
+    "clear"             { Clear-AntigravityCache -ExtraArgs $Rest }
+    "cache"             { Clear-AntigravityCache -ExtraArgs $Rest }
+    "cache-clear"       { Clear-AntigravityCache -ExtraArgs $Rest }
+    "clear-cache"       { Clear-AntigravityCache -ExtraArgs $Rest }
+    "clean-cache"       { Clear-AntigravityCache -ExtraArgs $Rest }
+    "cache-clean"       { Clear-AntigravityCache -ExtraArgs $Rest }
+    "prune"             { Clear-AntigravityCache -ExtraArgs $Rest }
+    "predict"           { Clear-AntigravityCache -ExtraArgs (@("-Predict") + $Rest) }
+    "list-backups"      { Clear-AntigravityCache -ExtraArgs @("-ListBackups") }
+    "backups"           { Clear-AntigravityCache -ExtraArgs @("-ListBackups") }
+    "history"           { Clear-AntigravityCache -ExtraArgs @("-ListBackups") }
+    "undo"              { Clear-AntigravityCache -ExtraArgs (@("-Undo") + $Rest) }
+    "all"               { Install-Antigravity }
+    "install"           { Install-Antigravity }
+    "setup"             { Install-Antigravity }
+    "reinstall"         { Install-Antigravity }
+    "full"              { Install-Antigravity }
     default        {
         Write-Host "  [ FAIL ] Unknown Antigravity command: '$action'" -ForegroundColor Red
         Show-AgyHelp

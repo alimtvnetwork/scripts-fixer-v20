@@ -1132,7 +1132,7 @@ if ($hasCommand) {
             exit $LASTEXITCODE
         }
 
-        if ($firstArg -in @("install", "setup", "reinstall", "full", "all", "cli", "check", "verify", "uninstall", "remove")) {
+        if ($firstArg -in @("install", "setup", "reinstall", "full", "all", "cli", "check", "verify", "uninstall", "remove", "uninstall-all")) {
             $isAgyScriptPresent = Test-Path $agyScript
 
             if (-not $isAgyScriptPresent) {
@@ -1140,6 +1140,35 @@ if ($hasCommand) {
                 Write-Host "Antigravity dispatcher missing at: $agyScript"
 
                 exit 1
+            }
+
+            $hasUninstallAllVerb = $firstArg -eq "uninstall-all"
+            $hasAllFlag = $false
+
+            foreach ($arg in $agyArgs) {
+                $argLow = "$arg".Trim().ToLower()
+
+                if ($argLow -in @("--all", "-all", "-a")) {
+                    $hasAllFlag = $true
+                }
+            }
+
+            $isDeepUninstall = ($firstArg -in @("uninstall", "remove") -and $hasAllFlag) -or $hasUninstallAllVerb
+
+            if ($isDeepUninstall) {
+                $filteredArgs = @()
+
+                for ($i = 1; $i -lt $agyArgs.Count; $i++) {
+                    $tokLow = "$($agyArgs[$i])".Trim().ToLower()
+
+                    if ($tokLow -notin @("--all", "-all", "-a")) {
+                        $filteredArgs += $agyArgs[$i]
+                    }
+                }
+
+                & $agyScript "uninstall" "-All" @filteredArgs
+
+                exit $LASTEXITCODE
             }
 
             & $agyScript @agyArgs
@@ -1902,46 +1931,105 @@ if ($hasCommand) {
         # Map keyword -> { ScriptDir, Name } (Chocolatey-backed installer scripts).
         # Chrome is the first wired entry; add more rows here as needed.
         $uninstallTargets = @{
-            "chrome"        = @{ Folder = "58-install-chrome";    Display = "Google Chrome" }
-            "google-chrome" = @{ Folder = "58-install-chrome";    Display = "Google Chrome" }
-            "googlechrome"  = @{ Folder = "58-install-chrome";    Display = "Google Chrome" }
-            "protonvpn"     = @{ Folder = "60-install-protonvpn"; Display = "Proton VPN" }
-            "proton-vpn"    = @{ Folder = "60-install-protonvpn"; Display = "Proton VPN" }
-            "proton"        = @{ Folder = "60-install-protonvpn"; Display = "Proton VPN" }
-            "vpn"           = @{ Folder = "60-install-protonvpn"; Display = "Proton VPN" }
-            "jumpjump-vpn"  = @{ Folder = "61-install-jumpjump-vpn"; Display = "JumpJump VPN" }
-            "jumpjumpvpn"   = @{ Folder = "61-install-jumpjump-vpn"; Display = "JumpJump VPN" }
-            "jumpjump"      = @{ Folder = "61-install-jumpjump-vpn"; Display = "JumpJump VPN" }
-            "jjvpn"         = @{ Folder = "61-install-jumpjump-vpn"; Display = "JumpJump VPN" }
-            "antigravity-manager" = @{ Folder = "68-install-antigravity-manager"; Display = "Antigravity Manager" }
-            "antigravity"   = @{ Folder = "69-install-antigravity"; Display = "Antigravity (agy)" }
-            "agy"           = @{ Folder = "69-install-antigravity"; Display = "Antigravity (agy)" }
-            "codex"         = @{ Folder = "78-install-codex"; Display = "Codex UI" }
-            "plotcode"      = @{ Folder = "79-install-plotcode"; Display = "PlotCode UI" }
-            "claude-code"   = @{ Folder = "80-install-claude-code"; Display = "Claude Code" }
-            "claudecode"    = @{ Folder = "80-install-claude-code"; Display = "Claude Code" }
-            "claude"        = @{ Folder = "80-install-claude-code"; Display = "Claude Code" }
+            "chrome"                  = @{ Folder = "58-install-chrome";              Display = "Google Chrome" }
+            "google-chrome"           = @{ Folder = "58-install-chrome";              Display = "Google Chrome" }
+            "googlechrome"            = @{ Folder = "58-install-chrome";              Display = "Google Chrome" }
+            "protonvpn"               = @{ Folder = "60-install-protonvpn";           Display = "Proton VPN" }
+            "proton-vpn"              = @{ Folder = "60-install-protonvpn";           Display = "Proton VPN" }
+            "proton"                  = @{ Folder = "60-install-protonvpn";           Display = "Proton VPN" }
+            "vpn"                     = @{ Folder = "60-install-protonvpn";           Display = "Proton VPN" }
+            "jumpjump-vpn"            = @{ Folder = "61-install-jumpjump-vpn";        Display = "JumpJump VPN" }
+            "jumpjumpvpn"             = @{ Folder = "61-install-jumpjump-vpn";        Display = "JumpJump VPN" }
+            "jumpjump"                = @{ Folder = "61-install-jumpjump-vpn";        Display = "JumpJump VPN" }
+            "jjvpn"                   = @{ Folder = "61-install-jumpjump-vpn";        Display = "JumpJump VPN" }
+            "agm"                     = @{ Folder = "68-install-antigravity-manager"; Display = "Antigravity Manager" }
+            "agm-all"                 = @{ Folder = "68-install-antigravity-manager"; Display = "Antigravity Manager (Deep)" }
+            "antigravity-manager"     = @{ Folder = "68-install-antigravity-manager"; Display = "Antigravity Manager" }
+            "antigravity-manager-all" = @{ Folder = "68-install-antigravity-manager"; Display = "Antigravity Manager (Deep)" }
+            "agy"                     = @{ Folder = "69-install-antigravity";         Display = "Antigravity (agy)" }
+            "antigravity"             = @{ Folder = "69-install-antigravity";         Display = "Antigravity (agy)" }
+            "agy-all"                 = @{ Folder = "69-install-antigravity";         Display = "Antigravity (Deep)" }
+            "antigravity-all"         = @{ Folder = "69-install-antigravity";         Display = "Antigravity (Deep)" }
+            "copilot"                 = @{ Helper = "scripts\os\helpers\uninstall-copilot.ps1"; Display = "Windows Copilot" }
+            "copilot-all"             = @{ Helper = "scripts\os\helpers\uninstall-copilot.ps1"; Display = "Windows Copilot" }
+            "edge"                    = @{ Helper = "scripts\os\helpers\uninstall-edge.ps1";    Display = "Microsoft Edge" }
+            "edge-all"                = @{ Helper = "scripts\os\helpers\uninstall-edge.ps1";    Display = "Microsoft Edge" }
+            "codex"                   = @{ Folder = "78-install-codex";               Display = "Codex UI" }
+            "plotcode"                = @{ Folder = "79-install-plotcode";            Display = "PlotCode UI" }
+            "claude-code"             = @{ Folder = "80-install-claude-code";         Display = "Claude Code" }
+            "claudecode"              = @{ Folder = "80-install-claude-code";         Display = "Claude Code" }
+            "claude"                  = @{ Folder = "80-install-claude-code";         Display = "Claude Code" }
         }
 
         if (-not $uninstallTargets.ContainsKey($targetRaw)) {
             Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "Unknown $normalizedCommand target '$targetRaw'. Supported: $($uninstallTargets.Keys -join ', ')"
             Write-Host "  Tip: for other tools, use  .\run.ps1 -I <NN> uninstall" -ForegroundColor $ThemeMuted
+
             exit 1
         }
 
-        $entry      = $uninstallTargets[$targetRaw]
-        $targetRun  = Join-Path $RootDir ("scripts\" + $entry.Folder + "\run.ps1")
-        if (-not (Test-Path $targetRun)) {
+        $entry = $uninstallTargets[$targetRaw]
+        $isOsHelper = $entry.ContainsKey("Helper")
+
+        if ($isOsHelper) {
+            $helperScript = Join-Path $RootDir $entry.Helper
+            $isHelperPresent = Test-Path $helperScript
+
+            if (-not $isHelperPresent) {
+                Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
+                Write-Host "Helper script missing for $($entry.Display) at: $helperScript"
+
+                exit 1
+            }
+
+            Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
+            Write-Host "Uninstalling $($entry.Display)..." -ForegroundColor $ThemeMuted
+            & $helperScript @passthrough
+
+            exit $LASTEXITCODE
+        }
+
+        $targetRun = Join-Path $RootDir ("scripts\" + $entry.Folder + "\run.ps1")
+        $isTargetPresent = Test-Path $targetRun
+
+        if (-not $isTargetPresent) {
             Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
             Write-Host "Dispatcher missing for $($entry.Display) at: $targetRun"
+
             exit 1
+        }
+
+        $hasAllFlag = $false
+        $filteredPassthrough = @()
+
+        foreach ($pArg in $passthrough) {
+            $pLow = "$pArg".Trim().ToLower()
+
+            if ($pLow -in @("--all", "-all", "-a")) {
+                $hasAllFlag = $true
+            } else {
+                $filteredPassthrough += $pArg
+            }
+        }
+
+        $isAgyDeep = ($targetRaw -in @("agy-all", "antigravity-all")) -or (($targetRaw -in @("agy", "antigravity")) -and $hasAllFlag)
+        $isAgmDeep = ($targetRaw -in @("agm-all", "antigravity-manager-all")) -or (($targetRaw -in @("agm", "antigravity-manager")) -and $hasAllFlag)
+        $isDeepAll = $isAgyDeep -or $isAgmDeep
+
+        $runArgs = @("uninstall")
+
+        if ($isDeepAll) {
+            $runArgs += "-All"
+            $runArgs += $filteredPassthrough
+        } else {
+            $runArgs += $passthrough
         }
 
         # ── Uninstall step ────────────────────────────────────────────────
         Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
-        Write-Host "Uninstalling $($entry.Display) via Chocolatey ($($entry.Folder))..." -ForegroundColor $ThemeMuted
-        & $targetRun "uninstall" @passthrough
+        Write-Host "Uninstalling $($entry.Display) ($($entry.Folder))..." -ForegroundColor $ThemeMuted
+        & $targetRun @runArgs
         $uninstallExit = $LASTEXITCODE
 
         if ($isBareUninstallCommand) {
@@ -1951,8 +2039,9 @@ if ($hasCommand) {
         # ── Reinstall: install step ───────────────────────────────────────
         Write-Host ""
         Write-Host "  [ INFO ] " -ForegroundColor $ThemeSecondary -NoNewline
-        Write-Host "Reinstalling $($entry.Display) via Chocolatey..." -ForegroundColor $ThemeMuted
-        & $targetRun "install" @passthrough
+        Write-Host "Reinstalling $($entry.Display)..." -ForegroundColor $ThemeMuted
+        & $targetRun "install" @filteredPassthrough
+
         exit $LASTEXITCODE
     } elseif ($isBareUpdateCommand) {
         Show-VersionHeader

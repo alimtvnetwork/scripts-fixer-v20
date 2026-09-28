@@ -32,7 +32,8 @@ Set-StrictMode -Version Latest
 
 $helpersDir    = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $scriptDir     = Split-Path -Parent $helpersDir
-$sharedDir     = Join-Path (Split-Path -Parent $scriptDir) "shared"
+$rootDir       = Split-Path -Parent $scriptDir
+$sharedDir     = Join-Path $rootDir "shared"
 $categoriesDir = Join-Path $helpersDir "clean-categories"
 
 . (Join-Path $sharedDir "logging.ps1")
@@ -71,9 +72,10 @@ Write-Host "    5. Yarn           Yarn global package cache" -ForegroundColor Da
 Write-Host "    6. Bun            Bun module and install cache" -ForegroundColor DarkGray
 Write-Host "    7. Python / pip   pip HTTP download cache" -ForegroundColor DarkGray
 Write-Host "    8. Cargo / Rust   Cargo registry cache and git checkouts" -ForegroundColor DarkGray
-Write-Host "    9. .NET / NuGet   NuGet local HTTP and package caches" -ForegroundColor DarkGray
-Write-Host "    10. Gradle/Maven  Build tool caches and temp repositories" -ForegroundColor DarkGray
-Write-Host "    11. Antigravity   IDE/CLI app caches and conversation pruning" -ForegroundColor DarkGray
+Write-Host "    9. Gradle         Build tool caches and daemon" -ForegroundColor DarkGray
+Write-Host "    10. Maven         Local repository cache" -ForegroundColor DarkGray
+Write-Host "    11. .NET / NuGet  Local HTTP and package caches" -ForegroundColor DarkGray
+Write-Host "    12. Antigravity   AI caches, task dumps, and build artifacts" -ForegroundColor DarkGray
 Write-Host ""
 
 if ($isHelp) {
@@ -184,17 +186,149 @@ function Invoke-DevStep {
     }
 }
 
-function Invoke-AntigravityDevStep {
+function Test-IsSafeDevPath {
+    param([string]$FilePath)
+
+    $isMissing = [string]::IsNullOrWhiteSpace($FilePath)
+
+    if ($isMissing) {
+        return $false
+    }
+
+    $norm = $FilePath.Trim().Replace('/', '\')
+    $isWorkMatch = $norm.ToLower().StartsWith("d:\work\")
+
+    if ($isWorkMatch) {
+        return $false
+    }
+
+    $isRepoMatch = $norm.ToLower().StartsWith($rootDir.ToLower())
+
+    if ($isRepoMatch) {
+        return $false
+    }
+
+    return $true
+}
+
+function Remove-SafeDevFile {
+    param(
+        [string]$FilePath,
+        [bool]$IsDryMode
+    )
+
+    $isSafe = Test-IsSafeDevPath -FilePath $FilePath
+
+    if (-not $isSafe) {
+        return 0
+    }
+
+    $hasFile = Test-Path -LiteralPath $FilePath -PathType Leaf
+
+    if (-not $hasFile) {
+        return 0
+    }
+
+    try {
+        $item = Get-Item -LiteralPath $FilePath -Force -ErrorAction Stop
+        $sz = [long]$item.Length
+
+        if (-not $IsDryMode) {
+            Remove-Item -LiteralPath $FilePath -Force -ErrorAction Stop
+        }
+
+        return $sz
+    } catch {
+        Write-FileError -FilePath $FilePath -Operation "remove" -Reason $_.Exception.Message -Module "dev-clean"
+        $script:StepIssuesCount++
+
+        return 0
+    }
+}
+
+function Sweep-SafeDevFileList {
+    param(
+        [string[]]$Paths,
+        [bool]$IsDryMode
+    )
+
+    $totBytes = 0
+    $totCount = 0
+
+    foreach ($p in $Paths) {
+        $sz = Remove-SafeDevFile -FilePath "$p" -IsDryMode $IsDryMode
+        $hasRemoved = $sz -gt 0
+
+        if ($hasRemoved) {
+            $totBytes += $sz
+            $totCount++
+        }
+    }
+
+    return @{ Bytes = $totBytes; Count = $totCount }
+}
+
+function Get-StaleDevCacheFiles {
+    $targetDirs = @(
+        (Join-Path $env:APPDATA "Code\Cache"),
+        (Join-Path $env:APPDATA "Code\CachedData"),
+        (Join-Path $env:APPDATA "Code\CachedExtensionVSIXs"),
+        (Join-Path $env:LOCALAPPDATA "Temp\vscode-cache"),
+        (Join-Path $env:TEMP "gitmap"),
+        (Join-Path $env:USERPROFILE ".gitmap\temp"),
+        (Join-Path $env:USERPROFILE ".gitmap\purge"),
+        (Join-Path $env:LOCALAPPDATA "pip\cache\wheels")
+    )
+
+    $discovered = @()
+
+    foreach ($d in $targetDirs) {
+        $isSafe = Test-IsSafeDevPath -FilePath $d
+        $hasDir = $isSafe -and (Test-Path -LiteralPath $d -PathType Container)
+
+        if ($hasDir) {
+            $files = Get-ChildItem -LiteralPath $d -Recurse -File -Force -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName
+
+            if ($files) {
+                $discovered += @($files)
+            }
+        }
+    }
+
+    return $discovered
+}
+
+function Invoke-AiCleanScriptScan {
+    $aiCleanScript = Join-Path $scriptDir "os-ai-clean.py"
+    $isMissing = -not (Test-Path -LiteralPath $aiCleanScript)
+
+    if ($isMissing) {
+        return $null
+    }
+
+    try {
+        $jsonOut = & python $aiCleanScript --dry-run --json 2>$null | Out-String
+        $isJsonEmpty = [string]::IsNullOrWhiteSpace($jsonOut)
+
+        if ($isJsonEmpty) {
+            return $null
+        }
+
+        return ($jsonOut | ConvertFrom-Json)
+    } catch {
+        return $null
+    }
+}
+
+function Invoke-AgyClearHelper {
     param(
         [bool]$IsDryMode,
         [bool]$IsYesMode
     )
 
-    Write-Host ""
-    Write-Host "  ---- 12. Antigravity & AI Developer Cache ----" -ForegroundColor Cyan
-
     $agyHelper = Join-Path (Split-Path -Parent (Split-Path -Parent $helpersDir)) "69-install-antigravity\helpers\clear-agy.ps1"
     $isAgyMissing = -not (Test-Path -LiteralPath $agyHelper)
+
     if ($isAgyMissing) {
         Write-Host "  [ SKIP ] Antigravity clear helper not found" -ForegroundColor DarkGray
         return
@@ -213,6 +347,62 @@ function Invoke-AntigravityDevStep {
         Write-Host "  [ WARN ] Antigravity cache cleanup failed: $($_.Exception.Message)" -ForegroundColor Yellow
         $script:StepIssuesCount++
     }
+}
+
+function Invoke-AiCacheDeepSweep {
+    param([bool]$IsDryMode)
+
+    $scanData = Invoke-AiCleanScriptScan
+    $hasData = $null -ne $scanData -and $null -ne $scanData.categories
+
+    if (-not $hasData) {
+        return
+    }
+
+    foreach ($cat in $scanData.categories) {
+        $catPaths = @($cat.paths)
+        $res = Sweep-SafeDevFileList -Paths $catPaths -IsDryMode $IsDryMode
+
+        $script:TotalBytesFreed += [long]$res.Bytes
+        $script:TotalItemsRemoved += [int]$res.Count
+
+        $sizeLabel = Format-ByteSize -Bytes $res.Bytes
+        $tag = if ($IsDryMode) { "[DRY-RUN]" } else { "[  OK  ]" }
+        Write-Host "  $tag $($cat.name): $sizeLabel ($($res.Count) files)" -ForegroundColor Green
+    }
+}
+
+function Invoke-StaleBuildArtifactsSweep {
+    param([bool]$IsDryMode)
+
+    $staleFiles = Get-StaleDevCacheFiles
+    $hasFiles = $staleFiles.Count -gt 0
+
+    if (-not $hasFiles) {
+        return
+    }
+
+    $res = Sweep-SafeDevFileList -Paths $staleFiles -IsDryMode $IsDryMode
+    $script:TotalBytesFreed += [long]$res.Bytes
+    $script:TotalItemsRemoved += [int]$res.Count
+
+    $sizeLabel = Format-ByteSize -Bytes $res.Bytes
+    $tag = if ($IsDryMode) { "[DRY-RUN]" } else { "[  OK  ]" }
+    Write-Host "  $tag Stale Build & Editor Caches: $sizeLabel ($($res.Count) files)" -ForegroundColor Green
+}
+
+function Invoke-AntigravityDevStep {
+    param(
+        [bool]$IsDryMode,
+        [bool]$IsYesMode
+    )
+
+    Write-Host ""
+    Write-Host "  ---- 12. Antigravity & AI Developer Cache ----" -ForegroundColor Cyan
+
+    Invoke-AgyClearHelper -IsDryMode $IsDryMode -IsYesMode $IsYesMode
+    Invoke-AiCacheDeepSweep -IsDryMode $IsDryMode
+    Invoke-StaleBuildArtifactsSweep -IsDryMode $IsDryMode
 }
 
 # Run all developer categories
