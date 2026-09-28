@@ -29,7 +29,10 @@ if ($hasEnvHelper) {
 }
 
 function Test-IsSafePath {
-    param([string]$Path)
+    param(
+        [Alias("TargetDir", "FilePath")]
+        [string]$Path
+    )
 
     $hasPath = -not [string]::IsNullOrWhiteSpace($Path)
     if (-not $hasPath) {

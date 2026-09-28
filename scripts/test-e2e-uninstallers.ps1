@@ -95,10 +95,11 @@ if (-not $isUninstallFound) {
 } else {
     try {
         . $uninstallScript
-        $isSafeTest = Test-IsSafePath -TargetDir "D:\work\scripts-fixer"
-        $isSafetyWorking = -not $isSafeTest
+        $isWorkspaceBlocked = -not (Test-IsSafePath -Path "D:\work\scripts-fixer")
+        $isSafeAllowed = Test-IsSafePath -Path "$env:TEMP\antigravity-e2e-test"
+        $isSafetyWorking = $isWorkspaceBlocked -and $isSafeAllowed
 
-        Report-TestResult -Name "Workspace Safety Barrier" -IsPassed $isSafetyWorking -Message "d:\work correctly protected against deletion"
+        Report-TestResult -Name "Workspace Safety Barrier" -IsPassed $isSafetyWorking -Message "d:\work blocked and temp paths allowed"
     } catch {
         Report-TestResult -Name "Workspace Safety Barrier" -IsPassed $false -Message "$($_.Exception.Message)"
     }

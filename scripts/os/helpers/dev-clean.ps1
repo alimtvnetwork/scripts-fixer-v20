@@ -187,7 +187,10 @@ function Invoke-DevStep {
 }
 
 function Test-IsSafeDevPath {
-    param([string]$FilePath)
+    param(
+        [Alias("Path", "TargetDir")]
+        [string]$FilePath
+    )
 
     $isMissing = [string]::IsNullOrWhiteSpace($FilePath)
 
