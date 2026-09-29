@@ -248,16 +248,17 @@ EOF
 }
 
 show_network_view() {
-  printf "\n"
-  printf "  \033[36m● Network Interfaces & IP Configuration\033[0m\n"
-  printf "  \033[90m=======================================\033[0m\n"
-  printf "  \033[33m%-28s %-16s %-16s %-16s %-6s %-6s\033[0m\n" "INTERFACE" "IP ADDRESS" "NETMASK" "GATEWAY" "DHCP" "STATUS"
-  printf "  \033[90m----------------------------------------------------------------------------------------\033[0m\n"
 
   local gw="-"
   local mask="255.255.255.0"
   local os_type
   os_type=$(uname -s)
+
+  printf "\n"
+  printf "  \033[36m● Network Interfaces & IP Configuration\033[0m\n"
+  printf "  \033[90m=======================================\033[0m\n"
+  printf "  \033[33m%-18s %-18s %-16s %-16s %-16s %-6s %-6s\033[0m\n" "INTERFACE" "TYPE" "IP ADDRESS" "NETMASK" "GATEWAY" "DHCP" "STATUS"
+  printf "  \033[90m%s\033[0m\n" "--------------------------------------------------------------------------------------------------"
 
   case "$os_type" in
     Darwin)
@@ -281,7 +282,15 @@ show_network_view() {
   if [ "$os_type" = "Linux" ] && command -v ip >/dev/null 2>&1; then
     ip -o -4 addr show 2>/dev/null | while read -r _ iface _ addr _; do
       local pure_ip="${addr%%/*}"
-      printf "  \033[32m%-28s %-16s %-16s %-16s %-6s %-6s\033[0m\n" "$iface" "$pure_ip" "$mask" "$gw" "yes" "up"
+      local iftype="Ethernet"
+      if [[ "$iface" =~ ^(ppp|dsl|adsl) ]]; then
+        iftype="ADSL / PPPoE"
+      elif [[ "$iface" =~ ^(wl|wlan|wifi) ]]; then
+        iftype="Wi-Fi"
+      elif [[ "$iface" =~ ^(tun|tap|wg) ]]; then
+        iftype="VPN"
+      fi
+      printf "  \033[32m%-18s %-18s %-16s %-16s %-16s %-6s %-6s\033[0m\n" "$iface" "$iftype" "$pure_ip" "$mask" "$gw" "yes" "up"
     done
     printf "\n"
     return 0
@@ -289,7 +298,7 @@ show_network_view() {
 
   local primary_ip
   primary_ip=$(get_primary_ip)
-  printf "  \033[32m%-28s %-16s %-16s %-16s %-6s %-6s\033[0m\n" "default-adapter" "$primary_ip" "$mask" "$gw" "yes" "up"
+  printf "  \033[32m%-18s %-18s %-16s %-16s %-16s %-6s %-6s\033[0m\n" "default-adapter" "Ethernet" "$primary_ip" "$mask" "$gw" "yes" "up"
   printf "\n"
 }
 
@@ -324,6 +333,7 @@ show_network_json() {
 [
   {
     "name": "default-adapter",
+    "type": "Ethernet",
     "ip": "$primary_ip",
     "netmask": "$mask",
     "gateway": "$gw",

@@ -209,15 +209,41 @@ function Get-MachineNetworkAdapters {
             $mask = $subList | Where-Object { $_ -match '^\d+\.\d+\.\d+\.\d+$' } | Select-Object -First 1
             $gw = if ($gwList.Count -gt 0) { $gwList[0] } else { "-" }
 
+            $connName = $adapter.Description
+            $connType = "Ethernet"
+            try {
+                $nic = Get-CimInstance Win32_NetworkAdapter -Filter "Index=$($adapter.Index)" -ErrorAction SilentlyContinue
+                if ($nic -and -not [string]::IsNullOrWhiteSpace($nic.NetConnectionID)) {
+                    $connName = $nic.NetConnectionID
+                }
+                if ($nic -and -not [string]::IsNullOrWhiteSpace($nic.AdapterType)) {
+                    $connType = $nic.AdapterType
+                }
+            } catch {}
+
+            $descLower = "$($adapter.Description) $connName $connType".ToLower()
+            $cleanType = "Ethernet"
+            if ($descLower -match 'wireless|wi-fi|802\.11|wlan') {
+                $cleanType = "Wi-Fi"
+            } elseif ($descLower -match 'ppp|adsl|dsl|broadband|wan miniport|dial') {
+                $cleanType = "ADSL / Broadband"
+            } elseif ($descLower -match 'vpn|virtual|tap|tun|wireguard') {
+                $cleanType = "VPN"
+            } elseif ($descLower -match 'cellular|mobile|lte|5g|4g') {
+                $cleanType = "Cellular"
+            }
+
             $results += [PSCustomObject]@{
-                name       = $adapter.Description
-                ip         = if ($v4) { $v4 } else { "-" }
-                netmask    = if ($mask) { $mask } else { "-" }
-                gateway    = $gw
-                mac        = $adapter.MACAddress
-                isDHCP     = [bool]$adapter.DHCPEnabled
-                status     = "up"
-                isLoopback = $false
+                name        = $connName
+                description = $adapter.Description
+                type        = $cleanType
+                ip          = if ($v4) { $v4 } else { "-" }
+                netmask     = if ($mask) { $mask } else { "-" }
+                gateway     = $gw
+                mac         = $adapter.MACAddress
+                isDHCP      = [bool]$adapter.DHCPEnabled
+                status      = "up"
+                isLoopback  = $false
             }
         }
     } catch {}
@@ -232,13 +258,13 @@ function Show-MachineNetworkView {
     Write-Host "  ● Network Interfaces & IP Configuration" -ForegroundColor Cyan
     Write-Host "  =======================================" -ForegroundColor DarkGray
 
-    $fmt = "  {0,-28} {1,-16} {2,-16} {3,-16} {4,-6} {5,-6}"
-    Write-Host ([string]::Format($fmt, "INTERFACE", "IP ADDRESS", "NETMASK", "GATEWAY", "DHCP", "STATUS")) -ForegroundColor DarkYellow
-    Write-Host "  $('-' * 88)" -ForegroundColor DarkGray
+    $fmt = "  {0,-18} {1,-18} {2,-16} {3,-16} {4,-16} {5,-6} {6,-6}"
+    Write-Host ([string]::Format($fmt, "INTERFACE", "TYPE", "IP ADDRESS", "NETMASK", "GATEWAY", "DHCP", "STATUS")) -ForegroundColor DarkYellow
+    Write-Host "  $('-' * 102)" -ForegroundColor DarkGray
 
     foreach ($a in $adapters) {
         $dhcpStr = if ($a.isDHCP) { "yes" } else { "no" }
-        Write-Host ([string]::Format($fmt, $a.name, $a.ip, $a.netmask, $a.gateway, $dhcpStr, $a.status)) -ForegroundColor Green
+        Write-Host ([string]::Format($fmt, $a.name, $a.type, $a.ip, $a.netmask, $a.gateway, $dhcpStr, $a.status)) -ForegroundColor Green
     }
 
     Write-Host ""
