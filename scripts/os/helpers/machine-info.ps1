@@ -345,11 +345,15 @@ $isJson = $Json.IsPresent
 $hasHelp = $Help.IsPresent
 $cleanArgs = @()
 
+$allArgs = @()
 if (-not [string]::IsNullOrWhiteSpace($Action)) {
-    $cleanArgs += $Action.Trim()
+    $allArgs += $Action.Trim()
+}
+if ($null -ne $Argv) {
+    $allArgs += @($Argv)
 }
 
-foreach ($a in $Argv) {
+foreach ($a in $allArgs) {
     $low = "$a".Trim().ToLower()
 
     if ($low -in @("--json", "-json", "-j", "json")) {
