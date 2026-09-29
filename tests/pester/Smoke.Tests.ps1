@@ -33,3 +33,22 @@ Describe "Core helpers" {
         { . (Join-Path $Repo 'core/json-output.ps1') } | Should -Not -Throw
     }
 }
+
+Describe "Help modularization invariants" {
+    It "root-help.ps1 and all files in scripts/dispatcher/help are <= 100 lines" {
+        $helpFiles = @(Get-ChildItem (Join-Path $Repo 'scripts/dispatcher/help') -Filter '*.ps1')
+        $helpFiles += (Get-Item (Join-Path $Repo 'scripts/dispatcher/root-help.ps1'))
+        foreach ($f in $helpFiles) {
+            $lineCount = (Get-Content $f.FullName).Count
+            $lineCount | Should -BeLessOrEqual 100 -Because "$($f.Name) has $lineCount lines (must be <= 100)"
+        }
+    }
+
+    It "loads root-help.ps1 and exports core help functions" {
+        . (Join-Path $Repo 'scripts/dispatcher/root-help.ps1')
+        (Get-Command Show-RootHelpRaw -ErrorAction SilentlyContinue) | Should -Not -BeNullOrEmpty
+        (Get-Command Show-RootHelp -ErrorAction SilentlyContinue) | Should -Not -BeNullOrEmpty
+        (Get-Command Show-KeywordTable -ErrorAction SilentlyContinue) | Should -Not -BeNullOrEmpty
+        (Get-Command Show-AgyHelp -ErrorAction SilentlyContinue) | Should -Not -BeNullOrEmpty
+    }
+}

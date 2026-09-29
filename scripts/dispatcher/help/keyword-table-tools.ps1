@@ -1,0 +1,73 @@
+# Keyword table: Settings, databases, desktop, AI, and devops tools
+
+function Show-HelpKeywordsTools {
+    Write-Host "    Config & Settings" -ForegroundColor $ThemePrimary
+    Write-HelpKeywordTableRow "vscode+menu, vscode+context" "VS Code + Settings + Right-click Menu" "01, 10, 11"
+    Write-HelpKeywordTableRow "vscode+settings, vscode+s" "VS Code + Settings Sync" "01, 11"
+    Write-HelpKeywordTableRow "pwsh+menu, pwsh-menu" "PowerShell + Right-click Menu" "17, 31"
+    Write-HelpKeywordTableRow "conemu+menu, conemu-menu" "ConEmu + Right-click Menu" "48, 59"
+    Write-HelpKeywordTableRow "wt+menu, wt-menu" "Windows Terminal + Right-click Menu" "37, 64"
+    Write-HelpKeywordTableRow "all-dev, all" "Interactive dev tools menu" "12"
+    Write-HelpKeywordTableRow "audit" "Audit mode" "13"
+    Write-HelpKeywordTableRow "health, healthcheck" "Health check (audit + report)" "13"
+    Write-HelpKeywordTableRow "winget" "Winget package manager" "14"
+    Write-HelpKeywordTableRow "tweaks" "Windows tweaks" "15"
+    Write-Host ""
+
+    Write-Host "    Databases" -ForegroundColor $ThemePrimary
+    Write-HelpKeywordTableRow "mysql" "MySQL" "18"
+    Write-HelpKeywordTableRow "mariadb" "MariaDB" "19"
+    Write-HelpKeywordTableRow "postgresql, postgres" "PostgreSQL" "20"
+    Write-HelpKeywordTableRow "sqlite" "SQLite + DB Browser" "21"
+    Write-HelpKeywordTableRow "mongodb, mongo" "MongoDB" "22"
+    Write-HelpKeywordTableRow "couchdb" "CouchDB" "23"
+    Write-HelpKeywordTableRow "redis" "Redis" "24"
+    Write-HelpKeywordTableRow "cassandra" "Apache Cassandra" "25"
+    Write-HelpKeywordTableRow "neo4j" "Neo4j" "26"
+    Write-HelpKeywordTableRow "elasticsearch" "Elasticsearch" "27"
+    Write-HelpKeywordTableRow "duckdb" "DuckDB" "28"
+    Write-HelpKeywordTableRow "litedb" "LiteDB" "29"
+    Write-HelpKeywordTableRow "databases, db" "Database installer menu" "30"
+    Write-Host ""
+
+    Write-Host "    Desktop Tools" -ForegroundColor $ThemePrimary
+    Write-HelpKeywordTableRow "notepad++, npp" "NPP + Settings (install + sync)" "33"
+    Write-HelpKeywordTableRow "npp+settings" "NPP + Settings (explicit)" "33"
+    Write-HelpKeywordTableRow "npp-settings" "NPP Settings (settings only)" "33"
+    Write-HelpKeywordTableRow "install-npp" "Install NPP (install only)" "33"
+    Write-HelpKeywordTableRow "sticky-notes, sticky" "sticky-notes" "34"
+    Write-HelpKeywordTableRow "gitmap, git-map" "GitMap CLI" "35"
+    Write-HelpKeywordTableRow "obs, obs+settings" "OBS + Settings (install + sync)" "36"
+    Write-HelpKeywordTableRow "obs-settings" "OBS Settings (settings only)" "36"
+    Write-HelpKeywordTableRow "install-obs" "Install OBS (install only)" "36"
+    Write-HelpKeywordTableRow "wt, windows-terminal" "WT + Settings (install + sync)" "37"
+    Write-HelpKeywordTableRow "wt+settings" "WT + Settings (explicit)" "37"
+    Write-HelpKeywordTableRow "wt-settings" "WT Settings (settings only)" "37"
+    Write-HelpKeywordTableRow "install-wt" "Install WT (install only)" "37"
+    Write-HelpKeywordTableRow "dbeaver, db-viewer" "DBeaver + Settings (install + sync)" "32"
+    Write-HelpKeywordTableRow "dbeaver-settings" "DBeaver Settings (settings only)" "32"
+    Write-HelpKeywordTableRow "install-dbeaver" "Install DBeaver (install only)" "32"
+    Write-Host ""
+
+    Write-Host "    AI & Local LLM" -ForegroundColor $ThemePrimary
+    Write-HelpKeywordTableRow "ollama, local-llm" "Ollama (local LLM runner)" "42"
+    Write-HelpKeywordTableRow "llama-cpp, llamacpp" "llama.cpp + KoboldCPP" "43"
+    Write-HelpKeywordTableRow "llama, gguf" "llama.cpp (alias)" "43"
+    Write-HelpKeywordTableRow "llm" "LLM tools (Ollama)" "42"
+    Write-HelpKeywordTableRow "kobold, koboldcpp" "KoboldCPP (llama.cpp)" "43"
+    Write-HelpKeywordTableRow "ollama-models" "Ollama model pull only" "42"
+    Write-HelpKeywordTableRow "llama-models" "llama.cpp model picker only" "43"
+    Write-HelpKeywordTableRow "ai-tools, local-ai" "Ollama + llama.cpp" "42, 43"
+    Write-HelpKeywordTableRow "ollama+llama" "Ollama + llama.cpp" "42, 43"
+    Write-HelpKeywordTableRow "ai-full, aifull" "Python + libs + Ollama + llama.cpp" "05, 41, 42, 43"
+    Write-Host ""
+
+    Write-Host "    DevOps & Containers" -ForegroundColor $ThemePrimary
+    Write-HelpKeywordTableRow "rust, cargo" "Rust + Cargo" "44"
+    Write-HelpKeywordTableRow "docker" "Docker Desktop" "45"
+    Write-HelpKeywordTableRow "kubernetes, k8s" "Kubernetes tools" "46"
+    Write-HelpKeywordTableRow "devops" "Git + Docker + Kubernetes" "07, 45, 46"
+    Write-HelpKeywordTableRow "container-dev" "Docker + Kubernetes" "45, 46"
+    Write-HelpKeywordTableRow "systems-dev" "C++ + Rust" "09, 44"
+    Write-Host ""
+}
