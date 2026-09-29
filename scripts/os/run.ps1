@@ -428,7 +428,7 @@ switch ($normalizedAction) {
         & (Join-Path $scriptDir "helpers\simple-clean.ps1") -Argv $Rest
         exit $LASTEXITCODE
     }
-    { $_ -in @("dev-cleanup", "clean-dev", "cleandev", "devcleanup", "dev-clean", "cleanup-dev") } {
+    { $_ -in @("dev-cleanup", "clean-dev", "cleandev", "devcleanup", "dev-clean", "cleanup-dev", "devtool", "devtools", "dev-tool", "dev-tools", "devtools-cache", "dev-tools-cache", "clear-dev", "clear-devtools") } {
         # Developer tools cache cleaner: Go, pnpm, npm, choco, yarn, bun, pip, cargo, nuget, etc.
         & (Join-Path $scriptDir "helpers\dev-clean.ps1") -Argv $Rest
         exit $LASTEXITCODE

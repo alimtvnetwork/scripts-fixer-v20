@@ -48,6 +48,7 @@ function Show-RootHelpRaw {
     Write-Host "    $(".\run.ps1 os clean | temp-clean".PadRight($col))" -NoNewline; Write-Host "Disk cleanup (categories, buckets, consent system) or just temp dirs" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 os dev-cleanup [-y]".PadRight($col))" -NoNewline; Write-Host "Clean dev tools caches (Go, pnpm, npm, choco, yarn, bun, pip, cargo, nuget)" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 clean-dev [-y]".PadRight($col))" -NoNewline; Write-Host "Top-level shortcut for 'os dev-cleanup' (supports --dry-run, --yes)" -ForegroundColor $ThemeMuted
+    Write-Host "    $(".\run.ps1 dev-clean [-y]".PadRight($col))" -NoNewline; Write-Host "Alias for 'clean-dev' (supports --dry-run, --yes)" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 agy <action>".PadRight($col))" -NoNewline; Write-Host "Antigravity maintenance: clear | clean | predict | undo | list-backups ('agy help')" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 agy clear --keep 10".PadRight($col))" -NoNewline; Write-Host "Prune conversations keeping latest 10 intact (safe predict mode by default)" -ForegroundColor $ThemeMuted
     Write-Host "    $(".\run.ps1 agy clear --keep 10 -y".PadRight($col))" -NoNewline; Write-Host "Apply conversation prune & cache scrub (keeps latest 10 intact)" -ForegroundColor $ThemeMuted
@@ -326,6 +327,33 @@ function Show-RootHelpRaw {
     Write-Host "        .\run.ps1 agy undo latest".PadRight(60) -NoNewline; Write-Host "# Restore pruned steps from the latest transaction" -ForegroundColor $ThemeMuted
     Write-Host "        .\run.ps1 agy undo <transaction-id>".PadRight(60) -NoNewline; Write-Host "# Rollback a specific historical transaction" -ForegroundColor $ThemeMuted
     Write-Host ""
+    Write-Host "    Developer Tools Cache Cleanup (dev-clean / clean-dev / os dev-cleanup) -- detailed examples:" -ForegroundColor $ThemePrimary
+    Write-Host "      Developer Cache Sweeper (Go, pnpm, npm, Choco, Yarn, Bun, pip, Cargo, Gradle, Maven, NuGet, Antigravity):" -ForegroundColor DarkYellow
+    Write-Host "        .\run.ps1 clean-dev".PadRight(60) -NoNewline; Write-Host "# Interactive cleanup across all 12 developer caches" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 clean-dev --dry-run".PadRight(60) -NoNewline; Write-Host "# Preview space that would be reclaimed without deleting" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 clean-dev -y".PadRight(60) -NoNewline; Write-Host "# Skip confirmation prompt (auto-approve cleanup)" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 dev-clean".PadRight(60) -NoNewline; Write-Host "# Shorthand alias for 'clean-dev'" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 dev-cleanup".PadRight(60) -NoNewline; Write-Host "# Shorthand alias for 'clean-dev'" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 os dev-cleanup".PadRight(60) -NoNewline; Write-Host "# Run dev tools cache sweep via OS dispatcher" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 os dev-cleanup --dry-run".PadRight(60) -NoNewline; Write-Host "# Preview reclaimable dev cache via OS dispatcher" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 os dev-cleanup -y".PadRight(60) -NoNewline; Write-Host "# Auto-confirm dev cache sweep via OS dispatcher" -ForegroundColor $ThemeMuted
+    Write-Host "      Runtime & Package Manager Caches Covered:" -ForegroundColor DarkYellow
+    Write-Host "        Go".PadRight(24) -NoNewline; Write-Host "Build cache, test cache, fuzz cache, GOMODCACHE module downloads" -ForegroundColor $ThemeMuted
+    Write-Host "        pnpm / npm / Yarn".PadRight(24) -NoNewline; Write-Host "CAS store prune, dev-tool\pnpm\store, npm-cache, Yarn cache" -ForegroundColor $ThemeMuted
+    Write-Host "        Bun / Python pip".PadRight(24) -NoNewline; Write-Host "Bun pm cache rm, pip HTTP download cache & wheel cache" -ForegroundColor $ThemeMuted
+    Write-Host "        Cargo / Rust".PadRight(24) -NoNewline; Write-Host "~/.cargo/registry/cache and git checkout clones" -ForegroundColor $ThemeMuted
+    Write-Host "        Gradle / Maven".PadRight(24) -NoNewline; Write-Host "~/.gradle/caches daemon/dependencies, ~/.m2/repository" -ForegroundColor $ThemeMuted
+    Write-Host "        .NET / NuGet".PadRight(24) -NoNewline; Write-Host "dotnet nuget locals all --clear + %LOCALAPPDATA%\NuGet\v3-cache" -ForegroundColor $ThemeMuted
+    Write-Host "        Chocolatey".PadRight(24) -NoNewline; Write-Host "choco cache clean + package download archives in %TEMP%" -ForegroundColor $ThemeMuted
+    Write-Host "        Antigravity / AI".PadRight(24) -NoNewline; Write-Host "Brain conversation history, Electron/GPU caches, task dumps" -ForegroundColor $ThemeMuted
+    Write-Host "      Targeted Cleaners:" -ForegroundColor DarkYellow
+    Write-Host "        .\run.ps1 clean-agy 10".PadRight(60) -NoNewline; Write-Host "# Prune Antigravity brain keeping latest 10 conversations" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 agy clear --keep 10 -y".PadRight(60) -NoNewline; Write-Host "# Apply Antigravity conversation prune & cache scrub" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 os clean".PadRight(60) -NoNewline; Write-Host "# General disk cleanup (temp, updates, logs)" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 os temp-clean".PadRight(60) -NoNewline; Write-Host "# Purge user and system Temp folders" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 os choco-clean".PadRight(60) -NoNewline; Write-Host "# Clean Chocolatey download archives & broken packages" -ForegroundColor $ThemeMuted
+    Write-Host "        python scripts/os-ai-clean.py --clean-all".PadRight(60) -NoNewline; Write-Host "# Purge Antigravity brain & OS temp AI dumps" -ForegroundColor $ThemeMuted
+    Write-Host ""
     # ----- Dedicated Chrome & extensions cheatsheet ---------------------------
     # Surfaces every extension install mode (single, comma-list, all, raw URL,
     # file-of-URLs) with copy-paste examples so users do not have to grep the
@@ -520,7 +548,7 @@ function Show-RootHelpRaw {
     Write-Host "    Remote installers (irm <url> | iex):" -ForegroundColor $ThemePrimary
     Write-Host "      All aliases on each row are EQUIVALENT -- pick whichever you remember." -ForegroundColor $ThemeMuted
     Write-Host ""
-    Write-Host "    $("install clean-code".PadRight($kc))" -NoNewline; Write-Host "Coding Guidelines v23 -- alimtvnetwork/coding-guidelines-v23" -ForegroundColor $ThemeMuted
+    Write-Host "    $("install clean-code".PadRight($kc))" -NoNewline; Write-Host "Coding Guidelines v24 -- alimtvnetwork/coding-guidelines-v24" -ForegroundColor $ThemeMuted
     Write-Host "    $("install code-guide  (= cg, cc)".PadRight($kc))" -NoNewline; Write-Host "Same as 'install clean-code' (4 aliases total)" -ForegroundColor $ThemeMuted
     Write-Host "    $("install coding-guidelines".PadRight($kc))" -NoNewline; Write-Host "Same as 'install clean-code' (long alias)" -ForegroundColor $ThemeMuted
     Write-Host "    $("install starship    (= ss)".PadRight($kc))" -NoNewline; Write-Host "Starship cross-shell prompt -- local wrapper (winget/scoop/cargo)" -ForegroundColor $ThemeMuted
@@ -1057,9 +1085,9 @@ function Show-KeywordTable {
     Write-Host "    $("systems-dev".PadRight($kwCol))$("C++ + Rust".PadRight($descCol))09, 44"
     Write-Host ""
     Write-Host "    Remote installers (irm | iex)" -ForegroundColor $ThemePrimary
-    Write-Host "    $("clean-code, cg, cc".PadRight($kwCol))$("Coding Guidelines v23".PadRight($descCol))remote"
-    Write-Host "    $("code-guide".PadRight($kwCol))$("Coding Guidelines v23 (alias)".PadRight($descCol))remote"
-    Write-Host "    $("coding-guidelines".PadRight($kwCol))$("Coding Guidelines v23 (alias)".PadRight($descCol))remote"
+    Write-Host "    $("clean-code, cg, cc".PadRight($kwCol))$("Coding Guidelines v24".PadRight($descCol))remote"
+    Write-Host "    $("code-guide".PadRight($kwCol))$("Coding Guidelines v24 (alias)".PadRight($descCol))remote"
+    Write-Host "    $("coding-guidelines".PadRight($kwCol))$("Coding Guidelines v24 (alias)".PadRight($descCol))remote"
     Write-Host "    $("starship, ss".PadRight($kwCol))$("Starship cross-shell prompt".PadRight($descCol))remote"
     Write-Host "    $("starship-prompt".PadRight($kwCol))$("Starship (alias)".PadRight($descCol))remote"
     Write-Host "    $("oh-my-posh, omp, posh".PadRight($kwCol))$("Oh My Posh prompt theme".PadRight($descCol))remote"

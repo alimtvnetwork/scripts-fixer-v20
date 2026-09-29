@@ -181,7 +181,7 @@ function Invoke-EarlyHelpIntercept {
         $_isEarlyHelp = $true
         $_rest = @($_installList | Select-Object -Skip 1)
         if ($_rest.Count -gt 0) { $_earlyHelpFilter = ($_rest -join ' ').Trim() }
-    } elseif (($Help -or $h) -and -not $I -and ($_cmdLow -notin @("nginx", "os", "ssh", "menu", "vscode-folder", "git-tools", "agy", "antigravity", "clean-agy", "clear-agy"))) {
+    } elseif (($Help -or $h) -and -not $I -and ($_cmdLow -notin @("nginx", "os", "ssh", "menu", "vscode-folder", "git-tools", "agy", "antigravity", "clean-agy", "clear-agy", "clean-dev", "dev-clean", "dev-cleanup", "cleandev", "devcleanup"))) {
         $_isEarlyHelp = $true
         if ($_cmdLow -and ($_cmdLow -notin $_helpAliases)) {
             $_earlyHelpFilter = $Command.Trim()
@@ -218,7 +218,7 @@ function Invoke-EarlyHelpIntercept {
                 } else { $msg = [string]$data }
             } else { $msg = [string]$rec }
             [void]$_buf.Append($msg)
-            if (-not $nl) { [void]$_lines.Add($_buf.ToString()); $_buf.Clear() }
+            if (-not $nl) { [void]$_lines.Add($_buf.ToString()); [void]$_buf.Clear() }
         }
         $_filters = @(
             @{ K = "agy";           D = "Antigravity IDE & CLI cache, prune, and maintenance" },
@@ -237,6 +237,7 @@ function Invoke-EarlyHelpIntercept {
             @{ K = "export";        D = "Export settings (npp, obs, wt, dbeaver)" },
             @{ K = "os";            D = "OS-level tweaks and debloating" },
             @{ K = "clean-dev";     D = "Clean dev tool caches (Go, npm, pip, etc.)" },
+            @{ K = "dev-clean";     D = "Direct alias to clean developer tool caches" },
             @{ K = "path";          D = "Default dev directory commands" },
             @{ K = "models";        D = "Local LLM model management" },
             @{ K = "models-download"; D = "Download GGUF models directly" },
@@ -319,7 +320,7 @@ function Invoke-EarlyHelpIntercept {
                     } else { $msg = [string]$data }
                 } else { $msg = [string]$rec }
                 [void]$cur.Append($msg)
-                if (-not $nl) { [void]$buf.Add($cur.ToString()); $cur.Clear() }
+                if (-not $nl) { [void]$buf.Add($cur.ToString()); [void]$cur.Clear() }
             }
             return $buf
         }
@@ -416,7 +417,7 @@ function Invoke-EarlyHelpIntercept {
             'agy','clear-agy','clean-agy',
             'chrome','chrome-fix-ai','fix-ai','chrome-profile-copy',
             'menu','context-menu','profile','install','uninstall',
-            'self-update','settings','export','os','clean-dev',
+            'self-update','settings','export','os','clean-dev','dev-clean','dev-cleanup',
             'path','models','models-download','download','url',
             'mariadb','mongodb','redis','sqlite','node','python',
             'kubernetes','java','dotnet','rust','go','php','obs',

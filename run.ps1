@@ -521,6 +521,16 @@ if ($hasCommand) {
         }
     }
 
+    # Aliases: `clean devtools` / `clear devtools` / `clear dev-tools` / `clear dev-tools-cache` / `clear dev`
+    if ($normalizedCommand -in @('clean','clear') -and $Install -and $Install.Count -ge 1) {
+        $firstCleanArg = "$($Install[0])".Trim().ToLower()
+        if ($firstCleanArg -in @('dev','devs','developer','devtool','devtools','dev-tool','dev-tools','dev-tools-cache','devtools-cache','dev-clean','clean-dev','devtool-cache','devtools-cache')) {
+            $Command = 'clean-dev'
+            $Install = if ($Install.Count -gt 1) { @($Install[1..($Install.Count - 1)]) } else { @() }
+            $normalizedCommand = 'clean-dev'
+        }
+    }
+
     # ── Auto-discovery redirect ────────────────────────────────────────
     # Renamed / legacy / typo'd top-level verbs are rewritten to their
     # canonical form here so every downstream `isBareXxxCommand` check
@@ -560,6 +570,14 @@ if ($hasCommand) {
         'cleandev'             = 'clean-dev'
         'devcleanup'           = 'clean-dev'
         'dev-clean'            = 'clean-dev'
+        'devtool'              = 'clean-dev'
+        'devtools'             = 'clean-dev'
+        'dev-tool'             = 'clean-dev'
+        'dev-tools'            = 'clean-dev'
+        'devtools-cache'       = 'clean-dev'
+        'dev-tools-cache'      = 'clean-dev'
+        'clear-dev'            = 'clean-dev'
+        'clear-devtools'       = 'clean-dev'
         # misc
         'taskbar-left'         = 'startup-add'   # documented sample lives under startup-add helpers
     }
@@ -638,7 +656,7 @@ if ($hasCommand) {
     # (isBareInstallCommand already set above at line 3679)
     $isBareMenuCommand    = $normalizedCommand -in @("menu","menus","context-menu","contextmenu","ctx-menu","ctxmenu")
     $isBareOsCommand      = $normalizedCommand -eq "os"
-    $isBareCleanDevCommand = $normalizedCommand -in @("clean-dev", "dev-cleanup", "cleandev", "devcleanup", "dev-clean")
+    $isBareCleanDevCommand = $normalizedCommand -in @("clean-dev", "dev-cleanup", "cleandev", "devcleanup", "dev-clean", "devtool", "devtools", "dev-tool", "dev-tools", "devtools-cache", "dev-tools-cache", "clear-dev", "clear-devtools")
     $isBareSshCommand     = $normalizedCommand -in @("ssh","sshkey","ssh-key","ssh-keys","sshkeys")
     $isBareVscodeFolderCommand = $normalizedCommand -in @("vscode-folder", "vscode-folder-repair", "vscodefolder", "vscodefolderrepair")
     $isBareVscodeContextMenuCommand = $normalizedCommand -in @("vscode-context-menu", "vscode-contextmenu", "vscodecontextmenu", "vscode-menu", "vscodemenu")
@@ -687,7 +705,8 @@ if ($hasCommand) {
     #   - any of $Install contains --no-pull / -no-pull / --offline
     #   - command is read-only (status/path/scan/export/doctor)
     $isAgyHelp = ($isBareAgyCommand -or $isBareCleanAgyCommand) -and ($h -or $Help -or ($null -eq $Install) -or ($Install.Count -eq 0) -or ($Install[0].ToLower() -in @("help", "--help", "-help", "-h", "/?", "?")))
-    $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareExportConfigCommand -or $isBareImportConfigCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand -or $isAgyHelp
+    $isCleanDevHelp = $isBareCleanDevCommand -and ($h -or $Help -or ($null -ne $Install -and $Install.Count -gt 0 -and $Install[0].ToLower() -in @("help", "--help", "-help", "-h", "/?", "?")))
+    $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareExportConfigCommand -or $isBareImportConfigCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand -or $isAgyHelp -or $isCleanDevHelp
     $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareCleanDevCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareTerminalTasksCommand -or $isBareDbMenuCommand -or $isBareNginxCommand -or $isBareAgyCommand -or $isBareCleanAgyCommand
     $isNoPullEnv = $env:SCRIPTS_FIXER_NO_PULL -eq "1"
     $isNoPullFlag = $false
@@ -849,6 +868,10 @@ if ($hasCommand) {
 
         if ($null -ne $Install) {
             $osArgs += @($Install)
+        }
+
+        if ($Help -or $h) {
+            $osArgs += "--help"
         }
 
         if ($Y -and -not ($osArgs | Where-Object { "$_".Trim().ToLower() -in @("--yes","-yes","-y","--force","-force") })) {

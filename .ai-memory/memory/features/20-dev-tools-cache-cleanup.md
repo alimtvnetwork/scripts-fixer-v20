@@ -48,3 +48,9 @@ Runs a 10-step developer cache sweep:
 ### 2.4 Cross-Platform Parity
 - `scripts-linux/run.sh`: Added `clean-dev` / `dev-cleanup` top-level shortcut targeting `pkg-npm,pkg-pnpm,pkg-bun,pkg-yarn,pkg-pip,pkg-go,pkg-cargo`.
 - `scripts-linux/65-os-clean/config.json`: Added `pkg-go` and `pkg-cargo` categories.
+
+### 2.5 Help Text & Discovery Integration
+- **Root Help Screen**: Dedicated `Developer Tools Cache Cleanup (dev-clean / clean-dev / os dev-cleanup)` section in `scripts/dispatcher/root-help.ps1` with detailed examples, flags, aliases, and breakdown of all 12 covered caches.
+- **Early Help & Intercept**: Excluded `clean-dev`, `dev-clean`, `dev-cleanup`, `cleandev`, `devcleanup` in `scripts/dispatcher/early-help.ps1` so `-h` / `--help` displays dedicated subcommands without blocking or falling through.
+- **Filter REPL**: Registered in `$_filters` and `$_completionPool` for auto-complete and multi-keyword search (`.\run.ps1 help "dev tools"` / `.\run.ps1 help clean-dev`).
+

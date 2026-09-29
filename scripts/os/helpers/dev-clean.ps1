@@ -79,13 +79,22 @@ Write-Host "    12. Antigravity   AI caches, task dumps, and build artifacts" -F
 Write-Host ""
 
 if ($isHelp) {
-    Write-Host "  Usage: .\run.ps1 os dev-cleanup [--dry-run] [--yes]" -ForegroundColor White
-    Write-Host "         .\run.ps1 clean-dev [--dry-run] [-y]" -ForegroundColor White
+    Write-Host "  Usage: .\run.ps1 clean-dev [--dry-run] [-y]" -ForegroundColor White
+    Write-Host "         .\run.ps1 os dev-cleanup [--dry-run] [--yes]" -ForegroundColor White
+    Write-Host ""
+    Write-Host "  Aliases:" -ForegroundColor Yellow
+    Write-Host "    clean-dev, dev-clean, dev-cleanup, cleandev, devcleanup" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "  Flags:" -ForegroundColor Yellow
     Write-Host "    --dry-run, -d    Preview space reclaimed without deleting" -ForegroundColor DarkGray
     Write-Host "    --yes, -y        Bypass confirmation prompt" -ForegroundColor DarkGray
     Write-Host "    --help, -h       Show this help message" -ForegroundColor DarkGray
+    Write-Host ""
+    Write-Host "  Examples:" -ForegroundColor Yellow
+    Write-Host "    .\run.ps1 clean-dev --dry-run     # Preview space that can be reclaimed" -ForegroundColor DarkGray
+    Write-Host "    .\run.ps1 clean-dev -y            # Clean all dev caches without prompt" -ForegroundColor DarkGray
+    Write-Host "    .\run.ps1 dev-clean               # Interactive cleanup with prompt" -ForegroundColor DarkGray
+    Write-Host "    .\run.ps1 os dev-cleanup --yes    # Clean via OS dispatcher" -ForegroundColor DarkGray
     Write-Host ""
     exit 0
 }

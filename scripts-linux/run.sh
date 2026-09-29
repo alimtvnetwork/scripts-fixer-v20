@@ -66,9 +66,12 @@ while [ $# -gt 0 ]; do
     startup-prune|startup-purge)
         VERB="startup-passthrough"; STARTUP_SUB="prune";  shift; STARTUP_REST=("$@"); break ;;
     # ---- top-level shortcuts to script 65 (cross-OS os-clean) ----
-    dev-cleanup|clean-dev|devcleanup|cleandev)
+    dev-cleanup|clean-dev|devcleanup|cleandev|dev-clean|devtool|devtools|dev-tool|dev-tools|devtools-cache|dev-tools-cache|clear-dev|clear-devtools)
         VERB="osclean-passthrough"; OSCLEAN_SUB="run"; shift; OSCLEAN_REST=("--only" "pkg-npm,pkg-pnpm,pkg-bun,pkg-yarn,pkg-pip,pkg-go,pkg-cargo" "$@"); break ;;
-    os-clean|clean)
+    os-clean|clean|clear)
+        if [[ "$2" =~ ^(dev|devs|developer|devtool|devtools|dev-tool|dev-tools|devtools-cache|dev-tools-cache|dev-clean|clean-dev)$ ]]; then
+            VERB="osclean-passthrough"; OSCLEAN_SUB="run"; shift 2; OSCLEAN_REST=("--only" "pkg-npm,pkg-pnpm,pkg-bun,pkg-yarn,pkg-pip,pkg-go,pkg-cargo" "$@"); break
+        fi
         VERB="osclean-passthrough"; OSCLEAN_SUB="run";              shift; OSCLEAN_REST=("$@"); break ;;
     os-clean-list|clean-list|clean-categories)
         VERB="osclean-passthrough"; OSCLEAN_SUB="list-categories";  shift; OSCLEAN_REST=("$@"); break ;;
@@ -315,7 +318,7 @@ Examples:
   Ratings legend: 9-10 exceptional | 7-8 strong | 5-6 competent | <5 weak
 
 Remote installers (SHA256-pinned, mirror of Windows remote.<key>):
-  install coding-guidelines    Coding Guidelines v23 -- alimtvnetwork/coding-guidelines-v23
+  install coding-guidelines    Coding Guidelines v24 -- alimtvnetwork/coding-guidelines-v24
   install clean-code           Same as 'install coding-guidelines'
   install cg | cc | code-guide Aliases of 'install coding-guidelines'
                                  Body is downloaded, sha256-verified BEFORE
@@ -336,8 +339,13 @@ Cross-OS startup management (script 64 shortcuts):
       --dry-run                Preview only, no changes
       --yes                    Skip the interactive confirmation prompt
 
-Cross-OS cleanup (script 65 shortcuts):
+Cross-OS developer tools cleanup (clean-dev / dev-cleanup):
   clean-dev                    Sweep dev caches (npm, pnpm, bun, yarn, pip, go, cargo)
+      --dry-run                Preview only, no deletions
+      --yes                    Skip interactive confirmation prompt
+      Aliases: dev-cleanup, cleandev, devcleanup, dev-clean
+
+Cross-OS system cleanup (script 65 shortcuts):
   os-clean                     Sweep temp/caches/trash/pkg-caches/logs (apply mode)
       --dry-run                Preview only, no deletions
       --only A,B,C             Limit to comma-separated category ids
