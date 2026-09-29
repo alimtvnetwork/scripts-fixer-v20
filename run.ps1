@@ -596,7 +596,7 @@ if ($hasCommand) {
     $canonicalVerbs = @(
         'install','update','uninstall','reinstall','self-update','path','scan',
         'export','status','doctor','report','models','models-download','menu',
-        'os','clean-dev','dev-cleanup','ssh','vscode-folder','vscode-context-menu','chrome','chrome-fix-ai',
+        'os','machine','alias','ip','clean-dev','dev-cleanup','ssh','vscode-folder','vscode-context-menu','chrome','chrome-fix-ai',
         'chrome-profile-copy','chrome-profile-export','chrome-profile-import',
         'profile','git-tools','gsa','reset','help','version','nginx',
         'startup','schedule','crontab','macro','async','storage','pipeline','cluster',
@@ -657,6 +657,8 @@ if ($hasCommand) {
     $isBareMenuCommand    = $normalizedCommand -in @("menu","menus","context-menu","contextmenu","ctx-menu","ctxmenu")
     $isBareOsCommand      = $normalizedCommand -eq "os"
     $isBareCleanDevCommand = $normalizedCommand -in @("clean-dev", "dev-cleanup", "cleandev", "devcleanup", "dev-clean", "devtool", "devtools", "dev-tool", "dev-tools", "devtools-cache", "dev-tools-cache", "clear-dev", "clear-devtools")
+    $isBareMachineCommand = $normalizedCommand -in @("machine", "machine-info", "machine-alias", "mach", "info", "alias")
+    $isBareIpCommand      = $normalizedCommand -in @("ip", "my-ip", "myip", "ip-info", "ipinfo")
     $isBareSshCommand     = $normalizedCommand -in @("ssh","sshkey","ssh-key","ssh-keys","sshkeys")
     $isBareVscodeFolderCommand = $normalizedCommand -in @("vscode-folder", "vscode-folder-repair", "vscodefolder", "vscodefolderrepair")
     $isBareVscodeContextMenuCommand = $normalizedCommand -in @("vscode-context-menu", "vscode-contextmenu", "vscodecontextmenu", "vscode-menu", "vscodemenu")
@@ -706,8 +708,9 @@ if ($hasCommand) {
     #   - command is read-only (status/path/scan/export/doctor)
     $isAgyHelp = ($isBareAgyCommand -or $isBareCleanAgyCommand) -and ($h -or $Help -or ($null -eq $Install) -or ($Install.Count -eq 0) -or ($Install[0].ToLower() -in @("help", "--help", "-help", "-h", "/?", "?")))
     $isCleanDevHelp = $isBareCleanDevCommand -and ($h -or $Help -or ($null -ne $Install -and $Install.Count -gt 0 -and $Install[0].ToLower() -in @("help", "--help", "-help", "-h", "/?", "?")))
-    $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareExportConfigCommand -or $isBareImportConfigCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand -or $isAgyHelp -or $isCleanDevHelp
-    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareCleanDevCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareTerminalTasksCommand -or $isBareDbMenuCommand -or $isBareNginxCommand -or $isBareAgyCommand -or $isBareCleanAgyCommand
+    $isMachineRead = ($isBareMachineCommand -and ($null -eq $Install -or $Install.Count -eq 0 -or $Install[0].ToLower() -in @("ls","list","show","status","st","--json","-j")))
+    $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareExportConfigCommand -or $isBareImportConfigCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand -or $isAgyHelp -or $isCleanDevHelp -or $isMachineRead -or $isBareIpCommand
+    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareCleanDevCommand -or $isBareMachineCommand -or $isBareIpCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareTerminalTasksCommand -or $isBareDbMenuCommand -or $isBareNginxCommand -or $isBareAgyCommand -or $isBareCleanAgyCommand
     $isNoPullEnv = $env:SCRIPTS_FIXER_NO_PULL -eq "1"
     $isNoPullFlag = $false
     if ($null -ne $Install) {
@@ -876,6 +879,54 @@ if ($hasCommand) {
 
         if ($Y -and -not ($osArgs | Where-Object { "$_".Trim().ToLower() -in @("--yes","-yes","-y","--force","-force") })) {
             $osArgs += "--yes"
+        }
+
+        & $osScript @osArgs
+        exit $LASTEXITCODE
+    }
+
+    if ($isBareMachineCommand) {
+        $osScript = Join-Path $RootDir "scripts\os\run.ps1"
+        $isOsScriptPresent = Test-Path $osScript
+
+        if (-not $isOsScriptPresent) {
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
+            Write-Host "OS dispatcher missing at: $osScript"
+            exit 1
+        }
+
+        $osArgs = @("machine")
+
+        if ($null -ne $Install) {
+            $osArgs += @($Install)
+        }
+
+        if ($Help -or $h) {
+            $osArgs += "--help"
+        }
+
+        & $osScript @osArgs
+        exit $LASTEXITCODE
+    }
+
+    if ($isBareIpCommand) {
+        $osScript = Join-Path $RootDir "scripts\os\run.ps1"
+        $isOsScriptPresent = Test-Path $osScript
+
+        if (-not $isOsScriptPresent) {
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
+            Write-Host "OS dispatcher missing at: $osScript"
+            exit 1
+        }
+
+        $osArgs = @("ip")
+
+        if ($null -ne $Install) {
+            $osArgs += @($Install)
+        }
+
+        if ($Help -or $h) {
+            $osArgs += "--help"
         }
 
         & $osScript @osArgs

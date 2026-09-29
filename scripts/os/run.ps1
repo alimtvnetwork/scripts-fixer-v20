@@ -631,6 +631,14 @@ switch ($normalizedAction) {
         & (Join-Path $scriptDir "helpers\context-menu.ps1") @Rest
         exit $LASTEXITCODE
     }
+    { $_ -in @("machine", "alias", "machine-info", "machine-alias", "mach", "info") } {
+        & (Join-Path $scriptDir "helpers\machine-info.ps1") @Rest
+        exit $LASTEXITCODE
+    }
+    { $_ -in @("ip", "my-ip", "myip", "ip-info", "ipinfo") } {
+        & (Join-Path $scriptDir "helpers\machine-info.ps1") "ip" @Rest
+        exit $LASTEXITCODE
+    }
     { $_ -in @("help", "--help", "-help", "-h", "/?", "?", "") } {
         Show-OsHelp
         exit 0

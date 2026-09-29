@@ -351,7 +351,7 @@ foreach ($a in $Argv) {
     elseif ($low -in @("--help", "-h", "-help", "help", "/?", "?")) {
         $hasHelp = $true
     }
-    elseif (-not $low.StartsWith("-")) {
+    elseif (-not [string]::IsNullOrWhiteSpace($a) -and -not $low.StartsWith("-")) {
         $cleanArgs += "$a".Trim()
     }
 }
@@ -361,7 +361,7 @@ if ($hasHelp) {
     exit 0
 }
 
-$subCmd = if ($cleanArgs.Count -gt 0) { $cleanArgs[0].ToLower() } else { "ls" }
+$subCmd = if ($cleanArgs.Count -gt 0 -and -not [string]::IsNullOrWhiteSpace($cleanArgs[0])) { $cleanArgs[0].ToLower() } else { "ls" }
 
 switch ($subCmd) {
     { $_ -in @("ls", "list", "show", "status", "st") } {
@@ -399,7 +399,17 @@ switch ($subCmd) {
 
     default {
         # Positional value passed directly: .\run.ps1 machine my-node-01
-        $code = Set-MachineIdentityValue -NewValue $cleanArgs[0] -IsJson $isJson
-        exit $code
+        if ($cleanArgs.Count -gt 0 -and -not [string]::IsNullOrWhiteSpace($cleanArgs[0])) {
+            $code = Set-MachineIdentityValue -NewValue $cleanArgs[0] -IsJson $isJson
+            exit $code
+        }
+
+        $id = Get-MachineIdentityData
+        if ($isJson) {
+            $id | ConvertTo-Json -Depth 4
+        } else {
+            Show-MachineIdentityView -Identity $id
+        }
+        exit 0
     }
 }

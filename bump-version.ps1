@@ -145,6 +145,16 @@ if ($null -ne $nodeCmd2) {
     if (Test-Path $registrySync) {
         & node $registrySync | Out-Host
     }
+    $latestJson = Join-Path $PSScriptRoot ".gitmap" "release" "latest.json"
+    if (Test-Path $latestJson) {
+        $latestObj = [PSCustomObject]@{
+            version = $newVersion
+            tag = "v$newVersion"
+            branch = "release/v$newVersion"
+        }
+        $latestObj | ConvertTo-Json | Set-Content -Path $latestJson -Encoding UTF8
+        Write-Host "[ OK ] .gitmap/release/latest.json -> v$newVersion" -ForegroundColor Green
+    }
 }
 else {
     Write-Host "[ SKIP ] node not found -- run manually: node tools/sync-version.cjs && node tools/registry-sync.cjs" -ForegroundColor Yellow

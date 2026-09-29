@@ -33,6 +33,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 # Canonical version files
 VERSION_JSON = REPO_ROOT / "version.json"
 SCRIPTS_VERSION_JSON = REPO_ROOT / "scripts" / "version.json"
+GITMAP_LATEST_JSON = REPO_ROOT / ".gitmap" / "release" / "latest.json"
 PACKAGE_JSON = REPO_ROOT / "package.json"
 README_MD = REPO_ROOT / "readme.md"
 CHANGELOG_MD = REPO_ROOT / "changelog.md"
@@ -146,6 +147,20 @@ def update_version_json(next_version, today_str, dry_run=False):
             json.dump(sdata, f, indent=2)
             f.write("\n")
         print(f"[*] Updated scripts/version.json -> {next_version}")
+
+    if GITMAP_LATEST_JSON.is_file():
+        if dry_run:
+            print(f"[DRY RUN] Would update .gitmap/release/latest.json to {next_version}")
+            return
+        ldata = {
+            "version": next_version,
+            "tag": f"v{next_version}",
+            "branch": f"release/v{next_version}"
+        }
+        with open(GITMAP_LATEST_JSON, "w", encoding="utf-8", newline="\n") as f:
+            json.dump(ldata, f, indent=2)
+            f.write("\n")
+        print(f"[*] Updated .gitmap/release/latest.json -> {next_version}")
 
 
 def update_package_json(next_version, dry_run=False):
