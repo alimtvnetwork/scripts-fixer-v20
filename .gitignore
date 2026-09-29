@@ -68,3 +68,4 @@ make_v3.py
 .ai-memory/temp-agents/
 __pycache__/
 *.pyc
+.ai-memory/cicd/

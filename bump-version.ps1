@@ -155,6 +155,13 @@ if ($null -ne $nodeCmd2) {
         $latestObj | ConvertTo-Json | Set-Content -Path $latestJson -Encoding UTF8
         Write-Host "[ OK ] .gitmap/release/latest.json -> v$newVersion" -ForegroundColor Green
     }
+    $pkgJson = Join-Path $PSScriptRoot "package.json"
+    if (Test-Path $pkgJson) {
+        $pkgData = Get-Content $pkgJson -Raw | ConvertFrom-Json
+        $pkgData.version = $newVersion
+        $pkgData | ConvertTo-Json -Depth 4 | Set-Content -Path $pkgJson -Encoding UTF8
+        Write-Host "[ OK ] package.json -> v$newVersion" -ForegroundColor Green
+    }
 }
 else {
     Write-Host "[ SKIP ] node not found -- run manually: node tools/sync-version.cjs && node tools/registry-sync.cjs" -ForegroundColor Yellow

@@ -1,5 +1,15 @@
 # Changelog
 
+## [v1.54.0] - 2026-09-30
+
+### Added
+- Cross-platform machine identity & IP inspection (`machine`, `alias`, `ip`) with GitMap Go parity.
+- Cross-platform terminal history & suggestion cleaner (`clear terminal`, `clear-terminal`) across PowerShell (PSReadLine), Bash, Zsh, and Sh.
+- GitMap suggestion reseeding engine (17 canonical commands) and automatic tab-completion hook setup.
+- Global update to coding-guidelines-v24 across all documentation, remote installers, and SHA256 integrity verifications.
+
+---
+
 ## [v1.53.0] - 2026-09-29
 
 ### Added

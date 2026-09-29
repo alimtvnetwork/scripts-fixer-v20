@@ -581,6 +581,28 @@ if ($hasCommand) {
         # misc
         'taskbar-left'         = 'startup-add'   # documented sample lives under startup-add helpers
     }
+
+    # Compound verb disambiguation:
+    if ($normalizedCommand -in @("clear", "clean") -and $null -ne $Install -and $Install.Count -gt 0) {
+        $firstVerbArg = $Install[0].Trim().ToLower()
+        if ($firstVerbArg -in @("terminal", "term", "console", "history")) {
+            $commandAliasMap["clear"] = "clear-terminal"
+            $commandAliasMap["clean"] = "clear-terminal"
+        } elseif ($firstVerbArg -in @("dev", "devs", "developer", "devtool", "devtools", "dev-tool", "dev-tools", "devtools-cache")) {
+            $commandAliasMap["clear"] = "clean-dev"
+            $commandAliasMap["clean"] = "clean-dev"
+        } elseif ($firstVerbArg -in @("agy", "antigravity")) {
+            $commandAliasMap["clear"] = "clear-agy"
+            $commandAliasMap["clean"] = "clear-agy"
+        }
+    } elseif ($normalizedCommand -in @("terminal", "term") -and $null -ne $Install -and $Install.Count -gt 0) {
+        $firstVerbArg = $Install[0].Trim().ToLower()
+        if ($firstVerbArg -in @("clear", "clean", "reset", "wipe")) {
+            $commandAliasMap["terminal"] = "clear-terminal"
+            $commandAliasMap["term"]     = "clear-terminal"
+        }
+    }
+
     if ($commandAliasMap.ContainsKey($normalizedCommand)) {
         $redirectTo = $commandAliasMap[$normalizedCommand]
         Write-Host "  [REDIRECT] '" -ForegroundColor $ThemeSecondary -NoNewline
@@ -596,7 +618,7 @@ if ($hasCommand) {
     $canonicalVerbs = @(
         'install','update','uninstall','reinstall','self-update','path','scan',
         'export','status','doctor','report','models','models-download','menu',
-        'os','machine','alias','ip','clean-dev','dev-cleanup','ssh','vscode-folder','vscode-context-menu','chrome','chrome-fix-ai',
+        'os','machine','alias','ip','clear-terminal','clean-terminal','clean-dev','dev-cleanup','ssh','vscode-folder','vscode-context-menu','chrome','chrome-fix-ai',
         'chrome-profile-copy','chrome-profile-export','chrome-profile-import',
         'profile','git-tools','gsa','reset','help','version','nginx',
         'startup','schedule','crontab','macro','async','storage','pipeline','cluster',
@@ -659,6 +681,9 @@ if ($hasCommand) {
     $isBareCleanDevCommand = $normalizedCommand -in @("clean-dev", "dev-cleanup", "cleandev", "devcleanup", "dev-clean", "devtool", "devtools", "dev-tool", "dev-tools", "devtools-cache", "dev-tools-cache", "clear-dev", "clear-devtools")
     $isBareMachineCommand = $normalizedCommand -in @("machine", "machine-info", "machine-alias", "mach", "info", "alias")
     $isBareIpCommand      = $normalizedCommand -in @("ip", "my-ip", "myip", "ip-info", "ipinfo")
+    $isBareClearTerminalCommand = ($normalizedCommand -in @("clear-terminal", "clean-terminal", "terminal-clear", "terminal-clean", "clearterminal", "cleanterminal")) -or `
+        ($normalizedCommand -in @("clear", "clean") -and $null -ne $Install -and $Install.Count -gt 0 -and $Install[0].ToLower() -in @("terminal", "term", "console", "history")) -or `
+        ($normalizedCommand -in @("terminal", "term") -and $null -ne $Install -and $Install.Count -gt 0 -and $Install[0].ToLower() -in @("clear", "clean", "reset", "wipe"))
     $isBareSshCommand     = $normalizedCommand -in @("ssh","sshkey","ssh-key","ssh-keys","sshkeys")
     $isBareVscodeFolderCommand = $normalizedCommand -in @("vscode-folder", "vscode-folder-repair", "vscodefolder", "vscodefolderrepair")
     $isBareVscodeContextMenuCommand = $normalizedCommand -in @("vscode-context-menu", "vscode-contextmenu", "vscodecontextmenu", "vscode-menu", "vscodemenu")
@@ -710,7 +735,7 @@ if ($hasCommand) {
     $isCleanDevHelp = $isBareCleanDevCommand -and ($h -or $Help -or ($null -ne $Install -and $Install.Count -gt 0 -and $Install[0].ToLower() -in @("help", "--help", "-help", "-h", "/?", "?")))
     $isMachineRead = ($isBareMachineCommand -and ($null -eq $Install -or $Install.Count -eq 0 -or $Install[0].ToLower() -in @("ls","list","show","status","st","--json","-j")))
     $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareExportConfigCommand -or $isBareImportConfigCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand -or $isAgyHelp -or $isCleanDevHelp -or $isMachineRead -or $isBareIpCommand
-    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareCleanDevCommand -or $isBareMachineCommand -or $isBareIpCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareTerminalTasksCommand -or $isBareDbMenuCommand -or $isBareNginxCommand -or $isBareAgyCommand -or $isBareCleanAgyCommand
+    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareCleanDevCommand -or $isBareClearTerminalCommand -or $isBareMachineCommand -or $isBareIpCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareTerminalTasksCommand -or $isBareDbMenuCommand -or $isBareNginxCommand -or $isBareAgyCommand -or $isBareCleanAgyCommand
     $isNoPullEnv = $env:SCRIPTS_FIXER_NO_PULL -eq "1"
     $isNoPullFlag = $false
     if ($null -ne $Install) {
@@ -923,6 +948,32 @@ if ($hasCommand) {
 
         if ($null -ne $Install) {
             $osArgs += @($Install)
+        }
+
+        if ($Help -or $h) {
+            $osArgs += "--help"
+        }
+
+        & $osScript @osArgs
+        exit $LASTEXITCODE
+    }
+
+    if ($isBareClearTerminalCommand) {
+        $osScript = Join-Path $RootDir "scripts\os\run.ps1"
+        $isOsScriptPresent = Test-Path $osScript
+
+        if (-not $isOsScriptPresent) {
+            Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
+            Write-Host "OS dispatcher missing at: $osScript"
+            exit 1
+        }
+
+        $osArgs = @("clear-terminal")
+
+        if ($null -ne $Install) {
+            $isSkipFirst = ($normalizedCommand -in @("clear", "clean", "terminal", "term") -and $Install.Count -gt 0 -and $Install[0].ToLower() -in @("terminal", "term", "console", "history", "clear", "clean", "reset", "wipe"))
+            $forwardArgs = if ($isSkipFirst -and $Install.Count -gt 1) { @($Install[1..($Install.Count - 1)]) } elseif ($isSkipFirst) { @() } else { @($Install) }
+            $osArgs += $forwardArgs
         }
 
         if ($Help -or $h) {

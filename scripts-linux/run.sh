@@ -59,6 +59,15 @@ while [ $# -gt 0 ]; do
     # ./run.sh alias [args...]
     # ./run.sh ip [--json]
     os)
+        if [ "${2:-}" = "clear-terminal" ] || [ "${2:-}" = "terminal-clear" ]; then
+            VERB="clear-terminal-passthrough"; shift 2; CLRTERM_REST=("$@"); break
+        fi
+        if [ "${2:-}" = "terminal" ] && { [ "${3:-}" = "clear" ] || [ "${3:-}" = "clean" ]; }; then
+            VERB="clear-terminal-passthrough"; shift 3; CLRTERM_REST=("$@"); break
+        fi
+        if [ "${2:-}" = "clear" ] && { [ "${3:-}" = "terminal" ] || [ "${3:-}" = "term" ]; }; then
+            VERB="clear-terminal-passthrough"; shift 3; CLRTERM_REST=("$@"); break
+        fi
         if [ "${2:-}" = "machine" ] || [ "${2:-}" = "alias" ] || [ "${2:-}" = "info" ]; then
             VERB="machine-passthrough"; shift 2; MACHINE_REST=("$@"); break
         fi
@@ -69,6 +78,13 @@ while [ $# -gt 0 ]; do
             VERB="osclean-passthrough"; OSCLEAN_SUB="run"; shift 2; OSCLEAN_REST=("$@"); break
         fi
         VERB="machine-passthrough"; shift; MACHINE_REST=("$@"); break ;;
+    clear-terminal|clean-terminal|terminal-clear|terminal-clean|clearterminal|cleanterminal)
+        VERB="clear-terminal-passthrough"; shift; CLRTERM_REST=("$@"); break ;;
+    terminal|term)
+        if [ "${2:-}" = "clear" ] || [ "${2:-}" = "clean" ] || [ "${2:-}" = "reset" ] || [ "${2:-}" = "wipe" ]; then
+            VERB="clear-terminal-passthrough"; shift 2; CLRTERM_REST=("$@"); break
+        fi
+        ;;
     machine|machine-info|machine-alias|alias)
         VERB="machine-passthrough"; shift; MACHINE_REST=("$@"); break ;;
     ip|my-ip|myip|ip-info|ipinfo)
@@ -90,6 +106,9 @@ while [ $# -gt 0 ]; do
     os-clean|clean|clear)
         if [[ "$2" =~ ^(dev|devs|developer|devtool|devtools|dev-tool|dev-tools|devtools-cache|dev-tools-cache|dev-clean|clean-dev)$ ]]; then
             VERB="osclean-passthrough"; OSCLEAN_SUB="run"; shift 2; OSCLEAN_REST=("--only" "pkg-npm,pkg-pnpm,pkg-bun,pkg-yarn,pkg-pip,pkg-go,pkg-cargo" "$@"); break
+        fi
+        if [[ "$2" =~ ^(terminal|term|console|history)$ ]]; then
+            VERB="clear-terminal-passthrough"; shift 2; CLRTERM_REST=("$@"); break
         fi
         VERB="osclean-passthrough"; OSCLEAN_SUB="run";              shift; OSCLEAN_REST=("$@"); break ;;
     os-clean-list|clean-list|clean-categories)
@@ -363,6 +382,14 @@ Cross-OS machine identity & network inspection (GitMap parity):
   machine set <name>           Set custom machine alias/name with rollback
   machine revert               Restore previous machine alias and name
   ip [--json]                  Display active network adapters and IP addresses
+
+Cross-OS terminal history & suggestion cleaner (GitMap parity):
+  clear-terminal               Wipe terminal history and suggestions (Bash, Zsh, Sh, PWSH)
+  clear terminal               Alias of 'clear-terminal'
+      --dry-run                Preview files and targets without deleting
+      --reseed-only            Only reseed GitMap suggestions without wiping
+      --no-reseed              Wipe history but skip GitMap suggestions reseeding
+      --json                   Emit machine-readable JSON summary
 
 Cross-OS developer tools cleanup (clean-dev / dev-cleanup):
   clean-dev                    Sweep dev caches (npm, pnpm, bun, yarn, pip, go, cargo)
@@ -908,6 +935,12 @@ case "${VERB:-help}" in
     _mach_filtered=()
     for _a in "${MACHINE_REST[@]:-}"; do [ -n "$_a" ] && _mach_filtered+=("$_a"); done
     bash "$ROOT/_shared/machine-info.sh" "${_mach_filtered[@]}"
+    exit $?
+    ;;
+  clear-terminal-passthrough)
+    _clr_filtered=()
+    for _a in "${CLRTERM_REST[@]:-}"; do [ -n "$_a" ] && _clr_filtered+=("$_a"); done
+    bash "$ROOT/_shared/clear-terminal.sh" "${_clr_filtered[@]}"
     exit $?
     ;;
   startup-passthrough)

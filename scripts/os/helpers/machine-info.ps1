@@ -8,6 +8,9 @@
 #>
 
 param(
+    [string]$Action = "",
+    [switch]$Json,
+    [switch]$Help,
     [Parameter(ValueFromRemainingArguments = $true)]
     [string[]]$Argv = @()
 )
@@ -338,17 +341,21 @@ function Show-MachineHelp {
 
 # ── Main Entrypoint Dispatcher ────────────────────────────────────────────────
 
-$isJson = $false
-$hasHelp = $false
+$isJson = $Json.IsPresent
+$hasHelp = $Help.IsPresent
 $cleanArgs = @()
+
+if (-not [string]::IsNullOrWhiteSpace($Action)) {
+    $cleanArgs += $Action.Trim()
+}
 
 foreach ($a in $Argv) {
     $low = "$a".Trim().ToLower()
 
-    if ($low -in @("--json", "-j", "json")) {
+    if ($low -in @("--json", "-json", "-j", "json")) {
         $isJson = $true
     }
-    elseif ($low -in @("--help", "-h", "-help", "help", "/?", "?")) {
+    elseif ($low -in @("--help", "-help", "-h", "help", "/?", "?")) {
         $hasHelp = $true
     }
     elseif (-not [string]::IsNullOrWhiteSpace($a) -and -not $low.StartsWith("-")) {

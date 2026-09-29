@@ -210,6 +210,8 @@ function Show-OsHelp {
     Write-Host "    machine set <name>                                     Set custom machine alias/name with rollback" -ForegroundColor Green
     Write-Host "    machine revert                                         Revert to previous machine alias" -ForegroundColor Green
     Write-Host "    ip [--json]                                            Display network interfaces & default gateway" -ForegroundColor Green
+    Write-Host "    clear-terminal [--dry-run] [--yes]                     Clear terminal histories/suggestions & reseed GitMap" -ForegroundColor Green
+    Write-Host "      Aliases: clear terminal, terminal-clear, clean-terminal" -ForegroundColor DarkGray
     Write-Host ""
     Write-Host "  DEFAULT APPS (open Settings deeplink scoped to the app, then verify)" -ForegroundColor Cyan
     Write-Host "    browser <name> [--list] [--dry-run] [--yes]            Set default web browser" -ForegroundColor Green
@@ -427,7 +429,13 @@ if ($normalizedAction -match '^clean-(.+)$') {
 }
 
 switch ($normalizedAction) {
-    "clean" {
+    { $_ -in @("clean", "clear") } {
+        if ($Rest.Count -gt 0 -and $Rest[0].ToLower() -in @("terminal", "term", "console")) {
+            $restSub = @()
+            if ($Rest.Count -gt 1) { $restSub = @($Rest[1..($Rest.Count - 1)]) }
+            & (Join-Path $scriptDir "helpers\clear-terminal.ps1") @restSub
+            exit $LASTEXITCODE
+        }
         # SIMPLE clean: WU cache + temp dirs + event logs + PSReadLine history.
         # For the full 60-category sweep use 'advance-clean' / 'advanced-clean'.
         & (Join-Path $scriptDir "helpers\simple-clean.ps1") -Argv $Rest
@@ -637,6 +645,10 @@ switch ($normalizedAction) {
     }
     { $_ -in @("ip", "my-ip", "myip", "ip-info", "ipinfo") } {
         & (Join-Path $scriptDir "helpers\machine-info.ps1") "ip" @Rest
+        exit $LASTEXITCODE
+    }
+    { $_ -in @("clear-terminal", "clean-terminal", "terminal-clear", "terminal-clean", "clearterminal", "cleanterminal", "terminal") } {
+        & (Join-Path $scriptDir "helpers\clear-terminal.ps1") @Rest
         exit $LASTEXITCODE
     }
     { $_ -in @("help", "--help", "-help", "-h", "/?", "?", "") } {

@@ -366,6 +366,18 @@ function Show-RootHelpRaw {
     Write-Host "        .\run.ps1 machine revert".PadRight(60) -NoNewline; Write-Host "# Restore previous machine alias and name" -ForegroundColor $ThemeMuted
     Write-Host "        .\run.ps1 os machine".PadRight(60) -NoNewline; Write-Host "# Access machine identity via OS dispatcher" -ForegroundColor $ThemeMuted
     Write-Host ""
+    Write-Host "    Terminal History & Suggestion Cleaner (GitMap parity) -- detailed examples:" -ForegroundColor $ThemePrimary
+    Write-Host "      Terminal Clean, PSReadLine & Shell History Wipe:" -ForegroundColor DarkYellow
+    Write-Host "        .\run.ps1 clear-terminal".PadRight(60) -NoNewline; Write-Host "# Wipe terminal history and suggestions (PWSH, Bash, Zsh, Sh)" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 clear terminal".PadRight(60) -NoNewline; Write-Host "# Compound alias for 'clear-terminal'" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 clear-terminal --dry-run".PadRight(60) -NoNewline; Write-Host "# Preview targets and line counts without deleting" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 clear-terminal -y".PadRight(60) -NoNewline; Write-Host "# Skip interactive confirmation prompt" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 clear-terminal --json".PadRight(60) -NoNewline; Write-Host "# Output wipe & reseed results as structured JSON" -ForegroundColor $ThemeMuted
+    Write-Host "      GitMap Reseeding & Prediction Engine:" -ForegroundColor DarkYellow
+    Write-Host "        .\run.ps1 clear-terminal --reseed-only".PadRight(60) -NoNewline; Write-Host "# Reseed 17 GitMap suggestions without wiping history" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 clear-terminal --no-reseed".PadRight(60) -NoNewline; Write-Host "# Wipe terminal history but skip GitMap suggestions reseeding" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 os clear-terminal".PadRight(60) -NoNewline; Write-Host "# Access terminal cleaner via OS dispatcher" -ForegroundColor $ThemeMuted
+    Write-Host ""
     # ----- Dedicated Chrome & extensions cheatsheet ---------------------------
     # Surfaces every extension install mode (single, comma-list, all, raw URL,
     # file-of-URLs) with copy-paste examples so users do not have to grep the
