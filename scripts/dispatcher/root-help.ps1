@@ -354,6 +354,18 @@ function Show-RootHelpRaw {
     Write-Host "        .\run.ps1 os choco-clean".PadRight(60) -NoNewline; Write-Host "# Clean Chocolatey download archives & broken packages" -ForegroundColor $ThemeMuted
     Write-Host "        python scripts/os-ai-clean.py --clean-all".PadRight(60) -NoNewline; Write-Host "# Purge Antigravity brain & OS temp AI dumps" -ForegroundColor $ThemeMuted
     Write-Host ""
+    Write-Host "    Machine Identity & IP Inspection (GitMap parity) -- detailed examples:" -ForegroundColor $ThemePrimary
+    Write-Host "      Inspection, Hostname & Network Adapters:" -ForegroundColor DarkYellow
+    Write-Host "        .\run.ps1 machine".PadRight(60) -NoNewline; Write-Host "# Display complete machine OS, specs & network identity" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 machine ls".PadRight(60) -NoNewline; Write-Host "# Explicit list alias for machine overview" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 machine --json".PadRight(60) -NoNewline; Write-Host "# Output machine identity as structured JSON (for CI/piping)" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 ip".PadRight(60) -NoNewline; Write-Host "# Display network adapters, IPs, gateways & netmasks" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 ip --json".PadRight(60) -NoNewline; Write-Host "# Output network adapters as structured JSON array" -ForegroundColor $ThemeMuted
+    Write-Host "      Machine Naming & Rollback:" -ForegroundColor DarkYellow
+    Write-Host "        .\run.ps1 machine set <name>".PadRight(60) -NoNewline; Write-Host "# Set custom machine alias/name with rollback tracking" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 machine revert".PadRight(60) -NoNewline; Write-Host "# Restore previous machine alias and name" -ForegroundColor $ThemeMuted
+    Write-Host "        .\run.ps1 os machine".PadRight(60) -NoNewline; Write-Host "# Access machine identity via OS dispatcher" -ForegroundColor $ThemeMuted
+    Write-Host ""
     # ----- Dedicated Chrome & extensions cheatsheet ---------------------------
     # Surfaces every extension install mode (single, comma-list, all, raw URL,
     # file-of-URLs) with copy-paste examples so users do not have to grep the

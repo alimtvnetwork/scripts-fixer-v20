@@ -54,6 +54,25 @@ while [ $# -gt 0 ]; do
         printf '\n  scripts-fixer v%s  (%s)\n  https://github.com/alimtvnetwork/scripts-fixer-v20\n\n' "$ver" "$sha"
         exit 0
         ;;
+    # ---- top-level shortcuts for machine identity & IP inspection ----
+    # ./run.sh machine [ls|show|set|revert|ip] [--json]
+    # ./run.sh alias [args...]
+    # ./run.sh ip [--json]
+    os)
+        if [ "${2:-}" = "machine" ] || [ "${2:-}" = "alias" ] || [ "${2:-}" = "info" ]; then
+            VERB="machine-passthrough"; shift 2; MACHINE_REST=("$@"); break
+        fi
+        if [ "${2:-}" = "ip" ]; then
+            VERB="machine-passthrough"; shift 2; MACHINE_REST=("ip" "$@"); break
+        fi
+        if [ "${2:-}" = "clean" ] || [ "${2:-}" = "clear" ]; then
+            VERB="osclean-passthrough"; OSCLEAN_SUB="run"; shift 2; OSCLEAN_REST=("$@"); break
+        fi
+        VERB="machine-passthrough"; shift; MACHINE_REST=("$@"); break ;;
+    machine|machine-info|machine-alias|alias)
+        VERB="machine-passthrough"; shift; MACHINE_REST=("$@"); break ;;
+    ip|my-ip|myip|ip-info|ipinfo)
+        VERB="machine-passthrough"; shift; MACHINE_REST=("ip" "$@"); break ;;
     # ---- top-level shortcuts to script 64 (cross-OS startup-add) ----
     startup-list|startup-ls)
         VERB="startup-passthrough"; STARTUP_SUB="list"; shift ;;
@@ -338,6 +357,12 @@ Cross-OS startup management (script 64 shortcuts):
   startup-prune                Idempotent sweep: remove ALL tool-tagged entries
       --dry-run                Preview only, no changes
       --yes                    Skip the interactive confirmation prompt
+
+Cross-OS machine identity & network inspection (GitMap parity):
+  machine [ls|show] [--json]   Display machine IP, alias, OS hostname, and specs
+  machine set <name>           Set custom machine alias/name with rollback
+  machine revert               Restore previous machine alias and name
+  ip [--json]                  Display active network adapters and IP addresses
 
 Cross-OS developer tools cleanup (clean-dev / dev-cleanup):
   clean-dev                    Sweep dev caches (npm, pnpm, bun, yarn, pip, go, cargo)
@@ -879,6 +904,12 @@ case "${VERB:-help}" in
   list) registry_list_all | column -t -s$'\t' ;;
   health)      verb_health ;;
   repair-all)  verb_repair_all ;;
+  machine-passthrough)
+    _mach_filtered=()
+    for _a in "${MACHINE_REST[@]:-}"; do [ -n "$_a" ] && _mach_filtered+=("$_a"); done
+    bash "$ROOT/_shared/machine-info.sh" "${_mach_filtered[@]}"
+    exit $?
+    ;;
   startup-passthrough)
     bash "$ROOT/64-startup-add/run.sh" "$STARTUP_SUB" "${STARTUP_REST[@]:-}"
     ;;

@@ -238,6 +238,11 @@ lines.push(`| Scripts with modes | ${scriptsWithModes} |`);
 lines.push(`| Combo keywords | ${comboEntries.length} |`);
 lines.push('');
 
+fs.mkdirSync(path.dirname(OUT_PATH), { recursive: true });
 fs.writeFileSync(OUT_PATH, lines.join('\n'));
+const OUT_PATH2 = path.join(ROOT, '02-spec', 'script-registry-summary.md');
+if (fs.existsSync(path.dirname(OUT_PATH2))) {
+  fs.writeFileSync(OUT_PATH2, lines.join('\n'));
+}
 console.log(`Wrote ${OUT_PATH}`);
 console.log(`  ${totalScripts} scripts, ${totalKeywords} keywords, ${totalModeEntries} mode entries, ${comboEntries.length} combos, ${subKwCount} subcommand keywords`);
