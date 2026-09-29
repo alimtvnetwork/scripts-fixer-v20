@@ -576,8 +576,21 @@ if ($hasCommand) {
         'dev-tools'            = 'clean-dev'
         'devtools-cache'       = 'clean-dev'
         'dev-tools-cache'      = 'clean-dev'
+        'devtool-cache'        = 'clean-dev'
+        'dev-tool-cache'       = 'clean-dev'
         'clear-dev'            = 'clean-dev'
         'clear-devtools'       = 'clean-dev'
+        'clear-dev-tools'      = 'clean-dev'
+        'clear-dev-tools-cache'= 'clean-dev'
+        'clear-devtools-cache' = 'clean-dev'
+        'clear-devtool'        = 'clean-dev'
+        'clear-dev-tool'       = 'clean-dev'
+        'clean-devtools'       = 'clean-dev'
+        'clean-dev-tools'      = 'clean-dev'
+        'clean-dev-tools-cache'= 'clean-dev'
+        'clean-devtools-cache' = 'clean-dev'
+        'devtools-cache-clear' = 'clean-dev'
+        'dev-tools-cache-clear'= 'clean-dev'
         # misc
         'taskbar-left'         = 'startup-add'   # documented sample lives under startup-add helpers
     }
@@ -588,7 +601,7 @@ if ($hasCommand) {
         if ($firstVerbArg -in @("terminal", "term", "console", "history")) {
             $commandAliasMap["clear"] = "clear-terminal"
             $commandAliasMap["clean"] = "clear-terminal"
-        } elseif ($firstVerbArg -in @("dev", "devs", "developer", "devtool", "devtools", "dev-tool", "dev-tools", "devtools-cache")) {
+        } elseif ($firstVerbArg -in @("dev", "devs", "developer", "devtool", "devtools", "dev-tool", "dev-tools", "devtools-cache", "dev-tools-cache", "devtool-cache", "dev-tool-cache")) {
             $commandAliasMap["clear"] = "clean-dev"
             $commandAliasMap["clean"] = "clean-dev"
         } elseif ($firstVerbArg -in @("agy", "antigravity")) {
@@ -600,6 +613,11 @@ if ($hasCommand) {
         if ($firstVerbArg -in @("clear", "clean", "reset", "wipe")) {
             $commandAliasMap["terminal"] = "clear-terminal"
             $commandAliasMap["term"]     = "clear-terminal"
+        }
+    } elseif ($normalizedCommand -in @("devtool", "devtools", "dev-tool", "dev-tools", "devtools-cache", "dev-tools-cache", "devtool-cache", "dev-tool-cache") -and $null -ne $Install -and $Install.Count -gt 0) {
+        $firstVerbArg = $Install[0].Trim().ToLower()
+        if ($firstVerbArg -in @("clear", "clean", "cleanup", "reset", "purge")) {
+            $commandAliasMap[$normalizedCommand] = "clean-dev"
         }
     }
 
@@ -678,7 +696,14 @@ if ($hasCommand) {
     # (isBareInstallCommand already set above at line 3679)
     $isBareMenuCommand    = $normalizedCommand -in @("menu","menus","context-menu","contextmenu","ctx-menu","ctxmenu")
     $isBareOsCommand      = $normalizedCommand -eq "os"
-    $isBareCleanDevCommand = $normalizedCommand -in @("clean-dev", "dev-cleanup", "cleandev", "devcleanup", "dev-clean", "devtool", "devtools", "dev-tool", "dev-tools", "devtools-cache", "dev-tools-cache", "clear-dev", "clear-devtools")
+    $isBareCleanDevCommand = $normalizedCommand -in @(
+        "clean-dev", "dev-cleanup", "cleandev", "devcleanup", "dev-clean",
+        "devtool", "devtools", "dev-tool", "dev-tools",
+        "devtools-cache", "dev-tools-cache", "devtool-cache", "dev-tool-cache",
+        "clear-dev", "clear-devtools", "clear-dev-tools", "clear-dev-tools-cache", "clear-devtools-cache",
+        "clear-devtool", "clear-dev-tool", "clean-devtools", "clean-dev-tools", "clean-dev-tools-cache", "clean-devtools-cache",
+        "devtools-cache-clear", "dev-tools-cache-clear"
+    )
     $isBareMachineCommand = $normalizedCommand -in @("machine", "machine-info", "machine-alias", "mach", "info", "alias")
     $isBareIpCommand      = $normalizedCommand -in @("ip", "my-ip", "myip", "ip-info", "ipinfo")
     $isBareClearTerminalCommand = ($normalizedCommand -in @("clear-terminal", "clean-terminal", "terminal-clear", "terminal-clean", "clearterminal", "cleanterminal")) -or `

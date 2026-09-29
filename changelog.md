@@ -1,5 +1,16 @@
 # Changelog
 
+## [v1.55.0] - 2026-09-30
+
+### Added
+- Complete POSIX Shell command parity (`scripts/run.sh` and `scripts-linux/run.sh`) matching PowerShell dispatchers for `machine`, `ip`, `clear-terminal`, `clear terminal`, and `clean-dev` / `dev-clean`.
+- Modularized PowerShell root help system: decomposed monolithic `root-help.ps1` into 30 modular sub-files in `scripts/dispatcher/help/` (strictly $\le$ 100 lines each).
+- Dynamic keyword search filtering for Shell runner (`./run.sh help <keyword>`).
+- Dedicated Shell help categories for Machine Identity, Terminal History Cleaner, and Developer Tools Cleanup.
+- Pester test suite expansion covering cross-platform shell script dispatching and dry-run execution.
+
+---
+
 ## [v1.54.0] - 2026-09-30
 
 ### Added

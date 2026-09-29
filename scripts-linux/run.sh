@@ -101,10 +101,10 @@ while [ $# -gt 0 ]; do
     startup-prune|startup-purge)
         VERB="startup-passthrough"; STARTUP_SUB="prune";  shift; STARTUP_REST=("$@"); break ;;
     # ---- top-level shortcuts to script 65 (cross-OS os-clean) ----
-    dev-cleanup|clean-dev|devcleanup|cleandev|dev-clean|devtool|devtools|dev-tool|dev-tools|devtools-cache|dev-tools-cache|clear-dev|clear-devtools)
+    dev-cleanup|clean-dev|devcleanup|cleandev|dev-clean|devtool|devtools|dev-tool|dev-tools|devtools-cache|dev-tools-cache|devtool-cache|dev-tool-cache|clear-dev|clear-devtools|clear-dev-tools|clear-dev-tools-cache|clear-devtools-cache|clear-devtool|clear-dev-tool|clean-devtools|clean-dev-tools|clean-dev-tools-cache|clean-devtools-cache|devtools-cache-clear|dev-tools-cache-clear)
         VERB="osclean-passthrough"; OSCLEAN_SUB="run"; shift; OSCLEAN_REST=("--only" "pkg-npm,pkg-pnpm,pkg-bun,pkg-yarn,pkg-pip,pkg-go,pkg-cargo" "$@"); break ;;
     os-clean|clean|clear)
-        if [[ "$2" =~ ^(dev|devs|developer|devtool|devtools|dev-tool|dev-tools|devtools-cache|dev-tools-cache|dev-clean|clean-dev)$ ]]; then
+        if [[ "$2" =~ ^(dev|devs|developer|devtool|devtools|dev-tool|dev-tools|devtools-cache|dev-tools-cache|devtool-cache|dev-tool-cache|dev-clean|clean-dev)$ ]]; then
             VERB="osclean-passthrough"; OSCLEAN_SUB="run"; shift 2; OSCLEAN_REST=("--only" "pkg-npm,pkg-pnpm,pkg-bun,pkg-yarn,pkg-pip,pkg-go,pkg-cargo" "$@"); break
         fi
         if [[ "$2" =~ ^(terminal|term|console|history)$ ]]; then

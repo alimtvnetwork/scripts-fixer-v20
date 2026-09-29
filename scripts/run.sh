@@ -36,6 +36,9 @@ if [ -f "scripts/shared/theme.json" ]; then
     [ ! -z "$t_error" ] && val=$(map_color "$t_error") && [ ! -z "$val" ] && ERROR=$val
 fi
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
 PYTHON_BIN="python3"
 if ! python3 -c "import sys" &>/dev/null; then
     if python -c "import sys" &>/dev/null; then
@@ -69,6 +72,12 @@ show_main_help() {
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install ls" "List all previously installed items"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install tar <file|url>" "Intelligent archive installer (.tar.gz, .zip, .gz)"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh os <action>" "OS level actions (update, update-all)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh machine [ls|--json]" "Display machine IP, alias, OS specs (GitMap parity)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh ip [--json]" "Display network adapters & IPs (GitMap parity)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh clear-terminal" "Wipe terminal history & suggestions (GitMap parity)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh clear terminal" "Alias of 'clear-terminal'"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh clean-dev [-y]" "Sweep dev tools caches (Go, npm, pip, cargo)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh dev-clean [-y]" "Alias of 'clean-dev'"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh vmware <tools|mount>" "VMware tools installation and shared folder mount"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh vmware-tools" "Install VMware Tools (open-vm-tools & desktop)"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh vmware-mount" "Mount VMware shared folder (.host:/ -> /mnt/hgfs)"
@@ -83,6 +92,34 @@ show_main_help() {
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh pipeline errors -t" "Check pipeline errors and wait for ETA"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh cluster <cmd>" "Cluster nodes & remote execution (SQLite+SSH RSA)"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh fix-antigravity" "Fix Antigravity launcher & restore official icon"
+
+    echo -e ""
+    echo -e "  ${ACCENT}Machine Identity & Network Inspection (GitMap parity):${TEXT}"
+    echo -e ""
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh machine [ls|show]" "Display machine IP, alias, OS hostname, and specs"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh machine --json" "Output machine identity as structured JSON"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh machine set <name>" "Set custom machine alias/name with rollback"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh machine revert" "Restore previous machine alias and name"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh ip [--json]" "Display active network adapters and IP addresses"
+
+    echo -e ""
+    echo -e "  ${ACCENT}Terminal History & Suggestion Cleaner (GitMap parity):${TEXT}"
+    echo -e ""
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh clear-terminal" "Wipe terminal history and suggestions (Bash, Zsh, Sh, PWSH)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh clear terminal" "Alias of 'clear-terminal'"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh clear-terminal --dry-run" "Preview files and targets without deleting"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh clear-terminal -y" "Skip confirmation prompt"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh clear-terminal --json" "Output wipe & reseed results as structured JSON"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh clear-terminal --reseed-only" "Only reseed GitMap suggestions without wiping"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh clear-terminal --no-reseed" "Wipe history but skip GitMap suggestions reseeding"
+
+    echo -e ""
+    echo -e "  ${ACCENT}Developer Tools Cache Cleanup:${TEXT}"
+    echo -e ""
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh clean-dev" "Sweep dev caches (npm, pnpm, bun, yarn, pip, go, cargo)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh clean-dev --dry-run" "Preview space without deleting"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh clean-dev -y" "Skip confirmation prompt"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh dev-clean" "Alias of 'clean-dev'"
 
     echo -e ""
     echo -e "  ${ACCENT}Options & Flags:${TEXT}"
@@ -368,12 +405,70 @@ fi
 
 # General help check
 if [[ "$COMMAND" == "help" || "$COMMAND" == "-h" || "$COMMAND" == "--help" ]]; then
-    show_main_help
+    if [ -n "$ARGS" ]; then
+        show_main_help | grep -i --color=never "$ARGS" || echo "No lines matched: $ARGS"
+    else
+        show_main_help
+    fi
     show_footer
     exit 0
 fi
 
 case "$COMMAND" in
+    "machine"|"machine-info"|"machine-alias"|"alias")
+        bash "$REPO_ROOT/scripts-linux/_shared/machine-info.sh" $ARGS
+        show_footer
+        exit $?
+        ;;
+
+    "ip"|"my-ip"|"myip"|"ip-info"|"ipinfo")
+        bash "$REPO_ROOT/scripts-linux/_shared/machine-info.sh" ip $ARGS
+        show_footer
+        exit $?
+        ;;
+
+    "clear-terminal"|"clean-terminal"|"terminal-clear"|"terminal-clean"|"clearterminal"|"cleanterminal")
+        bash "$REPO_ROOT/scripts-linux/_shared/clear-terminal.sh" $ARGS
+        show_footer
+        exit $?
+        ;;
+
+    "clear")
+        first_sub=$(echo "$ARGS" | awk '{print $1}')
+        rest_sub=$(echo "$ARGS" | awk '{$1=""; print $0}' | sed -e 's/^[[:space:]]*//')
+        if [[ "$first_sub" == "terminal" || "$first_sub" == "term" ]]; then
+            bash "$REPO_ROOT/scripts-linux/_shared/clear-terminal.sh" $rest_sub
+            show_footer
+            exit $?
+        elif [[ "$first_sub" =~ ^(dev|devs|developer|devtool|devtools|dev-tool|dev-tools|devtools-cache|dev-tools-cache|devtool-cache|dev-tool-cache|clean-dev|dev-clean)$ ]]; then
+            if [ -f "$REPO_ROOT/scripts-linux/run.sh" ]; then
+                bash "$REPO_ROOT/scripts-linux/run.sh" dev-cleanup $rest_sub
+            else
+                $PYTHON_BIN scripts/os-ai-clean.py $rest_sub
+            fi
+            show_footer
+            exit $?
+        else
+            clear 2>/dev/null || true
+            exit 0
+        fi
+        ;;
+
+    "clean-dev"|"dev-clean"|"dev-cleanup"|"cleandev"|"devcleanup"|"devtool"|"devtools"|"dev-tool"|"dev-tools"|"devtools-cache"|"dev-tools-cache"|"devtool-cache"|"dev-tool-cache"|"clear-dev"|"clear-devtools"|"clear-dev-tools"|"clear-dev-tools-cache"|"clear-devtools-cache"|"clear-devtool"|"clear-dev-tool"|"clean-devtools"|"clean-dev-tools"|"clean-dev-tools-cache"|"clean-devtools-cache"|"devtools-cache-clear"|"dev-tools-cache-clear")
+        first_sub=$(echo "$ARGS" | awk '{print $1}')
+        rest_sub=$(echo "$ARGS" | awk '{$1=""; print $0}' | sed -e 's/^[[:space:]]*//')
+        if [[ "$first_sub" == "clear" || "$first_sub" == "clean" || "$first_sub" == "cleanup" || "$first_sub" == "cache" ]]; then
+            ARGS="$rest_sub"
+        fi
+        if [ -f "$REPO_ROOT/scripts-linux/run.sh" ]; then
+            bash "$REPO_ROOT/scripts-linux/run.sh" dev-cleanup $ARGS
+        else
+            $PYTHON_BIN scripts/os-ai-clean.py $ARGS
+        fi
+        show_footer
+        exit $?
+        ;;
+
     "export-config")
         APP=$1
         mkdir -p ./configs
@@ -411,6 +506,10 @@ case "$COMMAND" in
             echo -e "    update-all           - Run update and release-upgrade"
             echo -e "    fix-link <path>      - Create global symlink or fix broken git symlink"
             echo -e "    fix-antigravity      - Fix Antigravity launcher & restore official icon"
+            echo -e "    machine [ls|show]    - Display machine IP, alias, OS hostname, and specs"
+            echo -e "    ip [--json]          - Display active network adapters and IP addresses"
+            echo -e "    clear-terminal       - Wipe terminal history and suggestions"
+            echo -e "    dev-cleanup          - Sweep developer tool caches"
             show_footer
             exit 0
         elif [[ "$OS_CMD" == "update-all" || "$OS_CMD" == "91" ]]; then
@@ -421,6 +520,21 @@ case "$COMMAND" in
             bash scripts/os/ubuntu/fix-link.sh "$OS_ARG"
         elif [[ "$OS_CMD" == "fix-antigravity" || "$OS_CMD" == "fix-icon" ]]; then
             bash scripts/os/ubuntu/fix-antigravity-desktop.sh "$OS_ARG"
+        elif [[ "$OS_CMD" == "machine" || "$OS_CMD" == "alias" || "$OS_CMD" == "info" ]]; then
+            bash "$REPO_ROOT/scripts-linux/_shared/machine-info.sh" $OS_ARG
+        elif [[ "$OS_CMD" == "ip" ]]; then
+            bash "$REPO_ROOT/scripts-linux/_shared/machine-info.sh" ip $OS_ARG
+        elif [[ "$OS_CMD" == "clear-terminal" || "$OS_CMD" == "clean-terminal" ]]; then
+            bash "$REPO_ROOT/scripts-linux/_shared/clear-terminal.sh" $OS_ARG
+        elif [[ "$OS_CMD" == "terminal" ]] && [[ "$OS_ARG" == *"clear"* || "$OS_ARG" == *"clean"* ]]; then
+            OS_TERM_ARG=$(echo "$OS_ARG" | sed -E 's/^(clear|clean)[[:space:]]*//')
+            bash "$REPO_ROOT/scripts-linux/_shared/clear-terminal.sh" $OS_TERM_ARG
+        elif [[ "$OS_CMD" == "dev-cleanup" || "$OS_CMD" == "dev-clean" || "$OS_CMD" == "clean-dev" ]]; then
+            if [ -f "$REPO_ROOT/scripts-linux/run.sh" ]; then
+                bash "$REPO_ROOT/scripts-linux/run.sh" dev-cleanup $OS_ARG
+            else
+                $PYTHON_BIN scripts/os-ai-clean.py $OS_ARG
+            fi
         else
             echo -e "  ${ERROR}Unknown OS argument: $OS_CMD${TEXT}"
         fi

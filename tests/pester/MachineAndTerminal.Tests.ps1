@@ -61,4 +61,34 @@ Describe "Linux / Shell Helper Parity" {
         (Test-Path $script:ShTerminalHelper) | Should -BeTrue
         (Get-Item $script:ShTerminalHelper).Length | Should -BeGreaterThan 100
     }
+
+    It "scripts-linux machine-info.sh runs and returns machine identity" {
+        $bash = "C:\Program Files\Git\bin\bash.exe"
+        if (Test-Path $bash) {
+            $out = & $bash $script:ShMachineHelper
+            $out -join "`n" | Should -Match "Machine Identity"
+        }
+    }
+
+    It "scripts-linux clear-terminal.sh runs in dry-run mode" {
+        $bash = "C:\Program Files\Git\bin\bash.exe"
+        if (Test-Path $bash) {
+            $out = & $bash $script:ShTerminalHelper --dry-run
+            $out -join "`n" | Should -Match "DRY-RUN"
+        }
+    }
+
+    It "scripts/run.sh dispatches machine, ip, and clear-terminal commands" {
+        $bash = "C:\Program Files\Git\bin\bash.exe"
+        if (Test-Path $bash) {
+            $outMach = & $bash (Join-Path $Repo 'scripts/run.sh') machine
+            $outMach -join "`n" | Should -Match "Machine Identity"
+
+            $outIp = & $bash (Join-Path $Repo 'scripts/run.sh') ip
+            $outIp -join "`n" | Should -Match "Network Interfaces"
+
+            $outClr = & $bash (Join-Path $Repo 'scripts/run.sh') clear-terminal --dry-run
+            $outClr -join "`n" | Should -Match "DRY-RUN"
+        }
+    }
 }
