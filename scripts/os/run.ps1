@@ -205,6 +205,11 @@ function Show-OsHelp {
     Write-Host "    autologin [status|enable|disable] [flags]              Configure OS auto-login (Win11 / Server)" -ForegroundColor Green
     Write-Host "      --user <name> | --password <pass> | --domain <domain>  Credentials for automated sign-in" -ForegroundColor DarkGray
     Write-Host "      --dry-run | --json | --server | --win11                Inspection & target overrides" -ForegroundColor DarkGray
+    Write-Host "  MACHINE IDENTITY & IP INSPECTION (GitMap parity)" -ForegroundColor Cyan
+    Write-Host "    machine [ls|show] [--json]                             Display complete OS, hardware, & network info" -ForegroundColor Green
+    Write-Host "    machine set <name>                                     Set custom machine alias/name with rollback" -ForegroundColor Green
+    Write-Host "    machine revert                                         Revert to previous machine alias" -ForegroundColor Green
+    Write-Host "    ip [--json]                                            Display network interfaces & default gateway" -ForegroundColor Green
     Write-Host ""
     Write-Host "  DEFAULT APPS (open Settings deeplink scoped to the app, then verify)" -ForegroundColor Cyan
     Write-Host "    browser <name> [--list] [--dry-run] [--yes]            Set default web browser" -ForegroundColor Green

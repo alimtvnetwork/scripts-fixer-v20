@@ -16,9 +16,10 @@ $ErrorActionPreference = "Continue"
 Set-StrictMode -Version Latest
 
 $helpersDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
-$scriptDir  = Split-Path -Parent $helpersDir
-$rootDir    = Split-Path -Parent $scriptDir
-$sharedDir  = Join-Path $rootDir "shared"
+$osDir      = Split-Path -Parent $helpersDir
+$scriptsDir = Split-Path -Parent $osDir
+$rootDir    = Split-Path -Parent $scriptsDir
+$sharedDir  = Join-Path $scriptsDir "shared"
 
 . (Join-Path $sharedDir "logging.ps1")
 
