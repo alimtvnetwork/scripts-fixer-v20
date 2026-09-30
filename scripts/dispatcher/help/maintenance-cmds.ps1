@@ -48,13 +48,30 @@ function Show-HelpDevCacheExamples {
     Write-Host "        Chocolatey".PadRight(24) -NoNewline; Write-Host "choco cache clean + package download archives in %TEMP%" -ForegroundColor $ThemeMuted
     Write-Host "        Antigravity / AI".PadRight(24) -NoNewline; Write-Host "Brain conversation history, Electron/GPU caches, task dumps" -ForegroundColor $ThemeMuted
 
+    Write-Host "      Multi-Layer Work Artifacts & System Cache Cleaner (Windows, macOS & Linux/Unix):" -ForegroundColor DarkYellow
+    Write-HelpServiceLine ".\run.ps1 clean --help" "# Detailed help for all clean/clear subcommands"
+    Write-HelpServiceLine ".\run.ps1 clean all --dry-run" "# Plan Mode: preview all 8 layers & reclaimable space"
+    Write-HelpServiceLine ".\run.ps1 clean all -y" "# Auto-clean Work, Go, npm/pnpm, DevTools, Temp, WU, Recycle, Git"
+    Write-HelpServiceLine ".\run.ps1 clean artifacts --dry-run" "# Preview work directory (D:\work) build folders & binaries"
+    Write-HelpServiceLine ".\run.ps1 clean artifacts -y" "# Remove D:\work build folders/binaries (keeps node_modules)"
+    Write-HelpServiceLine ".\run.ps1 clean go -y" "# Clean Go GOCACHE, GOMODCACHE, testcache & fuzzcache"
+    Write-HelpServiceLine ".\run.ps1 clean npm -y" "# Clean npm, pnpm store, Yarn, Bun & Node caches"
+    Write-HelpServiceLine ".\run.ps1 clean devtools -y" "# Clean Chrome/Edge/VS Code DevTools & GPU caches"
+    Write-HelpServiceLine ".\run.ps1 clean temp -y" "# Clean %TEMP%, %LOCALAPPDATA%\Temp, C:\Windows\Temp, /tmp"
+    Write-HelpServiceLine ".\run.ps1 clean wu-download -y" "# Clean Windows SoftwareDistribution\Download"
+    Write-HelpServiceLine ".\run.ps1 clean recycle -y" "# Empty Recycle Bin ($Recycle.Bin / ~/.Trash)"
+    Write-HelpServiceLine ".\run.ps1 clean git-cache -y" "# Clean Git cache folders (~/.gitcache, .gitmap, tmp_pack_*)"
+    Write-HelpServiceLine "./run.sh clean all --dry-run" "# macOS / Linux / Unix Plan Mode preview"
+    Write-HelpServiceLine "./run.sh clean all -y" "# macOS / Linux / Unix auto-clean across all layers"
+
     Write-Host "      Targeted Cleaners:" -ForegroundColor DarkYellow
     Write-HelpServiceLine ".\run.ps1 clean-agy 10" "# Prune Antigravity brain keeping latest 10 conversations"
     Write-HelpServiceLine ".\run.ps1 agy clear --keep 10 -y" "# Apply Antigravity conversation prune & cache scrub"
     Write-HelpServiceLine ".\run.ps1 os clean" "# General disk cleanup (temp, updates, logs)"
     Write-HelpServiceLine ".\run.ps1 os temp-clean" "# Purge user and system Temp folders"
     Write-HelpServiceLine ".\run.ps1 os choco-clean" "# Clean Chocolatey download archives & broken packages"
-    Write-HelpServiceLine "python scripts/os-ai-clean.py --clean-all" "# Purge Antigravity brain & OS temp AI dumps"
+    Write-HelpServiceLine "python 03-ai-scripts/44-work-and-system-cache-cleaner.py --dry-run" "# Direct Python multi-layer Plan preview"
+    Write-HelpServiceLine "python 03-ai-scripts/44-work-and-system-cache-cleaner.py -y" "# Direct Python multi-layer execution"
 
     Write-Host ""
 }

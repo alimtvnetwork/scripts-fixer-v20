@@ -440,11 +440,53 @@ case "$COMMAND" in
             bash "$REPO_ROOT/scripts-linux/_shared/clear-terminal.sh" $rest_sub
             show_footer
             exit $?
-        elif [[ "$first_sub" =~ ^(dev|devs|developer|devtool|devtools|dev-tool|dev-tools|devtools-cache|dev-tools-cache|devtool-cache|dev-tool-cache|clean-dev|dev-clean)$ ]]; then
+        elif [[ "$first_sub" =~ ^(dev|devs|developer|devtool|dev-tool|dev-tools|dev-tools-cache|clean-dev|dev-clean)$ ]]; then
             if [ -f "$REPO_ROOT/scripts-linux/run.sh" ]; then
                 bash "$REPO_ROOT/scripts-linux/run.sh" dev-cleanup $rest_sub
             else
                 $PYTHON_BIN scripts/os-ai-clean.py $rest_sub
+            fi
+            show_footer
+            exit $?
+        elif [[ "$first_sub" =~ ^(help|--help|-help|-h)$ ]]; then
+            echo -e ""
+            echo -e "  ${PRIMARY}Multi-Layer Artifacts & System Cache Cleaner (macOS, Linux/Unix & Windows)${TEXT}"
+            echo -e "  ${MUTED}==========================================================================${TEXT}"
+            echo -e "  ${ACCENT}Usage:${TEXT} ./run.sh clean <subcommand> [--dry-run] [-y] [--work-dir <path>]"
+            echo -e "         ./run.sh clear <subcommand> [--dry-run] [-y]"
+            echo -e ""
+            echo -e "  ${ACCENT}Subcommands:${TEXT}"
+            printf "    %-26s ${MUTED}%s${TEXT}\n" "all | caches | full" "Run all 8 layers (Plan preview -> prompt or -y -> space saved summary)"
+            printf "    %-26s ${MUTED}%s${TEXT}\n" "artifacts | work | build" "Clean work dir (~/work, D:\\work) dist/build/target/tmp/.cache & binaries"
+            printf "    %-26s ${MUTED}%s${TEXT}\n" "go | go-cache" "Clean Go GOCACHE, GOMODCACHE, testcache & fuzzcache"
+            printf "    %-26s ${MUTED}%s${TEXT}\n" "npm | pnpm | node" "Clean npm, pnpm store, Yarn, Bun & Node caches (keeps node_modules)"
+            printf "    %-26s ${MUTED}%s${TEXT}\n" "devtools | browser-cache" "Clean Browser DevTools/GPU cache, VS Code & Antigravity caches"
+            printf "    %-26s ${MUTED}%s${TEXT}\n" "temp | tmp" "Clean OS & user temp directories (/tmp, /var/tmp, %TEMP%)"
+            printf "    %-26s ${MUTED}%s${TEXT}\n" "wu-download | pkg-cache" "Clean OS package download caches (apt/brew/SoftwareDistribution)"
+            printf "    %-26s ${MUTED}%s${TEXT}\n" "recycle | trash" "Empty Trash / Recycle Bin (~/.Trash, ~/.local/share/Trash)"
+            printf "    %-26s ${MUTED}%s${TEXT}\n" "git-cache | git" "Clean Git caches (~/.gitcache, .gitmap temp/logs, stale tmp_pack_*)"
+            printf "    %-26s ${MUTED}%s${TEXT}\n" "dev | dev-cleanup" "Sweep developer tool caches (Go, npm, pnpm, pip, cargo)"
+            printf "    %-26s ${MUTED}%s${TEXT}\n" "terminal" "Wipe terminal history & reseed suggestions"
+            echo -e ""
+            show_footer
+            exit 0
+        elif [[ "$first_sub" =~ ^(artifacts|artifact|work|work-artifacts|build|builds|binaries|binary|all|caches|full|system|go|golang|go-cache|gocache|gomodcache|npm|pnpm|node|nodejs|npm-cache|pnpm-cache|pnpm-store|yarn|bun|devtools|devtools-cache|browser-cache|vscode-cache|temp|tmp|temp-dirs|wu|wu-download|windows-update|softwaredistribution|software-distribution|recycle|recycle-bin|recyclebin|trash|git|git-cache|gitcache|gitmap-cache|--dry-run|--plan|-y|--yes)$ ]]; then
+            ONLY_CAT=""
+            case "$first_sub" in
+                artifacts|artifact|work|work-artifacts|build|builds|binaries|binary) ONLY_CAT="work-artifacts" ;;
+                go|golang|go-cache|gocache|gomodcache) ONLY_CAT="go-cache" ;;
+                npm|pnpm|node|nodejs|npm-cache|pnpm-cache|pnpm-store|yarn|bun) ONLY_CAT="npm-pnpm-node-cache" ;;
+                devtools|devtools-cache|browser-cache|vscode-cache) ONLY_CAT="devtools-cache" ;;
+                temp|tmp|temp-dirs) ONLY_CAT="temp-dirs" ;;
+                wu|wu-download|windows-update|softwaredistribution|software-distribution) ONLY_CAT="windows-update" ;;
+                recycle|recycle-bin|recyclebin|trash) ONLY_CAT="recycle-bin" ;;
+                git|git-cache|gitcache|gitmap-cache) ONLY_CAT="git-cache" ;;
+                --dry-run|--plan|-y|--yes) rest_sub="$first_sub $rest_sub" ;;
+            esac
+            if [ -n "$ONLY_CAT" ]; then
+                $PYTHON_BIN "$REPO_ROOT/03-ai-scripts/44-work-and-system-cache-cleaner.py" --only "$ONLY_CAT" $rest_sub
+            else
+                $PYTHON_BIN "$REPO_ROOT/03-ai-scripts/44-work-and-system-cache-cleaner.py" $rest_sub
             fi
             show_footer
             exit $?

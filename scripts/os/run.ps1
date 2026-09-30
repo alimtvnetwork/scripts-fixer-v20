@@ -429,12 +429,33 @@ if ($normalizedAction -match '^clean-(.+)$') {
 }
 
 switch ($normalizedAction) {
-    { $_ -in @("clean", "clear") } {
-        if ($Rest.Count -gt 0 -and $Rest[0].ToLower() -in @("terminal", "term", "console")) {
-            $restSub = @()
-            if ($Rest.Count -gt 1) { $restSub = @($Rest[1..($Rest.Count - 1)]) }
-            & (Join-Path $scriptDir "helpers\clear-terminal.ps1") @restSub
+    { $_ -in @("clean", "clear", "clean-artifacts", "clear-artifacts", "artifacts-cleaner") } {
+        if ($normalizedAction -in @("clean-artifacts", "clear-artifacts", "artifacts-cleaner")) {
+            & (Join-Path $scriptDir "helpers\artifacts-cleaner.ps1") "artifacts" @Rest
             exit $LASTEXITCODE
+        }
+        if ($Rest.Count -gt 0) {
+            $subVerb = "$($Rest[0])".Trim().ToLower()
+            $restSub = if ($Rest.Count -gt 1) { @($Rest[1..($Rest.Count - 1)]) } else { @() }
+            if ($subVerb -in @("terminal", "term", "console")) {
+                & (Join-Path $scriptDir "helpers\clear-terminal.ps1") @restSub
+                exit $LASTEXITCODE
+            }
+            if ($subVerb -in @(
+                "artifacts", "artifact", "work", "work-artifacts", "build", "builds", "binaries", "binary",
+                "all", "caches", "full", "system",
+                "go", "golang", "go-cache", "gocache", "gomodcache",
+                "npm", "pnpm", "node", "nodejs", "npm-cache", "pnpm-cache", "pnpm-store", "yarn", "bun",
+                "devtools", "devtools-cache", "browser-cache", "vscode-cache",
+                "temp", "tmp", "temp-dirs",
+                "wu", "wu-download", "windows-update", "softwaredistribution", "software-distribution",
+                "recycle", "recycle-bin", "recyclebin", "trash",
+                "git", "git-cache", "gitcache", "gitmap-cache",
+                "help", "--help", "-help", "-h", "/?", "?"
+            )) {
+                & (Join-Path $scriptDir "helpers\artifacts-cleaner.ps1") $subVerb @restSub
+                exit $LASTEXITCODE
+            }
         }
         # SIMPLE clean: WU cache + temp dirs + event logs + PSReadLine history.
         # For the full 60-category sweep use 'advance-clean' / 'advanced-clean'.

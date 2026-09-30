@@ -524,11 +524,38 @@ if ($hasCommand) {
     # Aliases: `clean devtools` / `clear devtools` / `clear dev-tools` / `clear dev-tools-cache` / `clear dev`
     if ($normalizedCommand -in @('clean','clear') -and $Install -and $Install.Count -ge 1) {
         $firstCleanArg = "$($Install[0])".Trim().ToLower()
-        if ($firstCleanArg -in @('dev','devs','developer','devtool','devtools','dev-tool','dev-tools','dev-tools-cache','devtools-cache','dev-clean','clean-dev','devtool-cache','devtools-cache')) {
+        if ($firstCleanArg -in @('dev','devs','developer','devtool','dev-tool','dev-tools','dev-tools-cache','dev-clean','clean-dev','devtool-cache')) {
             $Command = 'clean-dev'
             $Install = if ($Install.Count -gt 1) { @($Install[1..($Install.Count - 1)]) } else { @() }
             $normalizedCommand = 'clean-dev'
         }
+        elseif ($firstCleanArg -in @(
+            'artifacts','artifact','work','work-artifacts','build','builds','binaries','binary',
+            'all','caches','full','system',
+            'go','golang','go-cache','gocache','gomodcache',
+            'npm','pnpm','node','nodejs','npm-cache','pnpm-cache','pnpm-store','yarn','bun',
+            'devtools','devtools-cache','browser-cache','vscode-cache',
+            'temp','tmp','temp-dirs',
+            'wu','wu-download','windows-update','softwaredistribution','software-distribution',
+            'recycle','recycle-bin','recyclebin','trash',
+            'git','git-cache','gitcache','gitmap-cache',
+            'help','--help','-help','-h','/?','?'
+        )) {
+            $artCleaner = Join-Path $RootDir "scripts\os\helpers\artifacts-cleaner.ps1"
+            [string[]]$restCleanArgs = @()
+            if ($Install.Count -gt 1) {
+                $restCleanArgs += @($Install[1..($Install.Count - 1)])
+            }
+            if ($Y) { $restCleanArgs += "--yes" }
+            if ($Help -or $h) { $restCleanArgs += "--help" }
+            & $artCleaner $firstCleanArg @restCleanArgs
+            exit $LASTEXITCODE
+        }
+    }
+    elseif ($normalizedCommand -in @('clean','clear') -and ($Help -or $h)) {
+        $artCleaner = Join-Path $RootDir "scripts\os\helpers\artifacts-cleaner.ps1"
+        & $artCleaner "--help"
+        exit $LASTEXITCODE
     }
 
     # ── Auto-discovery redirect ────────────────────────────────────────
