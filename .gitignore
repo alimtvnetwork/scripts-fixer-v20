@@ -69,3 +69,7 @@ make_v3.py
 __pycache__/
 *.pyc
 .ai-memory/cicd/
+antigravity-resume_task.json
+.antigravity_resume_task.json
+antigravity_resume_task.json
+.antigravity-resume_task.json
