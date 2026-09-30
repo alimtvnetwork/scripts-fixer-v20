@@ -1,5 +1,0 @@
-# powershell
-
-## Section
-
-Content here.
