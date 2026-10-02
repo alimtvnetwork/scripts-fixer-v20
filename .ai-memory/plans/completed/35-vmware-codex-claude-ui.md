@@ -34,18 +34,23 @@ Fix and improve VMware installation for Windows and Linux, and install Codex UI 
    - `scripts/os/mac/install-codex.sh`: Configured native GUI application window in `Codex.app/Contents/MacOS/Codex` and `/usr/local/bin/codex-ui`.
 4. **End-to-End Verification**:
    - `tests/e2e-ai-ui-install.ps1`:
-     - Expanded to a live 10-point test suite:
+     - Expanded to an exhaustive live 15-point test suite:
        1. VMware Workstation directory check.
-       2. VMware version integrity check.
-       3. Claude UI default directory check.
-       4. Claude Code UI Desktop shortcut check.
-       5. Claude Code UI Start Menu shortcut check.
-       6. Claude UI executable launch check.
-       7. Codex UI default directory check.
-       8. Codex UI Desktop shortcut check.
-       9. Codex UI Start Menu shortcut check.
-       10. Codex UI executable launch and window lifecycle check.
-     - Live execution verified: 10 out of 10 checks PASSED (exit code 0).
+       2. VMware essential binaries check (`vmware.exe`, `vmrun.exe`).
+       3. VMware version integrity check (`25.0.1 build-25219725`).
+       4. VMware authorization service (`VMAuthdService`) check.
+       5. Claude UI default directory check (`%LOCALAPPDATA%\Programs\Claude`).
+       6. Claude Code UI Desktop shortcut COM inspection (`WorkingDirectory`, `IconLocation`).
+       7. Claude Code UI Start Menu shortcut COM inspection.
+       8. Claude UI Real GUI Launch Verification (asynchronous spawn, working set > 30MB, graceful watchdog stop).
+       9. Codex UI default directory check (`%LOCALAPPDATA%\Programs\Codex\Codex.exe`).
+       10. Codex UI Desktop shortcut COM inspection (`WorkingDirectory`, `IconLocation`).
+       11. Codex UI Start Menu shortcut COM inspection.
+       12. Codex UI Real GUI Launch Verification (asynchronous spawn, window title match, graceful watchdog stop).
+       13. Claude CLI vs UI Disambiguation (`claude-ui.cmd` launches desktop GUI).
+       14. Codex CLI vs UI Disambiguation (`codex-ui.cmd` launches desktop GUI).
+       15. Uninstall lifecycle and syntax verification across scripts 66, 78, 80.
+     - Live execution verified: 15 out of 15 checks PASSED (exit code 0).
 
 ## Canonical Specifications
 - Architecture & VMware Spec: `02-spec/21-app/23-vmware-codex-claude-ui/01-vmware-installer-spec.md`

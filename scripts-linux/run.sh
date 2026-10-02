@@ -269,6 +269,13 @@ while [ $# -gt 0 ]; do
         VERB="agy-passthrough"; shift; AGY_REST=("$@"); break ;;
     clean-agy|clear-agy|agy-clean|agy-clear)
         VERB="agy-passthrough"; shift; AGY_REST=("clean" "$@"); break ;;
+    # ---- top-level shortcuts for VMware, Codex, Claude ----
+    vmware)
+        VERB="os-tool-passthrough"; OS_TOOL="vmware"; shift; OS_TOOL_REST=("$@"); break ;;
+    codex|codex-ui)
+        VERB="os-tool-passthrough"; OS_TOOL="codex"; shift; OS_TOOL_REST=("$@"); break ;;
+    claude|claude-code|claude-ui)
+        VERB="os-tool-passthrough"; OS_TOOL="claude-code"; shift; OS_TOOL_REST=("$@"); break ;;
     *)
         # `./run.sh install wordpress [args]` lands here AFTER install was consumed.
         # Re-route it through the wp passthrough so the user-friendly form works.
@@ -293,6 +300,17 @@ while [ $# -gt 0 ]; do
         fi
         if [ "$VERB" = "uninstall" ] && { [ "$1" = "agy" ] || [ "$1" = "antigravity" ]; }; then
             VERB="agy-passthrough"; shift; AGY_REST=("uninstall" "$@"); break
+        fi
+        if [ "$VERB" = "install" ] || [ "$VERB" = "uninstall" ]; then
+            if [ "$1" = "vmware" ]; then
+                VERB="os-tool-passthrough"; OS_TOOL="vmware"; shift; OS_TOOL_REST=("$@"); break
+            fi
+            if [ "$1" = "codex" ] || [ "$1" = "codex-ui" ]; then
+                VERB="os-tool-passthrough"; OS_TOOL="codex"; shift; OS_TOOL_REST=("$@"); break
+            fi
+            if [ "$1" = "claude" ] || [ "$1" = "claude-code" ] || [ "$1" = "claude-ui" ]; then
+                VERB="os-tool-passthrough"; OS_TOOL="claude-code"; shift; OS_TOOL_REST=("$@"); break
+            fi
         fi
         log_warn "Unknown arg: $1"; shift ;;
   esac
@@ -1106,6 +1124,31 @@ case "${VERB:-help}" in
     else
       bash "$ROOT/default-apps/run.sh" "$DEFAPP_KIND"
     fi
+    ;;
+  os-tool-passthrough)
+    _os_name="ubuntu"
+    if [ "$(uname -s 2>/dev/null)" = "Darwin" ]; then
+      _os_name="mac"
+    fi
+
+    _tool_script="$ROOT/../scripts/os/$_os_name/install-$OS_TOOL.sh"
+    if [ ! -f "$_tool_script" ]; then
+      _tool_script="$ROOT/../scripts/os/ubuntu/install-$OS_TOOL.sh"
+    fi
+
+    if [ ! -f "$_tool_script" ]; then
+      log_file_error "$_tool_script" "installer script for $OS_TOOL not found"
+      exit 1
+    fi
+
+    _tool_filtered=()
+    for _a in "${OS_TOOL_REST[@]:-}"; do [ -n "$_a" ] && _tool_filtered+=("$_a"); done
+    if [ "${#_tool_filtered[@]}" -gt 0 ]; then
+      bash "$_tool_script" "${_tool_filtered[@]}"
+    else
+      bash "$_tool_script"
+    fi
+    exit $?
     ;;
   install|check|repair|uninstall)
     if [ -n "$ONLY_ID" ]; then

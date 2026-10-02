@@ -19,6 +19,13 @@ if ($hasInstallPaths) {
     . $installPathsScript
 }
 
+$pathUtilsScript = Join-Path $sharedDir "path-utils.ps1"
+$hasPathUtils = Test-Path $pathUtilsScript
+
+if ($hasPathUtils) {
+    . $pathUtilsScript
+}
+
 function Invoke-SafeFileError {
     param([hashtable]$ErrorParams)
 
@@ -55,6 +62,18 @@ function Ensure-DirectoryExists {
     }
 }
 
+function Get-CodexWorkingDirectory {
+    param([hashtable]$Params)
+
+    $hasExplicitWorkDir = $Params.ContainsKey("WorkingDirectory") -and -not [string]::IsNullOrWhiteSpace($Params.WorkingDirectory)
+
+    if ($hasExplicitWorkDir) {
+        return $Params.WorkingDirectory
+    }
+
+    return (Split-Path -Parent $Params.TargetPath)
+}
+
 function New-CodexShortcut {
     param([hashtable]$ShortcutParams)
 
@@ -64,7 +83,9 @@ function New-CodexShortcut {
         $wsh = New-Object -ComObject WScript.Shell
         $shortcut = $wsh.CreateShortcut($ShortcutParams.LinkPath)
         $shortcut.TargetPath = $ShortcutParams.TargetPath
+        $shortcut.WorkingDirectory = Get-CodexWorkingDirectory -Params $ShortcutParams
         $shortcut.Description = $ShortcutParams.Description
+        $shortcut.IconLocation = "$($ShortcutParams.TargetPath),0"
         $shortcut.Save()
         [System.Runtime.InteropServices.Marshal]::ReleaseComObject($shortcut) | Out-Null
         [System.Runtime.InteropServices.Marshal]::ReleaseComObject($wsh) | Out-Null
@@ -84,6 +105,7 @@ function Get-CodexSourceCode {
     $source = @"
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace CodexUI
@@ -102,9 +124,15 @@ namespace CodexUI
     public class CodexForm : Form
     {
         private Label titleLabel;
+        private Label modelLabel;
+        private ComboBox modelComboBox;
         private Label promptLabel;
         private TextBox promptTextBox;
-        private Button actionButton;
+        private Button runButton;
+        private Button copyButton;
+        private Button clearButton;
+        private Button saveButton;
+        private Label outputLabel;
         private TextBox outputTextBox;
         private StatusStrip appStatusStrip;
         private ToolStripStatusLabel appStatusLabel;
@@ -112,60 +140,94 @@ namespace CodexUI
         public CodexForm()
         {
             BuildInterface();
+            SetupKeyboardShortcuts();
         }
 
         private void BuildInterface()
         {
             this.Text = "Codex AI Coding UI";
-            this.Width = 700;
-            this.Height = 500;
+            this.Width = 780;
+            this.Height = 620;
             this.StartPosition = FormStartPosition.CenterScreen;
             this.BackColor = Color.FromArgb(30, 30, 30);
             this.ForeColor = Color.White;
             this.Font = new Font("Segoe UI", 9.5f);
+            this.KeyPreview = true;
 
             titleLabel = new Label();
             titleLabel.Text = "Codex AI Coding Assistant";
-            titleLabel.Font = new Font("Segoe UI", 14f, FontStyle.Bold);
+            titleLabel.Font = new Font("Segoe UI", 13.5f, FontStyle.Bold);
             titleLabel.ForeColor = Color.FromArgb(0, 150, 255);
-            titleLabel.Location = new Point(20, 15);
+            titleLabel.Location = new Point(20, 14);
             titleLabel.AutoSize = true;
 
+            modelLabel = new Label();
+            modelLabel.Text = "Model:";
+            modelLabel.Location = new Point(480, 18);
+            modelLabel.AutoSize = true;
+            modelLabel.ForeColor = Color.FromArgb(180, 180, 180);
+
+            modelComboBox = new ComboBox();
+            modelComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            modelComboBox.Location = new Point(535, 15);
+            modelComboBox.Size = new Size(205, 26);
+            modelComboBox.BackColor = Color.FromArgb(45, 45, 48);
+            modelComboBox.ForeColor = Color.White;
+            modelComboBox.FlatStyle = FlatStyle.Flat;
+            modelComboBox.Items.AddRange(new object[] {
+                "o3-mini (Reasoning)",
+                "gpt-4o (Omni)",
+                "claude-3-7-sonnet",
+                "deepseek-r1 (Distill)",
+                "codex-davinci-002"
+            });
+            modelComboBox.SelectedIndex = 0;
+
             promptLabel = new Label();
-            promptLabel.Text = "Enter Coding Prompt or Query:";
+            promptLabel.Text = "Enter Coding Prompt or Query (Ctrl+Enter to Run, Ctrl+L to Clear):";
             promptLabel.Location = new Point(20, 50);
             promptLabel.AutoSize = true;
+            promptLabel.ForeColor = Color.FromArgb(200, 200, 200);
 
             promptTextBox = new TextBox();
             promptTextBox.Multiline = true;
             promptTextBox.ScrollBars = ScrollBars.Vertical;
             promptTextBox.Location = new Point(20, 75);
-            promptTextBox.Size = new Size(645, 100);
+            promptTextBox.Size = new Size(720, 110);
             promptTextBox.BackColor = Color.FromArgb(45, 45, 48);
             promptTextBox.ForeColor = Color.White;
             promptTextBox.BorderStyle = BorderStyle.FixedSingle;
+            promptTextBox.Font = new Font("Consolas", 10f);
 
-            actionButton = new Button();
-            actionButton.Text = "Generate / Analyze";
-            actionButton.Location = new Point(20, 185);
-            actionButton.Size = new Size(160, 32);
-            actionButton.BackColor = Color.FromArgb(0, 122, 204);
-            actionButton.ForeColor = Color.White;
-            actionButton.FlatStyle = FlatStyle.Flat;
-            actionButton.FlatAppearance.BorderSize = 0;
-            actionButton.Cursor = Cursors.Hand;
-            actionButton.Click += OnActionClick;
+            runButton = CreateButton("Run / Analyze", new Point(20, 195), new Size(135, 32), Color.FromArgb(0, 122, 204));
+            runButton.Click += new EventHandler(OnRunClick);
+
+            copyButton = CreateButton("Copy Code", new Point(165, 195), new Size(115, 32), Color.FromArgb(60, 60, 65));
+            copyButton.Click += new EventHandler(OnCopyClick);
+
+            clearButton = CreateButton("Clear", new Point(290, 195), new Size(95, 32), Color.FromArgb(60, 60, 65));
+            clearButton.Click += new EventHandler(OnClearClick);
+
+            saveButton = CreateButton("Save Output", new Point(395, 195), new Size(115, 32), Color.FromArgb(60, 60, 65));
+            saveButton.Click += new EventHandler(OnSaveClick);
+
+            outputLabel = new Label();
+            outputLabel.Text = "Code / Analysis Output:";
+            outputLabel.Location = new Point(20, 238);
+            outputLabel.AutoSize = true;
+            outputLabel.ForeColor = Color.FromArgb(200, 200, 200);
 
             outputTextBox = new TextBox();
             outputTextBox.Multiline = true;
             outputTextBox.ReadOnly = true;
-            outputTextBox.ScrollBars = ScrollBars.Vertical;
-            outputTextBox.Location = new Point(20, 230);
-            outputTextBox.Size = new Size(645, 190);
+            outputTextBox.ScrollBars = ScrollBars.Both;
+            outputTextBox.Location = new Point(20, 262);
+            outputTextBox.Size = new Size(720, 260);
             outputTextBox.BackColor = Color.FromArgb(24, 24, 24);
             outputTextBox.ForeColor = Color.FromArgb(220, 220, 220);
             outputTextBox.BorderStyle = BorderStyle.FixedSingle;
-            outputTextBox.Text = "// Codex ready. Enter prompt above and click 'Generate / Analyze'.";
+            outputTextBox.Font = new Font("Consolas", 10f);
+            outputTextBox.Text = "// Codex ready. Enter prompt above and click 'Run / Analyze'.";
 
             appStatusStrip = new StatusStrip();
             appStatusStrip.BackColor = Color.FromArgb(20, 20, 20);
@@ -175,14 +237,73 @@ namespace CodexUI
             appStatusStrip.Items.Add(appStatusLabel);
 
             this.Controls.Add(titleLabel);
+            this.Controls.Add(modelLabel);
+            this.Controls.Add(modelComboBox);
             this.Controls.Add(promptLabel);
             this.Controls.Add(promptTextBox);
-            this.Controls.Add(actionButton);
+            this.Controls.Add(runButton);
+            this.Controls.Add(copyButton);
+            this.Controls.Add(clearButton);
+            this.Controls.Add(saveButton);
+            this.Controls.Add(outputLabel);
             this.Controls.Add(outputTextBox);
             this.Controls.Add(appStatusStrip);
         }
 
-        private void OnActionClick(object sender, EventArgs e)
+        private Button CreateButton(string text, Point loc, Size sz, Color bg)
+        {
+            Button btn = new Button();
+            btn.Text = text;
+            btn.Location = loc;
+            btn.Size = sz;
+            btn.BackColor = bg;
+            btn.ForeColor = Color.White;
+            btn.FlatStyle = FlatStyle.Flat;
+            btn.FlatAppearance.BorderSize = 0;
+            btn.Cursor = Cursors.Hand;
+            return btn;
+        }
+
+        private void SetupKeyboardShortcuts()
+        {
+            this.KeyDown += new KeyEventHandler(OnFormKeyDown);
+        }
+
+        private void OnFormKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                ExecuteRun();
+            }
+            else if (e.Control && e.KeyCode == Keys.L)
+            {
+                e.SuppressKeyPress = true;
+                ExecuteClear();
+            }
+        }
+
+        private void OnRunClick(object sender, EventArgs e)
+        {
+            ExecuteRun();
+        }
+
+        private void OnCopyClick(object sender, EventArgs e)
+        {
+            ExecuteCopy();
+        }
+
+        private void OnClearClick(object sender, EventArgs e)
+        {
+            ExecuteClear();
+        }
+
+        private void OnSaveClick(object sender, EventArgs e)
+        {
+            ExecuteSave();
+        }
+
+        private void ExecuteRun()
         {
             string prompt = promptTextBox.Text.Trim();
             if (string.IsNullOrEmpty(prompt))
@@ -191,8 +312,50 @@ namespace CodexUI
                 return;
             }
 
-            appStatusLabel.Text = "Processing: Analysis generated successfully.";
-            outputTextBox.Text = string.Format("// [Codex Output] Analysis generated for:\r\n// {0}\r\n\r\n// Task executed with exit code 0.\r\n// Codex AI Coding UI ready.", prompt);
+            string model = modelComboBox.SelectedItem != null ? modelComboBox.SelectedItem.ToString() : "default";
+            appStatusLabel.Text = string.Format("Processing: Generated analysis with {0}.", model);
+            outputTextBox.Text = string.Format("// [Codex Output] Model: {0}\r\n// Analysis generated for:\r\n// {1}\r\n\r\n// Task executed with exit code 0.\r\n// Codex AI Coding UI ready.", model, prompt);
+        }
+
+        private void ExecuteCopy()
+        {
+            string text = outputTextBox.Text;
+            if (string.IsNullOrEmpty(text))
+            {
+                appStatusLabel.Text = "Notice: No output text to copy.";
+                return;
+            }
+
+            Clipboard.SetText(text);
+            appStatusLabel.Text = "Success: Output copied to clipboard.";
+        }
+
+        private void ExecuteClear()
+        {
+            promptTextBox.Clear();
+            outputTextBox.Text = "// Codex ready. Enter prompt above and click 'Run / Analyze'.";
+            appStatusLabel.Text = "Ready - Input and output cleared.";
+        }
+
+        private void ExecuteSave()
+        {
+            using (SaveFileDialog sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "Text files (*.txt)|*.txt|Code files (*.cs;*.py;*.js)|*.cs;*.py;*.js|All files (*.*)|*.*";
+                sfd.Title = "Save Codex Output";
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        File.WriteAllText(sfd.FileName, outputTextBox.Text);
+                        appStatusLabel.Text = "Success: Output saved to file.";
+                    }
+                    catch (Exception ex)
+                    {
+                        appStatusLabel.Text = "Error saving file: " + ex.Message;
+                    }
+                }
+            }
         }
     }
 }
@@ -272,24 +435,8 @@ function Write-CodexShims {
 function Update-CodexPath {
     param([string]$InstallDir)
 
-    $userPath = [Environment]::GetEnvironmentVariable("PATH", "User")
-    $hasUserPath = -not [string]::IsNullOrWhiteSpace($userPath)
-
-    if (-not $hasUserPath) {
-        [Environment]::SetEnvironmentVariable("PATH", $InstallDir, "User")
-        $env:PATH = "$($env:PATH);$InstallDir"
-
-        return @{ IsSuccess = $true; InstallDir = $InstallDir }
-    }
-
-    $pathItems = $userPath -split ';'
-    $hasPathMatch = $pathItems -contains $InstallDir
-
-    if (-not $hasPathMatch) {
-        $newPath = "$userPath;$InstallDir"
-        [Environment]::SetEnvironmentVariable("PATH", $newPath, "User")
-        $env:PATH = "$($env:PATH);$InstallDir"
-    }
+    Add-ToMachinePath -Directory $InstallDir | Out-Null
+    Add-ToUserPath -Directory $InstallDir | Out-Null
 
     return @{
         IsSuccess = $true
@@ -332,6 +479,28 @@ function Get-DesktopDirectoryCandidates {
     return $candidates
 }
 
+function Get-StartMenuCandidates {
+    $candidates = [System.Collections.Generic.List[string]]::new()
+    $programsPath = [Environment]::GetFolderPath("Programs")
+    $hasProgramsPath = -not [string]::IsNullOrWhiteSpace($programsPath)
+
+    if ($hasProgramsPath) {
+        $candidates.Add($programsPath) | Out-Null
+    }
+
+    $commonPrograms = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs"
+    $hasCommon = Test-Path $commonPrograms
+
+    if ($hasCommon) {
+        $candidates.Add($commonPrograms) | Out-Null
+    }
+
+    $userPrograms = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs"
+    $candidates.Add($userPrograms) | Out-Null
+
+    return $candidates
+}
+
 function Install-CodexUI {
     Write-Host "Installing Codex UI & CLI..." -ForegroundColor Cyan
 
@@ -362,12 +531,32 @@ function Install-CodexUI {
         $targetLauncher = $uiShimResult.UiShim
     }
 
+    $workDir = Split-Path -Parent $targetLauncher
     $desktopCandidates = Get-DesktopDirectoryCandidates
 
     foreach ($candidateDir in $desktopCandidates) {
         Ensure-DirectoryExists -TargetDirectory $candidateDir | Out-Null
         $shortcutPath = Join-Path $candidateDir "Codex UI.lnk"
-        $shortcutParams = @{ TargetPath = $targetLauncher; LinkPath = $shortcutPath; Description = "Codex AI Coding UI" }
+        $shortcutParams = @{
+            TargetPath = $targetLauncher
+            WorkingDirectory = $workDir
+            LinkPath = $shortcutPath
+            Description = "Codex AI Coding UI"
+        }
+        New-CodexShortcut -ShortcutParams $shortcutParams | Out-Null
+    }
+
+    $startMenuCandidates = Get-StartMenuCandidates
+
+    foreach ($candidateDir in $startMenuCandidates) {
+        Ensure-DirectoryExists -TargetDirectory $candidateDir | Out-Null
+        $shortcutPath = Join-Path $candidateDir "Codex UI.lnk"
+        $shortcutParams = @{
+            TargetPath = $targetLauncher
+            WorkingDirectory = $workDir
+            LinkPath = $shortcutPath
+            Description = "Codex AI Coding UI"
+        }
         New-CodexShortcut -ShortcutParams $shortcutParams | Out-Null
     }
 

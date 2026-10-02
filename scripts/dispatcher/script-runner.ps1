@@ -197,6 +197,15 @@ function Invoke-ScriptById {
         if ($isRegistered) {
             $scriptDir = Get-Item (Join-Path $RootDir "scripts\$folderName") -ErrorAction SilentlyContinue
         }
+
+        if (-not $folderName) {
+            $pattern = Join-Path $RootDir "scripts/$prefix-*"
+            $matchedDir = @(Get-Item $pattern -ErrorAction SilentlyContinue | Where-Object { $_.PSIsContainer -and (Test-Path (Join-Path $_.FullName "run.ps1")) }) | Select-Object -First 1
+
+            if ($matchedDir) {
+                $scriptDir = $matchedDir
+            }
+        }
     } else {
         $pattern = Join-Path $RootDir "scripts/$prefix-*"
         $scriptDir = @(Get-Item $pattern -ErrorAction SilentlyContinue |
@@ -204,19 +213,23 @@ function Invoke-ScriptById {
             Select-Object -First 1
     }
 
+    $errColor = if ($null -ne $ThemeError) { $ThemeError } else { "Red" }
+
     $isScriptMissing = -not $scriptDir -or -not (Test-Path $scriptDir.FullName)
     if ($isScriptMissing) {
         Write-Host ""
-        Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
+        Write-Host "  [ FAIL ] " -ForegroundColor $errColor -NoNewline
         Write-Host "No script folder found for ID $prefix"
+
         return $false
     }
 
     $scriptFile = Join-Path $scriptDir.FullName "run.ps1"
     $isRunFileMissing = -not (Test-Path $scriptFile)
     if ($isRunFileMissing) {
-        Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
+        Write-Host "  [ FAIL ] " -ForegroundColor $errColor -NoNewline
         Write-Host "run.ps1 not found in $($scriptDir.Name)"
+
         return $false
     }
 
@@ -239,7 +252,8 @@ function Invoke-ScriptById {
     if ($hasArgValidator) {
         $isChildArgsOk = Test-ChildScriptArgs -ExtraArgs $ExtraArgs -ScriptId $ScriptId
         if (-not $isChildArgsOk) {
-            Write-Host "  [ SKIP ] Refusing to invoke child script with malformed path arguments." -ForegroundColor $ThemeError
+            Write-Host "  [ SKIP ] Refusing to invoke child script with malformed path arguments." -ForegroundColor $errColor
+
             return $false
         }
     }

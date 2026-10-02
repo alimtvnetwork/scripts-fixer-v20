@@ -77,15 +77,29 @@ write_codex_plist() {
 <dict>
     <key>CFBundleExecutable</key>
     <string>Codex</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>CFBundleIdentifier</key>
     <string>ai.codex.desktop</string>
     <key>CFBundleName</key>
     <string>Codex UI</string>
+    <key>CFBundleDisplayName</key>
+    <string>Codex UI</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>1.0.0</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>11.0</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
 </dict>
 </plist>
 EOF
+
+    chmod 644 "$plist_file" 2>/dev/null || true
 
     return
 }
@@ -164,8 +178,22 @@ create_codex_bundle() {
     local bundle_path="$app_dir/Codex.app"
     local contents_dir="$bundle_path/Contents"
     local macos_dir="$contents_dir/MacOS"
+    local has_existing_app=0
 
+    if [ -d "$bundle_path" ]; then
+        has_existing_app=1
+    fi
+
+    if [ "$has_existing_app" -eq 1 ]; then
+        chmod +x "$macos_dir/Codex" 2>/dev/null || true
+        chmod +x "$macos_dir/codex-ui.py" 2>/dev/null || true
+
+        return
+    fi
+
+    local resources_dir="$contents_dir/Resources"
     mkdir -p "$macos_dir" 2>/dev/null || log_file_error "$macos_dir" "mkdir" "Permission denied"
+    mkdir -p "$resources_dir" 2>/dev/null || log_file_error "$resources_dir" "mkdir" "Permission denied"
     write_codex_plist "$contents_dir/Info.plist"
     write_codex_ui_script "$macos_dir/codex-ui.py"
 
@@ -182,6 +210,7 @@ osascript -e 'display dialog "Codex AI Coding UI\n\nCodex AI Desktop Engine is a
 EOF
 
     chmod +x "$macos_dir/Codex" 2>/dev/null || log_file_error "$macos_dir/Codex" "chmod" "Failed chmod"
+    chmod +x "$macos_dir/codex-ui.py" 2>/dev/null || log_file_error "$macos_dir/codex-ui.py" "chmod" "Failed chmod"
 
     return
 }

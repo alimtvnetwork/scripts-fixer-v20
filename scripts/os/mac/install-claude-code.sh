@@ -94,15 +94,29 @@ write_claude_plist() {
 <dict>
     <key>CFBundleExecutable</key>
     <string>Claude</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>CFBundleIdentifier</key>
     <string>com.anthropic.claude</string>
     <key>CFBundleName</key>
     <string>Claude</string>
+    <key>CFBundleDisplayName</key>
+    <string>Claude Code UI</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0.0</string>
+    <key>CFBundleVersion</key>
+    <string>1.0.0</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>11.0</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
 </dict>
 </plist>
 EOF
+
+    chmod 644 "$plist_file" 2>/dev/null || true
 
     return
 }
@@ -204,10 +218,15 @@ create_app_bundle() {
     fi
 
     if [ "$has_existing_app" -eq 1 ]; then
+        chmod +x "$macos_dir/Claude" 2>/dev/null || true
+        chmod +x "$macos_dir/claude-ui.py" 2>/dev/null || true
+
         return
     fi
 
+    local resources_dir="$contents_dir/Resources"
     mkdir -p "$macos_dir" 2>/dev/null || log_file_error "$macos_dir" "mkdir" "Permission denied"
+    mkdir -p "$resources_dir" 2>/dev/null || log_file_error "$resources_dir" "mkdir" "Permission denied"
     write_claude_plist "$contents_dir/Info.plist"
     write_claude_ui_script "$macos_dir/claude-ui.py"
 
@@ -224,6 +243,7 @@ osascript -e 'display dialog "Claude Code Desktop UI\n\nClaude Code Desktop appl
 EOF
 
     chmod +x "$macos_dir/Claude" 2>/dev/null || log_file_error "$macos_dir/Claude" "chmod" "Failed chmod"
+    chmod +x "$macos_dir/claude-ui.py" 2>/dev/null || log_file_error "$macos_dir/claude-ui.py" "chmod" "Failed chmod"
 
     return
 }
