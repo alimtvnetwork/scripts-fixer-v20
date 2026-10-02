@@ -285,6 +285,7 @@ execute_vmware_setup() {
   fi
 
   build_kernel_modules || true
+  sudo systemctl enable --now vmware.service 2>/dev/null || true
 
   if ! validate_vmware_installation; then
     return 1

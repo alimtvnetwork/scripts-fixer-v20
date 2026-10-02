@@ -60,6 +60,14 @@ function Get-VMwareTargetDir {
     return $x64Path
 }
 
+function Check-VMwareCandidateDirs {
+    $candidateDirs = Get-VMwareCandidateDirs
+    foreach ($dir in $candidateDirs) {
+        $hasDir = Test-Path $dir
+        Write-Log "Checked candidate directory '$dir': exists=$hasDir" -Level "info"
+    }
+}
+
 function Test-VMwareBinaryInDir {
     param([string]$DirectoryPath)
 
@@ -110,6 +118,22 @@ function Test-VMwareRegistryKey {
     return $hasMatch
 }
 
+function Test-VMwareAuthService {
+    $service = Get-Service -Name "VMAuthdService" -ErrorAction SilentlyContinue
+    $hasService = $null -ne $service
+
+    return $hasService
+}
+
+function Log-VMwareAuthServiceStatus {
+    $hasAuthService = Test-VMwareAuthService
+    if (-not $hasAuthService) {
+        return
+    }
+
+    Write-Log "VMware Authorization Service (VMAuthdService) verified." -Level "info"
+}
+
 function Is-VMwareInstalled {
     $hasBinary = Test-VMwareBinaryOnDisk
     if ($hasBinary) {
@@ -125,6 +149,11 @@ function Is-VMwareInstalled {
         if ($hasKey) {
             return $true
         }
+    }
+
+    $hasService = Test-VMwareAuthService
+    if ($hasService) {
+        return $true
     }
 
     return $false
@@ -266,7 +295,7 @@ function Invoke-VMwareBinaryInstaller {
     }
 
     Write-Log "Executing installer silently..." -Level "info"
-    $installerArgs = '/s /v"/qn EULAS_AGREED=1 REBOOT=ReallySuppress"'
+    $installerArgs = '/s /v"/qn EULAS_AGREED=1 AUTOSOFTWAREUPDATE=0 REBOOT=ReallySuppress"'
     $proc = Start-Process -FilePath $InstallerPath -ArgumentList $installerArgs -Wait -PassThru
     $isSuccess = ($proc.ExitCode -eq 0 -or $proc.ExitCode -eq 3010)
 
@@ -310,7 +339,10 @@ function Install-VMwareResilient {
 Write-Banner -Title "Install VMware Workstation/Player"
 Initialize-Logging -ScriptName "Install VMware"
 
+$candidateDirs = Get-VMwareCandidateDirs
+Check-VMwareCandidateDirs
 $targetDir = Get-VMwareTargetDir
+$targetPaths = $candidateDirs -join ", "
 $downloadUrls = Get-VMwareDownloadUrls
 $primarySource = $downloadUrls[0]
 $tempPath = Join-Path $env:TEMP "vmware-installer.exe"
@@ -319,13 +351,14 @@ Write-InstallPaths `
     -Tool   "VMware Workstation/Player" `
     -Source $primarySource `
     -Temp   $tempPath `
-    -Target $targetDir
+    -Target $targetPaths
 
 try {
     Write-Log "Checking for existing VMware installation..." -Level "info"
     $isInstalled = Is-VMwareInstalled
 
     if ($isInstalled) {
+        Log-VMwareAuthServiceStatus
         Write-Log "VMware is already installed." -Level "success"
         Invoke-DbRecord -Action "record-skipped" -ExtraArgs @("package", "vmware", "already installed")
 
@@ -335,9 +368,11 @@ try {
     Invoke-DbRecord -Action "record-start" -ExtraArgs @("package", "vmware", "install")
     $isSuccess = Install-VMwareResilient -TempInstallerPath $tempPath
     $isDetected = Is-VMwareInstalled
-    $isFinalSuccess = $isSuccess -or $isDetected
+    $hasAuthService = Test-VMwareAuthService
+    $isFinalSuccess = $isSuccess -or $isDetected -or $hasAuthService
 
     if ($isFinalSuccess) {
+        Log-VMwareAuthServiceStatus
         Write-Log "VMware installed successfully." -Level "success"
         Invoke-DbRecord -Action "record-success" -ExtraArgs @("package", "vmware", "17.5.2", "VMware Workstation installed")
     } else {
