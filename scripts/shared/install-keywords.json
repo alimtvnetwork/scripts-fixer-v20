@@ -1454,7 +1454,13 @@
     "claude": [
       80
     ],
+    "claude-ui": [
+      80
+    ],
     "claude-code": [
+      80
+    ],
+    "claude-code-ui": [
       80
     ],
     "claudecode": [
@@ -1464,6 +1470,9 @@
       80
     ],
     "install-claude-code": [
+      80
+    ],
+    "install-claude-code-ui": [
       80
     ],
     "install-antigravity": [

@@ -940,9 +940,19 @@ case "$COMMAND" in
                 SUCCESS=true
 
             # Standalone Tools
-            elif [[ "$ITEM" == *"codex"* || "$ITEM" == *"78"* ]]; then bash scripts/os/ubuntu/install-codex.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"codex"* || "$ITEM" == *"78"* ]]; then
+                if [[ "$OSTYPE" == "darwin"* ]] && [ -f "scripts/os/mac/install-codex.sh" ]; then
+                    bash scripts/os/mac/install-codex.sh && SUCCESS=true
+                else
+                    bash scripts/os/ubuntu/install-codex.sh && SUCCESS=true
+                fi
             elif [[ "$ITEM" == *"plotcode"* || "$ITEM" == *"79"* ]]; then bash scripts/os/ubuntu/install-plotcode.sh && SUCCESS=true
-            elif [[ "$ITEM" == *"claude-code"* || "$ITEM" == *"claudecode"* || "$ITEM" == *"claude"* || "$ITEM" == *"80"* ]]; then bash scripts/os/ubuntu/install-claude-code.sh && SUCCESS=true
+            elif [[ "$ITEM" == *"claude-code"* || "$ITEM" == *"claudecode"* || "$ITEM" == *"claude"* || "$ITEM" == *"80"* ]]; then
+                if [[ "$OSTYPE" == "darwin"* ]] && [ -f "scripts/os/mac/install-claude-code.sh" ]; then
+                    bash scripts/os/mac/install-claude-code.sh && SUCCESS=true
+                else
+                    bash scripts/os/ubuntu/install-claude-code.sh && SUCCESS=true
+                fi
             elif [[ "$ITEM" == *"antigravity"* || "$ITEM" == *"agy"* || "$ITEM" == *"69"* ]]; then
                 force_arg=""
                 [[ "$IS_FORCE" == "true" ]] && force_arg="--force"
