@@ -10,9 +10,9 @@ PHASE_2_BUDGET = N / 2   (Steps 151 .. 300: Mandatory Parallel Subagent Executio
 WAVES = ceil(subtasks / (A x H))
 ```
 
-[/goal](slashCommand;goal) Autonomously ingest, follow, and execute the referenced external prompts, task instructions, and coding guideline directives across the target codebase in bounded 5-8 file micro-batches: FIRST showcase and list out the given task in visible chat during Turn 1, capture it verbatim, plan it in the repo, spawn autonomous subagents via `invoke_subagent` (A = 2, H = 2; solo execution without calling `invoke_subagent` is an auto-reject failure) in disjoint file boxes using GitMap high-speed commands as primary, prove every single claim with concrete evidence, enforce coding guidelines to 100%, and finish with one atomic GitMap commit that holds strictly this task's files.
+[/goal](slashCommand;goal) Autonomously scan, plan, refactor, and fix all repetitive string normalization, manual trimming, and chained equality comparisons across Go, TypeScript, and Rust codebases. Modifying source files directly, enforce the Search First Directive for `<repo>/pkg/strutil/strutil.go` (or repo string utility), replace manual trimming and `EqualFold` / `ToLower` OR-chains with canonical helpers (`strutil.EqualFoldAny`, `strutil.EqualFoldAnyTrim`, `strutil.NormalizeLowerTrim`), eliminate redundant allocations, enforce positive boolean conventions (`is`/`has` only), maintain functions <= 8-15 lines, and defer verification strictly to targeted linters without running intermediate tests or builds: FIRST showcase and list out the given task in visible chat during Turn 1, capture it verbatim, plan it in the repo, spawn autonomous subagents via `invoke_subagent` (A = 2, H = 2; solo execution without calling `invoke_subagent` is an auto-reject failure) in disjoint file boxes using GitMap high-speed commands as primary, prove every single claim with concrete evidence, enforce coding guidelines to 100%, and finish with one atomic GitMap commit that holds strictly this task's files.
 
-[/learn](slashCommand;learn) Enforce the Top-Instruction Priority Mandate: whatever directives, custom requirements, checklists, or user instructions are provided ABOVE this prompt outrank everything below. Turn 1 MUST showcase the given task list in visible chat before any background execution. Each rule is stated once (R1 to R16) and cited by ID. Progress lives in the ledger and in `.ai-memory/plans/`, never only in chat.
+[/learn](slashCommand;learn) Enforce the Top-Instruction Priority Mandate: whatever directives, custom requirements, checklists, or user instructions are provided ABOVE this prompt outrank everything below. Turn 1 MUST showcase the given task list in visible chat before any background execution. Master the string normalization conventions: `02-spec/02-coding-guidelines/01-cross-language/34-string-normalization-and-equalfoldany.md` and `02-spec/21-app/02-string-normalization-and-equalfoldany/01-architecture-spec.md`. Each rule is stated once (R1 to R16) and cited by ID. Progress lives in the ledger and in `.ai-memory/plans/`, never only in chat.
 
 [/plan](slashCommand;plan) Execute thorough step-by-step planning in the repository before execution. Ensure all deliverables, architecture boundaries, and requirements are clearly defined in the audit ledger and subtask plans before dispatching worker waves.
 
@@ -31,7 +31,7 @@ WAVES = ceil(subtasks / (A x H))
 
 Before executing the tasks below, check if this prompt is already installed as a native Antigravity Skill.
 
-1. If `.agents/skills/<slug>/skill.md` does not exist in the workspace, create it now.
+1. If `.agents/skills/cg-string-normalization-and-equalfoldany/skill.md` does not exist in the workspace, create it now.
 2. Extract the core instructions of this prompt and save it into that `skill.md` using the standard YAML frontmatter (with `name` and `description`).
 3. Once installed, rely on progressive disclosure for future runs. Do not keep the entire prompt in active memory if not needed.
 
@@ -97,7 +97,7 @@ If sources conflict, follow stricter one and record under `Conflicts:` in ledger
 ## 2. Core Operational Rules (Cite by ID)
 
 - **R1 Zero Builds or Test Suites (TOTAL BAN).** NEVER run `go build`, `npm run build`, `vite build`, `go test ./...`, `pytest`, `npm test`, or `03-ai-scripts/06-cicd-local-runner.py`. CI verifies builds and suites. Routine turns must never waste time on heavy compilation/tests. Only explicit user command lifts this.
-- **R2 Targeted Checks Only.** Run only fast, file-scoped checks on specifically modified files (see Section 10). A check scanning 0 files is a **FAIL**.
+- **R2 Targeted Checks Only.** Run only fast, file-scoped checks on specifically modified files (see Section 12). A check scanning 0 files is a **FAIL**.
 - **R3 Evidence or It Did Not Happen.** Every `DONE`, `PASS`, or "verified" claim MUST cite a concrete file path, git diffstat, or command exit code (`exit 0`). Vague assurances are auto-rejected.
 - **R4 Never Invent Commands, Flags, or Paths.** Verify commands with a harmless call (`gitmap lf readme.md`), not `--help`. Use documented fallbacks and log in ledger.
 - **R5 Mandatory Subagents (`invoke_subagent`).** Spawning subagents via `invoke_subagent` (`A = 2`, `H = 2`) is an **ABSOLUTE MUST** (`research` for discovery in Phase 1, `self` for edits in Phase 2). The lead agent is STRICTLY FORBIDDEN from executing all reads or edits solo. Solo execution without calling `invoke_subagent` is an auto-reject failure on the same tier as Rule 0.
@@ -107,14 +107,14 @@ If sources conflict, follow stricter one and record under `Conflicts:` in ledger
 - **R10 Zero Unauthorized Releases.** Never bump versions, edit `version.json`, update changelogs, or trigger release scripts unless user explicitly requested release.
 - **R11 Strict Relative Git Paths & Lowercase Hygiene.** Strict ban on absolute paths (`C:\...`, `/home/...`) and `file:///` URIs. Paths relative from git root. New filenames and specs strictly lowercase.
 - **R12 No Polling / Immediate Turn Yielding.** Print progress line (`Dispatched Worker 01 .. Worker <A> (wave k / WAVES); waiting for their results.`) and **STOP CALLING TOOLS**. Never poll in loop. Check `manage_subagents` once if wave runs long.
-- **R13 Two-Strike Retry Cap & Anti-Looping.** Tool failing twice: worker replies `STATUS: BLOCKED` with exact error and stops. Lead takes over and logs `LEAD_FALLBACK: <reason>`. Subtask failing two remediation rounds is marked `FAILED` with RCA (Section 12).
+- **R13 Two-Strike Retry Cap & Anti-Looping.** Tool failing twice: worker replies `STATUS: BLOCKED` with exact error and stops. Lead takes over and logs `LEAD_FALLBACK: <reason>`. Subtask failing two remediation rounds is marked `FAILED` with RCA.
 - **R14 100% Ambiguity & Decision Boundaries.** Non-blocking: choose conservative option, log in ledger `Assumptions:`, proceed. Blocking: `ask_question` once, log in `.ai-memory/ambiguous-questions/01-new-ambiguity/`, continue unblocked tasks.
-- **R15 Zero Generated Artifacts Committed.** Never commit build caches, logs, temp scripts, or newly generated code (Hard Rule 1) unless repository already tracked them.
+- **R15 Zero Generated Artifacts Committed.** Never commit build caches, logs, temp scripts, or newly generated code unless repository already tracked them.
 - **R16 Zero Secrets in Standard Repos.** Never write credentials, tokens, passwords, or `.env` contents into tracked files, commits, ledger, plans, specs, or prompts (`agents.md` section 9).
   - *Secrets Gate (lead, before GitMap call):*
     1. Check changed/new files via `git status --porcelain`.
     2. Run `python linter-scripts/check-forbidden-strings.py`.
-    3. Search files via `gitmap aum search -r "(BEGIN [A-Z ]*PRIVATE KEY|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{36}|sk-[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{10,})"` for private keys, AWS, GitHub, OpenAI, Slack tokens, or secret/token assignments (NEVER run `git grep` or `Select-String`), AWS (`AKIA[0-9A-Z]{16}`), GitHub (`gh[pousr]_[A-Za-z0-9]{36}`), OpenAI (`sk-[A-Za-z0-9]{20,}`), Slack (`xox[baprs]-[A-Za-z0-9-]{10,}`), or secret/token assignments.
+    3. Search files via `gitmap aum search -r "(BEGIN [A-Z ]*PRIVATE KEY|AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9]{36}|sk-[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{10,})"` for private keys, AWS, GitHub, OpenAI, Slack tokens, or secret/token assignments (NEVER run `git grep` or `Select-String`).
     4. On hit: if `repo-secrets` exists in default work directory, store via `gitmap rs text "<value>" --slug <slug>` (or `gitmap rs file <path>`) and replace with env var/placeholder; if not, remove value and `ask_question` once. Log `SECRET_OFFLOADED: <file>:<line>` without value.
     5. Never print secrets in chat/logs; refer to file:line only. Workers finding a secret report `BLOCKED: secret at <file>:<line>`. Never put repository URLs or absolute paths into secrets instructions (`agents.md` section 9).
 
@@ -141,16 +141,178 @@ GitMap is your **PRIMARY** acceleration engine. NEVER use generic PowerShell sea
 
 ### 🔍 Code & Symbol Search Protocol (TOTAL BAN ON `Select-String` & `git grep`)
 - **Live Disk Search (Default for discovery, symbol tracking & blast radius):**
-  - Search string/symbol: `gitmap aum search "<symbol>" [dir] [-e <.ext>]` (e.g. `gitmap aum search "RunFleetPASCommand" cli -e .go`)
-  - Search regex: `gitmap aum search -r "<regex>" [dir] [-e <.ext>]` (e.g. `gitmap aum search -r "("pas"|"pa")" cli/cmd -e .go`)
+  - Search string/symbol: `gitmap aum search "<symbol>" [dir] [-e <.ext>]`
+  - Search regex: `gitmap aum search -r "<regex>" [dir] [-e <.ext>]`
   - Case-insensitive: `gitmap aum search -i "<query>" [dir]`
 - **TOTAL BAN:** NEVER run PowerShell `Select-String`, `Get-ChildItem -Recurse`, `git grep`, `grep`, or `findstr`. Running generic shell searches wastes execution steps, slows turns, and violates GitMap primacy.
 
 ---
 
-## 5. Step 0: Preflight, Platform Handshake & Ledger Creation (Phase 1 Budget)
+## 4. Search First Directive for `<repo>/pkg/strutil/strutil.go` & Canonical Utility Discovery
 
-1. **Platform Handshake:** Confirm tools (`invoke_subagent`, `send_message`, `manage_subagents`, `ask_question`, `write_to_file`, `replace_file_content`, `run_command`). If `task_boundary` exists: set `PLANNING` (Phase 1), `EXECUTION` (Phase 2), `VERIFICATION` (Phase 3).
+Before modifying call sites, creating local helpers, or introducing duplicate logic, agents must strictly follow the **Search First Directive**:
+
+### 4.1 Canonical Location Directory Table
+
+| Language | Primary Canonical Path | Permitted Internal Path | Prohibited Ad-Hoc Paths |
+| :--- | :--- | :--- | :--- |
+| **Go** | `<repo>/pkg/strutil/strutil.go` | `<repo>/internal/strutil/strutil.go` | `cmd/*.go`, `<repo>/pkg/util/helpers.go`, inline file helpers |
+| **TypeScript** | `<repo>/src/lib/strutil.ts` | `<repo>/src/utils/strutil.ts` | `src/components/*.tsx`, `src/pages/*.ts`, local helpers |
+| **Rust** | `<repo>/src/util/strutil.rs` | `<repo>/src/strutil/mod.rs` | `<repo>/src/main.rs`, inline sub-modules in `<repo>/src/cmd/` |
+| **Python** | `<repo>/pkg/strutil/strutil.py` | `<repo>/src/strutil.py` | `scripts/*.py`, inline functions in individual script files |
+
+### 4.2 Search & Discovery Protocol
+1. **Locate Canonical String Utility:**
+   - Scan for string utilities using `gitmap find-files-any "strutil"`.
+   - In Go: Check `<repo>/pkg/strutil/strutil.go` or `<repo>/04-code/golang/pkg/strutil/strutil.go`.
+   - In TypeScript: Check `<repo>/src/lib/strutil.ts` or `<repo>/src/utils/strutil.ts`.
+   - In Rust: Check `<repo>/src/util/strutil.rs` or `crate::strutil`.
+2. **Re-use Mandate:**
+   - All refactored call sites MUST import and use the canonical utility functions (`strutil.EqualFoldAny`, `strutil.EqualFoldAnyTrim`, `strutil.NormalizeLowerTrim`).
+   - Total ban on authoring duplicate unshared functions (`isYes`, `checkConfirm`, `matchesAny`, `cleanEqual`) inside consumer packages.
+3. **Absence Protocol:**
+   - If the canonical utility is missing in the target repository, agents must create or register it following `02-spec/02-coding-guidelines/01-cross-language/34-string-normalization-and-equalfoldany.md` BEFORE modifying call sites.
+
+---
+
+## 5. Code Reduction & String Normalization Transformation Rules
+
+Prompt 37 mandates surgical transformation of verbose, allocation-heavy string operations into concise `strutil` helper calls.
+
+### Rule T1: Chained `strings.EqualFold` OR-Chains
+- **Anti-Pattern:**
+  ```go
+  // ❌ ANTI-PATTERN: Verbose, repetitive EqualFold chaining
+  if strings.EqualFold(role, "admin") || strings.EqualFold(role, "root") || strings.EqualFold(role, "superuser") {
+      return allowAccess()
+  }
+  ```
+- **Canonical Refactoring:**
+  ```go
+  // ✅ CANONICAL: Concise, zero-allocation variadic helper
+  isAuthorized := strutil.EqualFoldAny(role, "admin", "root", "superuser")
+  if isAuthorized {
+      return allowAccess()
+  }
+  ```
+
+### Rule T2: Manual Trimming + Chained `EqualFold`
+- **Anti-Pattern:**
+  ```go
+  // ❌ ANTI-PATTERN: Multi-step trimming, intermediate variable, chained comparison
+  trimmed := strings.TrimSpace(status)
+  if strings.EqualFold(trimmed, "active") || strings.EqualFold(trimmed, "enabled") {
+      proceed()
+  }
+  ```
+- **Canonical Refactoring:**
+  ```go
+  // ✅ CANONICAL: Single-expression atomic trim-and-match
+  isActive := strutil.EqualFoldAnyTrim(status, "active", "enabled")
+  if isActive {
+      proceed()
+  }
+  ```
+
+### Rule T3: `strings.ToLower(strings.TrimSpace(s)) == "val"`
+- **Anti-Pattern:**
+  ```go
+  // ❌ ANTI-PATTERN: Heap allocation for ToLower and manual comparison
+  if strings.ToLower(strings.TrimSpace(env)) == "prod" || strings.ToLower(strings.TrimSpace(env)) == "production" {
+      enableHardening()
+  }
+  ```
+- **Canonical Refactoring:**
+  ```go
+  // ✅ CANONICAL: Normalized case-insensitive matching without allocations
+  isProduction := strutil.EqualFoldAnyTrim(env, "prod", "production")
+  if isProduction {
+      enableHardening()
+  }
+  ```
+
+### Rule T4: Single Value Trimmed Comparison
+- **Anti-Pattern:**
+  ```go
+  // ❌ ANTI-PATTERN: Inline trimming before single comparison
+  if strings.EqualFold(strings.TrimSpace(input), "yes") {
+      execute()
+  }
+  ```
+- **Canonical Refactoring:**
+  ```go
+  // ✅ CANONICAL: Dedicated single trim-and-fold helper
+  isAffirmative := strutil.EqualFoldTrim(input, "yes")
+  if isAffirmative {
+      execute()
+  }
+  ```
+
+### Rule T5: Boolean Polarity & Guard Clause Integrity
+- **Positive naming mandatory:** `isValidRole := strutil.EqualFoldAny(...)`, never `!isInvalid`.
+- **Implicit boolean checks:** `if isValidRole { ... }`, never `if isValidRole == true`.
+- **Discrete conditions:** Never combine positive and negative checks in the same condition (`if isA && !isB` is strictly banned).
+- **Vertical line gaps:** Mandatory blank line before `if`, after `}`, and before `return`.
+
+### 5.1 Real-World Case Study: `releaseundo.go`
+
+In CLI applications, user confirmation prompts repeatedly re-implement trimming and case-insensitive OR-chains:
+
+#### ❌ The Anti-Pattern (`cli/cmd/releaseundo.go`)
+```go
+// ❌ ANTI-PATTERN: Ad-hoc TrimSpace and chained EqualFold
+// Located in cli/cmd/releaseundo.go
+func confirmUndoRelease(tag string) bool {
+	fmt.Printf("Delete %s locally and on origin? [y/N]: ", tag)
+	var reply string
+	_, _ = fmt.Scanln(&reply)
+	trimmed := strings.TrimSpace(reply)
+
+	return strings.EqualFold(trimmed, "y") || strings.EqualFold(trimmed, "yes")
+}
+```
+
+#### ✅ The Canonical Refactoring (`cli/cmd/releaseundo.go`)
+```go
+// ✅ CANONICAL PATTERN: High-signal, single-line call to centralized strutil
+package cmd
+
+import (
+	"fmt"
+
+	"github.com/alimtvnetwork/gitmap-v28/cli/pkg/strutil"
+)
+
+func confirmUndoRelease(tag string) bool {
+	fmt.Printf("Delete %s locally and on origin? [y/N]: ", tag)
+	var reply string
+	_, _ = fmt.Scanln(&reply)
+
+	return strutil.EqualFoldAnyTrim(reply, "y", "yes")
+}
+```
+
+---
+
+## 6. AST Discovery Patterns via GitMap (Multi-Language)
+
+Always use high-speed multi-core GitMap search commands. Generic shell search tools (`Select-String`, `git grep`, `grep`, `findstr`) are strictly banned:
+
+| Pattern Category | Target Construct | High-Speed GitMap Search Command |
+| :--- | :--- | :--- |
+| **EqualFold Chains (Go)** | `EqualFold(...) \|\| EqualFold(...)` | `gitmap aum search -r "EqualFold\(.*\|\|.*EqualFold\(" [dir] -e .go` |
+| **Trim + EqualFold (Go)** | `TrimSpace(...) ... EqualFold(...)` | `gitmap aum search -r "TrimSpace\(.*EqualFold" [dir] -e .go` |
+| **ToLower Equality (Go)** | `strings.ToLower\(.*==.*\|\|` | `gitmap aum search -r "strings\.ToLower\(.*==.*\|\|" [dir] -e .go` |
+| **Generic EqualFold (Go)** | All `EqualFold` call sites | `gitmap aum search "strings.EqualFold" [dir] -e .go` |
+| **TypeScript toLowerCase** | `.toLowerCase() === ... \|\| ...` | `gitmap aum search -r "\.toLowerCase\(\)\s*===\s*.*\|\|" [dir] -e .ts` |
+| **TypeScript Trim + Lower** | `.trim().toLowerCase()` | `gitmap aum search -r "\.trim\(\)\.toLowerCase\(\)" [dir] -e .ts` |
+| **Rust eq_ignore_ascii** | `eq_ignore_ascii_case(...) \|\|` | `gitmap aum search -r "eq_ignore_ascii_case\(.*\|\|" [dir] -e .rs` |
+
+---
+
+## 7. Step 0: Preflight, Platform Handshake & Ledger Creation (Phase 1 Budget)
+
+1. **Platform Handshake:** Confirm tools (`invoke_subagent`, `send_message`, `manage_subagents`, `ask_question`, `write_to_file`, `replace_file_content`, `run_command`).
 2. **Commands & Directory:** Confirm `gitmap --version` and `python --version` exit 0. Verify GitMap with harmless call (`gitmap lf readme.md`), not `--help`. `run_command` uses `Cwd` in workspace root, paths relative. Never cd to other drives or tool folders.
 3. **Working Tree Cleanliness:** Run `git status --porcelain`. Record modified files in ledger; never touch them. Confirm root `readme.md` is lowercase. Read `.ai-memory/what-to-read.md`, `strictly-avoid.md`, `coding-guidelines.md`.
 4. **Resume Procedure (Check Before Creating):**
@@ -177,28 +339,29 @@ Tools: invoke_subagent=yes send_message=yes ask_question=yes gitmap=yes
 Assumptions: <list or none>
 Conflicts: <list or none>
 Stage list: <every path this run creates or modifies>
+```
 
 ---
 
-## 6. Phase 1: Planning Step & Spec Step (Steps 1 .. PHASE_1_BUDGET)
+## 8. Phase 1: Planning Step & Spec Step (Steps 1 .. PHASE_1_BUDGET)
 
 You must use `invoke_subagent` to delegate both planning and spec writing.
 
-1. **Planning Step (A = 2 Agents):** Lead agent calls `invoke_subagent` to spawn 2 subagents (e.g., `Research 01`, `Research 02`). Their prompt MUST instruct them to research the codebase using GitMap high-speed search (`gitmap aum search "<symbol>" [dir] [-e <.ext>]`, `gitmap find`, `gitmap lf`, `gitmap cat`) — NEVER PowerShell `Select-String` or `git grep` — define the boundaries, and write the Execution Plan (`.ai-memory/plans/pending/NN-<slug>.md`) and the Root Task JSON Manifest.
+1. **Planning Step (A = 2 Agents):** Lead agent calls `invoke_subagent` to spawn 2 subagents (`Research 01`, `Research 02`). Their prompt MUST instruct them to research the codebase using GitMap high-speed search (`gitmap aum search "<symbol>" [dir] [-e <.ext>]`, `gitmap find`, `gitmap lf`, `gitmap cat`) — NEVER PowerShell `Select-String` or `git grep` — define the boundaries, locate string comparison call sites, and write the Execution Plan (`.ai-memory/plans/pending/NN-<slug>.md`) and the Root Task JSON Manifest.
    - *Tool Call:* Lead must actually execute the `invoke_subagent` tool, then print `Dispatched Planning Agents`, and then END TURN to wait for `<SYSTEM_MESSAGE>`.
-2. **Spec Step (A = 2 Agents):** Once planning is done, the lead agent calls `invoke_subagent` again to spawn 2 subagents. Their prompt MUST instruct them to write the Canonical Spec (`02-spec/21-app/NN-<slug>.md` or folder) and decompose subtasks into `.ai-memory/plans/subtasks/`.
+2. **Spec Step (A = 2 Agents):** Once planning is done, the lead agent calls `invoke_subagent` again to spawn 2 subagents. Their prompt MUST instruct them to write the Canonical Spec (`02-spec/21-app/NN-<slug>/01-architecture-spec.md`) and decompose subtasks into `.ai-memory/plans/subtasks/NN-<slug>/`.
    - *Tool Call:* Lead must actually execute the `invoke_subagent` tool, then print `Dispatched Spec Agents`, and then END TURN to wait for `<SYSTEM_MESSAGE>`.
 3. **Readiness Gate:** Complete Phase 1 planning and spec authoring within `PHASE_1_BUDGET` steps, then proceed **UNCONDITIONALLY** into Phase 2.
 
 ---
 
-## 7. Phase 2: Execution Step (Worker Waves) (Steps (PHASE_1_BUDGET + 1) .. N)
+## 9. Phase 2: Execution Step (Worker Waves) (Steps (PHASE_1_BUDGET + 1) .. N)
 
 > [!CRITICAL]
 > **MANDATORY `invoke_subagent` DISPATCH (ZERO SOLO EXECUTION):**
 > You MUST ACTUALLY CALL the `invoke_subagent` tool to spawn A workers (`TypeName: "self"`, up to H subtasks per worker) in parallel. Executing all subtasks solo in main agent without the tool call is an immediate auto-reject failure.
 
-### 7.1 Dispatch Payload (`invoke_subagent`)
+### 9.1 Dispatch Payload (`invoke_subagent`)
 
 The `invoke_subagent` payload holds A entries (`Worker 01 .. Worker <A>`):
 
@@ -223,7 +386,7 @@ The `invoke_subagent` payload holds A entries (`Worker 01 .. Worker <A>`):
 }
 ```
 
-### 7.2 Self-Contained Worker Brief (Eliminate Context Blindness)
+### 9.2 Self-Contained Worker Brief (Eliminate Context Blindness)
 
 Subagents spawn with clean context. The prompt envelope MUST inject complete instructions:
 
@@ -245,12 +408,14 @@ You are Worker <NN> for task NN-<slug>. You have no prior chat context; this bri
 ### 100% Non-Negotiable Coding Guidelines (AUTO-REJECT ON VIOLATION):
 1. Positive booleans ONLY: use `is` and `has` prefixes exclusively. NEVER evaluate explicit `== true`. NEVER combine positive and negative checks in the same condition (`if isA && !isB` is BANNED).
 2. Go Structured Errors: return `*appfault.AppError`, never bare `error`.
-3. Function Sizing: <= 8 lines preferred, hard cap 15 lines. Extract domain structs and raw generics to `types.go`.
-4. Strict Relative Git Paths: zero absolute filesystem paths and zero `file:///` URIs.
-5. Repo Secrets: if any credentials or private tokens are needed, store them in the `repo-secrets` folder in the default work directory (via `gitmap rs`). Never commit secrets.
-6. Zero Builds or Tests: NEVER run `go build`, `npm run build`, `go test`, or `pytest`.
-7. Targeted Verification: Run only fast file-scoped linters (e.g. `python 03-ai-scripts/05-guideline-autofixer.py <folder> --check-only`). A check scanning 0 files is a FAIL.
-8. GitMap Search Primacy (TOTAL BAN on Select-String / git grep): NEVER execute PowerShell `Select-String`, `Get-ChildItem`, `git grep`, `grep`, or `findstr`. Always use `gitmap aum search "<pattern>" [dir] [-e <.ext>] [-r]` for live symbol/regex discovery.
+3. Search First Directive: check for canonical `<repo>/pkg/strutil/strutil.go` before authoring local helpers. BANNED from creating unshared local functions like `isYes` or `matchesAny`.
+4. String Normalization: replace manual trimming and `EqualFold` / `ToLower` OR-chains with `strutil.EqualFoldAny` or `strutil.EqualFoldAnyTrim`.
+5. Function Sizing: <= 8 lines preferred, hard cap 15 lines. Extract domain structs and raw generics to `types.go`.
+6. Strict Relative Git Paths: zero absolute filesystem paths and zero `file:///` URIs.
+7. Repo Secrets: if credentials or tokens are needed, store them in the `repo-secrets` folder in the default work directory (via `gitmap rs`). Never commit secrets.
+8. Zero Builds or Tests: NEVER run `go build`, `npm run build`, `go test`, or `pytest`.
+9. Targeted Verification: Run only fast file-scoped linters (e.g. `python 03-ai-scripts/05-guideline-autofixer.py <folder> --check-only`). A check scanning 0 files is a FAIL.
+10. GitMap Search Primacy (TOTAL BAN on Select-String / git grep): NEVER execute PowerShell `Select-String`, `Get-ChildItem`, `git grep`, `grep`, or `findstr`. Always use `gitmap aum search "<pattern>" [dir] [-e <.ext>] [-r]`.
 
 ### Output Contract:
 Write your subtask output to .ai-memory/plans/subtasks/NN-<slug>/01-<name>.json and reply with this JSON block, once per subtask, then stop:
@@ -265,7 +430,7 @@ Write your subtask output to .ai-memory/plans/subtasks/NN-<slug>/01-<name>.json 
 }
 ```
 
-### 7.3 Turn-Yielding & Verification Protocol
+### 9.3 Turn-Yielding & Verification Protocol
 
 1. **Invoke & Yield:** You must ACTUALLY CALL the `invoke_subagent` tool in your turn. Print the progress line (`Dispatched Worker 01 .. Worker <A> (wave k / WAVES); waiting for their results.`) and **STOP CALLING TOOLS** to end your turn.
 2. **Verify Worker Reports Independently:** Confirm `git diff --stat -- <owned files>` matches `filesChanged`, no files outside owned files modified, re-run targeted checks for `exit 0` on non-zero files.
@@ -275,7 +440,7 @@ Write your subtask output to .ai-memory/plans/subtasks/NN-<slug>/01-<name>.json 
 
 ---
 
-## 8. Phase 3: Consolidation, Evidence Verification & Atomic GitMap Push
+## 10. Phase 3: Consolidation, Evidence Verification & Atomic GitMap Push
 
 1. **Consolidate Subtasks:** Merge completed subtasks into `.ai-memory/plans/completed/NN-<slug>.md`, logging real steps from ledger; link to canonical spec. Delete `.ai-memory/plans/subtasks/NN-<slug>/` and pending plan. Canonical spec in `02-spec/21-app/` stays permanently.
 2. **Update Registers:** Update `.ai-memory/plans/readme.md` and `02-spec/21-app/readme.md`. Update `01-prompts/readme.md` and `.ai-memory/prompts.md` only when adding/modifying prompts. Register recent completed tasks before push gate.
@@ -284,7 +449,7 @@ Write your subtask output to .ai-memory/plans/subtasks/NN-<slug>/01-<name>.json 
 
 ---
 
-## 9. Final Report Format (Strict Vertical Lines)
+## 11. Final Report Format (Strict Vertical Lines)
 
 ```markdown
 ### Task Completion Summary
@@ -315,9 +480,7 @@ Independent check: run /verify-parent-task-run <slug>
 
 ---
 
----
-
-## 10. Targeted Verification Checks
+## 12. Targeted Verification Checks
 
 Confirm scripts exist via harmless workspace call before invoking (R4). Run on changed files/folders only:
 
@@ -330,7 +493,7 @@ Confirm scripts exist via harmless workspace call before invoking (R4). Run on c
 
 ---
 
-## 11. AI Fix Scripts Memory (Reusable Tooling)
+## 13. AI Fix Scripts Memory (Reusable Tooling)
 
 - [ ] [/goal](slashCommand;goal) Reuse First: Scanned and learned `03-ai-scripts/readme.md` before writing temporary code.
 - [ ] Strict In-Repository Execution: All Python scripts executed strictly within the codebase repository root.
@@ -340,31 +503,33 @@ Confirm scripts exist via harmless workspace call before invoking (R4). Run on c
 
 ---
 
-## 12. Banned Operations Checklist (TOTAL BAN — Auto-Reject on Violation)
+## 14. Banned Operations Checklist (TOTAL BAN — Auto-Reject on Violation)
 
 - [ ] TOP-INSTRUCTION PRIORITY MANDATE: Whatever directives, constraints, checklists, or instructions are given before this section or prompt (user preamble, header constraints, prior instructions) are verified as highest priority and non-negotiable, overriding all lower-level guidelines below.
 - [ ] MANDATORY SUBAGENT SPAWNING GATE (ZERO SOLO EXECUTION): Verified that `invoke_subagent` (`A = 2, H = 2`) was explicitly called in Phase 1 (parallel discovery/spec modules) and Phase 2 (`TypeName: "self"` parallel subtask execution). Executing all reads or code modifications solo without calling `invoke_subagent` is an immediate auto-reject failure.
+- [ ] SEARCH FIRST DIRECTIVE MANDATE: Verified that the repository was inspected for `<repo>/pkg/strutil/strutil.go` (or language equivalent) using GitMap before refactoring call sites. Creating unshared local helper functions (`isYes`, `checkConfirm`) is strictly banned.
 - [ ] ISSUE & RCA DESTINATION ROUTING: Whenever resolving an issue or performing a fix with RCA, verified that CI/CD failures are documented in .ai-memory/cicd-issues/NN-<slug>.md (indexed in .ai-memory/cicd-index.md), while non-CI/CD issues (application bugs, logic/runtime defects) are documented in 02-spec/22-app-issues/NN-<slug>.md (indexed in 02-spec/22-app-issues/readme.md).
 - [ ] NO TEST RUNNING (TOTAL BAN): Never run any tests using Python scripts (`06-cicd-local-runner.py`, `pytest`, runner scripts), Go (`go test ./...`), or any test runner during routine execution turns. Testing is strictly checked later on in CI/CD.
 - [ ] NO BUILD CHECKING (TOTAL BAN): Never run build commands (`go build`, `npm run build`, compiler checks) to verify compilation. Build verification is checked later on in CI/CD.
 - [ ] NO RUNNER SCRIPTS (TOTAL BAN): Never launch background test runners, worker pools, or test inventory loops during routine execution.
 - [ ] NO AUTOMATIC RELEASES (TOTAL BAN): Never bump versions, update changelogs, or trigger releases unless explicitly commanded by the user.
-- [ ] NO PER-FILE COMMITTING (TOTAL BAN): Never commit each file individually as you work (e.g. running `git commit` after editing File 1, then another commit after File 2). Committing file-by-file pollutes git history, creates subagent lock collisions, and breaks atomic changes. All modified files across the turn must be accumulated and committed together in a single atomic commit at the final step.
+- [ ] NO PER-FILE COMMITTING (TOTAL BAN): Never commit each file individually as you work. All modified files across the turn must be accumulated and committed together in a single atomic commit at the final step.
 - [ ] NO RAPID CI/CD POLLING (TOTAL BAN): Never query or loop rapidly (`gh run view` in tight loops) when inspecting remote CI/CD pipelines. Agents must query pipeline state using GitMap Pipeline-AI (`gitmap pipeline-ai status --json` or `gitmap pl-ai status -t <sec>`) and strictly wait or sleep based on `etaSeconds` to eliminate credit waste.
-- [ ] NO PREMATURE TURN CLOSING BEFORE EXECUTION (TOTAL BAN): Never halt execution, conclude the turn, or ask the user for permission after generating specs or subtasks. Planning constitutes only 50% of the task budget; you must proceed unconditionally to Phase 2 code execution. (Note: When dispatching asynchronous background subagents via `invoke_subagent`, yielding control to allow platform reactive wakeup is mandatory and is exempt from this ban).
-- [ ] NO HORIZONTAL TASK CONCATENATION (TOTAL BAN): Never concatenate tasks horizontally in the Task Completion Summary (e.g. NEVER `✅ #1... ✅ #2...` run-on). Every completed task MUST be rendered on its OWN SEPARATE LINE starting with an individual markdown list bullet (`- ✅`).
+- [ ] NO PREMATURE TURN CLOSING BEFORE EXECUTION (TOTAL BAN): Never halt execution, conclude the turn, or ask the user for permission after generating specs or subtasks. Planning constitutes only 50% of the task budget; you must proceed unconditionally to Phase 2 code execution.
+- [ ] NO HORIZONTAL TASK CONCATENATION (TOTAL BAN): Never concatenate tasks horizontally in the Task Completion Summary. Every completed task MUST be rendered on its OWN SEPARATE LINE starting with an individual markdown list bullet (`- ✅`).
 - [ ] INDEPENDENT AI VERIFICATION PROMPT MANDATE: Emitted the self-contained independent AI verification and audit prompt linking to the canonical spec, consolidated plan, and modified files with verbatim score audit criteria.
 - [ ] GITMAP HEAVY USAGE & ROUTINE PULL BAN: Heavily leveraged GitMap commands (`cpf`, `cpb`, `cpr`, `search`, `find`, `pwsh`) for discovery, execution, and commits. Never ran `pull-all` (`gitmap pa` or `gitmap pae`) unconditionally during routine turns; only ran `gitmap pae --json` when explicitly commanded by the user.
-- [ ] NO POWERSHELL OR SHELL SEARCHES (TOTAL BAN): Never run `Select-String`, `Get-ChildItem -Recurse`, `grep`, `git grep`, `findstr`, or slow shell search pipelines to search code. All code searching and symbol discovery MUST use GitMap high-speed search tools: `gitmap aum search "<query>" [dir] [-e <.ext>] [-r]` (streaming multi-core text/regex search) or `gitmap search "<query>"` (indexed symbol search). Running `Select-String` or `git grep` is an immediate auto-reject failure.
+- [ ] NO POWERSHELL OR SHELL SEARCHES (TOTAL BAN): Never run `Select-String`, `Get-ChildItem -Recurse`, `grep`, `git grep`, `findstr`, or slow shell search pipelines to search code. All code searching and symbol discovery MUST use GitMap high-speed search tools: `gitmap aum search "<query>" [dir] [-e <.ext>] [-r]` or `gitmap search "<query>"`.
 
 ---
 
-## 13. Non-Negotiable Coding Guidelines Checklist (Auto-Reject on Violation)
+## 15. Non-Negotiable Coding Guidelines Checklist (Auto-Reject on Violation)
 
 [/goal](slashCommand;goal) You must verify every item on this checklist before committing any code. If a subagent violated one of these rules, you must reject their work.
 
 - [ ] Master Guidelines: Fully enforced every file in `02-spec/02-coding-guidelines/` and `.ai-memory/coding-guidelines.md`.
-- [ ] Concrete Types Centralization (`types.go`): Extracted domain structs, raw generic instantiations, and Result wrappers into dedicated `types.go` files as single reusable named types with follow-through comments (never leak raw generics like `result.Result[*Config]`).
+- [ ] String Normalization & EqualFoldAny: Enforced `02-spec/02-coding-guidelines/01-cross-language/34-string-normalization-and-equalfoldany.md` by replacing verbose trimming and `EqualFold`/`ToLower` OR-chains with centralized `strutil.EqualFoldAny` and `strutil.EqualFoldAnyTrim` helpers.
+- [ ] Concrete Types Centralization (`types.go`): Extracted domain structs, raw generic instantiations, and Result wrappers into dedicated `types.go` files as single reusable named types with follow-through comments.
 - [ ] Error Management: Enforced `02-spec/03-error-manage/` using domain-specific `*appfault.AppError`, never generic error.
 - [ ] Boolean Conventions: All booleans begin with is or has only (all other prefixes like can, should, was, will, did, must are banned). No negatives (`!isSuccess` is banned; use `isFail`).
 - [ ] Semantic Naming: Zero generic garbage names (`temp`, `data`, `obj`). Behavior-driven unit test names.
@@ -375,7 +540,7 @@ Confirm scripts exist via harmless workspace call before invoking (R4). Run on c
 
 ---
 
-## 14. Anti-Hallucination & Blast Radius Checklist
+## 16. Anti-Hallucination & Blast Radius Checklist
 
 - [ ] Echo Back the Spec: Verified Acceptance Criteria from the Spec file verbatim.
 - [ ] Pre-Commit Diff Proof: Verified `git status` shows actual modified files before committing.
@@ -387,10 +552,10 @@ Confirm scripts exist via harmless workspace call before invoking (R4). Run on c
 
 ---
 
-## 15. Final Step Git Commit & Push Mandate (Strict Checklist)
+## 17. Final Step Git Commit & Push Mandate (Strict Checklist)
 
-- [ ] MANDATORY FINAL COMMIT & PUSH VIA GITMAP (ANYHOW): At the final step of the turn, after all targeted files have been refactored, verified with targeted linters, and plans/subtasks consolidated, use GitMap semantic commit commands: `gitmap cpf "<module> - <summary>"` (features), `gitmap cpb "<module> - <summary>"` (bugs), or `gitmap cpr "<module> - <summary>"` (releases) which automatically stage, commit with standardized prefixes, and push directly to the remote repository. (Fallback to `git add -A && git commit && git push` only if GitMap CLI is unavailable). Leaving uncommitted changes or unpushed commits on the active branch at the end of a turn is an immediate failure.
-- [ ] TOTAL BAN ON PER-FILE COMMITS (DO NOT COMMIT EACH FILE INDIVIDUALLY): You must not create separate git commits for each individual file as you edit them (e.g. running `git commit` or `gitmap cpf` after editing File 1, then committing again after File 2 is strictly forbidden). Committing file-by-file pollutes git log history, creates subagent lock collisions, and breaks atomic rollback. All modified files, test change caches, and plan records across the turn must be accumulated in the working tree and committed together in a single grouped atomic commit at the final step before pushing.
+- [ ] MANDATORY FINAL COMMIT & PUSH VIA GITMAP (ANYHOW): At the final step of the turn, after all targeted files have been refactored, verified with targeted linters, and plans/subtasks consolidated, use GitMap semantic commit commands: `gitmap cpf "<module> - <summary>"` (features), `gitmap cpb "<module> - <summary>"` (bugs), or `gitmap cpr "<module> - <summary>"` (releases) which automatically stage, commit with standardized prefixes, and push directly to the remote repository. Leaving uncommitted changes or unpushed commits on the active branch at the end of a turn is an immediate failure.
+- [ ] TOTAL BAN ON PER-FILE COMMITS (DO NOT COMMIT EACH FILE INDIVIDUALLY): You must not create separate git commits for each individual file as you edit them. All modified files, test change caches, and plan records across the turn must be accumulated in the working tree and committed together in a single grouped atomic commit at the final step before pushing.
 
 ## MUST FOLLOW NON-NEGOTIABLE
 
