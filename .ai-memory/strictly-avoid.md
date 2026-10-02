@@ -18,3 +18,4 @@ Content here.
 - NEVER use Windows backslashes (\) in Nginx virtual host configuration paths; normalize strictly to forward slashes (/).
 - NEVER disable, comment out, or bypass CI/CD validation workflows or unit tests to force pass.
 - NEVER attempt git checkout/reset/pull over files missing DELETE ACL rights (0x10000) on Windows; if git unlinking fails with "Invalid argument" (ERROR_ACCESS_DENIED), perform merge in clean workspace and synchronize with in-place overwrites or set proper ACLs.
+- NEVER install only a terminal CLI or npm shim when a user or spec mandates "UI" (e.g. Claude Code UI, Codex UI); always install the graphical desktop application (e.g. Anthropic Claude Desktop GUI, .app bundle, .desktop launcher) in standard OS default directories with desktop/start menu shortcuts.
