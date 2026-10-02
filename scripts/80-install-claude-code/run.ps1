@@ -77,6 +77,13 @@ function Find-ClaudeDesktopExecutable {
         return @{ IsFound = $true; ExecutablePath = $squirrelPath }
     }
 
+    $adminSquirrel = "C:\Users\Administrator\AppData\Local\AnthropicClaude\claude.exe"
+    $hasAdminSquirrel = Test-Path $adminSquirrel
+
+    if ($hasAdminSquirrel) {
+        return @{ IsFound = $true; ExecutablePath = $adminSquirrel }
+    }
+
     return @{ IsFound = $false; ExecutablePath = $null }
 }
 
@@ -135,14 +142,32 @@ function Ensure-DefaultClaudeDirectory {
     $squirrelExe = Join-Path $squirrelDir "claude.exe"
     $hasSquirrelExe = Test-Path $squirrelExe
 
+    if (-not $hasSquirrelExe) {
+        $adminSquirrelDir = "C:\Users\Administrator\AppData\Local\AnthropicClaude"
+        $adminSquirrelExe = Join-Path $adminSquirrelDir "claude.exe"
+        $hasAdminSquirrel = Test-Path $adminSquirrelExe
+
+        if ($hasAdminSquirrel) {
+            $squirrelDir = $adminSquirrelDir
+            $squirrelExe = $adminSquirrelExe
+            $hasSquirrelExe = $true
+        }
+    }
+
     if ($hasSquirrelExe) {
         $programsDir = Join-Path $env:LOCALAPPDATA "Programs"
         Ensure-DirectoryExists -TargetDirectory $programsDir | Out-Null
-        try {
-            New-Item -ItemType Junction -Path $defaultClaudeDir -Target $squirrelDir -Force | Out-Null
-        } catch {
-            Ensure-DirectoryExists -TargetDirectory $defaultClaudeDir | Out-Null
-            Copy-Item -Path $squirrelExe -Destination $defaultClaudeExe -Force | Out-Null
+        $hasExistingDir = Test-Path $defaultClaudeDir
+
+        if (-not $hasExistingDir) {
+            try {
+                New-Item -ItemType Junction -Path $defaultClaudeDir -Target $squirrelDir -Force | Out-Null
+            } catch {
+                Ensure-DirectoryExists -TargetDirectory $defaultClaudeDir | Out-Null
+                Copy-Item -Path "$squirrelDir\*" -Destination $defaultClaudeDir -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
+            }
+        } else {
+            Copy-Item -Path $squirrelExe -Destination $defaultClaudeExe -Force -ErrorAction SilentlyContinue | Out-Null
         }
     }
 
@@ -181,7 +206,7 @@ function Write-ClaudeShims {
     $uiShim  = Join-Path $installDir "claude-ui.cmd"
 
     $uiCmdContent = "@echo off`r`nstart `"`" `"$desktopExe`" %*`r`n"
-    $cliCmdContent = "@echo off`r`nwhere claude >nul 2>nul`r`nif %ERRORLEVEL% equ 0 ( claude %* ) else ( npx @anthropic-ai/claude-code %* )`r`n"
+    $cliCmdContent = "@echo off`r`nsetlocal`r`nfor /f `"tokens=*`" %%i in ('where claude 2^>nul') do (`r`n    if /i not `"%%i`"==`"%~f0`" (`r`n        `"%%i`" %*`r`n        exit /b %ERRORLEVEL%`r`n    )`r`n)`r`nnpx @anthropic-ai/claude-code %*`r`n"
 
     try {
         Set-Content -Path $uiShim -Value $uiCmdContent -Force
@@ -191,8 +216,10 @@ function Write-ClaudeShims {
         Invoke-SafeFileError -ErrorParams $err
     }
 
+    $isUiShimReady = Test-Path $uiShim
+
     return @{
-        IsSuccess = (Test-Path $uiShim)
+        IsSuccess = $isUiShimReady
         UiShim = $uiShim
     }
 }
@@ -270,7 +297,17 @@ function Update-ClaudePath {
     param([string]$InstallDir)
 
     $userPath = [Environment]::GetEnvironmentVariable("PATH", "User")
-    $hasPathMatch = $userPath -match [regex]::Escape($InstallDir)
+    $hasUserPath = -not [string]::IsNullOrWhiteSpace($userPath)
+
+    if (-not $hasUserPath) {
+        [Environment]::SetEnvironmentVariable("PATH", $InstallDir, "User")
+        $env:PATH = "$($env:PATH);$InstallDir"
+
+        return @{ IsSuccess = $true; InstallDir = $InstallDir }
+    }
+
+    $pathItems = $userPath -split ';'
+    $hasPathMatch = $pathItems -contains $InstallDir
 
     if (-not $hasPathMatch) {
         $newPath = "$userPath;$InstallDir"

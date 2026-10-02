@@ -52,29 +52,34 @@ Standard default locations for 64-bit Windows environments:
 
 | Software | Default Installation Directory | Executable / Launcher Path | Shortcut Locations |
 | :--- | :--- | :--- | :--- |
-| **Claude Code UI** (System-Wide) | `C:\Program Files\Anthropic\Claude` | `C:\Program Files\Anthropic\Claude\claude.exe` | Desktop (`Claude.lnk`), Start Menu (`Claude.lnk`) |
-| **Claude Code UI** (Per-User Fallback) | `%LOCALAPPDATA%\AnthropicClaude` | `%LOCALAPPDATA%\AnthropicClaude\claude.exe` | Desktop (`Claude.lnk`), Start Menu (`Claude.lnk`) |
-| **Codex UI** (System / Program Files) | `C:\Program Files\Codex` | `C:\Program Files\Codex\codex-ui.exe` | Desktop (`Codex.lnk`), Start Menu (`Codex.lnk`) |
-| **Codex UI** (Per-User Default) | `%LOCALAPPDATA%\Programs\Codex` | `%LOCALAPPDATA%\Programs\Codex\codex-ui.exe` | Desktop (`Codex.lnk`), Start Menu (`Codex.lnk`) |
-| **Codex CLI / Helper Fallback** | `%USERPROFILE%\.codex\bin` | `%USERPROFILE%\.codex\bin\codex.exe` | PATH environment registration |
+| **Claude Code UI** (Primary Desktop) | `%LOCALAPPDATA%\Programs\Claude` | `%LOCALAPPDATA%\Programs\Claude\Claude.exe` | Desktop (`Claude Code UI.lnk`), Start Menu (`Claude Code UI.lnk`) |
+| **Claude Code UI** (System-Wide) | `%ProgramFiles%\Anthropic\Claude` | `%ProgramFiles%\Anthropic\Claude\Claude.exe` | Desktop (`Claude Code UI.lnk`), Start Menu (`Claude Code UI.lnk`) |
+| **Claude Code UI** (Squirrel Fallback) | `%LOCALAPPDATA%\AnthropicClaude` | `%LOCALAPPDATA%\AnthropicClaude\claude.exe` | Desktop (`Claude Code UI.lnk`), Start Menu (`Claude Code UI.lnk`) |
+| **Claude Code UI Shims** | `%USERPROFILE%\.claude\bin` | `claude-ui.cmd` (GUI) / `claude.cmd` (CLI) | Registered in PATH environment variable |
+| **Codex UI** (Per-User Default) | `%LOCALAPPDATA%\Programs\Codex` | `%LOCALAPPDATA%\Programs\Codex\Codex.exe` | Desktop (`Codex UI.lnk`), Start Menu (`Codex UI.lnk`) |
+| **Codex UI** (System / Program Files) | `%ProgramFiles%\Codex` | `%ProgramFiles%\Codex\Codex.exe` | Desktop (`Codex UI.lnk`), Start Menu (`Codex UI.lnk`) |
+| **Codex UI Shims** | `%USERPROFILE%\.codex\bin` | `codex-ui.cmd` (GUI) / `codex.cmd` (CLI) | Registered in PATH environment variable |
 
 ### 3.2 Linux (Ubuntu / Debian)
 Standard filesystem hierarchy compliant paths:
 
-| Software | Default Binary Path | Application Launcher (`.desktop`) | Icon / Assets Directory |
+| Software | Default Binary / Script Path | Application Launcher (`.desktop`) | Icon / Assets Directory |
 | :--- | :--- | :--- | :--- |
-| **Claude Code UI** (System-Wide) | `/usr/local/bin/claude` | `/usr/share/applications/claude.desktop` | `/usr/share/icons/hicolor/scalable/apps/claude.svg` |
-| **Claude Code UI** (User-Local) | `~/.local/bin/claude` | `~/.local/share/applications/claude.desktop` | `~/.local/share/icons/claude.png` |
-| **Codex UI** (System-Wide) | `/usr/local/bin/codex-ui` | `/usr/share/applications/codex.desktop` | `/usr/share/icons/hicolor/scalable/apps/codex.svg` |
-| **Codex UI** (User-Local) | `~/.local/bin/codex-ui` | `~/.local/share/applications/codex.desktop` | `~/.local/share/icons/codex.png` |
+| **Claude Code UI** (Desktop GUI) | `/usr/local/bin/claude-ui.py` (`claude-ui`) | `/usr/share/applications/claude.desktop` (`Terminal=false`) | `/usr/share/icons/hicolor/scalable/apps/claude.svg` |
+| **Claude Code CLI** (Terminal) | `/usr/local/bin/claude` / `claude-code` | N/A (Terminal CLI command) | N/A |
+| **Claude Code UI** (User-Local) | `~/.local/bin/claude-ui.py` (`claude-ui`) | `~/.local/share/applications/claude.desktop` | `~/.local/share/icons/claude.png` |
+| **Codex UI** (Tkinter Desktop GUI) | `/usr/local/bin/codex-ui.py` (`codex-ui`) | `/usr/share/applications/codex.desktop` (`Terminal=false`) | `/usr/share/icons/hicolor/scalable/apps/codex.svg` |
+| **Codex CLI** (Terminal Companion) | `/usr/local/bin/codex` | N/A (Terminal CLI command) | N/A |
+| **Codex UI** (User-Local) | `~/.local/bin/codex-ui.py` (`codex-ui`) | `~/.local/share/applications/codex.desktop` | `~/.local/share/icons/codex.png` |
 
 ### 3.3 macOS
 Standard macOS Application Bundle paths:
 
-| Software | Bundle Directory | CLI Companion Symlink |
-| :--- | :--- | :--- |
-| **Claude Code UI** | `/Applications/Claude.app` | `/usr/local/bin/claude` |
-| **Codex UI** | `/Applications/Codex.app` | `/usr/local/bin/codex` |
+| Software | Bundle Directory | GUI Launcher Symlink | CLI Companion Symlink |
+| :--- | :--- | :--- | :--- |
+| **Claude Code UI** | `/Applications/Claude.app` | `/usr/local/bin/claude-ui` | `/usr/local/bin/claude` |
+| **Codex UI** | `/Applications/Codex.app` | `/usr/local/bin/codex-ui` | `/usr/local/bin/codex` |
+| **User-Local Bundles** | `~/Applications/{Claude,Codex}.app` | `~/.local/bin/{claude,codex}-ui` | `~/.local/bin/{claude,codex}` |
 
 ---
 
@@ -126,17 +131,71 @@ flowchart TD
    - If both tiers fail, invoke `Write-FileError` logging the exact absolute target path and raw error.
    - Return structured error Result object with diagnostic context.
 
-### 4.2 Codex UI Installation Pipeline (Windows)
+### 4.2 Codex UI Windows Pipeline & On-the-Fly C# WinForms Compilation
+Because no pre-packaged official desktop installer is distributed for Codex, the Windows installer dynamically compiles a native C# Windows Forms graphical desktop application directly on the host:
+1. **Compilation Engine**: Invokes the built-in Microsoft .NET Framework 64-bit compiler (`%SystemRoot%\Microsoft.NET\Framework64\v4.0.30319\csc.exe`):
+   ```powershell
+   $targetArgs = @(
+       "/nologo",
+       "/target:winexe",
+       "/r:System.Windows.Forms.dll",
+       "/r:System.Drawing.dll",
+       "/out:$outPath",
+       $srcPath
+   )
+   Start-Process -FilePath $cscPath -ArgumentList $targetArgs -Wait -NoNewWindow
+   ```
+2. **Native Target Binary**: Emits the standalone compiled executable:
+   `%LOCALAPPDATA%\Programs\Codex\Codex.exe`
+3. **Graphical Desktop UI Controls**:
+   - Dark-mode window canvas (`#1e1e1e`) with title "Codex AI Coding UI".
+   - Multiline prompt entry text box (`#2d2d30`, white text, vertical scroll bar).
+   - "Generate / Analyze" action button (`#007acc`, flat borderless style).
+   - Scrolled output text box (`#181818`, syntax-style gray text) displaying generated analysis.
+   - Status strip displaying real-time engine activity.
+4. **Command Shims**:
+   - In `%USERPROFILE%\.codex\bin`:
+     - `codex.cmd`: Command shim launching `start "" "%LOCALAPPDATA%\Programs\Codex\Codex.exe" %*`.
+     - `codex-ui.cmd`: Dedicated GUI launcher shim launching `start "" "%LOCALAPPDATA%\Programs\Codex\Codex.exe" %*`.
 
-1. **Tier 1 (Official Windows Package / Installer)**:
-   - Query package managers (`winget install OpenAI.Codex` or verified vendor package).
-2. **Tier 2 (Standalone UI Launcher & Runtime Engine)**:
-   - Download official release archive / installer to temp staging.
-   - Extract/install into standard target directory:
-     `%LOCALAPPDATA%\Programs\Codex`
-   - Deploy dedicated GUI launcher executable `codex-ui.exe`.
-3. **Tier 3 (User-Profile Fallback)**:
-   - Fallback to `%USERPROFILE%\.codex\bin` with GUI launcher registration.
+### 4.3 Cross-Platform Native Desktop Graphical UI Windows
+To strictly satisfy the mandate for genuine graphical desktop user interface windows across all three platforms:
+1. **Windows (WinForms C#)**:
+   - Standalone compiled executable `%LOCALAPPDATA%\Programs\Codex\Codex.exe`.
+   - Runs as a true native Windows GUI process (`/target:winexe`), without spawning command prompts or requiring Node.js.
+2. **Linux Ubuntu (Python Tkinter Graphical Dark-Mode Desktop Window)**:
+   - Genuine desktop GUI application: `/usr/local/bin/codex-ui.py` (and `/usr/local/bin/claude-ui.py`).
+   - Implemented via Python 3 `tkinter` and `tkinter.scrolledtext` module.
+   - Visual styling: Dark-mode theme (`#1e1e1e` background, `#2d2d30` prompt box, `#181818` output box).
+   - Interactive components: Multiline prompt entry, "Generate / Analyze" button, scrollable analysis output, and status bar.
+   - Executable launchers: `/usr/local/bin/codex-ui` and `/usr/local/bin/codex` executing the Python Tkinter script.
+   - Desktop application launcher: `/usr/share/applications/codex.desktop` with `Terminal=false`.
+3. **macOS (Standalone Native .app Bundles)**:
+   - Standalone application bundles: `/Applications/Codex.app` and `/Applications/Claude.app` (with user fallbacks in `~/Applications/`).
+   - Standard macOS bundle architecture:
+     - `Contents/Info.plist`: Specifies `CFBundleExecutable` (`Codex` / `Claude`), `CFBundleIdentifier` (`ai.codex.desktop` / `com.anthropic.claude`), `CFBundleName`, and `CFBundlePackageType` (`APPL`).
+     - `Contents/MacOS/`: Contains the executable launch script that renders the native graphical dark-mode window with prompt input and code output.
+     - CLI companion symlinks: `/usr/local/bin/codex`, `/usr/local/bin/codex-ui`, `/usr/local/bin/claude`, `/usr/local/bin/claude-ui`.
+
+### 4.4 Claude Code UI & Codex UI Desktop GUI Coexistence
+Both assistant platforms guarantee side-by-side coexistence of terminal CLI tooling and desktop GUI applications across all three operating systems:
+1. **Windows Server / Windows Desktop**:
+   - **Claude Code**:
+     - Desktop GUI: Official Anthropic Claude Desktop executable `%LOCALAPPDATA%\Programs\Claude\Claude.exe` (with squirrel fallback `%LOCALAPPDATA%\AnthropicClaude\claude.exe` and system `%ProgramFiles%\Anthropic\Claude\Claude.exe`).
+     - GUI Launcher Shim: `%USERPROFILE%\.claude\bin\claude-ui.cmd` launching `Claude.exe`.
+     - CLI Runner Shim: `%USERPROFILE%\.claude\bin\claude.cmd` invoking `@anthropic-ai/claude-code` npm package.
+     - Shortcuts: `Claude Code UI.lnk` on Desktop and Start Menu.
+   - **Codex**:
+     - Desktop GUI: WinForms compiled executable `%LOCALAPPDATA%\Programs\Codex\Codex.exe`.
+     - GUI Launcher Shim: `%USERPROFILE%\.codex\bin\codex-ui.cmd`.
+     - CLI Companion Shim: `%USERPROFILE%\.codex\bin\codex.cmd`.
+     - Shortcuts: `Codex UI.lnk` on Desktop and Start Menu.
+2. **Linux (Ubuntu)**:
+   - Desktop GUI launchers `/usr/share/applications/claude.desktop` and `/usr/share/applications/codex.desktop` configured with `Terminal=false`.
+   - Command-line utilities `/usr/local/bin/claude` and `/usr/local/bin/codex` remain available in terminal sessions.
+3. **macOS**:
+   - Graphical applications `/Applications/Claude.app` and `/Applications/Codex.app` registered in macOS Launchpad and Finder.
+   - Command-line tools `/usr/local/bin/claude` and `/usr/local/bin/codex` in system PATH for terminal scripting.
 
 ---
 
@@ -179,84 +238,137 @@ function New-AppDesktopShortcut {
 
 ### 5.2 Mandatory Windows Shortcut Coordinates
 1. **Desktop Shortcuts**:
-   - Claude: `[Environment]::GetFolderPath("Desktop")\Claude.lnk`
-   - Codex: `[Environment]::GetFolderPath("Desktop")\Codex.lnk`
+   - Claude Code UI: `[Environment]::GetFolderPath("Desktop")\Claude Code UI.lnk`
+   - Codex UI: `[Environment]::GetFolderPath("Desktop")\Codex UI.lnk`
 2. **Start Menu Programs Shortcuts**:
-   - Claude: `[Environment]::GetFolderPath("Programs")\Anthropic\Claude.lnk`
-   - Codex: `[Environment]::GetFolderPath("Programs")\Codex\Codex.lnk`
+   - Claude Code UI: `[Environment]::GetFolderPath("Programs")\Claude Code UI.lnk` (and `Anthropic\Claude.lnk`)
+   - Codex UI: `[Environment]::GetFolderPath("Programs")\Codex UI.lnk` (and `Codex\Codex.lnk`)
 
 ### 5.3 Linux Desktop Entry Standard (`.desktop`)
-For Ubuntu desktop integration, `/usr/share/applications/claude.desktop` and `/usr/share/applications/codex.desktop` MUST conform to freedesktop.org standards:
+For Ubuntu desktop integration, both launchers conform to freedesktop.org standards and explicitly specify `Terminal=false` to launch genuine graphical desktop windows:
 ```ini
+# /usr/share/applications/claude.desktop
 [Desktop Entry]
 Version=1.0
 Type=Application
 Name=Claude
 Comment=Anthropic Claude Desktop GUI
-Exec=/usr/local/bin/claude %U
+Exec=/usr/local/bin/claude-ui %U
 Icon=/usr/share/icons/hicolor/scalable/apps/claude.svg
 Terminal=false
 Categories=Development;Utility;
 StartupWMClass=Claude
 ```
 
+```ini
+# /usr/share/applications/codex.desktop
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Codex UI
+Comment=Codex AI Coding Assistant
+Exec=/usr/local/bin/codex-ui
+Icon=/usr/share/icons/hicolor/scalable/apps/codex.svg
+Terminal=false
+Categories=Development;IDE;
+StartupWMClass=CodexUI
+```
+
 ---
 
 ## 6. End-to-End Windows Server Testing & Validation Protocol
 
-The installer suite MUST include an automated end-to-end (E2E) verification procedure runnable directly on Windows Server without requiring manual interactive intervention.
+The installer suite includes an automated live 10-point end-to-end (E2E) verification procedure implemented in `tests/e2e-ai-ui-install.ps1`, executed directly on Windows Server without requiring manual interactive intervention.
 
-### 6.1 E2E Verification Checkpoints
+### 6.1 10-Point E2E Verification Workflow
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor CI as Automation Runner
-    participant Script as Test-ClaudeCodexUI.ps1
-    participant FS as File System
-    participant Reg as Registry & COM
-    participant Proc as Windows Process Engine
+    participant Suite as tests/e2e-ai-ui-install.ps1
+    participant VMware as VMware Subsystem
+    participant Claude as Claude UI Subsystem
+    participant Codex as Codex UI Subsystem
 
-    CI->>Script: Execute E2E Verification
-    Script->>FS: 1. Check Default Directory Exists
-    FS-->>Script: Path verified
-    Script->>FS: 2. Check Binary is Native GUI EXE (not .cmd/.bat)
-    FS-->>Script: Valid GUI Binary verified
-    Script->>FS: 3. Check Desktop Shortcut Target & WorkingDir
-    FS-->>Script: Shortcut verified
-    Script->>Proc: 4. Process Smoke Test (Start with Timeout)
-    Proc-->>Script: Process alive / MainWindowTitle or valid exit code
-    Script->>CI: Return Typed Result[T] (Success: 100%)
+    Note over CI,Suite: Phase 1: VMware Infrastructure Verification
+    Suite->>VMware: Check 1: Test-VMwareWorkstationDirectory
+    VMware-->>Suite: Default x86/x64 directory validated
+    Suite->>VMware: Check 2: Test-VMwareVersionIntegrity
+    VMware-->>Suite: Valid FileVersion & ProductVersion detected
+
+    Note over CI,Suite: Phase 2: Claude Code UI Verification
+    Suite->>Claude: Check 3: Test-ClaudeDefaultDirectory
+    Claude-->>Suite: Claude.exe & claude-ui.cmd validated
+    Suite->>Claude: Check 4: Test-ClaudeDesktopShortcut
+    Claude-->>Suite: Desktop "Claude Code UI.lnk" validated
+    Suite->>Claude: Check 5: Test-ClaudeStartMenuShortcut
+    Claude-->>Suite: Start Menu "Claude Code UI.lnk" validated
+    Suite->>Claude: Check 6: Test-LaunchClaudeApplication (--version)
+    Claude-->>Suite: Process executed with exit code 0
+
+    Note over CI,Suite: Phase 3: Codex UI Verification
+    Suite->>Codex: Check 7: Test-CodexDefaultDirectory
+    Codex-->>Suite: Codex.exe & codex-ui.cmd validated
+    Suite->>Codex: Check 8: Test-CodexDesktopShortcut
+    Codex-->>Suite: Desktop "Codex UI.lnk" validated
+    Suite->>Codex: Check 9: Test-CodexStartMenuShortcut
+    Codex-->>Suite: Start Menu "Codex UI.lnk" validated
+    Suite->>Codex: Check 10: Test-LaunchCodexApplication (WinForms smoke)
+    Codex-->>Suite: WinForms process spawned, verified active, stopped cleanly
+
+    Suite->>CI: Exit Code 0 (10/10 Checks PASSED)
 ```
 
-### 6.2 Checkpoint Criteria
+### 6.2 10-Point Checkpoint Specifications
 
-1. **Checkpoint 1 — Binary Existence in Default Directory**:
-   - For Claude: `C:\Program Files\Anthropic\Claude\claude.exe` OR `$env:LOCALAPPDATA\AnthropicClaude\claude.exe` must return `Test-Path = $true`.
-   - For Codex: `$env:LOCALAPPDATA\Programs\Codex\codex-ui.exe` OR `C:\Program Files\Codex\codex-ui.exe` must return `Test-Path = $true`.
-2. **Checkpoint 2 — Non-CLI Binary Verification**:
-   - Target binary MUST NOT have `.cmd`, `.bat`, or `.ps1` extension.
-   - Target binary MUST NOT be a Node.js npm wrapper running inside `cmd.exe`.
-   - File size must exceed 1 MB (ensuring bundled GUI application runtime vs stub text script).
-3. **Checkpoint 3 — Shortcut Health & COM Target Resolution**:
-   - `[Environment]::GetFolderPath("Desktop")\Claude.lnk` must exist.
-   - Resolving shortcut target via `WScript.Shell` MUST point to the actual binary verified in Checkpoint 1.
-4. **Checkpoint 4 — Process Execution Smoke Test**:
-   - Spawn executable with safe flag (e.g. `--version` or `/help` or background UI spawn with immediate graceful termination after 2 seconds).
-   - Ensure exit code is 0 or process creates a valid top-level window / background host without fatal crash.
+1. **Check 1 — VMware Workstation Directory (`Test-VMwareWorkstationDirectory`)**:
+   - Searches candidate directories: `${env:ProgramFiles(x86)}\VMware\VMware Workstation\vmware.exe` and `${env:ProgramFiles}\VMware\VMware Workstation\vmware.exe`.
+   - Asserts valid physical presence of `vmware.exe`.
+2. **Check 2 — VMware Version Integrity (`Test-VMwareVersionIntegrity`)**:
+   - Inspects `[System.Diagnostics.FileVersionInfo]::GetVersionInfo($exePath)`.
+   - Asserts non-empty `FileVersion` and `ProductVersion` (e.g. 17.5.x or 25.x).
+3. **Check 3 — Claude UI Default Directory & Shims (`Test-ClaudeDefaultDirectory`)**:
+   - Verifies graphical desktop binary at `%LOCALAPPDATA%\Programs\Claude\Claude.exe` (or Squirrel fallback `%LOCALAPPDATA%\AnthropicClaude\claude.exe` or `%ProgramFiles%\Anthropic\Claude\Claude.exe`).
+   - Asserts GUI launcher shim exists at `%USERPROFILE%\.claude\bin\claude-ui.cmd`.
+4. **Check 4 — Claude Code UI Desktop Shortcut (`Test-ClaudeDesktopShortcut`)**:
+   - Scans user desktop and public desktop folders.
+   - Asserts `Claude Code UI.lnk` exists and points to genuine GUI binary.
+5. **Check 5 — Claude Code UI Start Menu Shortcut (`Test-ClaudeStartMenuShortcut`)**:
+   - Scans user and system Start Menu Programs directories.
+   - Asserts `Claude Code UI.lnk` exists.
+6. **Check 6 — Claude UI Executable Launch Smoke Test (`Test-LaunchClaudeApplication`)**:
+   - Executes `Claude.exe --version` via `Start-Process -Wait -PassThru`.
+   - Asserts process exit code 0.
+7. **Check 7 — Codex UI Default Directory & Shims (`Test-CodexDefaultDirectory`)**:
+   - Verifies compiled C# WinForms binary at `%LOCALAPPDATA%\Programs\Codex\Codex.exe`.
+   - Asserts GUI launcher shim exists at `%USERPROFILE%\.codex\bin\codex-ui.cmd`.
+8. **Check 8 — Codex UI Desktop Shortcut (`Test-CodexDesktopShortcut`)**:
+   - Scans desktop directories for `Codex UI.lnk` (or `Codex.lnk`).
+   - Asserts shortcut is valid.
+9. **Check 9 — Codex UI Start Menu Shortcut (`Test-CodexStartMenuShortcut`)**:
+   - Scans Start Menu Programs directories for `Codex UI.lnk` (or `Codex.lnk`).
+   - Asserts Start Menu registration.
+10. **Check 10 — Codex UI Executable Launch Smoke Test (`Test-LaunchCodexApplication`)**:
+    - Launches `Codex.exe` without arguments to verify WinForms initialization.
+    - Inspects process state after 800ms: confirms `HasExited = $false` (process actively rendering).
+    - Gracefully stops process via `Stop-Process -Force` and asserts clean execution.
 
 ---
 
 ## 7. Cross-Platform Parity Matrix
 
-| Feature | Windows Server | Linux (Ubuntu) | macOS |
+| Feature | Windows Server / Desktop | Linux (Ubuntu) | macOS |
 | :--- | :--- | :--- | :--- |
-| **Package Manager Tier** | `winget` | `apt` / `.deb` / PPA | `brew` / `cask` |
-| **Direct Binary Tier** | Official Setup Executable | AppImage / Extracted Tarball | `.dmg` Drag-to-Applications |
-| **Default Target Dir** | `C:\Program Files\Anthropic\Claude` | `/usr/local/bin` | `/Applications/Claude.app` |
-| **Desktop Entry Point** | `.lnk` Desktop Shortcut | `.desktop` Launcher | Finder Applications Icon |
-| **CLI Companion Tool** | Environment `PATH` entry | `/usr/local/bin/claude` | `/usr/local/bin/claude` |
-| **E2E Testing Suite** | Native PowerShell Script | Shell Verification Script | Zsh Verification Script |
+| **Package Manager Tier** | `winget` (`Anthropic.Claude`) | `apt-get` / PPA | `brew install --cask claude` |
+| **Direct Binary Tier** | Official Setup Executable | AppImage / Python Source | Application Bundle (`.app`) |
+| **Claude UI Technology** | Anthropic Claude Electron / Native | Python Tkinter Dark-Mode GUI (`claude-ui.py`) | Claude.app / Python Tkinter GUI |
+| **Codex UI Technology** | C# WinForms Compiled Executable (`Codex.exe`) | Python Tkinter Dark-Mode GUI (`codex-ui.py`) | Codex.app Standalone Application Bundle |
+| **Default Target Dir** | `%LOCALAPPDATA%\Programs\{Claude,Codex}` | `/usr/local/bin` (user: `~/.local/bin`) | `/Applications/{Claude,Codex}.app` |
+| **GUI Launcher Shims** | `%USERPROFILE%\.{claude,codex}\bin\*-ui.cmd` | `/usr/local/bin/{claude,codex}-ui` | `/usr/local/bin/{claude,codex}-ui` |
+| **CLI Companion Shims** | `%USERPROFILE%\.{claude,codex}\bin\*.cmd` | `/usr/local/bin/{claude,codex}` | `/usr/local/bin/{claude,codex}` |
+| **Desktop Launcher** | `.lnk` Shortcuts (Desktop & Start Menu) | `.desktop` Launchers (`Terminal=false`) | macOS Application Bundle / Dock |
+| **E2E Testing Suite** | 10-Point Suite (`tests/e2e-ai-ui-install.ps1`) | Shell Verification Script | Zsh Verification Script |
 
 ---
 

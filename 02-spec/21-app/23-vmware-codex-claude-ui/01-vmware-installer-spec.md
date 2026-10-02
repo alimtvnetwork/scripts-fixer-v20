@@ -114,8 +114,17 @@ flowchart TD
 1. Resolve direct download URL from `$env:VMWARE_DOWNLOAD_URL` or canonical fallback CDN URL.
 2. Download installer executable or `.bundle` into isolated repository/OS temp folder.
 3. Execute silent unattended installer with standard silent parameters:
-   - **Windows**: `Start-Process -FilePath $tempFile -ArgumentList "/s /v`\"/qn REBOOT=ReallySuppress`\"" -Wait -PassThru`
+   - **Windows**: `Start-Process -FilePath $tempFile -ArgumentList '/s /v"/qn EULAS_AGREED=1 AUTOSOFTWAREUPDATE=0 REBOOT=ReallySuppress"' -Wait -PassThru`
+     - `/s`: Runs the setup bootstrap executable silently without displaying extraction dialogs.
+     - `/v"..."`: Passes enclosed parameters directly to the underlying MSI database engine.
+     - `/qn`: Full unattended silent execution with zero wizard user interface.
+     - `EULAS_AGREED=1`: Broadcom automated license agreement flag, preventing blocking interactive acceptance dialogs.
+     - `AUTOSOFTWAREUPDATE=0`: Disables phone-home check and automated software update polling.
+     - `REBOOT=ReallySuppress`: Suppresses forced system reboots, ensuring provisioning scripts continue cleanly.
    - **Linux**: `sudo ./vmware-installer.bundle --console --required --eulas-agreed`
+     - Automatically starts and enables virtualization services:
+       `sudo systemctl enable --now vmware.service`
+       `sudo systemctl enable --now vmware-USBArbitrator.service`
 
 ### 4.2 Tier 2: Chocolatey Fallback (Windows)
 1. Detect presence of `choco.exe`. If missing, check if `Ensure-PackageManagers` or Chocolatey bootstrapping is enabled.
@@ -193,11 +202,40 @@ All modified and newly authored code MUST adhere to the following invariants:
 ## 7. Windows Script Specification (`scripts/66-install-vmware/run.ps1`)
 
 ### 7.1 Key Function Decomposition
-- `Test-IsVMwareInstalled`: Inspects registry keys (`HKLM:\SOFTWARE\VMware, Inc.\VMware Workstation`, uninstall keys) and default directory paths.
-- `Get-VMwareDefaultDir`: Resolves the active or candidate Program Files path.
-- `Invoke-DirectInstall`: Downloads installer and executes silent unattended setup.
-- `Invoke-ChocoInstall`: Executes Chocolatey package installation fallback.
+- `Test-IsVMwareInstalled`: Inspects registry keys (`HKLM:\SOFTWARE\VMware, Inc.\VMware Workstation`, uninstall keys), default directory paths, and `VMAuthdService` status.
+- `Get-VMwareCandidateDirs`: Resolves 64-bit and 32-bit Program Files candidate directory paths.
+- `Get-VMwareTargetDir`: Resolves the active target directory for installation and logging.
+- `Test-VMwareAuthService`: Verifies presence and registration of VMware Authorization Service (`VMAuthdService`).
+- `Log-VMwareAuthServiceStatus`: Emits structured confirmation log when `VMAuthdService` is verified active.
+- `Invoke-DirectInstall`: Downloads installer and executes silent unattended setup using unattended Broadcom MSI arguments.
+- `Invoke-ChocoInstall`: Executes Chocolatey package installation fallback (`vmwareworkstation` then `vmware-workstation-player`).
 - `Assert-VMwareInstalled`: Verifies executable presence in the default directory post-install.
+
+### 7.2 Broadcom Unattended Arguments & VMAuthdService Verification
+To guarantee zero-interaction unattended provisioning across Windows Server environments:
+1. **Unattended Broadcom Silent MSI Arguments**:
+   ```powershell
+   $installerArgs = '/s /v"/qn EULAS_AGREED=1 AUTOSOFTWAREUPDATE=0 REBOOT=ReallySuppress"'
+   $proc = Start-Process -FilePath $InstallerPath -ArgumentList $installerArgs -Wait -PassThru
+   ```
+   - `/s`: Suppresses outer bootstrap and self-extraction dialog windows.
+   - `/v"..."`: Passes inner MSI flags directly to the Windows Installer engine.
+   - `/qn`: Runs completely silent without user interface or progress wizard.
+   - `EULAS_AGREED=1`: Pre-accepts Broadcom End User License Agreement to avoid interactive blocking prompts.
+   - `AUTOSOFTWAREUPDATE=0`: Disables phone-home update telemetry and automated version polling.
+   - `REBOOT=ReallySuppress`: Suppresses unplanned server restarts during automated orchestration.
+
+2. **VMware Authorization Service (`VMAuthdService`) Verification**:
+   The installer verifies core driver and service registration directly via PowerShell Service Manager:
+   ```powershell
+   function Test-VMwareAuthService {
+       $service = Get-Service -Name "VMAuthdService" -ErrorAction SilentlyContinue
+       $hasService = $null -ne $service
+
+       return $hasService
+   }
+   ```
+   Detecting `VMAuthdService` confirms that VMware core system drivers and background authentication hooks have successfully registered with the Windows Service Control Manager (SCM).
 
 ---
 
@@ -206,15 +244,33 @@ All modified and newly authored code MUST adhere to the following invariants:
 ### 8.1 Key Function Decomposition
 - `is_vmware_installed`: Checks presence of `/usr/bin/vmware` and `/usr/lib/vmware`.
 - `ensure_prerequisites`: Installs `build-essential`, `linux-headers-$(uname -r)`, and core compilation toolchains.
-- `download_bundle`: Fetches the `.bundle` installer with checksum verification.
-- `install_bundle`: Executes `./vmware-installer.bundle --console --required --eulas-agreed`.
-- `configure_kernel_modules`: Executes `vmware-modconfig --console --install-all` if kernel modules require compilation.
+- `download_bundle`: Fetches the `.bundle` installer with fallback mirror rotation and checksum validation.
+- `run_bundle_installer`: Executes `./vmware-installer.bundle --console --required --eulas-agreed`.
+- `build_kernel_modules`: Executes `vmware-modconfig --console --install-all` to compile and link `vmmon` and `vmnet` kernel modules.
+- `execute_vmware_setup`: Orchestrates bundle execution, kernel compilation, and systemd service startup.
+- `validate_vmware_installation`: Verifies binaries `/usr/bin/vmware` and library root `/usr/lib/vmware`.
+
+### 8.2 Ubuntu Systemd Service Startup & Daemon Management
+Following kernel module compilation, the Ubuntu installation sequence ensures that all necessary background daemons are activated:
+```bash
+# Enable and immediately start core virtualization service (vmmon/vmnet bridge)
+sudo systemctl enable --now vmware.service
+
+# Enable and immediately start USB Arbitrator service for device passthrough
+sudo systemctl enable --now vmware-USBArbitrator.service
+```
+- **`vmware.service`**: Activates core virtualization drivers, virtual network switches (`vmnet`), and networking NAT/DHCP daemons.
+- **`vmware-USBArbitrator.service`**: Manages dynamic USB device arbitration and passthrough between host and guest virtual machines.
+- **Service Verification**: Checks active state via `systemctl is-active --quiet vmware.service` and `systemctl is-active --quiet vmware-USBArbitrator.service`.
 
 ---
 
 ## 9. Verification & Acceptance Criteria
 
-1. **Path Integrity**: `Write-InstallPaths` fires with explicit Source, Temp, and Target.
+1. **Path Integrity**: `Write-InstallPaths` fires with explicit Source, Temp, and Target coordinates.
 2. **Directory Compliance**: Binary verified in `${env:ProgramFiles(x86)}\VMware\VMware Workstation` or `${env:ProgramFiles}\VMware\VMware Workstation` (Windows) and `/usr/bin/vmware` (Linux).
-3. **Fallback Verification**: Simulated broken direct download URL triggers Chocolatey fallback cleanly.
-4. **Log Recording**: Structured event recorded in SQLite tracking database (`package`, `vmware`, `17.x`).
+3. **Broadcom Silent Execution**: Unattended installer executes using `/s /v"/qn EULAS_AGREED=1 AUTOSOFTWAREUPDATE=0 REBOOT=ReallySuppress"` with zero interactive prompts.
+4. **VMAuthdService Verification**: Windows installer verifies presence of `VMAuthdService` in the Windows Service Control Manager.
+5. **Ubuntu Systemd Service Startup**: Linux installer enables and starts `vmware.service` and `vmware-USBArbitrator.service` via `systemctl enable --now`.
+6. **Fallback Verification**: Simulated broken direct download URL triggers Chocolatey fallback cleanly.
+7. **Log Recording**: Structured event recorded in SQLite tracking database (`package`, `vmware`, `17.x`).
