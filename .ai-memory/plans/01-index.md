@@ -45,7 +45,7 @@
 | 34 | `20-agy-cache-clear-and-dev-clean.md` | Antigravity Cache Clear -k<N> Syntax, Bottom Summary, Cross-OS & Dev-Clean | `completed` | 2026-09-24 |
 | 35 | `21-os-autologin-and-agy-modularization.md` | OS Auto-Login (Win11/Server/Ubuntu) & Modular AGY Python Package | `completed` | 2026-09-24 |
 | 36 | `34-antigravity-deep-uninstaller-suite.md` | Antigravity State Backup & Deep Wipe, AGM, Copilot, Edge Uninstallers & Dev-Clean | `completed` | 2026-09-28 |
-| 37 | `subtasks/20-vmware-codex-claude-ui/01-vmware-install-improvements.md` | VMware Installation Improvements & Cross-Platform Codex UI / Claude Code Desktop UI | `completed` | 2026-10-02 |
+| 37 | `35-vmware-codex-claude-ui.md` | VMware Installation Improvements & Cross-Platform Codex UI / Claude Code Desktop UI | `completed` | 2026-10-02 |
 
 ---
 

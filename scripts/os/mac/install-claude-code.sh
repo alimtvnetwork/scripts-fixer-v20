@@ -123,9 +123,12 @@ write_claude_shims() {
 #!/bin/bash
 if [ -d "/Applications/Claude.app" ]; then
     open -a "/Applications/Claude.app" "$@" 2>/dev/null || true
+elif [ -d "$HOME/Applications/Claude.app" ]; then
+    open -a "$HOME/Applications/Claude.app" "$@" 2>/dev/null || true
 fi
-if command -v claude &>/dev/null; then
-    exec claude "$@"
+REAL_CLAUDE="$(type -ap claude 2>/dev/null | grep -v "$0" | head -n 1 || true)"
+if [ -n "$REAL_CLAUDE" ] && [ -x "$REAL_CLAUDE" ]; then
+    exec "$REAL_CLAUDE" "$@"
 elif command -v npx &>/dev/null; then
     exec npx @anthropic-ai/claude-code "$@"
 fi
@@ -134,6 +137,44 @@ EOF
     chmod +x "$claude_bin" 2>/dev/null || log_file_error "$claude_bin" "chmod" "Cannot set executable bit"
     ln -sf "$claude_bin" "$bin_dir/claude" 2>/dev/null || log_file_error "$bin_dir/claude" "symlink" "Failed link"
     ln -sf "$claude_bin" "$bin_dir/claude-ui" 2>/dev/null || log_file_error "$bin_dir/claude-ui" "symlink" "Failed link"
+
+    return
+}
+
+ensure_all_app_bundles() {
+    local sys_app="/Applications"
+    local has_sys_app=0
+
+    if [ -w "$sys_app" ] || [[ "$EUID" -eq 0 ]]; then
+        has_sys_app=1
+    fi
+
+    if [ "$has_sys_app" -eq 1 ]; then
+        create_app_bundle "$sys_app"
+    fi
+
+    local user_app="$HOME/Applications"
+    create_app_bundle "$user_app"
+
+    return
+}
+
+ensure_all_mac_shims() {
+    local sys_bin="/usr/local/bin"
+    local has_sys_bin=0
+
+    if [ -w "$sys_bin" ] || [[ "$EUID" -eq 0 ]]; then
+        has_sys_bin=1
+    fi
+
+    if [ "$has_sys_bin" -eq 1 ]; then
+        mkdir -p "$sys_bin" 2>/dev/null || true
+        write_claude_shims "$sys_bin"
+    fi
+
+    local user_bin="$HOME/.local/bin"
+    mkdir -p "$user_bin" 2>/dev/null || log_file_error "$user_bin" "mkdir" "Permission denied"
+    write_claude_shims "$user_bin"
 
     return
 }
@@ -157,30 +198,14 @@ update_mac_path() {
 install_mac_claude_code() {
     echo -e "\n  ${SECONDARY}[  ..  ] Installing Claude Code UI on macOS (/Applications)...${TEXT}"
 
-    local app_dir
-    app_dir="$(resolve_app_dir)"
-    local bin_dir
-    bin_dir="$(resolve_bin_dir)"
-
     install_cask_claude
-    create_app_bundle "$app_dir"
-    write_claude_shims "$bin_dir"
+    ensure_all_app_bundles
+    ensure_all_mac_shims
 
-    local user_bin="$HOME/.local/bin"
-    local has_distinct_bin=0
+    update_mac_path "/usr/local/bin"
+    update_mac_path "$HOME/.local/bin"
 
-    if [ "$bin_dir" != "$user_bin" ]; then
-        has_distinct_bin=1
-    fi
-
-    if [ "$has_distinct_bin" -eq 1 ]; then
-        mkdir -p "$user_bin" 2>/dev/null || true
-        write_claude_shims "$user_bin"
-    fi
-
-    update_mac_path "$bin_dir"
-
-    echo -e "\n  ${PRIMARY}[DONE ] Claude Code UI installed successfully in $app_dir/Claude.app.${TEXT}"
+    echo -e "\n  ${PRIMARY}[DONE ] Claude Code UI installed successfully in /Applications/Claude.app.${TEXT}"
 
     return
 }

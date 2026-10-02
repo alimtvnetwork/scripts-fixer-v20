@@ -80,8 +80,9 @@ write_claude_shims() {
 
     cat << 'EOF' > "$claude_bin"
 #!/bin/bash
-if command -v claude &>/dev/null; then
-    exec claude "$@"
+REAL_CLAUDE="$(type -ap claude 2>/dev/null | grep -v "$0" | head -n 1 || true)"
+if [ -n "$REAL_CLAUDE" ] && [ -x "$REAL_CLAUDE" ]; then
+    exec "$REAL_CLAUDE" "$@"
 elif command -v npx &>/dev/null; then
     exec npx @anthropic-ai/claude-code "$@"
 else
@@ -99,14 +100,14 @@ EOF
 
 write_claude_desktop_entry() {
     local desktop_dir="$1"
-    local bin_dir="$2"
+    local exec_cmd="$2"
     local desktop_file="$desktop_dir/claude-code.desktop"
 
     cat << EOF > "$desktop_file"
 [Desktop Entry]
 Name=Claude Code UI
 Comment=Claude Code AI Desktop Assistant
-Exec=$bin_dir/claude-ui
+Exec=$exec_cmd
 Icon=utilities-terminal
 Terminal=true
 Type=Application
@@ -114,6 +115,57 @@ Categories=Development;IDE;
 EOF
 
     chmod +x "$desktop_file" 2>/dev/null || log_file_error "$desktop_file" "chmod" "Cannot set executable bit"
+
+    return
+}
+
+ensure_all_bin_shims() {
+    local user_bin="$HOME/.local/bin"
+    mkdir -p "$user_bin" 2>/dev/null || log_file_error "$user_bin" "mkdir" "Permission denied"
+    write_claude_shims "$user_bin"
+
+    local sys_bin="/usr/local/bin"
+    local has_sys_perm=0
+
+    if [ -w "$sys_bin" ] || [[ "$EUID" -eq 0 ]]; then
+        has_sys_perm=1
+    fi
+
+    if [ "$has_sys_perm" -eq 1 ]; then
+        mkdir -p "$sys_bin" 2>/dev/null || true
+        write_claude_shims "$sys_bin"
+    fi
+
+    return
+}
+
+ensure_all_desktop_entries() {
+    local launcher_bin="/usr/local/bin/claude-ui"
+    local has_sys_launcher=0
+
+    if [ -f "$launcher_bin" ]; then
+        has_sys_launcher=1
+    fi
+
+    if [ "$has_sys_launcher" -eq 0 ]; then
+        launcher_bin="$HOME/.local/bin/claude-ui"
+    fi
+
+    local user_desktop="$HOME/.local/share/applications"
+    mkdir -p "$user_desktop" 2>/dev/null || log_file_error "$user_desktop" "mkdir" "Permission denied"
+    write_claude_desktop_entry "$user_desktop" "$launcher_bin"
+
+    local sys_desktop="/usr/share/applications"
+    local has_sys_perm=0
+
+    if [ -w "$sys_desktop" ] || [[ "$EUID" -eq 0 ]]; then
+        has_sys_perm=1
+    fi
+
+    if [ "$has_sys_perm" -eq 1 ]; then
+        mkdir -p "$sys_desktop" 2>/dev/null || true
+        write_claude_desktop_entry "$sys_desktop" "$launcher_bin"
+    fi
 
     return
 }
@@ -149,41 +201,13 @@ install_claude_code() {
 
     install_npm_package
 
-    local target_bin
-    target_bin="$(resolve_bin_dir)"
-    local target_desktop
-    target_desktop="$(resolve_desktop_dir)"
+    ensure_all_bin_shims
+    ensure_all_desktop_entries
 
-    write_claude_shims "$target_bin"
-    write_claude_desktop_entry "$target_desktop" "$target_bin"
+    update_shell_path "$HOME/.local/bin"
+    update_shell_path "/usr/local/bin"
 
-    local user_bin="$HOME/.local/bin"
-    local has_distinct_user_bin=0
-
-    if [ "$target_bin" != "$user_bin" ]; then
-        has_distinct_user_bin=1
-    fi
-
-    if [ "$has_distinct_user_bin" -eq 1 ]; then
-        mkdir -p "$user_bin" 2>/dev/null || true
-        write_claude_shims "$user_bin"
-    fi
-
-    local user_desktop="$HOME/.local/share/applications"
-    local has_distinct_desktop=0
-
-    if [ "$target_desktop" != "$user_desktop" ]; then
-        has_distinct_desktop=1
-    fi
-
-    if [ "$has_distinct_desktop" -eq 1 ]; then
-        mkdir -p "$user_desktop" 2>/dev/null || true
-        write_claude_desktop_entry "$user_desktop" "$target_bin"
-    fi
-
-    update_shell_path "$target_bin"
-
-    echo -e "\n  ${PRIMARY}[DONE ] Claude Code UI setup complete in $target_bin and $target_desktop.${TEXT}"
+    echo -e "\n  ${PRIMARY}[DONE ] Claude Code UI setup complete across default directories.${TEXT}"
 
     return
 }

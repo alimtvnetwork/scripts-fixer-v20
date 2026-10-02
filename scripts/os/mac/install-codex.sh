@@ -93,6 +93,8 @@ write_codex_shims() {
 #!/bin/bash
 if [ -d "/Applications/Codex.app" ]; then
     open -a "/Applications/Codex.app" "$@" 2>/dev/null || true
+elif [ -d "$HOME/Applications/Codex.app" ]; then
+    open -a "$HOME/Applications/Codex.app" "$@" 2>/dev/null || true
 fi
 echo "[Codex UI] Launching Codex Assistant..."
 exec bash
@@ -100,6 +102,44 @@ EOF
 
     chmod +x "$codex_bin" 2>/dev/null || log_file_error "$codex_bin" "chmod" "Cannot set executable bit"
     ln -sf "$codex_bin" "$bin_dir/codex-ui" 2>/dev/null || log_file_error "$bin_dir/codex-ui" "symlink" "Failed link"
+
+    return
+}
+
+ensure_all_app_bundles() {
+    local sys_app="/Applications"
+    local has_sys_app=0
+
+    if [ -w "$sys_app" ] || [[ "$EUID" -eq 0 ]]; then
+        has_sys_app=1
+    fi
+
+    if [ "$has_sys_app" -eq 1 ]; then
+        create_codex_bundle "$sys_app"
+    fi
+
+    local user_app="$HOME/Applications"
+    create_codex_bundle "$user_app"
+
+    return
+}
+
+ensure_all_mac_shims() {
+    local sys_bin="/usr/local/bin"
+    local has_sys_bin=0
+
+    if [ -w "$sys_bin" ] || [[ "$EUID" -eq 0 ]]; then
+        has_sys_bin=1
+    fi
+
+    if [ "$has_sys_bin" -eq 1 ]; then
+        mkdir -p "$sys_bin" 2>/dev/null || true
+        write_codex_shims "$sys_bin"
+    fi
+
+    local user_bin="$HOME/.local/bin"
+    mkdir -p "$user_bin" 2>/dev/null || log_file_error "$user_bin" "mkdir" "Permission denied"
+    write_codex_shims "$user_bin"
 
     return
 }
@@ -123,29 +163,13 @@ update_mac_path() {
 install_mac_codex() {
     echo -e "\n  ${SECONDARY}[  ..  ] Installing Codex UI on macOS (/Applications)...${TEXT}"
 
-    local app_dir
-    app_dir="$(resolve_app_dir)"
-    local bin_dir
-    bin_dir="$(resolve_bin_dir)"
+    ensure_all_app_bundles
+    ensure_all_mac_shims
 
-    create_codex_bundle "$app_dir"
-    write_codex_shims "$bin_dir"
+    update_mac_path "/usr/local/bin"
+    update_mac_path "$HOME/.local/bin"
 
-    local user_bin="$HOME/.local/bin"
-    local has_distinct_bin=0
-
-    if [ "$bin_dir" != "$user_bin" ]; then
-        has_distinct_bin=1
-    fi
-
-    if [ "$has_distinct_bin" -eq 1 ]; then
-        mkdir -p "$user_bin" 2>/dev/null || true
-        write_codex_shims "$user_bin"
-    fi
-
-    update_mac_path "$bin_dir"
-
-    echo -e "\n  ${PRIMARY}[DONE ] Codex UI installed successfully in $app_dir/Codex.app.${TEXT}"
+    echo -e "\n  ${PRIMARY}[DONE ] Codex UI installed successfully in /Applications/Codex.app.${TEXT}"
 
     return
 }

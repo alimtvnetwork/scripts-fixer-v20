@@ -73,14 +73,14 @@ EOF
 
 write_codex_desktop_entry() {
     local desktop_dir="$1"
-    local bin_dir="$2"
+    local exec_cmd="$2"
     local desktop_file="$desktop_dir/codex.desktop"
 
     cat << EOF > "$desktop_file"
 [Desktop Entry]
 Name=Codex UI
 Comment=Codex AI Coding Assistant
-Exec=$bin_dir/codex-ui
+Exec=$exec_cmd
 Icon=utilities-terminal
 Terminal=true
 Type=Application
@@ -88,6 +88,57 @@ Categories=Development;IDE;
 EOF
 
     chmod +x "$desktop_file" 2>/dev/null || log_file_error "$desktop_file" "chmod" "Cannot set executable bit"
+
+    return
+}
+
+ensure_all_bin_shims() {
+    local user_bin="$HOME/.local/bin"
+    mkdir -p "$user_bin" 2>/dev/null || log_file_error "$user_bin" "mkdir" "Permission denied"
+    write_codex_binary "$user_bin"
+
+    local sys_bin="/usr/local/bin"
+    local has_sys_perm=0
+
+    if [ -w "$sys_bin" ] || [[ "$EUID" -eq 0 ]]; then
+        has_sys_perm=1
+    fi
+
+    if [ "$has_sys_perm" -eq 1 ]; then
+        mkdir -p "$sys_bin" 2>/dev/null || true
+        write_codex_binary "$sys_bin"
+    fi
+
+    return
+}
+
+ensure_all_desktop_entries() {
+    local launcher_bin="/usr/local/bin/codex-ui"
+    local has_sys_launcher=0
+
+    if [ -f "$launcher_bin" ]; then
+        has_sys_launcher=1
+    fi
+
+    if [ "$has_sys_launcher" -eq 0 ]; then
+        launcher_bin="$HOME/.local/bin/codex-ui"
+    fi
+
+    local user_desktop="$HOME/.local/share/applications"
+    mkdir -p "$user_desktop" 2>/dev/null || log_file_error "$user_desktop" "mkdir" "Permission denied"
+    write_codex_desktop_entry "$user_desktop" "$launcher_bin"
+
+    local sys_desktop="/usr/share/applications"
+    local has_sys_perm=0
+
+    if [ -w "$sys_desktop" ] || [[ "$EUID" -eq 0 ]]; then
+        has_sys_perm=1
+    fi
+
+    if [ "$has_sys_perm" -eq 1 ]; then
+        mkdir -p "$sys_desktop" 2>/dev/null || true
+        write_codex_desktop_entry "$sys_desktop" "$launcher_bin"
+    fi
 
     return
 }
@@ -121,41 +172,13 @@ update_shell_path() {
 install_codex() {
     echo -e "\n  ${SECONDARY}[  ..  ] Installing Codex UI across default directories...${TEXT}"
 
-    local target_bin
-    target_bin="$(resolve_bin_dir)"
-    local target_desktop
-    target_desktop="$(resolve_desktop_dir)"
+    ensure_all_bin_shims
+    ensure_all_desktop_entries
 
-    write_codex_binary "$target_bin"
-    write_codex_desktop_entry "$target_desktop" "$target_bin"
+    update_shell_path "$HOME/.local/bin"
+    update_shell_path "/usr/local/bin"
 
-    local user_bin="$HOME/.local/bin"
-    local has_distinct_user_bin=0
-
-    if [ "$target_bin" != "$user_bin" ]; then
-        has_distinct_user_bin=1
-    fi
-
-    if [ "$has_distinct_user_bin" -eq 1 ]; then
-        mkdir -p "$user_bin" 2>/dev/null || true
-        write_codex_binary "$user_bin"
-    fi
-
-    local user_desktop="$HOME/.local/share/applications"
-    local has_distinct_desktop=0
-
-    if [ "$target_desktop" != "$user_desktop" ]; then
-        has_distinct_desktop=1
-    fi
-
-    if [ "$has_distinct_desktop" -eq 1 ]; then
-        mkdir -p "$user_desktop" 2>/dev/null || true
-        write_codex_desktop_entry "$user_desktop" "$target_bin"
-    fi
-
-    update_shell_path "$target_bin"
-
-    echo -e "\n  ${PRIMARY}[DONE ] Codex UI installed successfully in $target_bin and $target_desktop.${TEXT}"
+    echo -e "\n  ${PRIMARY}[DONE ] Codex UI installed successfully across default directories.${TEXT}"
 
     return
 }

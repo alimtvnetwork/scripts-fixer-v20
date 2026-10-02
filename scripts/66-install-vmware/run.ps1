@@ -29,6 +29,19 @@ function Invoke-DbRecord {
     }
 }
 
+function Get-VMwareCandidateDirs {
+    $dirs = [System.Collections.Generic.List[string]]::new()
+    $dirs.Add((Join-Path ${env:ProgramFiles} "VMware\VMware Workstation"))
+
+    $x86Root = ${env:ProgramFiles(x86)}
+    $hasX86Root = -not [string]::IsNullOrWhiteSpace($x86Root)
+    if ($hasX86Root) {
+        $dirs.Add((Join-Path $x86Root "VMware\VMware Workstation"))
+    }
+
+    return $dirs.ToArray()
+}
+
 function Get-VMwareTargetDir {
     $x64Path = Join-Path ${env:ProgramFiles} "VMware\VMware Workstation"
     $hasX64 = Test-Path $x64Path
@@ -36,8 +49,10 @@ function Get-VMwareTargetDir {
         return $x64Path
     }
 
-    $x86Path = Join-Path ${env:ProgramFiles(x86)} "VMware\VMware Workstation"
-    $hasX86 = Test-Path $x86Path
+    $x86Root = ${env:ProgramFiles(x86)}
+    $hasX86Root = -not [string]::IsNullOrWhiteSpace($x86Root)
+    $x86Path = if ($hasX86Root) { Join-Path $x86Root "VMware\VMware Workstation" } else { "" }
+    $hasX86 = (-not [string]::IsNullOrWhiteSpace($x86Path)) -and (Test-Path $x86Path)
     if ($hasX86) {
         return $x86Path
     }
@@ -45,13 +60,34 @@ function Get-VMwareTargetDir {
     return $x64Path
 }
 
-function Test-VMwareBinaryOnDisk {
-    $targetDir = Get-VMwareTargetDir
-    $vmwareExe = Join-Path $targetDir "vmware.exe"
-    $playerExe = Join-Path $targetDir "vmplayer.exe"
+function Test-VMwareBinaryInDir {
+    param([string]$DirectoryPath)
+
+    $hasDir = Test-Path $DirectoryPath
+    if (-not $hasDir) {
+        return $false
+    }
+
+    $vmwareExe = Join-Path $DirectoryPath "vmware.exe"
+    $playerExe = Join-Path $DirectoryPath "vmplayer.exe"
     $hasBinary = (Test-Path $vmwareExe) -or (Test-Path $playerExe)
 
     return $hasBinary
+}
+
+function Test-VMwareBinaryOnDisk {
+    $candidateDirs = Get-VMwareCandidateDirs
+    foreach ($dir in $candidateDirs) {
+        $hasBinary = Test-VMwareBinaryInDir -DirectoryPath $dir
+        if ($hasBinary) {
+            return $true
+        }
+    }
+
+    $cmd = (Get-Command "vmware.exe" -ErrorAction SilentlyContinue) -or (Get-Command "vmplayer.exe" -ErrorAction SilentlyContinue)
+    $hasCommand = $null -ne $cmd
+
+    return $hasCommand
 }
 
 function Test-VMwareDisplayName {
@@ -94,6 +130,32 @@ function Is-VMwareInstalled {
     return $false
 }
 
+function Has-Winget {
+    $wingetCmd = Get-Command "winget.exe" -ErrorAction SilentlyContinue
+    $hasWinget = $null -ne $wingetCmd
+
+    return $hasWinget
+}
+
+function Install-VMwareViaWinget {
+    $hasWinget = Has-Winget
+    if (-not $hasWinget) {
+        return $false
+    }
+
+    Write-Log "Attempting install via winget package 'VMware.WorkstationPro'..." -Level "info"
+    $wingetArgs = @(
+        "install",
+        "VMware.WorkstationPro",
+        "--accept-source-agreements",
+        "--accept-package-agreements"
+    )
+    $proc = Start-Process -FilePath "winget.exe" -ArgumentList $wingetArgs -Wait -PassThru -NoNewWindow
+    $isSuccess = ($proc.ExitCode -eq 0 -or $proc.ExitCode -eq 3010)
+
+    return $isSuccess
+}
+
 function Has-Chocolatey {
     $chocoCmd = Get-Command "choco.exe" -ErrorAction SilentlyContinue
     $hasChoco = $null -ne $chocoCmd
@@ -127,17 +189,38 @@ function Install-VMwareViaChoco {
     return $isPlayerInstalled
 }
 
-function Get-VMwareDownloadUrl {
-    $url = $env:VMWARE_DOWNLOAD_URL
-    $hasCustomUrl = -not [string]::IsNullOrWhiteSpace($url)
+function Get-VMwareDownloadUrls {
+    $urls = [System.Collections.Generic.List[string]]::new()
+    $customUrl = $env:VMWARE_DOWNLOAD_URL
+    $hasCustomUrl = -not [string]::IsNullOrWhiteSpace($customUrl)
     if ($hasCustomUrl) {
-        return $url
+        $urls.Add($customUrl)
     }
 
-    return "https://download3.vmware.com/software/WKST-1752-WIN/VMware-workstation-full-17.5.2-23775571.exe"
+    $urls.Add("https://download3.vmware.com/software/WKST-1752-WIN/VMware-workstation-full-17.5.2-23775571.exe")
+    $urls.Add("https://download3.vmware.com/software/wkst/VMware-workstation-full-17.5.2-23775571.exe")
+    $urls.Add("https://download3.vmware.com/software/WKST-1750-WIN/VMware-workstation-full-17.5.0-22583795.exe")
+
+    return $urls.ToArray()
 }
 
-function Invoke-VMwareDownload {
+function Remove-VMwareTempInstaller {
+    param([string]$FilePath)
+
+    $hasFile = Test-Path $FilePath
+    if (-not $hasFile) {
+        return
+    }
+
+    try {
+        Write-Log "Cleaning up installer..." -Level "info"
+        Remove-Item -Path $FilePath -Force -ErrorAction Stop
+    } catch {
+        Write-FileError -FilePath $FilePath -Operation "remove" -Reason $_.Exception.Message -Module "VMwareInstaller"
+    }
+}
+
+function Invoke-VMwareDownloadAttempt {
     param(
         [string]$Url,
         [string]$DestinationPath
@@ -145,15 +228,31 @@ function Invoke-VMwareDownload {
 
     try {
         Write-Log "Downloading VMware installer from $Url..." -Level "info"
-        Invoke-WebRequest -Uri $Url -OutFile $DestinationPath -UseBasicParsing
-        $hasFile = Test-Path $DestinationPath
+        Invoke-WebRequest -Uri $Url -OutFile $DestinationPath -UseBasicParsing -TimeoutSec 300
+        $item = Get-Item $DestinationPath -ErrorAction SilentlyContinue
+        $hasFile = ($null -ne $item) -and ($item.Length -gt 1048576)
 
         return $hasFile
     } catch {
+        Remove-VMwareTempInstaller -FilePath $DestinationPath
         Write-FileError -FilePath $DestinationPath -Operation "download" -Reason $_.Exception.Message -Module "VMwareInstaller"
 
         return $false
     }
+}
+
+function Invoke-VMwareDownloadWithFallbacks {
+    param([string]$DestinationPath)
+
+    $urls = Get-VMwareDownloadUrls
+    foreach ($url in $urls) {
+        $hasDownloaded = Invoke-VMwareDownloadAttempt -Url $url -DestinationPath $DestinationPath
+        if ($hasDownloaded) {
+            return $true
+        }
+    }
+
+    return $false
 }
 
 function Invoke-VMwareBinaryInstaller {
@@ -174,29 +273,10 @@ function Invoke-VMwareBinaryInstaller {
     return $isSuccess
 }
 
-function Remove-VMwareTempInstaller {
-    param([string]$FilePath)
-
-    $hasFile = Test-Path $FilePath
-    if (-not $hasFile) {
-        return
-    }
-
-    try {
-        Write-Log "Cleaning up installer..." -Level "info"
-        Remove-Item -Path $FilePath -Force -ErrorAction Stop
-    } catch {
-        Write-FileError -FilePath $FilePath -Operation "remove" -Reason $_.Exception.Message -Module "VMwareInstaller"
-    }
-}
-
 function Install-VMwareViaDirectDownload {
-    param(
-        [string]$DownloadUrl,
-        [string]$TempInstallerPath
-    )
+    param([string]$TempInstallerPath)
 
-    $hasDownloaded = Invoke-VMwareDownload -Url $DownloadUrl -DestinationPath $TempInstallerPath
+    $hasDownloaded = Invoke-VMwareDownloadWithFallbacks -DestinationPath $TempInstallerPath
     if (-not $hasDownloaded) {
         return $false
     }
@@ -208,18 +288,21 @@ function Install-VMwareViaDirectDownload {
 }
 
 function Install-VMwareResilient {
-    param(
-        [string]$DownloadUrl,
-        [string]$TempInstallerPath
-    )
+    param([string]$TempInstallerPath)
 
+    $isWingetInstalled = Install-VMwareViaWinget
+    if ($isWingetInstalled) {
+        return $true
+    }
+
+    Write-Log "Winget installation skipped or failed; trying Chocolatey..." -Level "info"
     $isChocoInstalled = Install-VMwareViaChoco
     if ($isChocoInstalled) {
         return $true
     }
 
     Write-Log "Chocolatey installation skipped or failed; trying direct download..." -Level "info"
-    $isDirectInstalled = Install-VMwareViaDirectDownload -DownloadUrl $DownloadUrl -TempInstallerPath $TempInstallerPath
+    $isDirectInstalled = Install-VMwareViaDirectDownload -TempInstallerPath $TempInstallerPath
 
     return $isDirectInstalled
 }
@@ -228,12 +311,13 @@ Write-Banner -Title "Install VMware Workstation/Player"
 Initialize-Logging -ScriptName "Install VMware"
 
 $targetDir = Get-VMwareTargetDir
-$url = Get-VMwareDownloadUrl
+$downloadUrls = Get-VMwareDownloadUrls
+$primarySource = $downloadUrls[0]
 $tempPath = Join-Path $env:TEMP "vmware-installer.exe"
 
 Write-InstallPaths `
     -Tool   "VMware Workstation/Player" `
-    -Source $url `
+    -Source $primarySource `
     -Temp   $tempPath `
     -Target $targetDir
 
@@ -249,12 +333,15 @@ try {
     }
 
     Invoke-DbRecord -Action "record-start" -ExtraArgs @("package", "vmware", "install")
-    $isSuccess = Install-VMwareResilient -DownloadUrl $url -TempInstallerPath $tempPath
+    $isSuccess = Install-VMwareResilient -TempInstallerPath $tempPath
+    $isDetected = Is-VMwareInstalled
+    $isFinalSuccess = $isSuccess -or $isDetected
 
-    if ($isSuccess) {
+    if ($isFinalSuccess) {
         Write-Log "VMware installed successfully." -Level "success"
         Invoke-DbRecord -Action "record-success" -ExtraArgs @("package", "vmware", "17.5.2", "VMware Workstation installed")
     } else {
+        Write-FileError -FilePath $targetDir -Operation "install" -Reason "VMware installation failed across all tiers" -Module "VMwareInstaller"
         Write-Log "VMware installation failed." -Level "error"
         Invoke-DbRecord -Action "record-failure" -ExtraArgs @("package", "vmware", "1", "installer failed")
     }

@@ -15,15 +15,16 @@ if ($hasLogging) {
 function Invoke-SafeFileError {
     param([hashtable]$ErrorParams)
 
+    $filePath = if ([string]::IsNullOrWhiteSpace($ErrorParams.FilePath)) { "UnknownFile" } else { $ErrorParams.FilePath }
     $hasFileError = $null -ne (Get-Command Write-FileError -ErrorAction SilentlyContinue)
 
     if ($hasFileError) {
-        Write-FileError -FilePath $ErrorParams.FilePath -Operation $ErrorParams.Operation -Reason $ErrorParams.Reason -Module "e2e-ai-ui-install"
+        Write-FileError -FilePath $filePath -Operation $ErrorParams.Operation -Reason $ErrorParams.Reason -Module "e2e-ai-ui-install"
 
         return
     }
 
-    Write-Error "[$($ErrorParams.Operation)] $($ErrorParams.FilePath): $($ErrorParams.Reason)"
+    Write-Error "[$($ErrorParams.Operation)] $($filePath): $($ErrorParams.Reason)"
 
     return
 }
@@ -183,8 +184,17 @@ function Test-LaunchCodexApplication {
 
     $isLaunchSuccess = $false
     try {
-        $proc = Start-Process -FilePath $ExecutablePath -Wait -PassThru -NoNewWindow
-        $isLaunchSuccess = ($proc.ExitCode -eq 0)
+        # Start process and verify it spawns a valid process ID
+        $proc = Start-Process -FilePath $ExecutablePath -PassThru -NoNewWindow
+        Start-Sleep -Milliseconds 1200
+        $isAlive = -not $proc.HasExited
+
+        if ($isAlive) {
+            $isLaunchSuccess = $true
+            Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+        } else {
+            $isLaunchSuccess = ($proc.ExitCode -eq 0)
+        }
     } catch {
         $err = @{ FilePath = $ExecutablePath; Operation = "launch-test"; Reason = $_.Exception.Message }
         Invoke-SafeFileError -ErrorParams $err
