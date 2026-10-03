@@ -59,6 +59,9 @@ while [ $# -gt 0 ]; do
     # ./run.sh alias [args...]
     # ./run.sh ip [--json]
     os)
+        if [ -z "${2:-}" ] || [ "${2:-}" = "help" ] || [ "${2:-}" = "--help" ] || [ "${2:-}" = "-h" ]; then
+            VERB="os-help"; shift; break
+        fi
         if [ "${2:-}" = "clear-terminal" ] || [ "${2:-}" = "terminal-clear" ]; then
             VERB="clear-terminal-passthrough"; shift 2; CLRTERM_REST=("$@"); break
         fi
@@ -89,6 +92,8 @@ while [ $# -gt 0 ]; do
         VERB="machine-passthrough"; shift; MACHINE_REST=("$@"); break ;;
     ip|my-ip|myip|ip-info|ipinfo)
         VERB="machine-passthrough"; shift; MACHINE_REST=("ip" "$@"); break ;;
+    gitmap)
+        VERB="gitmap-passthrough"; shift; GITMAP_REST=("$@"); break ;;
     # ---- top-level shortcuts to script 64 (cross-OS startup-add) ----
     startup-list|startup-ls)
         VERB="startup-passthrough"; STARTUP_SUB="list"; shift ;;
@@ -102,10 +107,17 @@ while [ $# -gt 0 ]; do
         VERB="startup-passthrough"; STARTUP_SUB="prune";  shift; STARTUP_REST=("$@"); break ;;
     # ---- top-level shortcuts to script 65 (cross-OS os-clean) ----
     dev-cleanup|clean-dev|devcleanup|cleandev|dev-clean|devtool|devtools|dev-tool|dev-tools|devtools-cache|dev-tools-cache|devtool-cache|dev-tool-cache|clear-dev|clear-devtools|clear-dev-tools|clear-dev-tools-cache|clear-devtools-cache|clear-devtool|clear-dev-tool|clean-devtools|clean-dev-tools|clean-dev-tools-cache|clean-devtools-cache|devtools-cache-clear|dev-tools-cache-clear)
+        if [[ "${2:-}" =~ ^(clear|clean|cleanup|reset|purge)$ ]]; then
+            shift
+        fi
         VERB="osclean-passthrough"; OSCLEAN_SUB="run"; shift; OSCLEAN_REST=("--only" "pkg-npm,pkg-pnpm,pkg-bun,pkg-yarn,pkg-pip,pkg-go,pkg-cargo" "$@"); break ;;
     os-clean|clean|clear)
         if [[ "$2" =~ ^(dev|devs|developer|devtool|devtools|dev-tool|dev-tools|devtools-cache|dev-tools-cache|devtool-cache|dev-tool-cache|dev-clean|clean-dev)$ ]]; then
-            VERB="osclean-passthrough"; OSCLEAN_SUB="run"; shift 2; OSCLEAN_REST=("--only" "pkg-npm,pkg-pnpm,pkg-bun,pkg-yarn,pkg-pip,pkg-go,pkg-cargo" "$@"); break
+            shift 2
+            if [[ "${1:-}" =~ ^(clear|clean|cleanup|reset|purge)$ ]]; then
+                shift
+            fi
+            VERB="osclean-passthrough"; OSCLEAN_SUB="run"; OSCLEAN_REST=("--only" "pkg-npm,pkg-pnpm,pkg-bun,pkg-yarn,pkg-pip,pkg-go,pkg-cargo" "$@"); break
         fi
         if [[ "$2" =~ ^(terminal|term|console|history)$ ]]; then
             VERB="clear-terminal-passthrough"; shift 2; CLRTERM_REST=("$@"); break
@@ -315,6 +327,67 @@ while [ $# -gt 0 ]; do
         log_warn "Unknown arg: $1"; shift ;;
   esac
 done
+
+show_os_help() {
+  cat <<EOF
+
+  OS Subcommands
+  ==============
+
+  Usage: ./run.sh os <action> [args]
+
+  Subcommands:
+    clean [--only <cats>] [--dry-run] [--yes]   Clean OS and package caches
+    dev-cleanup [--dry-run] [--yes]             Clean developer tool caches (npm, go, pip, cargo)
+    machine [ls|set|revert]                     Inspect or set machine alias and name
+    ip [--json]                                 Display local and public IP addresses
+    clear-terminal                              Wipe terminal screen and clear scrollback history
+    help                                        Show this OS help screen
+
+  Aliases:
+    ./run.sh clean-dev                          Alias for os dev-cleanup
+    ./run.sh machine                            Alias for os machine
+    ./run.sh ip                                 Alias for os ip
+    ./run.sh clear-terminal                     Alias for os clear-terminal
+
+EOF
+}
+
+show_gitmap_help() {
+  cat <<EOF
+
+  GitMap CLI -- Developer Companion & Fast Scanner
+  ========================================================
+  Author: MD ALIM UL KARIM  |  Sponsor: RISEUP ASIA LLC
+  Usage: ./run.sh gitmap <command> [args]
+
+  Primary Commands:
+    status | doctor             Health check, git hygiene, and split-db integrity
+    scan                        Discover and index local Git repositories
+    pull | sync                 Parallel fetch and sync repositories across disks
+    cd <alias|path>             Jump directly to repository root directory
+    repo list                   List registered repositories and active branches
+    group list                  List logical repository grouping namespaces
+
+  Automation (AUM) & Search:
+    aum search | grep           Fast parallel symbol and regex search across repos
+    aum guard                   Pre-commit verification and secret leak auditing
+    aum sequence                Re-sequence numeric prefixes and normalize filenames
+    search <symbol>             Instant SQLite indexed symbol search
+    ff <pattern>                Fast file locator (ff, ffa, ffs, ffe)
+
+  Pipeline, AGY & Fleet:
+    pipeline status             Query CI/CD status and runner pipeline health
+    pipeline errors             Extract and summarize bounded CI failure logs
+    agy running-prompts         Inspect active Antigravity background tasks
+    agy sug | clear 10          Smart prompt suggestions or prune conversations
+    ssh list                    List discovered SSH hosts and credential profiles
+    cluster list                Show status of connected multi-node workers
+    storage list                Report disk consumption and cleanable caches
+    completion install          Install PowerShell/Bash shell auto-completion
+
+EOF
+}
 
 show_help() {
   cat <<EOF
@@ -949,6 +1022,25 @@ case "${VERB:-help}" in
   list) registry_list_all | column -t -s$'\t' ;;
   health)      verb_health ;;
   repair-all)  verb_repair_all ;;
+  os-help)
+    show_os_help
+    exit 0
+    ;;
+  gitmap-passthrough)
+    _gm_sub="${GITMAP_REST[0]:-help}"
+    if [ "$_gm_sub" = "help" ] || [ "$_gm_sub" = "-h" ] || [ "$_gm_sub" = "--help" ] || [ ${#GITMAP_REST[@]} -eq 0 ]; then
+      show_gitmap_help
+      exit 0
+    fi
+    if command -v gitmap >/dev/null 2>&1; then
+      gitmap "${GITMAP_REST[@]}"
+      exit $?
+    fi
+    printf "\n\033[33m  [ NOTE ] GitMap CLI is not installed.\033[0m\n"
+    printf "  Install via: curl -fsSL https://raw.githubusercontent.com/alimtvnetwork/gitmap-v28/main/install.sh | sh\n"
+    printf "  Or run:      ./run.sh install gitmap\n\n"
+    exit 1
+    ;;
   machine-passthrough)
     _mach_filtered=()
     for _a in "${MACHINE_REST[@]:-}"; do [ -n "$_a" ] && _mach_filtered+=("$_a"); done

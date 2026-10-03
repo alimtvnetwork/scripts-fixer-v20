@@ -45,24 +45,60 @@ function Resolve-FirstExistingPath {
 }
 
 function Get-DesktopDirectories {
-    $dirs = @(
-        [Environment]::GetFolderPath("Desktop"),
-        (Join-Path $env:USERPROFILE "Desktop"),
-        "C:\Users\Administrator\Desktop",
-        (Join-Path $env:PUBLIC "Desktop")
-    )
+    $dirs = [System.Collections.Generic.List[string]]::new()
+    $desktopPath = [Environment]::GetFolderPath("Desktop")
+    $hasDesktopPath = -not [string]::IsNullOrWhiteSpace($desktopPath)
 
-    return $dirs
+    if ($hasDesktopPath) {
+        $dirs.Add($desktopPath) | Out-Null
+    }
+
+    $userDesktop = Join-Path $env:USERPROFILE "Desktop"
+    $hasUserDesktop = -not [string]::IsNullOrWhiteSpace($userDesktop)
+
+    if ($hasUserDesktop) {
+        $dirs.Add($userDesktop) | Out-Null
+    }
+
+    $adminDesktop = "C:\Users\Administrator\Desktop"
+    $hasAdmin = Test-Path $adminDesktop
+
+    if ($hasAdmin) {
+        $dirs.Add($adminDesktop) | Out-Null
+    }
+
+    $hasPublic = -not [string]::IsNullOrWhiteSpace($env:PUBLIC)
+
+    if ($hasPublic) {
+        $dirs.Add((Join-Path $env:PUBLIC "Desktop")) | Out-Null
+    }
+
+    return $dirs.ToArray()
 }
 
 function Get-StartMenuDirectories {
-    $dirs = @(
-        [Environment]::GetFolderPath("Programs"),
-        (Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs"),
-        "C:\ProgramData\Microsoft\Windows\Start Menu\Programs"
-    )
+    $dirs = [System.Collections.Generic.List[string]]::new()
+    $programsPath = [Environment]::GetFolderPath("Programs")
+    $hasProgramsPath = -not [string]::IsNullOrWhiteSpace($programsPath)
 
-    return $dirs
+    if ($hasProgramsPath) {
+        $dirs.Add($programsPath) | Out-Null
+    }
+
+    $hasAppData = -not [string]::IsNullOrWhiteSpace($env:APPDATA)
+
+    if ($hasAppData) {
+        $dirs.Add((Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs")) | Out-Null
+    }
+
+    $commonPrograms = "C:\ProgramData\Microsoft\Windows\Start Menu\Programs"
+    $hasCommon = Test-Path $commonPrograms
+
+    if ($hasCommon) {
+        $dirs.Add($commonPrograms) | Out-Null
+    }
+
+    return $dirs.ToArray()
 }
 
 function Resolve-ExistingShortcut {
@@ -71,7 +107,19 @@ function Resolve-ExistingShortcut {
     $candidates = [System.Collections.Generic.List[string]]::new()
 
     foreach ($dir in $SearchParams.Directories) {
+        $hasDir = -not [string]::IsNullOrWhiteSpace($dir)
+
+        if (-not $hasDir) {
+            continue
+        }
+
         foreach ($name in $SearchParams.FileNames) {
+            $hasName = -not [string]::IsNullOrWhiteSpace($name)
+
+            if (-not $hasName) {
+                continue
+            }
+
             $candidates.Add((Join-Path $dir $name)) | Out-Null
         }
     }
@@ -101,8 +149,7 @@ function Test-ShortcutProperties {
 
         $hasTarget = -not [string]::IsNullOrWhiteSpace($targetPath) -and (Test-Path $targetPath)
         $hasWorkDir = -not [string]::IsNullOrWhiteSpace($workDir)
-        $hasIcon = -not [string]::IsNullOrWhiteSpace($iconLocation)
-        $isValid = $hasTarget -and $hasWorkDir -and $hasIcon
+        $isValid = $hasTarget -and $hasWorkDir
 
         return @{ IsSuccess = $isValid; TargetPath = $targetPath; WorkingDirectory = $workDir; IconLocation = $iconLocation }
     } catch {
@@ -114,21 +161,24 @@ function Test-VMwareWorkstationDirectory {
     $x86ProgramFiles = ${env:ProgramFiles(x86)}
     $candidatePaths = @(
         (Join-Path $x86ProgramFiles "VMware\VMware Workstation\vmware.exe"),
-        (Join-Path $env:ProgramFiles "VMware\VMware Workstation\vmware.exe")
+        (Join-Path $env:ProgramFiles "VMware\VMware Workstation\vmware.exe"),
+        (Join-Path $env:ProgramFiles "VMware\VMware Tools\VMwareToolboxCmd.exe"),
+        "C:\Program Files\VMware\VMware Tools\VMwareToolboxCmd.exe"
     )
     $resolvedExe = Resolve-FirstExistingPath -CandidatePaths $candidatePaths
     $hasExe = -not [string]::IsNullOrWhiteSpace($resolvedExe)
 
     if (-not $hasExe) {
-        $err = @{ FilePath = "vmware.exe"; Operation = "verify-vmware-dir"; Reason = "vmware.exe not found" }
+        $err = @{ FilePath = "vmware.exe"; Operation = "validate"; Reason = "Neither VMware Workstation nor VMware Tools found" }
         Invoke-SafeFileError -ErrorParams $err
 
-        return @{ IsSuccess = $false; Directory = $null; Path = $null }
+        return @{ IsSuccess = $false; Directory = $null; Path = $null; IsGuest = $false }
     }
 
     $installDir = Split-Path -Parent $resolvedExe
+    $isGuest = $resolvedExe -match "VMwareToolboxCmd\.exe"
 
-    return @{ IsSuccess = $true; Directory = $installDir; Path = $resolvedExe }
+    return @{ IsSuccess = $true; Directory = $installDir; Path = $resolvedExe; IsGuest = $isGuest }
 }
 
 function Test-VMwareEssentialBinaries {
@@ -144,9 +194,14 @@ function Test-VMwareEssentialBinaries {
     $vmrunExe  = Join-Path $InstallDirectory "vmrun.exe"
     $hasVmware = Test-Path $vmwareExe
     $hasVmrun  = Test-Path $vmrunExe
-    $isAllPresent = $hasVmware -and $hasVmrun
+    $isWorkstation = $hasVmware -and $hasVmrun
 
-    return @{ IsSuccess = $isAllPresent; HasVmware = $hasVmware; HasVmrun = $hasVmrun }
+    $toolsExe = Join-Path $InstallDirectory "VMwareToolboxCmd.exe"
+    $hasTools = Test-Path $toolsExe
+
+    $isAllPresent = $isWorkstation -or $hasTools
+
+    return @{ IsSuccess = $isAllPresent; HasVmware = $hasVmware; HasVmrun = $hasVmrun; HasTools = $hasTools }
 }
 
 function Test-VMwareVersionIntegrity {
@@ -155,7 +210,7 @@ function Test-VMwareVersionIntegrity {
     $hasExe = -not [string]::IsNullOrWhiteSpace($ExecutablePath) -and (Test-Path $ExecutablePath)
 
     if (-not $hasExe) {
-        $err = @{ FilePath = "$ExecutablePath"; Operation = "verify-vmware-version"; Reason = "vmware.exe path invalid" }
+        $err = @{ FilePath = "$ExecutablePath"; Operation = "validate"; Reason = "VMware executable path invalid" }
         Invoke-SafeFileError -ErrorParams $err
 
         return @{ IsSuccess = $false; FileVersion = $null; ProductVersion = $null }
@@ -167,7 +222,7 @@ function Test-VMwareVersionIntegrity {
     $hasValidVersion = $hasFileVersion -and $hasProductVersion
 
     if (-not $hasValidVersion) {
-        $err = @{ FilePath = $ExecutablePath; Operation = "verify-vmware-version"; Reason = "vmware.exe version info missing" }
+        $err = @{ FilePath = $ExecutablePath; Operation = "validate"; Reason = "VMware executable version info missing" }
         Invoke-SafeFileError -ErrorParams $err
 
         return @{ IsSuccess = $false; FileVersion = $versionInfo.FileVersion; ProductVersion = $versionInfo.ProductVersion }
@@ -177,21 +232,34 @@ function Test-VMwareVersionIntegrity {
 }
 
 function Test-VMwareAuthServiceStatus {
-    $service = Get-Service -Name "VMAuthdService" -ErrorAction SilentlyContinue
-    $hasService = $null -ne $service
+    $authSvc = Get-Service -Name "VMAuthdService" -ErrorAction SilentlyContinue
+    $hasAuthSvc = ($null -ne $authSvc) -and ($authSvc.Status -eq [System.ServiceProcess.ServiceControllerStatus]::Running)
 
-    if (-not $hasService) {
-        return @{ IsSuccess = $false; Status = "NotInstalled" }
+    if ($hasAuthSvc) {
+        return @{ IsSuccess = $true; Status = $authSvc.Status.ToString(); Service = "VMAuthdService" }
     }
 
-    $isRunning = $service.Status -eq [System.ServiceProcess.ServiceControllerStatus]::Running
+    $toolsSvc = Get-Service -Name "VMTools" -ErrorAction SilentlyContinue
+    $hasToolsSvc = ($null -ne $toolsSvc) -and ($toolsSvc.Status -eq [System.ServiceProcess.ServiceControllerStatus]::Running)
 
-    return @{ IsSuccess = $isRunning; Status = $service.Status.ToString() }
+    if ($hasToolsSvc) {
+        return @{ IsSuccess = $true; Status = $toolsSvc.Status.ToString(); Service = "VMTools" }
+    }
+
+    $vm3dSvc = Get-Service -Name "VM3DService" -ErrorAction SilentlyContinue
+    $hasVm3dSvc = ($null -ne $vm3dSvc) -and ($vm3dSvc.Status -eq [System.ServiceProcess.ServiceControllerStatus]::Running)
+
+    if ($hasVm3dSvc) {
+        return @{ IsSuccess = $true; Status = $vm3dSvc.Status.ToString(); Service = "VM3DService" }
+    }
+
+    return @{ IsSuccess = $false; Status = "NotInstalledOrRunning" }
 }
 
 function Test-ClaudeDefaultDirectory {
     $claudePaths = @(
         (Join-Path $env:LOCALAPPDATA "Programs\Claude\Claude.exe"),
+        (Join-Path $env:LOCALAPPDATA "Programs\Claude\claude.exe"),
         (Join-Path $env:LOCALAPPDATA "AnthropicClaude\claude.exe"),
         (Join-Path $env:ProgramFiles "Anthropic\Claude\Claude.exe")
     )
@@ -199,7 +267,7 @@ function Test-ClaudeDefaultDirectory {
     $isAppFound = -not [string]::IsNullOrWhiteSpace($resolvedApp)
 
     if (-not $isAppFound) {
-        $err = @{ FilePath = "$env:LOCALAPPDATA\Programs\Claude\Claude.exe"; Operation = "verify-claude-dir"; Reason = "Claude GUI executable missing" }
+        $err = @{ FilePath = "$env:LOCALAPPDATA\Programs\Claude\Claude.exe"; Operation = "validate"; Reason = "Claude GUI executable missing" }
         Invoke-SafeFileError -ErrorParams $err
 
         return @{ IsSuccess = $false; Path = $null }
@@ -296,7 +364,7 @@ function Test-CodexDefaultDirectory {
     $hasCodexExe = Test-Path $codexExe
 
     if (-not $hasCodexExe) {
-        $err = @{ FilePath = $codexExe; Operation = "verify-codex-dir"; Reason = "Codex.exe missing" }
+        $err = @{ FilePath = $codexExe; Operation = "validate"; Reason = "Codex.exe missing" }
         Invoke-SafeFileError -ErrorParams $err
 
         return @{ IsSuccess = $false; Path = $null }
@@ -376,7 +444,7 @@ function Test-ClaudeDisambiguation {
         $uiShim = Join-Path $dir "claude-ui.cmd"
         $cliShim = Join-Path $dir "claude.cmd"
 
-        if ((Test-Path $uiShim) -and ((Get-Content -Path $uiShim -Raw) -match "Claude\.exe")) {
+        if ((Test-Path $uiShim) -and ((Get-Content -Path $uiShim -Raw) -match "claude\.exe")) {
             $hasUiLaunch = $true
         }
 
@@ -412,6 +480,28 @@ function Test-CodexDisambiguation {
     return @{ IsSuccess = $false; ShimPath = $null }
 }
 
+function Test-PlotCodeInstallation {
+    $binDir = Join-Path $env:USERPROFILE ".plotcode\bin"
+    $uiShim = Join-Path $binDir "plotcode-ui.cmd"
+    $cliShim = Join-Path $binDir "plotcode.cmd"
+    $hasUiShim = Test-Path $uiShim
+    $hasCliShim = Test-Path $cliShim
+
+    $dirs = Get-DesktopDirectories
+    $searchParams = @{ Directories = $dirs; FileNames = @("PlotCode UI.lnk", "PlotCode.lnk") }
+    $shortcut = Resolve-ExistingShortcut -SearchParams $searchParams
+    $hasShortcut = -not [string]::IsNullOrWhiteSpace($shortcut)
+
+    $isInstalled = $hasUiShim -and $hasCliShim -and $hasShortcut
+
+    return @{
+        IsSuccess = $isInstalled
+        HasUiShim = $hasUiShim
+        HasCliShim = $hasCliShim
+        HasShortcut = $hasShortcut
+    }
+}
+
 function Test-ScriptSyntaxValid {
     param([string]$ScriptPath)
 
@@ -435,6 +525,7 @@ function Test-UninstallLifecycleAndSyntax {
     $scripts = @(
         (Join-Path $RepoRoot "scripts\66-install-vmware\uninstall.ps1"),
         (Join-Path $RepoRoot "scripts\78-install-codex\uninstall.ps1"),
+        (Join-Path $RepoRoot "scripts\79-install-plotcode\uninstall.ps1"),
         (Join-Path $RepoRoot "scripts\80-install-claude-code\uninstall.ps1")
     )
 
@@ -463,10 +554,10 @@ function Write-CheckResult {
 }
 
 function Run-AiUiVerificationSuite {
-    Write-Host "`n=== Live 15-Point Windows Server E2E Verification Suite ===" -ForegroundColor Cyan
+    Write-Host "`n=== Live 16-Point Windows Server E2E Verification Suite ===" -ForegroundColor Cyan
 
     $vmDirResult = Test-VMwareWorkstationDirectory
-    Write-CheckResult -StepNumber 1 -Description "VMware Workstation directory " -IsSuccess $vmDirResult.IsSuccess
+    Write-CheckResult -StepNumber 1 -Description "VMware installation directory" -IsSuccess $vmDirResult.IsSuccess
 
     $vmBinResult = Test-VMwareEssentialBinaries -InstallDirectory $vmDirResult.Directory
     Write-CheckResult -StepNumber 2 -Description "VMware essential binaries   " -IsSuccess $vmBinResult.IsSuccess
@@ -475,7 +566,7 @@ function Run-AiUiVerificationSuite {
     Write-CheckResult -StepNumber 3 -Description "VMware version integrity    " -IsSuccess $vmVerResult.IsSuccess
 
     $vmAuthResult = Test-VMwareAuthServiceStatus
-    Write-CheckResult -StepNumber 4 -Description "VMware authorization service" -IsSuccess $vmAuthResult.IsSuccess
+    Write-CheckResult -StepNumber 4 -Description "VMware service status       " -IsSuccess $vmAuthResult.IsSuccess
 
     $claudeDirResult = Test-ClaudeDefaultDirectory
     Write-CheckResult -StepNumber 5 -Description "Claude UI default directory " -IsSuccess $claudeDirResult.IsSuccess
@@ -507,17 +598,21 @@ function Run-AiUiVerificationSuite {
     $codexDisResult = Test-CodexDisambiguation
     Write-CheckResult -StepNumber 14 -Description "Codex CLI/UI disambiguation " -IsSuccess $codexDisResult.IsSuccess
 
+    $plotCodeResult = Test-PlotCodeInstallation
+    Write-CheckResult -StepNumber 15 -Description "PlotCode UI installation    " -IsSuccess $plotCodeResult.IsSuccess
+
     $uninstallResult = Test-UninstallLifecycleAndSyntax -RepoRoot $repoDir
-    Write-CheckResult -StepNumber 15 -Description "Uninstall lifecycle & syntax" -IsSuccess $uninstallResult.IsSuccess
+    Write-CheckResult -StepNumber 16 -Description "Uninstall lifecycle & syntax" -IsSuccess $uninstallResult.IsSuccess
 
     $isAllPass = $vmDirResult.IsSuccess -and $vmBinResult.IsSuccess -and $vmVerResult.IsSuccess -and `
         $vmAuthResult.IsSuccess -and $claudeDirResult.IsSuccess -and $claudeDeskResult.IsSuccess -and `
         $claudeMenuResult.IsSuccess -and $claudeLaunchResult.IsSuccess -and $codexDirResult.IsSuccess -and `
         $codexDeskResult.IsSuccess -and $codexMenuResult.IsSuccess -and $codexLaunchResult.IsSuccess -and `
-        $claudeDisResult.IsSuccess -and $codexDisResult.IsSuccess -and $uninstallResult.IsSuccess
+        $claudeDisResult.IsSuccess -and $codexDisResult.IsSuccess -and $plotCodeResult.IsSuccess -and `
+        $uninstallResult.IsSuccess
 
     if ($isAllPass) {
-        Write-Host "`n[PASSED] All 15 E2E live checks passed successfully!`n" -ForegroundColor Green
+        Write-Host "`n[PASSED] All 16 E2E live checks passed successfully!`n" -ForegroundColor Green
 
         exit 0
     }

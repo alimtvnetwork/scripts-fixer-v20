@@ -46,6 +46,7 @@
 | 35 | `21-os-autologin-and-agy-modularization.md` | OS Auto-Login (Win11/Server/Ubuntu) & Modular AGY Python Package | `completed` | 2026-09-24 |
 | 36 | `34-antigravity-deep-uninstaller-suite.md` | Antigravity State Backup & Deep Wipe, AGM, Copilot, Edge Uninstallers & Dev-Clean | `completed` | 2026-09-28 |
 | 37 | `35-vmware-codex-claude-ui.md` | VMware Installation Improvements & Cross-Platform Codex UI / Claude Code Desktop UI | `completed` | 2026-10-02 |
+| 38 | `24-vmware-clear-help-codex-plot.md` | VMware Verification, Clear Commands Harmonization, GitMap Help & Codex/Plot UI Release | `completed` | 2026-10-03 |
 
 ---
 
