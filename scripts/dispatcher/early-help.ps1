@@ -181,7 +181,7 @@ function Invoke-EarlyHelpIntercept {
         $_isEarlyHelp = $true
         $_rest = @($_installList | Select-Object -Skip 1)
         if ($_rest.Count -gt 0) { $_earlyHelpFilter = ($_rest -join ' ').Trim() }
-    } elseif (($Help -or $h) -and -not $I -and ($_cmdLow -notin @("nginx", "os", "ssh", "menu", "vscode-folder", "git-tools", "agy", "antigravity", "clean-agy", "clear-agy", "clean-dev", "dev-clean", "dev-cleanup", "cleandev", "devcleanup", "gitmap"))) {
+    } elseif (($Help -or $h) -and -not $I -and ($_cmdLow -notin @("nginx", "os", "ssh", "menu", "vscode-folder", "git-tools", "agy", "antigravity", "clean-agy", "clear-agy", "clean-dev", "dev-clean", "dev-cleanup", "cleandev", "devcleanup", "gitmap", "services", "service", "db", "database", "databases"))) {
         $_isEarlyHelp = $true
         if ($_cmdLow -and ($_cmdLow -notin $_helpAliases)) {
             $_earlyHelpFilter = $Command.Trim()

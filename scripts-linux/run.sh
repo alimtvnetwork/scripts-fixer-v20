@@ -23,6 +23,13 @@ export SCRIPT_ID="root"
 . "$ROOT/_shared/doctor.sh"
 
 VERB=""; ONLY_ID=""; PARALLEL=1; JSON_OUT=0; ONLY_DRIFT=0
+DB_REST=(); SERVICES_REST=(); STARTUP_MGR_REST=(); SCHEDULE_MGR_REST=(); MACRO_MGR_REST=(); STORAGE_MGR_REST=(); CLUSTER_MGR_REST=()
+PYTHON_BIN=""
+if python3 -V >/dev/null 2>&1; then
+  PYTHON_BIN="python3"
+elif python -V >/dev/null 2>&1; then
+  PYTHON_BIN="python"
+fi
 
 if [ "${1:-}" = "/run" ] || [ "${1:-}" = "run" ] || [ "${1:-}" = "\run" ]; then
   shift
@@ -94,6 +101,20 @@ while [ $# -gt 0 ]; do
         VERB="machine-passthrough"; shift; MACHINE_REST=("ip" "$@"); break ;;
     gitmap)
         VERB="gitmap-passthrough"; shift; GITMAP_REST=("$@"); break ;;
+    db|database|databases)
+        VERB="db-passthrough"; shift; DB_REST=("$@"); break ;;
+    services|service)
+        VERB="services-passthrough"; shift; SERVICES_REST=("$@"); break ;;
+    startup)
+        VERB="startup-manager-passthrough"; shift; STARTUP_MGR_REST=("$@"); break ;;
+    schedule|cron|crontab)
+        VERB="schedule-manager-passthrough"; shift; SCHEDULE_MGR_REST=("$@"); break ;;
+    macro)
+        VERB="macro-manager-passthrough"; shift; MACRO_MGR_REST=("$@"); break ;;
+    storage)
+        VERB="storage-manager-passthrough"; shift; STORAGE_MGR_REST=("$@"); break ;;
+    cluster|k8s-cluster|node-cmd)
+        VERB="cluster-manager-passthrough"; shift; CLUSTER_MGR_REST=("$@"); break ;;
     # ---- top-level shortcuts to script 64 (cross-OS startup-add) ----
     startup-list|startup-ls)
         VERB="startup-passthrough"; STARTUP_SUB="list"; shift ;;
@@ -112,7 +133,25 @@ while [ $# -gt 0 ]; do
         fi
         VERB="osclean-passthrough"; OSCLEAN_SUB="run"; shift; OSCLEAN_REST=("--only" "pkg-npm,pkg-pnpm,pkg-bun,pkg-yarn,pkg-pip,pkg-go,pkg-cargo" "$@"); break ;;
     os-clean|clean|clear)
-        if [[ "$2" =~ ^(dev|devs|developer|devtool|devtools|dev-tool|dev-tools|devtools-cache|dev-tools-cache|devtool-cache|dev-tool-cache|dev-clean|clean-dev)$ ]]; then
+        if [[ "${2:-}" =~ ^(help|-h|--help)$ ]]; then
+            cleaner_script="$ROOT/../03-ai-scripts/44-work-and-system-cache-cleaner.py"
+            if [ -n "$PYTHON_BIN" ] && [ -f "$cleaner_script" ]; then
+                "$PYTHON_BIN" "$cleaner_script" --help
+                exit 0
+            else
+                cat << 'EOF'
+
+  Multi-Layer Cleaner Usage:
+    ./run.sh clean                         Run interactive cache cleaner
+    ./run.sh clean --dry-run               Preview files to be removed
+    ./run.sh clean -y                      Auto-confirm cache cleanup
+    ./run.sh clean --only <categories>     Clean specific categories (e.g. go-cache, temp-dirs)
+
+EOF
+                exit 0
+            fi
+        fi
+        if [[ "${2:-}" =~ ^(dev|devs|developer|devtool|devtools|dev-tool|dev-tools|devtools-cache|dev-tools-cache|devtool-cache|dev-tool-cache|dev-clean|clean-dev)$ ]]; then
             shift 2
             if [[ "${1:-}" =~ ^(clear|clean|cleanup|reset|purge)$ ]]; then
                 shift
@@ -872,6 +911,23 @@ case "${VERB:-help}" in
     exit $?
     ;;
   models)
+    mp_first="${MODELS_REST[0]:-}"
+    if [ "${#MODELS_REST[@]}" -eq 0 ] || [ "$mp_first" = "help" ] || [ "$mp_first" = "-h" ] || [ "$mp_first" = "--help" ]; then
+      cat << 'EOF'
+
+  Local LLM Model Orchestrator (script 43 / llama.cpp):
+    ./run.sh models list                    Print full catalog (id, family, size, RAM)
+    ./run.sh models <id> [<id> ...]         Download one or more models by exact id
+    ./run.sh models <id> --dir <path>       Download to custom directory (alias: -d)
+    ./run.sh models list --family <name>    Filter catalog by family (e.g. qwen, llama)
+    ./run.sh models --coding --all          Download all coding-focused models
+    ./run.sh models --max-ram 16 --all      Download models fitting within RAM limit
+    ./run.sh models help                    Show this help message
+
+EOF
+      exit 0
+    fi
+
     # Forward every arg to model-pull.sh -- it owns flag parsing (filters,
     # --dir, --all, --dry-run, --exclude, capability flags, etc).
     mp_filtered=()
@@ -1099,6 +1155,245 @@ case "${VERB:-help}" in
     fi
     bash "$ROOT/69-install-antigravity/run.sh" "${_agy_filtered[@]}"
     exit $?
+    ;;
+  db-passthrough)
+    _db_filtered=()
+    for _a in "${DB_REST[@]:-}"; do [ -n "$_a" ] && _db_filtered+=("$_a"); done
+    first_arg="${_db_filtered[0]:-}"
+    if [ "${#_db_filtered[@]}" -eq 0 ] || [ "$first_arg" = "help" ] || [ "$first_arg" = "-h" ] || [ "$first_arg" = "--help" ]; then
+      cat << 'EOF'
+
+  Database Management & Installers:
+    ./run.sh db help                        Show database installer help
+    ./run.sh db menu                        Interactive database installer menu
+    ./run.sh db mysql                       Install MySQL database (script 18)
+    ./run.sh db postgresql                  Install PostgreSQL database (script 20)
+    ./run.sh db sqlite                      Install SQLite database (script 21)
+    ./run.sh db mongodb                     Install MongoDB database (script 22)
+    ./run.sh db redis                       Install Redis cache (script 24)
+
+EOF
+      exit 0
+    fi
+    if [ "$first_arg" = "menu" ] || [ "$first_arg" = "interactive" ]; then
+      if [ -f "$ROOT/../scripts/os/ubuntu/install-databases-menu.sh" ]; then
+        bash "$ROOT/../scripts/os/ubuntu/install-databases-menu.sh"
+        exit $?
+      fi
+    fi
+    case "$first_arg" in
+      mysql)      bash "$ROOT/run.sh" -I 18; exit $? ;;
+      mariadb)    bash "$ROOT/run.sh" -I 19; exit $? ;;
+      postgresql|postgres) bash "$ROOT/run.sh" -I 20; exit $? ;;
+      sqlite)     bash "$ROOT/run.sh" -I 21; exit $? ;;
+      mongodb|mongo) bash "$ROOT/run.sh" -I 22; exit $? ;;
+      redis)      bash "$ROOT/run.sh" -I 24; exit $? ;;
+      *)
+        log_err "Unknown database option: $first_arg"
+        echo "Run './run.sh db help' for available database options."
+        exit 1
+        ;;
+    esac
+    ;;
+  services-passthrough)
+    cat << 'EOF'
+
+  Services & Automation Overview:
+    Nginx Web Server & Domain Manager:
+      ./run.sh nginx install               Install Nginx web server
+      ./run.sh nginx help                  Show domain manager command help
+      ./run.sh nginx list                  List registered domains
+    Startup & Boot Automation:
+      ./run.sh startup help                Manage startup items (Startup.db)
+      ./run.sh startup-list                List active startup items
+    Crontab & Scheduled Tasks:
+      ./run.sh schedule help               Manage scheduled jobs (Schedule.db)
+      ./run.sh schedule-list               List active schedules
+    Interactive Macros & Workflows:
+      ./run.sh macro help                  Interactive macro sequences (Macro.db)
+    Async Monitoring & Storage:
+      ./run.sh storage help                Split DB sizes and disk calculation
+    Kubernetes Cluster Nodes & Remote Commands:
+      ./run.sh cluster help                Cluster nodes and SSH execution
+
+EOF
+    exit 0
+    ;;
+  startup-manager-passthrough)
+    _start_filtered=()
+    for _a in "${STARTUP_MGR_REST[@]:-}"; do [ -n "$_a" ] && _start_filtered+=("$_a"); done
+    first_arg="${_start_filtered[0]:-}"
+    mgr_script="$ROOT/../scripts/shared/startup_manager.py"
+    if [ "${#_start_filtered[@]}" -eq 0 ] || [ "$first_arg" = "help" ] || [ "$first_arg" = "-h" ] || [ "$first_arg" = "--help" ]; then
+      if [ -n "$PYTHON_BIN" ] && [ -f "$mgr_script" ]; then
+        "$PYTHON_BIN" "$mgr_script" help
+      else
+        cat << 'EOF'
+
+  Startup Automation Usage:
+    ./run.sh startup list                  List registered startup actions
+    ./run.sh startup add <path|macro>      Register item to run on startup/login
+    ./run.sh startup remove <id>           Unregister startup item
+    ./run.sh startup run <id>              Trigger startup item immediately
+    ./run.sh startup help                  Show startup command help
+
+EOF
+      fi
+      exit 0
+    fi
+    if [ -n "$PYTHON_BIN" ] && [ -f "$mgr_script" ]; then
+      "$PYTHON_BIN" "$mgr_script" "${_start_filtered[@]}"
+      exit $?
+    fi
+    log_err "Python is required to run startup manager."
+    exit 1
+    ;;
+  schedule-manager-passthrough)
+    _sched_filtered=()
+    for _a in "${SCHEDULE_MGR_REST[@]:-}"; do [ -n "$_a" ] && _sched_filtered+=("$_a"); done
+    first_arg="${_sched_filtered[0]:-}"
+    mgr_script="$ROOT/../scripts/shared/schedule_manager.py"
+    if [ "${#_sched_filtered[@]}" -eq 0 ] || [ "$first_arg" = "help" ] || [ "$first_arg" = "-h" ] || [ "$first_arg" = "--help" ]; then
+      if [ -n "$PYTHON_BIN" ] && [ -f "$mgr_script" ]; then
+        "$PYTHON_BIN" "$mgr_script" help
+      else
+        cat << 'EOF'
+
+  Schedule & Crontab Command Usage:
+    ./run.sh schedule list                 List all scheduled jobs
+    ./run.sh schedule add <type> <target> <timing>
+    ./run.sh schedule run <id>             Execute job immediately
+    ./run.sh schedule debug <id>           Inspect execution logs
+    ./run.sh schedule help                 Show schedule command help
+
+EOF
+      fi
+      exit 0
+    fi
+    if [ -n "$PYTHON_BIN" ] && [ -f "$mgr_script" ]; then
+      "$PYTHON_BIN" "$mgr_script" "${_sched_filtered[@]}"
+      exit $?
+    fi
+    log_err "Python is required to run schedule manager."
+    exit 1
+    ;;
+  macro-manager-passthrough)
+    _macro_filtered=()
+    for _a in "${MACRO_MGR_REST[@]:-}"; do [ -n "$_a" ] && _macro_filtered+=("$_a"); done
+    first_arg="${_macro_filtered[0]:-}"
+    mgr_script="$ROOT/../scripts/shared/macro_manager.py"
+    if [ "${#_macro_filtered[@]}" -eq 0 ] || [ "$first_arg" = "help" ] || [ "$first_arg" = "-h" ] || [ "$first_arg" = "--help" ]; then
+      if [ -n "$PYTHON_BIN" ] && [ -f "$mgr_script" ]; then
+        "$PYTHON_BIN" "$mgr_script" help
+      else
+        cat << 'EOF'
+
+  Interactive Macro Command Usage:
+    ./run.sh macro list                    List registered macros
+    ./run.sh macro add <name> <cmd1>...    Create interactive command sequence
+    ./run.sh macro run <name>              Execute macro interactively
+    ./run.sh macro help                    Show macro command help
+
+EOF
+      fi
+      exit 0
+    fi
+    if [ -n "$PYTHON_BIN" ] && [ -f "$mgr_script" ]; then
+      "$PYTHON_BIN" "$mgr_script" "${_macro_filtered[@]}"
+      exit $?
+    fi
+    log_err "Python is required to run macro manager."
+    exit 1
+    ;;
+  storage-manager-passthrough)
+    _store_filtered=()
+    for _a in "${STORAGE_MGR_REST[@]:-}"; do [ -n "$_a" ] && _store_filtered+=("$_a"); done
+    first_arg="${_store_filtered[0]:-}"
+    mgr_script="$ROOT/../scripts/shared/storage_manager.py"
+    if [ "${#_store_filtered[@]}" -eq 0 ] || [ "$first_arg" = "help" ] || [ "$first_arg" = "-h" ] || [ "$first_arg" = "--help" ]; then
+      if [ -n "$PYTHON_BIN" ] && [ -f "$mgr_script" ]; then
+        "$PYTHON_BIN" "$mgr_script" help
+      else
+        cat << 'EOF'
+
+  Storage & Split DB Inspector Usage:
+    ./run.sh storage list                  Show split DB sizes & disk space
+    ./run.sh storage partition             Storage partitioning options & swap guides
+    ./run.sh storage help                  Show storage command help
+
+EOF
+      fi
+      exit 0
+    fi
+    if [ -n "$PYTHON_BIN" ] && [ -f "$mgr_script" ]; then
+      "$PYTHON_BIN" "$mgr_script" "${_store_filtered[@]}"
+      exit $?
+    fi
+    log_err "Python is required to run storage manager."
+    exit 1
+    ;;
+  cluster-manager-passthrough)
+    _clus_filtered=()
+    for _a in "${CLUSTER_MGR_REST[@]:-}"; do [ -n "$_a" ] && _clus_filtered+=("$_a"); done
+    first_arg="${_clus_filtered[0]:-}"
+    if [ "${#_clus_filtered[@]}" -eq 0 ] || [ "$first_arg" = "help" ] || [ "$first_arg" = "-h" ] || [ "$first_arg" = "--help" ]; then
+      cat << 'EOF'
+
+  Cluster Command Help (SQLite + SSH RSA):
+    ./run.sh cluster list                  List all cluster nodes from SQLite
+    ./run.sh cluster add <name> <role> <ip> [user]  Add node to SQLite database
+    ./run.sh cluster remove <name>         Remove node from SQLite
+    ./run.sh cluster import [json-path]    Import nodes from config.json
+    ./run.sh cluster history               View past command execution logs
+    ./run.sh cluster run <target> "<cmd>"  Execute remote command via bash
+
+EOF
+      exit 0
+    fi
+    bridge_script="$ROOT/../scripts/shared/db_bridge.py"
+    action_args=()
+    if [ "${#_clus_filtered[@]}" -gt 1 ]; then
+      action_args=("${_clus_filtered[@]:1}")
+    fi
+    case "$first_arg" in
+      list|ls)
+        "$PYTHON_BIN" "$bridge_script" cluster-list-nodes "${action_args[@]}"
+        exit $?
+        ;;
+      add)
+        "$PYTHON_BIN" "$bridge_script" cluster-add-node "${action_args[@]}"
+        exit $?
+        ;;
+      remove|rm)
+        "$PYTHON_BIN" "$bridge_script" cluster-remove-node "${action_args[@]}"
+        exit $?
+        ;;
+      import)
+        json_path="kubernetes/config.json"
+        [ "${#action_args[@]}" -gt 0 ] && json_path="${action_args[0]}"
+        "$PYTHON_BIN" "$bridge_script" cluster-import-json "$json_path"
+        exit $?
+        ;;
+      history|logs)
+        "$PYTHON_BIN" "$bridge_script" cluster-list-logs "${action_args[@]}"
+        exit $?
+        ;;
+      run|exec)
+        cmd_script="$ROOT/../kubernetes/07-remote-commands/run-cmd.sh"
+        if [ -f "$cmd_script" ]; then
+          bash "$cmd_script" "${action_args[@]}"
+          exit $?
+        else
+          log_err "Remote command script missing: $cmd_script"
+          exit 1
+        fi
+        ;;
+      *)
+        log_err "Unknown cluster action: $first_arg"
+        echo "Run './run.sh cluster help' for usage."
+        exit 1
+        ;;
+    esac
     ;;
   grp-passthrough)
     # Filter empties (some bash versions add a stray "" when "$@" was empty

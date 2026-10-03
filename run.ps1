@@ -763,6 +763,8 @@ if ($hasCommand) {
     $isBareStorageCommand  = $normalizedCommand -eq "storage"
     $isBarePipelineCommand = $normalizedCommand -eq "pipeline"
     $isBareClusterCommand  = $normalizedCommand -in @("cluster", "k8s-cluster", "node-cmd")
+    $isBareServicesCommand = $normalizedCommand -in @("services", "service")
+    $isBareDbCommand       = $normalizedCommand -in @("db", "database", "databases")
     $isBareHelpCommand    = $normalizedCommand -in @("help", "--help", "-help", "/?", "?")
     $isBareScriptId = $normalizedCommand -match '^\d+$'
 
@@ -789,9 +791,10 @@ if ($hasCommand) {
     $isAgyHelp = ($isBareAgyCommand -or $isBareCleanAgyCommand) -and ($h -or $Help -or ($null -eq $Install) -or ($Install.Count -eq 0) -or ($Install[0].ToLower() -in @("help", "--help", "-help", "-h", "/?", "?")))
     $isGitmapHelp = $isBareGitmapCommand -and ($h -or $Help -or ($null -eq $Install) -or ($Install.Count -eq 0) -or ($Install[0].ToLower() -in @("help", "--help", "-help", "-h", "/?", "?")))
     $isCleanDevHelp = $isBareCleanDevCommand -and ($h -or $Help -or ($null -ne $Install -and $Install.Count -gt 0 -and $Install[0].ToLower() -in @("help", "--help", "-help", "-h", "/?", "?")))
+    $isDbHelp = $isBareDbCommand -and ($h -or $Help -or ($null -eq $Install) -or ($Install.Count -eq 0) -or ($Install[0].ToLower() -in @("help", "--help", "-help", "-h", "/?", "?")))
     $isMachineRead = ($isBareMachineCommand -and ($null -eq $Install -or $Install.Count -eq 0 -or $Install[0].ToLower() -in @("ls","list","show","status","st","--json","-j")))
-    $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareExportConfigCommand -or $isBareImportConfigCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand -or $isAgyHelp -or $isGitmapHelp -or $isCleanDevHelp -or $isMachineRead -or $isBareIpCommand
-    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareCleanDevCommand -or $isBareClearTerminalCommand -or $isBareMachineCommand -or $isBareIpCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareTerminalTasksCommand -or $isBareDbMenuCommand -or $isBareNginxCommand -or $isBareAgyCommand -or $isBareCleanAgyCommand -or $isBareGitmapCommand
+    $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareExportConfigCommand -or $isBareImportConfigCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand -or $isAgyHelp -or $isGitmapHelp -or $isCleanDevHelp -or $isMachineRead -or $isBareIpCommand -or $isBareServicesCommand -or $isDbHelp
+    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareCleanDevCommand -or $isBareClearTerminalCommand -or $isBareMachineCommand -or $isBareIpCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareTerminalTasksCommand -or $isBareDbMenuCommand -or $isBareNginxCommand -or $isBareAgyCommand -or $isBareCleanAgyCommand -or $isBareGitmapCommand -or $isBareServicesCommand -or $isBareDbCommand -or $isBareStartupCommand -or $isBareScheduleCommand -or $isBareMacroCommand -or $isBareAsyncCommand -or $isBareStorageCommand -or $isBareClusterCommand -or $isBarePipelineCommand
     $isNoPullEnv = $env:SCRIPTS_FIXER_NO_PULL -eq "1"
     $isNoPullFlag = $false
     if ($null -ne $Install) {
@@ -2435,6 +2438,40 @@ if ($hasCommand) {
             Write-Host "  Run '.\run.ps1 cluster help' for usage."
             exit 1
         }
+    } elseif ($isBareServicesCommand) {
+        Show-HelpServices
+        exit 0
+    } elseif ($isBareDbCommand) {
+        $hasInstallArgs = $null -ne $Install -and $Install.Count -gt 0
+        $firstArgLow = if ($hasInstallArgs) { "$($Install[0])".Trim().ToLower() } else { "" }
+        $isDbHelpRequested = $h -or $Help -or (-not $hasInstallArgs) -or ($firstArgLow -in @("help", "--help", "-help", "-h", "/?", "?"))
+
+        if ($isDbHelpRequested) {
+            Show-HelpDatabasesAndCombos
+            exit 0
+        }
+
+        $isMenuOption = $firstArgLow -in @("menu", "interactive")
+        if ($isMenuOption) {
+            Show-VersionHeader
+            . (Join-Path $RootDir "scripts\shared\windows-tasks-and-db.ps1")
+            Show-DatabaseMenu
+            exit 0
+        }
+
+        $remainingDbArgs = @($Install | Where-Object { $_ })
+        $hasLeadingVerb = $remainingDbArgs.Count -gt 0 -and $remainingDbArgs[0].ToLower() -in @("install", "add")
+        if ($hasLeadingVerb) {
+            $remainingDbArgs = @($remainingDbArgs | Select-Object -Skip 1)
+        }
+
+        $hasRemainingDbArgs = $remainingDbArgs.Count -gt 0
+        if ($hasRemainingDbArgs) {
+            $Install = $remainingDbArgs
+        } else {
+            Show-HelpDatabasesAndCombos
+            exit 0
+        }
     } elseif ($isBareScriptId) {
         $I = [int]$normalizedCommand
     } else {
@@ -2473,9 +2510,23 @@ if ($List) {
 $normalizedCommandLower = if ($Command) { $Command.Trim().ToLower() } else { "" }
 $isHelpCommand = $normalizedCommandLower -in @("help", "--help", "-help", "/?", "?")
 
-if ($Help -or $isHelpCommand) {
+$helpTokens = @("help", "-h", "--help", "-help", "/?", "?", "-?")
+$hasHelpTokenInInstall = $false
+if ($Install -and $Install.Count -gt 0) {
+    foreach ($arg in $Install) {
+        if ($null -ne $arg -and "$arg".Trim().ToLower() -in $helpTokens) {
+            $hasHelpTokenInInstall = $true
+            break
+        }
+    }
+}
+
+if ($Help -or $isHelpCommand -or $hasHelpTokenInInstall) {
     $helpFilter = $null
-    if ($isHelpCommand) {
+    if ($hasHelpTokenInInstall) {
+        $remaining = @($Install | Where-Object { $null -ne $_ -and "$_".Trim().ToLower() -notin $helpTokens })
+        if ($remaining.Count -gt 0) { $helpFilter = ($remaining -join ' ').Trim() }
+    } elseif ($isHelpCommand) {
         # `.\run.ps1 help <keyword>` -- keyword(s) land in $Install
         if ($Install -and $Install.Count -gt 0) { $helpFilter = ($Install -join ' ').Trim() }
     } elseif ($Help) {
@@ -2539,6 +2590,39 @@ if ($Y) {
 # ── Handle install keyword mode (bare or named) ─────────────────────
 $hasInstallKeywords = $null -ne $Install -and $Install.Count -gt 0
 if ($hasInstallKeywords) {
+    $helpTokens = @("help", "-h", "--help", "-help", "?", "/?", "-?")
+    $expandedInstallTokens = @()
+    foreach ($arg in $Install) {
+        if ($null -ne $arg) {
+            $expandedInstallTokens += "$arg" -split '[,]+' | Where-Object { $_.Trim().Length -gt 0 }
+        }
+    }
+
+    $hasHelpToken = $false
+    foreach ($item in $expandedInstallTokens) {
+        $itemNormalized = $item.Trim().ToLower()
+        if ($itemNormalized -in $helpTokens) {
+            $hasHelpToken = $true
+            break
+        }
+    }
+
+    if ($hasHelpToken) {
+        $remainingKeywords = @($expandedInstallTokens | Where-Object {
+            $_.Trim().ToLower() -notin $helpTokens
+        })
+
+        $hasRemainingKeywords = $remainingKeywords.Count -gt 0
+        if ($hasRemainingKeywords) {
+            $filterQuery = ($remainingKeywords -join ' ').Trim()
+            Show-RootHelp -Filter $filterQuery
+            exit 0
+        }
+
+        Show-RootHelp
+        exit 0
+    }
+
     $resolvedEntries = Resolve-InstallKeywords -Keywords $Install
 
     $isResolveFailed = $null -eq $resolvedEntries

@@ -1,5 +1,16 @@
 # Changelog
 
+## [v1.57.0] - 2026-10-03
+
+### Added
+- **Universal Command & Subcommand Help Routing Parity**: Achieved universal `<command> help` and subcommand help routing parity across Windows PowerShell (`run.ps1`) and Linux Bash (`scripts-linux/run.sh`).
+- **Dedicated Subcommand Routing**: Implemented dedicated subcommand help routing for `db help`, `services help`, `models help`, `clean help`, `clear help`, `startup help`, `schedule help`, `macro help`, `storage help`, and `cluster help`.
+- **Universal Keyword Help Interceptor**: Introduced universal keyword help interceptor across shell dispatchers preventing `Unknown keyword: 'help'` across all individual tools (`vscode help`, `python help`, `node help`, `docker help`, etc.).
+- **Windows Server 2025 E2E Verification**: Completed comprehensive 16-point live E2E verification of VMware Tools, native C# WinForms Codex UI, PlotCode UI, and Claude Code UI on Windows Server 2025.
+- **Multi-Manifest Version Synchronization**: Synchronized `version.json`, `scripts/version.json`, `package.json`, and `.gitmap/release/latest.json` to target release `v1.57.0`.
+
+---
+
 ## [v1.56.0] - 2026-10-03
 
 ### Added
