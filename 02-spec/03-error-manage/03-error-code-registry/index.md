@@ -1,5 +1,0 @@
-# index
-
-## Section
-
-Content here.
