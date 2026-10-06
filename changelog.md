@@ -1,5 +1,37 @@
 # Changelog
 
+## [v1.57.1] - 2026-10-03
+
+### Added
+- Synchronize prompts, skills, AI scripts, and coding guidelines
+
+---
+
+## [v1.57.0] - 2026-10-03
+
+### Added
+- **Universal Command & Subcommand Help Routing Parity**: Achieved universal `<command> help` and subcommand help routing parity across Windows PowerShell (`run.ps1`) and Linux Bash (`scripts-linux/run.sh`).
+- **Dedicated Subcommand Routing**: Implemented dedicated subcommand help routing for `db help`, `services help`, `models help`, `clean help`, `clear help`, `startup help`, `schedule help`, `macro help`, `storage help`, and `cluster help`.
+- **Universal Keyword Help Interceptor**: Introduced universal keyword help interceptor across shell dispatchers preventing `Unknown keyword: 'help'` across all individual tools (`vscode help`, `python help`, `node help`, `docker help`, etc.).
+- **Windows Server 2025 E2E Verification**: Completed comprehensive 16-point live E2E verification of VMware Tools, native C# WinForms Codex UI, PlotCode UI, and Claude Code UI on Windows Server 2025.
+- **Multi-Manifest Version Synchronization**: Synchronized `version.json`, `scripts/version.json`, `package.json`, and `.gitmap/release/latest.json` to target release `v1.57.0`.
+
+---
+
+## [v1.56.0] - 2026-10-03
+
+### Added
+- **VMware Host vs Guest Disambiguation & Verification**: Implemented deterministic discrimination between VMware Tools (guest utilities) and VMware Workstation/Player (host hypervisor suite) in `scripts/66-install-vmware/run.ps1` and verification suites, with automated host checks for `VMwareToolboxCmd.exe` and `VMTools`/`VM3DService`.
+- **VMware CLI Verification Engine**: Added automated verification for `vmrun.exe`, `vmware-vdiskmanager.exe`, VIX API registry keys, and system PATH environment configuration.
+- **Clear Commands Harmonization & StrictMode Fixes**: Harmonized `devtools clear` and `clear devtools` across dispatchers, and resolved StrictMode variable initialization in `scripts/dev-clean.ps1`.
+- **GitMap Subcommand Help Routing**: Harmonized `gitmap help` routing across Windows PowerShell (`scripts/run.ps1 gitmap help`) and POSIX shell (`scripts/run.sh gitmap help`), preserving safe routing for `os help` without colliding with OS-level binaries.
+- **Codex UI Standalone C# WinForms Architecture**: Built direct native compilation pipeline in `scripts/78-install-codex/run.ps1` using Microsoft .NET Framework `csc.exe`, enabling zero-dependency GUI deployment on Windows Server without AppX, Microsoft Store, or npm CLI batch wrappers.
+- **PlotCode UI Windows Server Integration**: Configured Windows Server prerequisite resolution, `%USERPROFILE%\.plotcode\bin` environment setup, desktop shortcut creation via COM `WScript.Shell`, and database success telemetry in `scripts/79-install-plotcode/run.ps1`.
+- **Live 16-Point & 15-Point AI UI E2E Verification Suite**: Enhanced `tests/e2e-ai-ui-install.ps1` to cover VMware host/guest binaries, services, Claude Code UI, Codex WinForms UI, PlotCode UI, CLI/UI disambiguation shims, and AST syntax validation for all uninstall lifecycles.
+- **Multi-Manifest Version Synchronization**: Synchronized `scripts/version.json`, `version.json`, `package.json`, and `.gitmap/release/latest.json` to target release `v1.56.0`.
+
+---
+
 ## [v1.55.9] - 2026-10-02
 
 ### Added

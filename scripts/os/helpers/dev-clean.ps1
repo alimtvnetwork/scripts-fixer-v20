@@ -388,7 +388,7 @@ function Invoke-StaleBuildArtifactsSweep {
     param([bool]$IsDryMode)
 
     $staleFiles = Get-StaleDevCacheFiles
-    $hasFiles = $staleFiles.Count -gt 0
+    $hasFiles = @($staleFiles).Count -gt 0
 
     if (-not $hasFiles) {
         return

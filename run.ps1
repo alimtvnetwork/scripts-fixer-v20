@@ -172,6 +172,7 @@ if (Test-Path $_yesFlagHelper) {
 $dispatcherDir = Join-Path $RootDir "scripts\dispatcher"
 . (Join-Path $dispatcherDir "script-runner.ps1")
 . (Join-Path $dispatcherDir "root-help.ps1")
+. (Join-Path $dispatcherDir "help\gitmap-help.ps1")
 . (Join-Path $dispatcherDir "keyword-resolver.ps1")
 . (Join-Path $dispatcherDir "status-export.ps1")
 . (Join-Path $dispatcherDir "doctor-cmd.ps1")
@@ -524,7 +525,7 @@ if ($hasCommand) {
     # Aliases: `clean devtools` / `clear devtools` / `clear dev-tools` / `clear dev-tools-cache` / `clear dev`
     if ($normalizedCommand -in @('clean','clear') -and $Install -and $Install.Count -ge 1) {
         $firstCleanArg = "$($Install[0])".Trim().ToLower()
-        if ($firstCleanArg -in @('dev','devs','developer','devtool','dev-tool','dev-tools','dev-tools-cache','dev-clean','clean-dev','devtool-cache')) {
+        if ($firstCleanArg -in @('dev','devs','developer','devtool','devtools','dev-tool','dev-tools','dev-tools-cache','devtools-cache','dev-clean','clean-dev','devtool-cache')) {
             $Command = 'clean-dev'
             $Install = if ($Install.Count -gt 1) { @($Install[1..($Install.Count - 1)]) } else { @() }
             $normalizedCommand = 'clean-dev'
@@ -534,7 +535,7 @@ if ($hasCommand) {
             'all','caches','full','system',
             'go','golang','go-cache','gocache','gomodcache',
             'npm','pnpm','node','nodejs','npm-cache','pnpm-cache','pnpm-store','yarn','bun',
-            'devtools','devtools-cache','browser-cache','vscode-cache',
+            'browser-cache','vscode-cache',
             'temp','tmp','temp-dirs',
             'wu','wu-download','windows-update','softwaredistribution','software-distribution',
             'recycle','recycle-bin','recyclebin','trash',
@@ -645,6 +646,7 @@ if ($hasCommand) {
         $firstVerbArg = $Install[0].Trim().ToLower()
         if ($firstVerbArg -in @("clear", "clean", "cleanup", "reset", "purge")) {
             $commandAliasMap[$normalizedCommand] = "clean-dev"
+            $Install = if ($Install.Count -gt 1) { @($Install[1..($Install.Count - 1)]) } else { @() }
         }
     }
 
@@ -665,7 +667,7 @@ if ($hasCommand) {
         'export','status','doctor','report','models','models-download','menu',
         'os','machine','alias','ip','clear-terminal','clean-terminal','clean-dev','dev-cleanup','ssh','vscode-folder','vscode-context-menu','chrome','chrome-fix-ai',
         'chrome-profile-copy','chrome-profile-export','chrome-profile-import',
-        'profile','git-tools','gsa','reset','help','version','nginx',
+        'profile','git-tools','gsa','reset','help','version','nginx','gitmap',
         'startup','schedule','crontab','macro','async','storage','pipeline','cluster',
         'agy','clear-agy','clean-agy'
     )
@@ -753,6 +755,7 @@ if ($hasCommand) {
     $isBareResetCommand   = $normalizedCommand -in @("reset","fresh","fresh-start","wipe-state","clear-state")
     $isBareAgyCommand     = $normalizedCommand -in @("agy", "antigravity")
     $isBareCleanAgyCommand = $normalizedCommand -in @("clean-agy", "clear-agy", "agy-clean", "agy-clear", "antigravity-clean", "antigravity-clear")
+    $isBareGitmapCommand   = $normalizedCommand -in @("gitmap", "gm")
     $isBareStartupCommand  = $normalizedCommand -eq "startup"
     $isBareScheduleCommand = $normalizedCommand -in @("schedule", "crontab", "cron")
     $isBareMacroCommand    = $normalizedCommand -eq "macro"
@@ -760,6 +763,8 @@ if ($hasCommand) {
     $isBareStorageCommand  = $normalizedCommand -eq "storage"
     $isBarePipelineCommand = $normalizedCommand -eq "pipeline"
     $isBareClusterCommand  = $normalizedCommand -in @("cluster", "k8s-cluster", "node-cmd")
+    $isBareServicesCommand = $normalizedCommand -in @("services", "service")
+    $isBareDbCommand       = $normalizedCommand -in @("db", "database", "databases")
     $isBareHelpCommand    = $normalizedCommand -in @("help", "--help", "-help", "/?", "?")
     $isBareScriptId = $normalizedCommand -match '^\d+$'
 
@@ -784,10 +789,12 @@ if ($hasCommand) {
     #   - any of $Install contains --no-pull / -no-pull / --offline
     #   - command is read-only (status/path/scan/export/doctor)
     $isAgyHelp = ($isBareAgyCommand -or $isBareCleanAgyCommand) -and ($h -or $Help -or ($null -eq $Install) -or ($Install.Count -eq 0) -or ($Install[0].ToLower() -in @("help", "--help", "-help", "-h", "/?", "?")))
+    $isGitmapHelp = $isBareGitmapCommand -and ($h -or $Help -or ($null -eq $Install) -or ($Install.Count -eq 0) -or ($Install[0].ToLower() -in @("help", "--help", "-help", "-h", "/?", "?")))
     $isCleanDevHelp = $isBareCleanDevCommand -and ($h -or $Help -or ($null -ne $Install -and $Install.Count -gt 0 -and $Install[0].ToLower() -in @("help", "--help", "-help", "-h", "/?", "?")))
+    $isDbHelp = $isBareDbCommand -and ($h -or $Help -or ($null -eq $Install) -or ($Install.Count -eq 0) -or ($Install[0].ToLower() -in @("help", "--help", "-help", "-h", "/?", "?")))
     $isMachineRead = ($isBareMachineCommand -and ($null -eq $Install -or $Install.Count -eq 0 -or $Install[0].ToLower() -in @("ls","list","show","status","st","--json","-j")))
-    $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareExportConfigCommand -or $isBareImportConfigCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand -or $isAgyHelp -or $isCleanDevHelp -or $isMachineRead -or $isBareIpCommand
-    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareCleanDevCommand -or $isBareClearTerminalCommand -or $isBareMachineCommand -or $isBareIpCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareTerminalTasksCommand -or $isBareDbMenuCommand -or $isBareNginxCommand -or $isBareAgyCommand -or $isBareCleanAgyCommand
+    $isReadOnlyBare = $isBarePathCommand -or $isBareScanCommand -or $isBareExportCommand -or $isBareExportConfigCommand -or $isBareImportConfigCommand -or $isBareStatusCommand -or $isBareDoctorCommand -or $isBareReportCommand -or $isAgyHelp -or $isGitmapHelp -or $isCleanDevHelp -or $isMachineRead -or $isBareIpCommand -or $isBareServicesCommand -or $isDbHelp
+    $isDispatchingBareSubcommand = $isBareOsCommand -or $isBareCleanDevCommand -or $isBareClearTerminalCommand -or $isBareMachineCommand -or $isBareIpCommand -or $isBareSshCommand -or $isBareVscodeFolderCommand -or $isBareVscodeContextMenuCommand -or $isBareProfileCommand -or $isBareGitToolsCommand -or $isBareGsaCommand -or $isBareModelsCommand -or $isBareModelsDownloadCommand -or $isBareInstallCommand -or $isBareMenuCommand -or $isBareChromeCommand -or $isBareChromeFixAiCommand -or $isBareChromeProfileCopyCommand -or $isBareChromeProfileExportCommand -or $isBareChromeProfileImportCommand -or $isBareTerminalTasksCommand -or $isBareDbMenuCommand -or $isBareNginxCommand -or $isBareAgyCommand -or $isBareCleanAgyCommand -or $isBareGitmapCommand -or $isBareServicesCommand -or $isBareDbCommand -or $isBareStartupCommand -or $isBareScheduleCommand -or $isBareMacroCommand -or $isBareAsyncCommand -or $isBareStorageCommand -or $isBareClusterCommand -or $isBarePipelineCommand
     $isNoPullEnv = $env:SCRIPTS_FIXER_NO_PULL -eq "1"
     $isNoPullFlag = $false
     if ($null -ne $Install) {
@@ -947,7 +954,19 @@ if ($hasCommand) {
         $osArgs = @("dev-cleanup")
 
         if ($null -ne $Install) {
-            $osArgs += @($Install)
+            $filteredDevArgs = @()
+            foreach ($arg in $Install) {
+                $argStr = "$arg".Trim()
+                $argLow = $argStr.ToLower()
+
+                if ($argLow -in @("clear", "clean", "cleanup", "purge", "reset", "dev", "devs", "developer", "devtool", "devtools", "dev-tool", "dev-tools", "dev-tools-cache", "devtools-cache", "devtool-cache", "dev-clean", "clean-dev", "devcleanup", "cleandev")) {
+                    continue
+                }
+
+                $filteredDevArgs += $argStr
+            }
+
+            $osArgs += $filteredDevArgs
         }
 
         if ($Help -or $h) {
@@ -1356,6 +1375,47 @@ if ($hasCommand) {
         Write-Host "  [ FAIL ] " -ForegroundColor $ThemeError -NoNewline
         Write-Host "Unknown Antigravity action: '$firstArg'"
         Show-AgyHelp
+        exit 1
+    }
+
+    if ($isBareGitmapCommand) {
+        Show-VersionHeader
+        $gitmapArgs = @()
+
+        if ($null -ne $Install) {
+            $gitmapArgs = @($Install)
+        }
+
+        $hasFirstArg = $gitmapArgs.Count -gt 0
+        $firstArg = if ($hasFirstArg) { "$($gitmapArgs[0])".Trim().ToLower() } else { "" }
+        $isHelpRequested = ($h -or $Help -or (-not $hasFirstArg) -or ($firstArg -in @("help", "--help", "-help", "-h", "/?", "?")))
+
+        if ($isHelpRequested) {
+            Show-GitmapHelp
+            exit 0
+        }
+
+        $gitmapCmd = Get-Command "gitmap" -ErrorAction SilentlyContinue
+        $isInstalled = $null -ne $gitmapCmd
+        $gitmapExe = if ($isInstalled) { $gitmapCmd.Source } else { "" }
+
+        if (-not $isInstalled -and (Test-Path "C:\dev-tool\GitMap\gitmap.exe")) {
+            $isInstalled = $true
+            $gitmapExe = "C:\dev-tool\GitMap\gitmap.exe"
+        }
+
+        if (-not $isInstalled -and (Test-Path "D:\dev-tool\GitMap\gitmap.exe")) {
+            $isInstalled = $true
+            $gitmapExe = "D:\dev-tool\GitMap\gitmap.exe"
+        }
+
+        if ($isInstalled) {
+            & $gitmapExe @gitmapArgs
+            exit $LASTEXITCODE
+        }
+
+        Write-Host "  [ NOTE ] GitMap CLI is not yet installed." -ForegroundColor $ThemeAccent
+        Write-Host "  Install via: .\run.ps1 install gitmap   or   .\run.ps1 -I 35" -ForegroundColor White
         exit 1
     }
 
@@ -2378,6 +2438,40 @@ if ($hasCommand) {
             Write-Host "  Run '.\run.ps1 cluster help' for usage."
             exit 1
         }
+    } elseif ($isBareServicesCommand) {
+        Show-HelpServices
+        exit 0
+    } elseif ($isBareDbCommand) {
+        $hasInstallArgs = $null -ne $Install -and $Install.Count -gt 0
+        $firstArgLow = if ($hasInstallArgs) { "$($Install[0])".Trim().ToLower() } else { "" }
+        $isDbHelpRequested = $h -or $Help -or (-not $hasInstallArgs) -or ($firstArgLow -in @("help", "--help", "-help", "-h", "/?", "?"))
+
+        if ($isDbHelpRequested) {
+            Show-HelpDatabasesAndCombos
+            exit 0
+        }
+
+        $isMenuOption = $firstArgLow -in @("menu", "interactive")
+        if ($isMenuOption) {
+            Show-VersionHeader
+            . (Join-Path $RootDir "scripts\shared\windows-tasks-and-db.ps1")
+            Show-DatabaseMenu
+            exit 0
+        }
+
+        $remainingDbArgs = @($Install | Where-Object { $_ })
+        $hasLeadingVerb = $remainingDbArgs.Count -gt 0 -and $remainingDbArgs[0].ToLower() -in @("install", "add")
+        if ($hasLeadingVerb) {
+            $remainingDbArgs = @($remainingDbArgs | Select-Object -Skip 1)
+        }
+
+        $hasRemainingDbArgs = $remainingDbArgs.Count -gt 0
+        if ($hasRemainingDbArgs) {
+            $Install = $remainingDbArgs
+        } else {
+            Show-HelpDatabasesAndCombos
+            exit 0
+        }
     } elseif ($isBareScriptId) {
         $I = [int]$normalizedCommand
     } else {
@@ -2416,9 +2510,23 @@ if ($List) {
 $normalizedCommandLower = if ($Command) { $Command.Trim().ToLower() } else { "" }
 $isHelpCommand = $normalizedCommandLower -in @("help", "--help", "-help", "/?", "?")
 
-if ($Help -or $isHelpCommand) {
+$helpTokens = @("help", "-h", "--help", "-help", "/?", "?", "-?")
+$hasHelpTokenInInstall = $false
+if ($Install -and $Install.Count -gt 0) {
+    foreach ($arg in $Install) {
+        if ($null -ne $arg -and "$arg".Trim().ToLower() -in $helpTokens) {
+            $hasHelpTokenInInstall = $true
+            break
+        }
+    }
+}
+
+if ($Help -or $isHelpCommand -or $hasHelpTokenInInstall) {
     $helpFilter = $null
-    if ($isHelpCommand) {
+    if ($hasHelpTokenInInstall) {
+        $remaining = @($Install | Where-Object { $null -ne $_ -and "$_".Trim().ToLower() -notin $helpTokens })
+        if ($remaining.Count -gt 0) { $helpFilter = ($remaining -join ' ').Trim() }
+    } elseif ($isHelpCommand) {
         # `.\run.ps1 help <keyword>` -- keyword(s) land in $Install
         if ($Install -and $Install.Count -gt 0) { $helpFilter = ($Install -join ' ').Trim() }
     } elseif ($Help) {
@@ -2482,6 +2590,39 @@ if ($Y) {
 # ── Handle install keyword mode (bare or named) ─────────────────────
 $hasInstallKeywords = $null -ne $Install -and $Install.Count -gt 0
 if ($hasInstallKeywords) {
+    $helpTokens = @("help", "-h", "--help", "-help", "?", "/?", "-?")
+    $expandedInstallTokens = @()
+    foreach ($arg in $Install) {
+        if ($null -ne $arg) {
+            $expandedInstallTokens += "$arg" -split '[,]+' | Where-Object { $_.Trim().Length -gt 0 }
+        }
+    }
+
+    $hasHelpToken = $false
+    foreach ($item in $expandedInstallTokens) {
+        $itemNormalized = $item.Trim().ToLower()
+        if ($itemNormalized -in $helpTokens) {
+            $hasHelpToken = $true
+            break
+        }
+    }
+
+    if ($hasHelpToken) {
+        $remainingKeywords = @($expandedInstallTokens | Where-Object {
+            $_.Trim().ToLower() -notin $helpTokens
+        })
+
+        $hasRemainingKeywords = $remainingKeywords.Count -gt 0
+        if ($hasRemainingKeywords) {
+            $filterQuery = ($remainingKeywords -join ' ').Trim()
+            Show-RootHelp -Filter $filterQuery
+            exit 0
+        }
+
+        Show-RootHelp
+        exit 0
+    }
+
     $resolvedEntries = Resolve-InstallKeywords -Keywords $Install
 
     $isResolveFailed = $null -eq $resolvedEntries

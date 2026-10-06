@@ -32,6 +32,7 @@
 - [03-nginx-domain-manager-sqlite-ini](learned/03-nginx-domain-manager-sqlite-ini.md) — Permanent institutional knowledge: Nginx Domain Manager, SQLite persistence, BOM decoding, and INI synchronization.
 - [04-windows-git-unlink-acl-resolution](learned/04-windows-git-unlink-acl-resolution.md) — Windows Git unlink permission ACL resolution pattern.
 - [05-project-context-and-subsystems](learned/05-project-context-and-subsystems.md) — Subsystem contracts, split DB conventions, and recent commit history.
+- [06-universal-subcommand-help-and-windows-server-ui](learned/06-universal-subcommand-help-and-windows-server-ui.md) — Help routing invariants, Windows Server csc.exe WinForms compilation, and VMware guest detection.
 
 ### 4. Constraints & Prohibitions
 - [Strictly prohibited (SP-N HARD STOP)](constraints/strictly-prohibited.md) — Numbered hard-stop rules; load on first read, refuse triggering requests with rule number cited.

@@ -40,6 +40,7 @@ log_install_paths() {
 
   if command -v write_install_paths >/dev/null 2>&1; then
     write_install_paths --tool "$tool_name" --source "$source_path" --temp "$temp_path" --target "$target_path"
+
     return 0
   fi
 
@@ -52,6 +53,7 @@ log_install_paths() {
 }
 
 is_force=false
+
 for arg in "$@"; do
   if [ "$arg" = "--force" ] || [ "$arg" = "-f" ]; then
     is_force=true
@@ -80,13 +82,16 @@ copy_mount_runner() {
 
   if [ ! -f "$src" ]; then
     log_file_error "$src" "source script vmware-mount-shared.sh missing"
+
     return 1
   fi
 
-  sudo cp -f "$src" "$runner" || {
+  if ! sudo cp -f "$src" "$runner"; then
     log_file_error "$runner" "failed to copy mount script"
+
     return 1
-  }
+  fi
+
   sudo chmod +x "$runner"
 
   return 0
@@ -96,6 +101,7 @@ write_systemd_mount_unit() {
   local runner="/usr/local/bin/vmware-mount-shared.sh"
   local service_file="/etc/systemd/system/vmware-mount-shared.service"
 
+  local is_written=false
   sudo bash -c "cat <<'EOF' > $service_file
 [Unit]
 Description=Mount VMware Shared Folders
@@ -109,16 +115,22 @@ RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target
-EOF" || {
+EOF" && is_written=true
+
+  if [ "$is_written" = "false" ]; then
     log_file_error "$service_file" "failed to write systemd unit"
+
     return 1
-  }
+  fi
 
   return 0
 }
 
 enable_systemd_mount_service() {
-  write_systemd_mount_unit || return 1
+  if ! write_systemd_mount_unit; then
+    return 1
+  fi
+
   sudo systemctl daemon-reload 2>/dev/null || true
   sudo systemctl enable vmware-mount-shared.service 2>/dev/null || true
   echo -e "  ${PRIMARY}[  OK  ] Configured systemd service: vmware-mount-shared.service${TEXT}"
@@ -134,10 +146,15 @@ configure_crontab_mount() {
     return 0
   fi
 
-  ( crontab -l 2>/dev/null | grep -F -v "$runner" ; echo "$cron_job" ) | crontab - 2>/dev/null || {
+  local is_cron_ok=false
+  ( crontab -l 2>/dev/null | grep -F -v "$runner" ; echo "$cron_job" ) | crontab - 2>/dev/null && is_cron_ok=true
+
+  if [ "$is_cron_ok" = "false" ]; then
     log_file_error "/var/spool/cron" "failed to update crontab for @reboot mount"
+
     return 1
-  }
+  fi
+
   echo -e "  ${PRIMARY}[  OK  ] Configured crontab startup mount: $cron_job${TEXT}"
 
   return 0
@@ -149,12 +166,15 @@ setup_startup_mount() {
 
   local has_systemd=false
   command -v systemctl >/dev/null 2>&1 && [ -d "/etc/systemd/system" ] && has_systemd=true
+
   if [ "$has_systemd" = "true" ]; then
     enable_systemd_mount_service
+
     return $?
   fi
 
   configure_crontab_mount
+
   return $?
 }
 
@@ -163,13 +183,16 @@ install_open_vm_tools() {
 
   if ! command -v apt-get >/dev/null 2>&1; then
     log_file_error "/usr/bin/apt-get" "apt-get package manager not available"
+
     return 1
   fi
 
   sudo apt-get update -y || true
+
   if ! sudo apt-get install -y open-vm-tools open-vm-tools-desktop; then
     echo -e "  ${ERROR}✖ Failed to install open-vm-tools via apt.${TEXT}"
     log_file_error "/usr/bin/open-vm-tools" "apt-get install failed for open-vm-tools"
+
     return 1
   fi
 
@@ -182,20 +205,25 @@ main() {
 
   local is_installed=false
   is_tools_installed && is_installed=true
+
   if [ "$is_force" != "true" ] && [ "$is_installed" = "true" ] && db_is_installed package "vmware-tools"; then
     echo -e "  ${PRIMARY}[  OK  ] VMware Tools is already installed.${TEXT}"
     bash "$_SCRIPT_DIR/vmware-mount-shared.sh"
     db_record_skipped package "vmware-tools" "already installed"
+
     return 0
   fi
 
   db_record_start package "vmware-tools" "install"
+
   if ! install_open_vm_tools; then
     db_record_failure package "vmware-tools" 1 "apt-get install failed"
+
     return 1
   fi
 
   local ver="unknown"
+
   if [ -x "/usr/bin/vmware-toolbox-cmd" ]; then
     ver=$(/usr/bin/vmware-toolbox-cmd -v 2>/dev/null || echo "installed")
     echo -e "  ${PRIMARY}[  OK  ] VMware Tools verified: $ver${TEXT}"

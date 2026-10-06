@@ -276,11 +276,37 @@ StartupWMClass=CodexUI
 
 ---
 
-## 6. End-to-End Windows Server Testing & Validation Protocol
+## 5. Uninstallation Lifecycle (`uninstall.ps1`)
 
-The installer suite includes an automated live 10-point end-to-end (E2E) verification procedure implemented in `tests/e2e-ai-ui-install.ps1`, executed directly on Windows Server without requiring manual interactive intervention.
+To guarantee idempotency and full cleanup across CI/CD workers and test environments, each component provides a dedicated `uninstall.ps1` lifecycle script:
 
-### 6.1 10-Point E2E Verification Workflow
+### 5.1 Claude Code UI Uninstaller (`scripts/80-install-claude-code/uninstall.ps1`)
+- Purges `%USERPROFILE%\.claude\bin` shims (`claude-ui.cmd`, `claude.cmd`, `claude-ui.py`).
+- Removes Desktop shortcuts: `Claude Code UI.lnk`, `Claude Code.lnk`, `Claude.lnk`.
+- Removes Start Menu shortcut from `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Claude Code UI.lnk`.
+- Uninstalls npm global package `@anthropic-ai/claude-code` if npm is installed.
+- Logs structured status and emits success confirmation.
+
+### 5.2 Codex UI Uninstaller (`scripts/78-install-codex/uninstall.ps1`)
+- Purges `%USERPROFILE%\.codex\bin` shims (`codex-ui.cmd`, `codex.cmd`, `codex-ui.py`).
+- Removes Desktop shortcuts: `Codex UI.lnk` and `Codex.lnk`.
+- Removes Start Menu shortcut from `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Codex UI.lnk`.
+- Logs structured status and emits success confirmation.
+
+### 5.3 VMware Workstation Uninstaller (`scripts/66-install-vmware/uninstall.ps1`)
+- Stops background services: `VMAuthdService`, `VMnetDHCP`, `VMware NAT Service`, `VMUSBArbService`.
+- Scans `HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*` and WOW6432Node for VMware product GUIDs.
+- Executes silent uninstallation via `msiexec.exe /x "{GUID}" /qn REBOOT=ReallySuppress /norestart`.
+- Provides fallback to `winget uninstall VMware.WorkstationPro --silent` and Chocolatey uninstallation.
+- Purges temporary installer artifacts from `%TEMP%\vmware*`.
+
+---
+
+## 6. End-to-End Windows Server Testing & Validation Protocol (15-Point Suite)
+
+The installer suite includes an automated live 15-point end-to-end (E2E) verification procedure implemented in `tests/e2e-ai-ui-install.ps1`, executed directly on Windows Server without requiring manual interactive intervention.
+
+### 6.1 15-Point E2E Verification Workflow
 
 ```mermaid
 sequenceDiagram
@@ -290,12 +316,15 @@ sequenceDiagram
     participant VMware as VMware Subsystem
     participant Claude as Claude UI Subsystem
     participant Codex as Codex UI Subsystem
+    participant Dispatcher as Registry & Dispatcher
 
     Note over CI,Suite: Phase 1: VMware Infrastructure Verification
     Suite->>VMware: Check 1: Test-VMwareWorkstationDirectory
     VMware-->>Suite: Default x86/x64 directory validated
     Suite->>VMware: Check 2: Test-VMwareVersionIntegrity
     VMware-->>Suite: Valid FileVersion & ProductVersion detected
+    Suite->>VMware: Check 11: Test-VMwareAuthService
+    VMware-->>Suite: VMAuthdService verified active in SCM
 
     Note over CI,Suite: Phase 2: Claude Code UI Verification
     Suite->>Claude: Check 3: Test-ClaudeDefaultDirectory
@@ -306,6 +335,8 @@ sequenceDiagram
     Claude-->>Suite: Start Menu "Claude Code UI.lnk" validated
     Suite->>Claude: Check 6: Test-LaunchClaudeApplication (--version)
     Claude-->>Suite: Process executed with exit code 0
+    Suite->>Claude: Check 12: Test-ClaudeShimPath
+    Claude-->>Suite: %USERPROFILE%\.claude\bin in PATH
 
     Note over CI,Suite: Phase 3: Codex UI Verification
     Suite->>Codex: Check 7: Test-CodexDefaultDirectory
@@ -316,18 +347,26 @@ sequenceDiagram
     Codex-->>Suite: Start Menu "Codex UI.lnk" validated
     Suite->>Codex: Check 10: Test-LaunchCodexApplication (WinForms smoke)
     Codex-->>Suite: WinForms process spawned, verified active, stopped cleanly
+    Suite->>Codex: Check 13: Test-CodexShimPath
+    Codex-->>Suite: %USERPROFILE%\.codex\bin in PATH
 
-    Suite->>CI: Exit Code 0 (10/10 Checks PASSED)
+    Note over CI,Suite: Phase 4: Registry, Dispatcher & Lifecycle Verification
+    Suite->>Dispatcher: Check 14: Test-DispatcherRegistryWiring (ID 80)
+    Dispatcher-->>Suite: scripts/registry.json ID 80 verified dispatchable
+    Suite->>Dispatcher: Check 15: Test-UninstallLifecycle
+    Dispatcher-->>Suite: uninstall.ps1 syntax and lifecycle verified across scripts 66, 78, 80
+
+    Suite->>CI: Exit Code 0 (15/15 Checks PASSED)
 ```
 
-### 6.2 10-Point Checkpoint Specifications
+### 6.2 15-Point Checkpoint Specifications
 
 1. **Check 1 — VMware Workstation Directory (`Test-VMwareWorkstationDirectory`)**:
    - Searches candidate directories: `${env:ProgramFiles(x86)}\VMware\VMware Workstation\vmware.exe` and `${env:ProgramFiles}\VMware\VMware Workstation\vmware.exe`.
    - Asserts valid physical presence of `vmware.exe`.
 2. **Check 2 — VMware Version Integrity (`Test-VMwareVersionIntegrity`)**:
    - Inspects `[System.Diagnostics.FileVersionInfo]::GetVersionInfo($exePath)`.
-   - Asserts non-empty `FileVersion` and `ProductVersion` (e.g. 17.5.x or 25.x).
+   - Asserts non-empty `FileVersion` and `ProductVersion` (e.g. 17.5.x, 17.6.x, or 25.x).
 3. **Check 3 — Claude UI Default Directory & Shims (`Test-ClaudeDefaultDirectory`)**:
    - Verifies graphical desktop binary at `%LOCALAPPDATA%\Programs\Claude\Claude.exe` (or Squirrel fallback `%LOCALAPPDATA%\AnthropicClaude\claude.exe` or `%ProgramFiles%\Anthropic\Claude\Claude.exe`).
    - Asserts GUI launcher shim exists at `%USERPROFILE%\.claude\bin\claude-ui.cmd`.
@@ -353,6 +392,17 @@ sequenceDiagram
     - Launches `Codex.exe` without arguments to verify WinForms initialization.
     - Inspects process state after 800ms: confirms `HasExited = $false` (process actively rendering).
     - Gracefully stops process via `Stop-Process -Force` and asserts clean execution.
+11. **Check 11 — VMware Authorization Service (`Test-VMwareAuthService`)**:
+    - Verifies `VMAuthdService` registration and running state in Windows Service Control Manager.
+12. **Check 12 — Claude Code CLI & UI PATH Shims (`Test-ClaudeShimPath`)**:
+    - Verifies `%USERPROFILE%\.claude\bin` exists and contains both `claude-ui.cmd` and `claude.cmd`.
+13. **Check 13 — Codex CLI & UI PATH Shims (`Test-CodexShimPath`)**:
+    - Verifies `%USERPROFILE%\.codex\bin` exists and contains both `codex-ui.cmd` and `codex.cmd`.
+14. **Check 14 — Dispatcher Registry Wiring (`Test-DispatcherRegistryWiring`)**:
+    - Validates that `scripts/registry.json` contains ID 80 mapped to `80-install-claude-code`.
+    - Confirms `scripts/dispatcher/script-runner.ps1` correctly resolves and launches Script 80 and Script 78.
+15. **Check 15 — Uninstall Lifecycle Verification (`Test-UninstallLifecycle`)**:
+    - Validates syntax and presence of `uninstall.ps1` scripts across `scripts/66-install-vmware`, `scripts/78-install-codex`, and `scripts/80-install-claude-code`.
 
 ---
 
@@ -367,8 +417,9 @@ sequenceDiagram
 | **Default Target Dir** | `%LOCALAPPDATA%\Programs\{Claude,Codex}` | `/usr/local/bin` (user: `~/.local/bin`) | `/Applications/{Claude,Codex}.app` |
 | **GUI Launcher Shims** | `%USERPROFILE%\.{claude,codex}\bin\*-ui.cmd` | `/usr/local/bin/{claude,codex}-ui` | `/usr/local/bin/{claude,codex}-ui` |
 | **CLI Companion Shims** | `%USERPROFILE%\.{claude,codex}\bin\*.cmd` | `/usr/local/bin/{claude,codex}` | `/usr/local/bin/{claude,codex}` |
-| **Desktop Launcher** | `.lnk` Shortcuts (Desktop & Start Menu) | `.desktop` Launchers (`Terminal=false`) | macOS Application Bundle / Dock |
-| **E2E Testing Suite** | 10-Point Suite (`tests/e2e-ai-ui-install.ps1`) | Shell Verification Script | Zsh Verification Script |
+| **Desktop Launcher** | `.lnk` Shortcuts (Desktop & Start Menu) | `.desktop` Launchers (`Terminal=false`) | macOS Application Bundle (`Info.plist`) |
+| **E2E Testing Suite** | 15-Point Suite (`tests/e2e-ai-ui-install.ps1`) | Shell Verification Script | Zsh Verification Script |
+
 
 ---
 

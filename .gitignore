@@ -76,4 +76,7 @@ antigravity_resume_task.json
 
 
 # GitMap & Task Persistence
-.gitmap/
+.gitmap/*
+!.gitmap/release/
+.gitmap/release/*
+!.gitmap/release/latest.json

@@ -6,6 +6,7 @@
 | 21 | [21-os-autologin-and-agy-modularization](./21-os-autologin-and-agy-modularization/01-overview.md) | `active` | Cross-OS auto-login for Windows Server, Windows 11, and Ubuntu, plus AGY Python modularization with shared engine |
 | 22 | [22-deep-uninstaller-suite](./22-deep-uninstaller-suite/01-overview.md) | `active` | Antigravity deep uninstaller with project/conversation state backup, AGM uninstaller, Windows Copilot purge, Chris Titus Edge removal, and enhanced dev-clean |
 | 23 | [23-vmware-codex-claude-ui](./23-vmware-codex-claude-ui/01-vmware-installer-spec.md) | `active` | VMware installation improvements (Windows & Linux) and cross-platform Codex UI & Claude Code Desktop UI |
+| 24 | [24-vmware-clear-help-codex-plot](./24-vmware-clear-help-codex-plot/01-clear-and-help-routing-spec.md) | `active` | VMware host verification, clear commands harmonization, GitMap subcommand help, and Codex/Plot UI release v1.56.0 |
 
 ## Commands
 

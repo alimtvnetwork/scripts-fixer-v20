@@ -91,7 +91,7 @@ while ($i -lt $Argv.Count) {
         '^--passphrase$'   { $i++; $passphrase = $Argv[$i] }
         '^--no-passphrase$' { $hasNoPass = $true }
         '^--ask$'          { $hasAsk = $true }
-        '^--force$'        { $hasForce = $true }
+        '^(--force|-f|--yes|-y|--confirm)$' { $hasForce = $true }
         '^--dry-run$'      { $hasDryRun = $true }
         '^--' {
             Write-Log "Unknown flag: '$a' (failure: see --help)" -Level "fail"
@@ -163,8 +163,14 @@ if ($hasAsk -and -not $hasNoPass -and [string]::IsNullOrEmpty($passphrase)) {
 
 # ---- Idempotency check ----
 if ((Test-Path -LiteralPath $out) -and -not $hasForce) {
-    Write-Log "Private key already exists at exact path: '$out' (failure: pass --force to overwrite, or pick a different --out)" -Level "fail"
-    Save-LogFile -Status "fail"; exit 1
+    Write-Host "  ⚠ Private key already exists at: $out" -ForegroundColor Yellow
+    $reply = Read-Host "  Overwrite and backup existing key? [y/N]"
+    if ($reply -match '^(y|yes)$') {
+        $hasForce = $true
+    } else {
+        Write-Log "Private key already exists at exact path: '$out' (generation canceled)" -Level "warn"
+        Save-LogFile -Status "ok"; exit 0
+    }
 }
 
 # ---- Ensure .ssh dir exists with restrictive ACL ----
@@ -204,6 +210,13 @@ $pp = if ($hasNoPass -or [string]::IsNullOrEmpty($passphrase)) { "" } else { $pa
 $kgArgs = @("-t", $type, "-f", $out, "-C", $comment, "-N", $pp, "-q")
 if ($bits) { $kgArgs += @("-b", $bits.ToString()) }
 if ($hasForce -and (Test-Path -LiteralPath $out)) {
+    $bakTime = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+    $bakPath = "${out}.bak.${bakTime}"
+    Copy-Item -LiteralPath $out -Destination $bakPath -Force -ErrorAction SilentlyContinue
+    if (Test-Path -LiteralPath "$out.pub") {
+        Copy-Item -LiteralPath "$out.pub" -Destination "${bakPath}.pub" -Force -ErrorAction SilentlyContinue
+    }
+    Write-Log "Backed up existing SSH key to: $bakPath" -Level "info"
     Remove-Item -LiteralPath $out -Force -ErrorAction SilentlyContinue
     Remove-Item -LiteralPath "$out.pub" -Force -ErrorAction SilentlyContinue
 }

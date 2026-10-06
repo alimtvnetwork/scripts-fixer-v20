@@ -19,6 +19,13 @@ if ($hasInstallPaths) {
     . $installPathsScript
 }
 
+$pathUtilsScript = Join-Path $sharedDir "path-utils.ps1"
+$hasPathUtils = Test-Path $pathUtilsScript
+
+if ($hasPathUtils) {
+    . $pathUtilsScript
+}
+
 function Invoke-SafeFileError {
     param([hashtable]$ErrorParams)
 
@@ -40,13 +47,15 @@ function Ensure-DirectoryExists {
 
     $isTargetPresent = Test-Path $TargetDirectory
 
-    if (-not $isTargetPresent) {
-        try {
-            New-Item -ItemType Directory -Path $TargetDirectory -Force | Out-Null
-        } catch {
-            $err = @{ FilePath = $TargetDirectory; Operation = "create-directory"; Reason = $_.Exception.Message }
-            Invoke-SafeFileError -ErrorParams $err
-        }
+    if ($isTargetPresent) {
+        return @{ IsSuccess = $true; DirectoryPath = $TargetDirectory }
+    }
+
+    try {
+        New-Item -ItemType Directory -Path $TargetDirectory -Force | Out-Null
+    } catch {
+        $err = @{ FilePath = $TargetDirectory; Operation = "create-directory"; Reason = $_.Exception.Message }
+        Invoke-SafeFileError -ErrorParams $err
     }
 
     return @{
@@ -56,32 +65,19 @@ function Ensure-DirectoryExists {
 }
 
 function Find-ClaudeDesktopExecutable {
-    $primaryPath = Join-Path $env:LOCALAPPDATA "Programs\Claude\Claude.exe"
-    $hasPrimary = Test-Path $primaryPath
+    $candidates = @(
+        (Join-Path $env:LOCALAPPDATA "Programs\Claude\Claude.exe"),
+        "C:\Program Files\Anthropic\Claude\Claude.exe",
+        (Join-Path $env:LOCALAPPDATA "AnthropicClaude\claude.exe"),
+        "C:\Users\Administrator\AppData\Local\AnthropicClaude\claude.exe"
+    )
 
-    if ($hasPrimary) {
-        return @{ IsFound = $true; ExecutablePath = $primaryPath }
-    }
+    foreach ($path in $candidates) {
+        $hasPath = Test-Path $path
 
-    $systemPath = "C:\Program Files\Anthropic\Claude\Claude.exe"
-    $hasSystem = Test-Path $systemPath
-
-    if ($hasSystem) {
-        return @{ IsFound = $true; ExecutablePath = $systemPath }
-    }
-
-    $squirrelPath = Join-Path $env:LOCALAPPDATA "AnthropicClaude\claude.exe"
-    $hasSquirrel = Test-Path $squirrelPath
-
-    if ($hasSquirrel) {
-        return @{ IsFound = $true; ExecutablePath = $squirrelPath }
-    }
-
-    $adminSquirrel = "C:\Users\Administrator\AppData\Local\AnthropicClaude\claude.exe"
-    $hasAdminSquirrel = Test-Path $adminSquirrel
-
-    if ($hasAdminSquirrel) {
-        return @{ IsFound = $true; ExecutablePath = $adminSquirrel }
+        if ($hasPath) {
+            return @{ IsFound = $true; ExecutablePath = $path }
+        }
     }
 
     return @{ IsFound = $false; ExecutablePath = $null }
@@ -129,6 +125,42 @@ function Install-ClaudeDesktopViaDownload {
     }
 }
 
+function Find-SquirrelClaudeDir {
+    $candidates = @(
+        (Join-Path $env:LOCALAPPDATA "AnthropicClaude"),
+        "C:\Users\Administrator\AppData\Local\AnthropicClaude"
+    )
+
+    foreach ($dir in $candidates) {
+        $exe = Join-Path $dir "claude.exe"
+        $hasExe = Test-Path $exe
+
+        if ($hasExe) {
+            return $dir
+        }
+    }
+
+    return $null
+}
+
+function Sync-ClaudeFiles {
+    param(
+        [string]$SourceDir,
+        [string]$TargetDir
+    )
+
+    Ensure-DirectoryExists -TargetDirectory $TargetDir | Out-Null
+
+    try {
+        Copy-Item -Path "$SourceDir\*" -Destination $TargetDir -Recurse -Force | Out-Null
+    } catch {
+        $err = @{ FilePath = $TargetDir; Operation = "sync-claude-files"; Reason = $_.Exception.Message }
+        Invoke-SafeFileError -ErrorParams $err
+    }
+
+    return @{ IsSuccess = (Test-Path (Join-Path $TargetDir "claude.exe")) }
+}
+
 function Ensure-DefaultClaudeDirectory {
     $defaultClaudeDir = Join-Path $env:LOCALAPPDATA "Programs\Claude"
     $defaultClaudeExe = Join-Path $defaultClaudeDir "Claude.exe"
@@ -138,37 +170,11 @@ function Ensure-DefaultClaudeDirectory {
         return @{ IsSuccess = $true; TargetPath = $defaultClaudeExe }
     }
 
-    $squirrelDir = Join-Path $env:LOCALAPPDATA "AnthropicClaude"
-    $squirrelExe = Join-Path $squirrelDir "claude.exe"
-    $hasSquirrelExe = Test-Path $squirrelExe
+    $squirrelDir = Find-SquirrelClaudeDir
+    $hasSquirrelDir = -not [string]::IsNullOrWhiteSpace($squirrelDir)
 
-    if (-not $hasSquirrelExe) {
-        $adminSquirrelDir = "C:\Users\Administrator\AppData\Local\AnthropicClaude"
-        $adminSquirrelExe = Join-Path $adminSquirrelDir "claude.exe"
-        $hasAdminSquirrel = Test-Path $adminSquirrelExe
-
-        if ($hasAdminSquirrel) {
-            $squirrelDir = $adminSquirrelDir
-            $squirrelExe = $adminSquirrelExe
-            $hasSquirrelExe = $true
-        }
-    }
-
-    if ($hasSquirrelExe) {
-        $programsDir = Join-Path $env:LOCALAPPDATA "Programs"
-        Ensure-DirectoryExists -TargetDirectory $programsDir | Out-Null
-        $hasExistingDir = Test-Path $defaultClaudeDir
-
-        if (-not $hasExistingDir) {
-            try {
-                New-Item -ItemType Junction -Path $defaultClaudeDir -Target $squirrelDir -Force | Out-Null
-            } catch {
-                Ensure-DirectoryExists -TargetDirectory $defaultClaudeDir | Out-Null
-                Copy-Item -Path "$squirrelDir\*" -Destination $defaultClaudeDir -Recurse -Force -ErrorAction SilentlyContinue | Out-Null
-            }
-        } else {
-            Copy-Item -Path $squirrelExe -Destination $defaultClaudeExe -Force -ErrorAction SilentlyContinue | Out-Null
-        }
+    if ($hasSquirrelDir) {
+        Sync-ClaudeFiles -SourceDir $squirrelDir -TargetDir $defaultClaudeDir | Out-Null
     }
 
     $isDefaultReady = Test-Path $defaultClaudeExe
@@ -224,6 +230,32 @@ function Write-ClaudeShims {
     }
 }
 
+function Get-ClaudeIconLocation {
+    param([string]$TargetPath)
+
+    $defaultDir = Join-Path $env:LOCALAPPDATA "Programs\Claude"
+    $appIco = Join-Path $defaultDir "app.ico"
+    $hasIco = Test-Path $appIco
+
+    if ($hasIco) {
+        return $appIco
+    }
+
+    return "$TargetPath,0"
+}
+
+function Get-ShortcutWorkingDirectory {
+    param([hashtable]$Params)
+
+    $hasExplicitWorkDir = $Params.ContainsKey("WorkingDirectory") -and -not [string]::IsNullOrWhiteSpace($Params.WorkingDirectory)
+
+    if ($hasExplicitWorkDir) {
+        return $Params.WorkingDirectory
+    }
+
+    return (Split-Path -Parent $Params.TargetPath)
+}
+
 function New-ClaudeShortcut {
     param([hashtable]$ShortcutParams)
 
@@ -233,6 +265,8 @@ function New-ClaudeShortcut {
         $wsh = New-Object -ComObject WScript.Shell
         $shortcut = $wsh.CreateShortcut($ShortcutParams.LinkPath)
         $shortcut.TargetPath = $ShortcutParams.TargetPath
+        $shortcut.WorkingDirectory = Get-ShortcutWorkingDirectory -Params $ShortcutParams
+        $shortcut.IconLocation = Get-ClaudeIconLocation -TargetPath $ShortcutParams.TargetPath
         $shortcut.Description = $ShortcutParams.Description
         $shortcut.Save()
         [System.Runtime.InteropServices.Marshal]::ReleaseComObject($shortcut) | Out-Null
@@ -296,24 +330,8 @@ function Get-StartMenuCandidates {
 function Update-ClaudePath {
     param([string]$InstallDir)
 
-    $userPath = [Environment]::GetEnvironmentVariable("PATH", "User")
-    $hasUserPath = -not [string]::IsNullOrWhiteSpace($userPath)
-
-    if (-not $hasUserPath) {
-        [Environment]::SetEnvironmentVariable("PATH", $InstallDir, "User")
-        $env:PATH = "$($env:PATH);$InstallDir"
-
-        return @{ IsSuccess = $true; InstallDir = $InstallDir }
-    }
-
-    $pathItems = $userPath -split ';'
-    $hasPathMatch = $pathItems -contains $InstallDir
-
-    if (-not $hasPathMatch) {
-        $newPath = "$userPath;$InstallDir"
-        [Environment]::SetEnvironmentVariable("PATH", $newPath, "User")
-        $env:PATH = "$($env:PATH);$InstallDir"
-    }
+    Add-ToMachinePath -Directory $InstallDir | Out-Null
+    Add-ToUserPath -Directory $InstallDir | Out-Null
 
     return @{ IsSuccess = $true; InstallDir = $InstallDir }
 }
@@ -358,16 +376,31 @@ function Install-ClaudeCodeUI {
 
     Install-ClaudeCodeNpm | Out-Null
 
-    $shimParams = @{ InstallDir = $userBinDir; DesktopExe = $activeExe }
-    $uiShimResult = Write-ClaudeShims -ShimParams $shimParams
+    $userShimParams = @{ InstallDir = $userBinDir; DesktopExe = $activeExe }
+    $uiShimResult = Write-ClaudeShims -ShimParams $userShimParams
 
+    $progShimParams = @{ InstallDir = $defaultDir; DesktopExe = $activeExe }
+    Write-ClaudeShims -ShimParams $progShimParams | Out-Null
+
+    $workDir = Split-Path -Parent $activeExe
     $desktopCandidates = Get-DesktopCandidates
 
     foreach ($candidateDir in $desktopCandidates) {
         Ensure-DirectoryExists -TargetDirectory $candidateDir | Out-Null
-        $shortcutParamsUi = @{ TargetPath = $activeExe; LinkPath = (Join-Path $candidateDir "Claude Code UI.lnk"); Description = "Claude Code Desktop GUI Application" }
+        $shortcutParamsUi = @{
+            TargetPath = $activeExe
+            WorkingDirectory = $workDir
+            LinkPath = (Join-Path $candidateDir "Claude Code UI.lnk")
+            Description = "Claude Code Desktop GUI Application"
+        }
         New-ClaudeShortcut -ShortcutParams $shortcutParamsUi | Out-Null
-        $shortcutParamsLegacy = @{ TargetPath = $activeExe; LinkPath = (Join-Path $candidateDir "Claude Code.lnk"); Description = "Claude Code Desktop GUI Application" }
+
+        $shortcutParamsLegacy = @{
+            TargetPath = $activeExe
+            WorkingDirectory = $workDir
+            LinkPath = (Join-Path $candidateDir "Claude Code.lnk")
+            Description = "Claude Code Desktop GUI Application"
+        }
         New-ClaudeShortcut -ShortcutParams $shortcutParamsLegacy | Out-Null
     }
 
@@ -375,12 +408,18 @@ function Install-ClaudeCodeUI {
 
     foreach ($menuDir in $startMenuCandidates) {
         Ensure-DirectoryExists -TargetDirectory $menuDir | Out-Null
-        $menuParams = @{ TargetPath = $activeExe; LinkPath = (Join-Path $menuDir "Claude Code UI.lnk"); Description = "Claude Code Desktop GUI Application" }
+        $menuParams = @{
+            TargetPath = $activeExe
+            WorkingDirectory = $workDir
+            LinkPath = (Join-Path $menuDir "Claude Code UI.lnk")
+            Description = "Claude Code Desktop GUI Application"
+        }
         New-ClaudeShortcut -ShortcutParams $menuParams | Out-Null
     }
 
     Update-ClaudePath -InstallDir $userBinDir | Out-Null
-    Update-ClaudePath -InstallDir $defaultDir | Out-Null
+    Remove-FromUserPath -Directory $defaultDir | Out-Null
+    Remove-FromMachinePath -Directory $defaultDir | Out-Null
 
     Write-Host "Claude Code UI installed successfully (Desktop GUI + CLI)." -ForegroundColor Green
 

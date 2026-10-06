@@ -237,6 +237,40 @@ To guarantee zero-interaction unattended provisioning across Windows Server envi
    ```
    Detecting `VMAuthdService` confirms that VMware core system drivers and background authentication hooks have successfully registered with the Windows Service Control Manager (SCM).
 
+### 7.3 VMware Silent Uninstallation Lifecycle (`scripts/66-install-vmware/uninstall.ps1`)
+To ensure clean removal and idempotency across CI/CD workers and test environments, `scripts/66-install-vmware/uninstall.ps1` implements a multi-tier silent uninstallation workflow:
+
+1. **Service Teardown**:
+   Prior to uninstallation, all active VMware services are stopped gracefully:
+   - `VMAuthdService` (VMware Authorization Service)
+   - `VMnetDHCP` (VMware Virtual Network DHCP Daemon)
+   - `VMware NAT Service` (VMware Network Address Translation Daemon)
+   - `VMUSBArbService` (VMware USB Arbitration Service)
+
+2. **Registry Detection & Silent MSI Invocation**:
+   Inspects standard 64-bit and 32-bit uninstall registries:
+   - `HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*`
+   - `HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\*`
+   Matches DisplayNames containing `VMware Workstation` or `VMware Player`, extracts the Product GUID, and executes silent uninstallation:
+   ```powershell
+   msiexec.exe /x "{PRODUCT-GUID}" /qn REBOOT=ReallySuppress /norestart
+   ```
+
+3. **Package Manager Uninstallation Fallbacks**:
+   - Winget: `winget uninstall VMware.WorkstationPro --silent --accept-source-agreements`
+   - Chocolatey: `choco uninstall vmwareworkstation --yes --remove-dependencies` (or `vmware-workstation-player`)
+
+4. **Temp Artifacts Cleanup & CODE RED Audit**:
+   - Removes any lingering installer bundles or executables: `%TEMP%\vmware-installer.exe`, `%TEMP%\vmware*.exe`, `%TEMP%\vmware*.bundle`.
+   - Emits structured coordinates via `Write-InstallPaths -Action "Uninstall"`.
+   - Logs failures with exact absolute path and error reason via `Write-FileError`.
+
+### 7.4 Broadcom Personal Use License Mode Detection
+VMware Workstation Pro 17.5.2+ and 17.6.0 are officially free for personal use under Broadcom licensing. The installer script detects and configures personal use mode via `Test-BroadcomPersonalUse`:
+- Verifies `$env:VMWARE_PERSONAL_USE = "1"` or inspects `HKLM:\SOFTWARE\VMware, Inc.\VMware Workstation` for existing commercial serial keys.
+- If no commercial license key is present, the script activates Broadcom Personal Use mode, suppressing licensing error gates and logging structured confirmation.
+- Direct download mirrors prioritize official Broadcom CDN endpoints (17.6.0 build 24238078 and 17.5.2 build 23775571).
+
 ---
 
 ## 8. Linux Script Specification (`scripts/os/ubuntu/install-vmware.sh`)
@@ -246,7 +280,8 @@ To guarantee zero-interaction unattended provisioning across Windows Server envi
 - `ensure_prerequisites`: Installs `build-essential`, `linux-headers-$(uname -r)`, and core compilation toolchains.
 - `download_bundle`: Fetches the `.bundle` installer with fallback mirror rotation and checksum validation.
 - `run_bundle_installer`: Executes `./vmware-installer.bundle --console --required --eulas-agreed`.
-- `build_kernel_modules`: Executes `vmware-modconfig --console --install-all` to compile and link `vmmon` and `vmnet` kernel modules.
+- `build_kernel_modules`: Executes `vmware-modconfig --console --install-all` to compile and link `vmmon` and `vmnet` kernel modules, with automatic community patch fallback.
+- `fetch_community_patch` / `compile_community_patch`: Downloads and compiles `vmware-host-modules` headers for Linux kernels >= 6.5.
 - `execute_vmware_setup`: Orchestrates bundle execution, kernel compilation, and systemd service startup.
 - `validate_vmware_installation`: Verifies binaries `/usr/bin/vmware` and library root `/usr/lib/vmware`.
 
@@ -263,14 +298,27 @@ sudo systemctl enable --now vmware-USBArbitrator.service
 - **`vmware-USBArbitrator.service`**: Manages dynamic USB device arbitration and passthrough between host and guest virtual machines.
 - **Service Verification**: Checks active state via `systemctl is-active --quiet vmware.service` and `systemctl is-active --quiet vmware-USBArbitrator.service`.
 
+### 8.3 Modern Linux Kernel Module Compilation Fallback (Kernels >= 6.5)
+On modern Linux kernels (kernel version >= 6.5, standard in Ubuntu 22.04.4 LTS and 24.04 LTS), stock `vmware-modconfig --console --install-all` can fail due to upstream kernel API changes in timer and memory subsystems.
+To ensure zero compilation failures:
+1. `build_kernel_modules` attempts stock `vmware-modconfig` first.
+2. Upon failure, it invokes `build_community_modules` which:
+   - Downloads the matching patch release from `https://github.com/mkubecek/vmware-host-modules/archive/refs/heads/workstation-${version}.tar.gz`.
+   - Compiles patched `vmmon` and `vmnet` drivers cleanly against the running kernel headers.
+   - Installs modules via `sudo make install`, updates module dependencies with `sudo depmod -a`, and loads drivers using `modprobe`.
+
 ---
 
-## 9. Verification & Acceptance Criteria
+## 9. Verification & Acceptance Criteria (15-Point Suite Integration)
 
 1. **Path Integrity**: `Write-InstallPaths` fires with explicit Source, Temp, and Target coordinates.
 2. **Directory Compliance**: Binary verified in `${env:ProgramFiles(x86)}\VMware\VMware Workstation` or `${env:ProgramFiles}\VMware\VMware Workstation` (Windows) and `/usr/bin/vmware` (Linux).
 3. **Broadcom Silent Execution**: Unattended installer executes using `/s /v"/qn EULAS_AGREED=1 AUTOSOFTWAREUPDATE=0 REBOOT=ReallySuppress"` with zero interactive prompts.
-4. **VMAuthdService Verification**: Windows installer verifies presence of `VMAuthdService` in the Windows Service Control Manager.
-5. **Ubuntu Systemd Service Startup**: Linux installer enables and starts `vmware.service` and `vmware-USBArbitrator.service` via `systemctl enable --now`.
-6. **Fallback Verification**: Simulated broken direct download URL triggers Chocolatey fallback cleanly.
-7. **Log Recording**: Structured event recorded in SQLite tracking database (`package`, `vmware`, `17.x`).
+4. **VMAuthdService Verification (Check 11)**: Windows installer verifies presence of `VMAuthdService` in the Windows Service Control Manager.
+5. **Modern Kernel Compatibility**: Linux installer compiles kernel modules on Linux kernels >= 6.5 via stock `vmware-modconfig` or `vmware-host-modules` fallback.
+6. **Ubuntu Systemd Service Startup**: Linux installer enables and starts `vmware.service` and `vmware-USBArbitrator.service` via `systemctl enable --now`.
+7. **Fallback Verification**: Simulated broken direct download URL triggers Chocolatey fallback cleanly.
+8. **Uninstall Lifecycle (Check 15)**: `scripts/66-install-vmware/uninstall.ps1` stops services, removes registry components silently, and purges temporary files.
+9. **Log Recording**: Structured event recorded in SQLite tracking database (`package`, `vmware`, `17.x`).
+10. **15-Point Live E2E Integration**: Validated as part of `tests/e2e-ai-ui-install.ps1` (Checks 1-2 for directory and version integrity, Check 11 for service auth, Check 15 for lifecycle).
+
