@@ -69,6 +69,8 @@ show_main_help() {
     echo -e "  ${ACCENT}Usage:${TEXT}"
     echo -e ""
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install <keywords>" "Install by keyword / ID / combination"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh update <agy|ide|all>" "Update tool or system (e.g. ./run.sh update agy)"
+    printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh agy <action>" "Antigravity IDE & CLI helper (update, install, check)"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install ls" "List all previously installed items"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh install tar <file|url>" "Intelligent archive installer (.tar.gz, .zip, .gz)"
     printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh os <action>" "OS level actions (update, update-all)"
@@ -532,6 +534,53 @@ case "$COMMAND" in
         show_footer
         exit 0
         ;;
+    "update")
+        FIRST_SUB=$(echo "$ARGS" | awk '{print $1}')
+        REST_SUB=$(echo "$ARGS" | awk '{$1=""; print $0}' | sed -e 's/^[[:space:]]*//')
+        if [[ "$FIRST_SUB" == "agy" || "$FIRST_SUB" == "antigravity" || "$FIRST_SUB" == "ide" || "$FIRST_SUB" == "69" ]]; then
+            if [ -f "$REPO_ROOT/scripts-linux/69-install-antigravity/run.sh" ]; then
+                bash "$REPO_ROOT/scripts-linux/69-install-antigravity/run.sh" update $REST_SUB
+            else
+                bash "$REPO_ROOT/scripts/os/ubuntu/install-antigravity.sh" --update $REST_SUB
+            fi
+            show_footer
+            exit $?
+        elif [[ "$FIRST_SUB" == "all" || "$FIRST_SUB" == "os" || "$FIRST_SUB" == "system" ]]; then
+            bash "$REPO_ROOT/scripts/os/ubuntu/update-all.sh"
+            show_footer
+            exit $?
+        elif [[ "$FIRST_SUB" == "agm" || "$FIRST_SUB" == "antigravity-manager" || "$FIRST_SUB" == "manager" || "$FIRST_SUB" == "68" ]]; then
+            bash "$REPO_ROOT/scripts/os/ubuntu/install-antigravity-manager.sh" --update 2>/dev/null || bash "$REPO_ROOT/scripts/os/ubuntu/install-antigravity-manager.sh"
+            show_footer
+            exit $?
+        elif [[ -z "$FIRST_SUB" || "$FIRST_SUB" == "help" || "$FIRST_SUB" == "-h" || "$FIRST_SUB" == "--help" ]]; then
+            echo -e "  ${ACCENT}Update Command Usage:${TEXT}"
+            printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh update agy" "Update Google Antigravity Desktop IDE & agy CLI"
+            printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh update ide" "Alias for updating Antigravity Desktop IDE"
+            printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh update all" "Run full OS system package update (apt upgrade)"
+            printf "    %-44s ${MUTED}%s${TEXT}\n" "./run.sh update agm" "Update Antigravity Manager GUI"
+            show_footer
+            exit 0
+        else
+            echo -e "  ${ERROR}Unknown update target: $FIRST_SUB${TEXT}"
+            echo -e "  Available: agy, ide, agm, all, os"
+            show_footer
+            exit 1
+        fi
+        ;;
+
+    "agy"|"antigravity")
+        FIRST_SUB=$(echo "$ARGS" | awk '{print $1}')
+        REST_SUB=$(echo "$ARGS" | awk '{$1=""; print $0}' | sed -e 's/^[[:space:]]*//')
+        if [ -f "$REPO_ROOT/scripts-linux/69-install-antigravity/run.sh" ]; then
+            bash "$REPO_ROOT/scripts-linux/69-install-antigravity/run.sh" $ARGS
+        else
+            bash "$REPO_ROOT/scripts/os/ubuntu/install-antigravity.sh" $ARGS
+        fi
+        show_footer
+        exit $?
+        ;;
+
     "fix-antigravity"|"fix-icon")
         bash scripts/os/ubuntu/fix-antigravity-desktop.sh "$ARGS"
         show_footer

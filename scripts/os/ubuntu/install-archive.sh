@@ -500,7 +500,13 @@ fi
 
 cat <<EOF > "$WRAPPER_PATH"
 #!/bin/bash
-DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
+REAL_SOURCE="\$(readlink -f "\${BASH_SOURCE[0]}" 2>/dev/null || realpath "\${BASH_SOURCE[0]}" 2>/dev/null || echo "\${BASH_SOURCE[0]}")"
+DIR="\$(cd "\$(dirname "\$REAL_SOURCE")" && pwd)"
+
+if [ "\$DIR" = "\$HOME/.local/bin" ] || [ "\$DIR" = "/usr/local/bin" ] || [ "\$DIR" = "/usr/bin" ]; then
+    [ -d "$TARGET_DIR" ] && DIR="$TARGET_DIR"
+fi
+
 export LD_LIBRARY_PATH="\$DIR:\$DIR/lib:\${LD_LIBRARY_PATH:-}"
 EXEC="\$DIR/$REL_BIN"
 

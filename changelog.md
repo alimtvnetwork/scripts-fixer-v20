@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.59.0] - 2026-10-12
+
+### Added
+- scripts-linux - support top-level update agy and agy update commands
+
+---
+
 ## [v1.58.0] - 2026-10-12
 
 ### Added

@@ -171,7 +171,7 @@ verb_clean() {
 case "${1:-help}" in
   help|--help|-help|-h) show_help;;
   install)   verb_install;;
-  update)    verb_update "$@";;
+  update)    verb_update "${@:2}";;
   check)     verb_check;;
   repair)    verb_repair;;
   uninstall) verb_uninstall;;

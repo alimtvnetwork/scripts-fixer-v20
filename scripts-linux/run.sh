@@ -37,7 +37,7 @@ fi
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    install|check|repair|uninstall|health|repair-all) VERB="$1"; shift ;;
+    install|update|check|repair|uninstall|health|repair-all) VERB="$1"; shift ;;
     --list)        VERB="list"; shift ;;
     -I)            ONLY_ID="$2"; shift 2 ;;
     --parallel)    PARALLEL="$2"; shift 2 ;;
@@ -349,10 +349,13 @@ EOF
         if [ "$VERB" = "install" ] && { [ "$1" = "agy" ] || [ "$1" = "antigravity" ]; }; then
             VERB="agy-passthrough"; shift; AGY_REST=("install" "$@"); break
         fi
+        if [ "$VERB" = "update" ] && { [ "$1" = "agy" ] || [ "$1" = "antigravity" ]; }; then
+            VERB="agy-passthrough"; shift; AGY_REST=("update" "$@"); break
+        fi
         if [ "$VERB" = "uninstall" ] && { [ "$1" = "agy" ] || [ "$1" = "antigravity" ]; }; then
             VERB="agy-passthrough"; shift; AGY_REST=("uninstall" "$@"); break
         fi
-        if [ "$VERB" = "install" ] || [ "$VERB" = "uninstall" ]; then
+        if [ "$VERB" = "install" ] || [ "$VERB" = "update" ] || [ "$VERB" = "uninstall" ]; then
             if [ "$1" = "vmware" ]; then
                 VERB="os-tool-passthrough"; OS_TOOL="vmware"; shift; OS_TOOL_REST=("$@"); break
             fi
