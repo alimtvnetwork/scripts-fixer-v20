@@ -88,14 +88,45 @@ ensure_prereqs() {
 
 fetch_ide_url() {
     local arch="$1"
+    local manifest_url="https://antigravity-hub-auto-updater-974169037036.us-central1.run.app/manifest/latest-x64-linux.yml"
+    local fallback_ver="2.22.0"
+    local fallback_build="5446056071266304"
+    local target_platform="linux-x64"
 
     if [ "$arch" = "arm64" ] || [ "$arch" = "arm" ] || [ "$arch" = "aarch64" ]; then
-        echo "https://storage.googleapis.com/antigravity-public/antigravity-hub/2.19.1-6046815158665216/linux-arm/Antigravity.tar.gz"
-        return
+        target_platform="linux-arm"
     fi
 
-    echo "https://storage.googleapis.com/antigravity-public/antigravity-hub/2.19.1-6046815158665216/linux-x64/Antigravity.tar.gz"
+    local manifest_content
+    manifest_content=$(curl -s --connect-timeout 3 "$manifest_url" 2>/dev/null || true)
+
+    if [ -n "$manifest_content" ]; then
+        local live_ver=""
+        local live_build=""
+        while IFS= read -r line; do
+            case "$line" in
+                version:*)
+                    live_ver="${line#version:}"
+                    live_ver="$(echo "$live_ver" | tr -d ' "'\''\r')"
+                    ;;
+                *antigravity-hub/*)
+                    local part="${line#*antigravity-hub/}"
+                    local tag="${part%%/*}"
+                    live_build="${tag#*-}"
+                    live_build="$(echo "$live_build" | tr -d ' "'\''\r')"
+                    ;;
+            esac
+        done <<< "$manifest_content"
+
+        if [ -n "$live_ver" ] && [ -n "$live_build" ]; then
+            echo "https://storage.googleapis.com/antigravity-public/antigravity-hub/${live_ver}-${live_build}/${target_platform}/Antigravity.tar.gz"
+            return
+        fi
+    fi
+
+    echo "https://storage.googleapis.com/antigravity-public/antigravity-hub/${fallback_ver}-${fallback_build}/${target_platform}/Antigravity.tar.gz"
 }
+
 
 clean_existing_installation() {
     echo -e "  ${ACCENT}[FORCE] Wiping previous Antigravity installations for clean re-install...${TEXT}"
