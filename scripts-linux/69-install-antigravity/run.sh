@@ -73,7 +73,7 @@ verb_update() {
 
   if [ -f "$ub_script" ]; then
     log_info "[69] Executing ubuntu installer: $ub_script"
-    if bash "$ub_script" --update --force "$@"; then
+    if bash "$ub_script" --update "$@"; then
       log_ok "[69] Antigravity updated"
       mkdir -p "$ROOT/.installed"
       touch "$INSTALLED_MARK"

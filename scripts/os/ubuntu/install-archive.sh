@@ -727,7 +727,7 @@ if [ "$IS_GUI" = true ]; then
 
     # Clean up conflicting / duplicate desktop files
     if [ "$APP_NAME" = "antigravity" ] || [ "$APP_NAME" = "antigravity-ide" ]; then
-        local old_launchers=(
+        old_launchers=(
             "$DESKTOP_DIR/antigravity-ide.desktop"
             "$DESKTOP_DIR/Google Antigravity.desktop"
             "$DESKTOP_DIR/Google-Antigravity.desktop"
@@ -743,7 +743,7 @@ if [ "$IS_GUI" = true ]; then
             rm -f "$old_l" 2>/dev/null || true
         done
 
-        local sys_old_launchers=(
+        sys_old_launchers=(
             "/usr/share/applications/antigravity-ide.desktop"
             "/usr/share/applications/Google Antigravity.desktop"
             "/usr/share/applications/Google-Antigravity.desktop"

@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.60.0] - 2026-10-12
+
+### Added
+- ubuntu - safe in-place ide update and fix installer local scope
+
+---
+
 ## [v1.59.0] - 2026-10-12
 
 ### Added

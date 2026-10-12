@@ -9,6 +9,7 @@ ERROR='\033[1;31m'
 TEXT='\033[0m'
 
 IS_FORCE=false
+IS_UPDATE=false
 IS_DOWNLOAD_MUST=false
 
 for arg in "$@"; do
@@ -19,6 +20,7 @@ for arg in "$@"; do
         echo -e "  ${ACCENT}Usage:${TEXT}"
         echo -e "    ./run.sh install agy"
         echo -e "    ./run.sh install antigravity"
+        echo -e "    ./run.sh update agy"
         echo -e ""
         echo -e "  ${ACCENT}Options & Flags:${TEXT}"
         echo -e "    --force, -f          Force re-installation (clean reinstall, reusing cached downloads)"
@@ -28,8 +30,12 @@ for arg in "$@"; do
         exit 0
     fi
 
-    if [ "$arg" = "--force" ] || [ "$arg" = "-f" ] || [ "$arg" = "force" ] || [ "$arg" = "--update" ] || [ "$arg" = "-u" ] || [ "$arg" = "update" ]; then
+    if [ "$arg" = "--force" ] || [ "$arg" = "-f" ] || [ "$arg" = "force" ]; then
         IS_FORCE=true
+    fi
+
+    if [ "$arg" = "--update" ] || [ "$arg" = "-u" ] || [ "$arg" = "update" ]; then
+        IS_UPDATE=true
     fi
 
     if [ "$arg" = "--download-must" ] || [ "$arg" = "--redownload" ] || [ "$arg" = "--force-download" ] || [ "$arg" = "-fd" ]; then
@@ -37,8 +43,12 @@ for arg in "$@"; do
     fi
 done
 
-if [ "${FORCE:-0}" = "1" ] || [ "${IS_FORCE_INSTALL:-false}" = "true" ] || [ "${IS_FORCE:-false}" = "true" ] || [ "${UPDATE:-0}" = "1" ] || [ "${IS_UPDATE:-false}" = "true" ]; then
+if [ "${FORCE:-0}" = "1" ] || [ "${IS_FORCE_INSTALL:-false}" = "true" ]; then
     IS_FORCE=true
+fi
+
+if [ "${UPDATE:-0}" = "1" ] || [ "${IS_UPDATE:-false}" = "true" ]; then
+    IS_UPDATE=true
 fi
 
 if [ "${DOWNLOAD_MUST:-0}" = "1" ] || [ "${IS_DOWNLOAD_MUST:-false}" = "true" ]; then
@@ -886,6 +896,8 @@ main() {
 
     if [ "$IS_FORCE" = "true" ]; then
         clean_existing_installation
+    elif [ "$IS_UPDATE" = "true" ]; then
+        echo -e "  ${SECONDARY}[UPDATE] Performing in-place update of Google Antigravity IDE & CLI...${TEXT}"
     elif command -v antigravity &>/dev/null && [ -x "$HOME/.local/share/antigravity-ide/antigravity" ]; then
         echo -e "  ${PRIMARY}[  OK  ] Google Antigravity is already installed (use --force or --update to reinstall).${TEXT}"
         return 0
