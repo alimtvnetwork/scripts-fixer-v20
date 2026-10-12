@@ -59,6 +59,33 @@ verb_install() {
   return 1
 }
 
+verb_update() {
+  write_install_paths \
+    --tool   "antigravity" \
+    --source "https://storage.googleapis.com/antigravity-public (official archive)" \
+    --temp   "/tmp/scripts-fixer-downloads/Antigravity.tar.gz" \
+    --target "$HOME/.local/bin/agy"
+
+  log_info "[69] Updating Antigravity"
+  rm -f "$INSTALLED_MARK"
+
+  local ub_script="$REPO_ROOT/scripts/os/ubuntu/install-antigravity.sh"
+
+  if [ -f "$ub_script" ]; then
+    log_info "[69] Executing ubuntu installer: $ub_script"
+    if bash "$ub_script" --update --force "$@"; then
+      log_ok "[69] Antigravity updated"
+      mkdir -p "$ROOT/.installed"
+      touch "$INSTALLED_MARK"
+      return 0
+    fi
+  fi
+
+  log_err "[69] Antigravity update failed"
+  return 1
+}
+
+
 verb_check() {
   if verify_installed; then
     log_ok "[69] Antigravity detected"
@@ -110,6 +137,7 @@ show_help() {
   printf "  ${GREEN}list-backups${RESET}           List available conversation prune backups\n"
   printf "  ${GREEN}undo [tx-id]${RESET}           Restore pruned conversation turns from 'latest' or a specific transaction ID\n"
   printf "  ${CYAN}install${RESET}                Install Antigravity IDE and CLI (agy)\n"
+  printf "  ${CYAN}update${RESET}                 Update Antigravity IDE and CLI (agy)\n"
   printf "  ${CYAN}cli${RESET}                    Install Antigravity CLI only (agy)\n"
   printf "  ${CYAN}check${RESET}                  Check if Antigravity is installed and on PATH\n"
   printf "  ${CYAN}uninstall${RESET}              Uninstall Antigravity IDE and CLI\n"
@@ -143,6 +171,7 @@ verb_clean() {
 case "${1:-help}" in
   help|--help|-help|-h) show_help;;
   install)   verb_install;;
+  update)    verb_update "$@";;
   check)     verb_check;;
   repair)    verb_repair;;
   uninstall) verb_uninstall;;

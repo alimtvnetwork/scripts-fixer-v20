@@ -22,12 +22,13 @@ for arg in "$@"; do
         echo -e ""
         echo -e "  ${ACCENT}Options & Flags:${TEXT}"
         echo -e "    --force, -f          Force re-installation (clean reinstall, reusing cached downloads)"
+        echo -e "    --update, -u         Update existing installation (re-downloads/reinstalls over existing)"
         echo -e "    --download-must      Force fresh re-download of archive even if cached locally"
         echo -e ""
         exit 0
     fi
 
-    if [ "$arg" = "--force" ] || [ "$arg" = "-f" ] || [ "$arg" = "force" ]; then
+    if [ "$arg" = "--force" ] || [ "$arg" = "-f" ] || [ "$arg" = "force" ] || [ "$arg" = "--update" ] || [ "$arg" = "-u" ] || [ "$arg" = "update" ]; then
         IS_FORCE=true
     fi
 
@@ -36,7 +37,7 @@ for arg in "$@"; do
     fi
 done
 
-if [ "${FORCE:-0}" = "1" ] || [ "${IS_FORCE_INSTALL:-false}" = "true" ] || [ "${IS_FORCE:-false}" = "true" ]; then
+if [ "${FORCE:-0}" = "1" ] || [ "${IS_FORCE_INSTALL:-false}" = "true" ] || [ "${IS_FORCE:-false}" = "true" ] || [ "${UPDATE:-0}" = "1" ] || [ "${IS_UPDATE:-false}" = "true" ]; then
     IS_FORCE=true
 fi
 
@@ -79,11 +80,11 @@ fetch_ide_url() {
     local arch="$1"
 
     if [ "$arch" = "arm64" ] || [ "$arch" = "arm" ] || [ "$arch" = "aarch64" ]; then
-        echo "https://storage.googleapis.com/antigravity-public/antigravity-hub/2.13.0-6362815968182272/linux-arm/Antigravity.tar.gz"
+        echo "https://storage.googleapis.com/antigravity-public/antigravity-hub/2.19.1-6046815158665216/linux-arm/Antigravity.tar.gz"
         return
     fi
 
-    echo "https://storage.googleapis.com/antigravity-public/antigravity-hub/2.13.0-6362815968182272/linux-x64/Antigravity.tar.gz"
+    echo "https://storage.googleapis.com/antigravity-public/antigravity-hub/2.19.1-6046815158665216/linux-x64/Antigravity.tar.gz"
 }
 
 clean_existing_installation() {
@@ -874,10 +875,10 @@ main() {
     if [ "$IS_FORCE" = "true" ]; then
         clean_existing_installation
     elif command -v antigravity &>/dev/null && [ -x "$HOME/.local/share/antigravity-ide/antigravity" ]; then
-        echo -e "  ${PRIMARY}[  OK  ] Google Antigravity is already installed (use --force to reinstall).${TEXT}"
+        echo -e "  ${PRIMARY}[  OK  ] Google Antigravity is already installed (use --force or --update to reinstall).${TEXT}"
         return 0
     elif command -v antigravity &>/dev/null && [ -x "$HOME/.local/share/antigravity/antigravity" ]; then
-        echo -e "  ${PRIMARY}[  OK  ] Google Antigravity is already installed (use --force to reinstall).${TEXT}"
+        echo -e "  ${PRIMARY}[  OK  ] Google Antigravity is already installed (use --force or --update to reinstall).${TEXT}"
         return 0
     fi
 

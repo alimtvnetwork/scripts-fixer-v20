@@ -3,7 +3,10 @@
   "id": "69",
   "name": "Antigravity IDE & agy CLI",
   "summary": "Google Antigravity AI coding assistant IDE and agy CLI",
-  "aliases": ["agy", "antigravity"],
+  "aliases": [
+    "agy",
+    "antigravity"
+  ],
   "platforms": {
     "windows": {
       "folder": "69-install-antigravity",
@@ -23,6 +26,7 @@
   "destructive": false,
   "commands": [
     "install",
+    "update",
     "check",
     "repair",
     "uninstall",
@@ -36,5 +40,10 @@
     "help"
   ],
   "phase": "04",
-  "tags": ["ai", "ide", "cli", "antigravity"]
+  "tags": [
+    "ai",
+    "ide",
+    "cli",
+    "antigravity"
+  ]
 }

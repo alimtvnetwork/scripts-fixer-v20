@@ -1,5 +1,12 @@
 # Changelog
 
+## [v1.58.0] - 2026-10-12
+
+### Added
+- scripts-linux - add Antigravity IDE update action
+
+---
+
 ## [v1.57.2] - 2026-10-07
 
 ### Added
