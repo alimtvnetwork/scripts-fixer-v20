@@ -8,15 +8,22 @@
     "enabled": true,
     "chocoPackage": "whatsapp",
     "name": "WhatsApp",
-    "desc": "WhatsApp Desktop client (installed via Chocolatey, falls back to official installer)",
+    "desc": "WhatsApp Desktop client (Chocolatey, Official Installer & Windows Server Desktop Engine)",
     "skipDevDirPrompt": true,
+    "serverEngine": {
+      "isEnabled": true,
+      "appName": "WhatsApp",
+      "targetUrl": "https://web.whatsapp.com/",
+      "profileDirName": "User Data",
+      "timeoutSeconds": 30
+    },
     "fallback": {
       "enabled": true,
       "url": "https://web.whatsapp.com/desktop/windows/release/x64/WhatsAppSetup.exe",
       "fileName": "WhatsAppSetup.exe",
       "downloadDir": "",
       "silentArgs": "/S",
-      "timeoutSeconds": 600
+      "timeoutSeconds": 30
     },
     "uninstallCleanup": {
       "enabled": true,

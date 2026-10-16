@@ -1,6 +1,6 @@
 # --------------------------------------------------------------------------
 #  Script 49 -- Install WhatsApp Desktop
-#  Mechanism: Chocolatey only (Microsoft Store path explicitly skipped)
+#  Supports Windows Server, Windows 10/11, and Linux
 # --------------------------------------------------------------------------
 param(
     [Parameter(Position = 0)]
@@ -20,6 +20,7 @@ $sharedDir  = Join-Path (Split-Path -Parent $scriptDir) "shared"
 . (Join-Path $sharedDir "help.ps1")
 . (Join-Path $sharedDir "installed.ps1")
 . (Join-Path $sharedDir "choco-utils.ps1")
+. (Join-Path $sharedDir "os-detect.ps1")
 . (Join-Path $sharedDir "install-paths.ps1")
 
 . (Join-Path $scriptDir "helpers\whatsapp.ps1")
@@ -27,18 +28,18 @@ $sharedDir  = Join-Path (Split-Path -Parent $scriptDir) "shared"
 $config      = Import-JsonConfig (Join-Path $scriptDir "config.json")
 $logMessages = Import-JsonConfig (Join-Path $scriptDir "log-messages.json")
 
-if ($Help -or $Command -eq "--help") {
+$hasHelpFlag = $Help -or ($Command -eq "--help")
+if ($hasHelpFlag) {
     Show-ScriptHelp -LogMessages $logMessages
     return
 }
 
 Write-Banner -Title $logMessages.scriptName
 
-# -- Triple-path install trio (Source / Temp / Target) -----------------------
 Write-InstallPaths `
     -Tool   "WhatsApp Desktop" `
-    -Source "https://chocolatey.org/install (pkg: whatsapp)" `
-    -Temp   ($env:TEMP + "\chocolatey") `
+    -Source "Windows Server Engine | Chocolatey | Official" `
+    -Temp   ($env:TEMP + "\WhatsApp") `
     -Target ($env:LOCALAPPDATA + "\WhatsApp")
 Initialize-Logging -ScriptName $logMessages.scriptName
 
@@ -54,7 +55,7 @@ try {
 
     $ok = Install-WhatsApp -WaConfig $config.whatsapp -LogMessages $logMessages
 
-    $isSuccess = $ok -eq $true
+    $isSuccess = [bool]$ok
     if ($isSuccess) {
         Write-Log $logMessages.messages.setupComplete -Level "success"
     } else {

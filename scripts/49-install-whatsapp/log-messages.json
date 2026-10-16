@@ -1,15 +1,20 @@
 {
   "scriptName": "install-whatsapp",
   "scriptTitle": "Install WhatsApp",
-  "scriptDesc": "Install WhatsApp Desktop via Chocolatey (skips Microsoft Store entirely)",
+  "scriptDesc": "Install WhatsApp Desktop across Windows Server, Windows 10/11, and Linux",
   "messages": {
     "checking": "Checking for existing WhatsApp Desktop install...",
     "alreadyInstalled": "WhatsApp Desktop already installed at: {path}",
-    "notFound": "WhatsApp Desktop not found -- will install via Chocolatey",
+    "notFound": "WhatsApp Desktop not found -- resolving installation strategy",
     "installing": "Installing whatsapp via Chocolatey...",
     "installSuccess": "WhatsApp Desktop installed at: {path}",
     "installFailed": "WhatsApp installation failed: {error}",
     "verifyFailed": "Install completed but WhatsApp.exe was not found in any expected location -- choco package may have changed install path",
+    "serverEngineDetected": "Windows Server environment detected -- activating Windows Server Native Desktop Launcher engine",
+    "browserFound": "Chromium engine found at: {path}",
+    "browserNotFound": "No compatible Chromium engine (Chrome or Edge) found on system",
+    "launcherCreated": "Native WhatsApp launcher compiled and installed at: {path}",
+    "shortcutsCreated": "WhatsApp Start Menu, Desktop shortcuts, and whatsapp:// protocol created",
     "fallbackTriggered": "Chocolatey path failed -- falling back to official WhatsApp installer ({reason})",
     "fallbackDisabled": "Fallback disabled in config -- aborting after Chocolatey failure",
     "fallbackDownloading": "Downloading official installer from {url} -> {dest}",
@@ -39,7 +44,7 @@
   },
   "help": {
     "commands": {
-      "install": "Install WhatsApp Desktop via Chocolatey (default)",
+      "install": "Install WhatsApp Desktop (default)",
       "uninstall": "Uninstall WhatsApp Desktop, remove tracking"
     },
     "examples": [
