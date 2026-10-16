@@ -5,7 +5,9 @@
 #>
 
 function Test-IsWindowsEnvironment {
-    if ($null -ne $IsWindows) {
+    $hasIsWindows = $null -ne (Get-Variable -Name 'IsWindows' -ErrorAction SilentlyContinue)
+
+    if ($hasIsWindows) {
         return [bool]$IsWindows
     }
 
