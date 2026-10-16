@@ -1,0 +1,16 @@
+{
+  "prompt_id": "p-43262916",
+  "project_id": "scripts-fixer",
+  "instance_id": "default",
+  "repo_path": "d:\\work\\scripts-fixer",
+  "prompt_content": "Project Memory Initialization Protocol",
+  "model": "gemini-2.5-pro",
+  "session_id": "d407545e-a9b0-4fe3-88ae-7ff39436c18d",
+  "conversation_id": "d407545e-a9b0-4fe3-88ae-7ff39436c18d",
+  "image_payload": null,
+  "image_paths": [],
+  "has_image": false,
+  "auto_boot": true,
+  "status": "dispatched",
+  "backed_up_at": 1792176446
+}
