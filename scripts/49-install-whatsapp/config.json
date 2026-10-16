@@ -10,6 +10,12 @@
     "name": "WhatsApp",
     "desc": "WhatsApp Desktop client (installed via Chocolatey, falls back to official installer)",
     "skipDevDirPrompt": true,
+    "serverChain": ["chocolatey", "official", "winget"],
+    "wingetId": "WhatsApp.WhatsApp",
+    "timeouts": {
+      "downloadSeconds": 300,
+      "installSeconds": 600
+    },
     "fallback": {
       "enabled": true,
       "url": "https://web.whatsapp.com/desktop/windows/release/x64/WhatsAppSetup.exe",

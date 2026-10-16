@@ -32,6 +32,104 @@ function Get-WhatsAppPath {
     return $null
 }
 
+function Get-WaOsProductType {
+    <#
+    .SYNOPSIS
+        Returns Win32_OperatingSystem ProductType (1=Workstation, 2=DC, 3=Server), or $null.
+    #>
+    try {
+        $os = Get-CimInstance Win32_OperatingSystem -ErrorAction Stop
+    } catch {
+        Write-Log "Could not query Win32_OperatingSystem: $($_.Exception.Message) -- assuming Workstation" -Level "warn"
+        return $null
+    }
+
+    return $os.ProductType
+}
+
+function Test-IsWindowsServer {
+    <#
+    .SYNOPSIS
+        Returns $true when the OS is a Windows Server SKU (ProductType 2 or 3).
+    #>
+    $productType = Get-WaOsProductType
+
+    if ($null -eq $productType) { return $false }
+
+    return ($productType -ne 1)
+}
+
+function Test-HasWinget {
+    <#
+    .SYNOPSIS
+        Returns $true when winget is available on PATH.
+    #>
+    $cmd = Get-Command winget -ErrorAction SilentlyContinue
+
+    return ($null -ne $cmd)
+}
+
+function Get-WaTimeoutSeconds {
+    <#
+    .SYNOPSIS
+        Resolves a timeout (seconds) from config.timeouts.<Key>, else default.
+    #>
+    param(
+        $WaConfig,
+        [Parameter(Mandatory)][string]$Key,
+        [int]$DefaultSeconds = 300
+    )
+
+    $hasTimeouts = $null -ne $WaConfig.PSObject.Properties['timeouts']
+    if (-not $hasTimeouts) { return $DefaultSeconds }
+
+    $value = 0
+    try { $value = [int]$WaConfig.timeouts.$Key } catch { $value = 0 }
+    if ($value -le 0) { return $DefaultSeconds }
+
+    return $value
+}
+
+function Get-WaServerChain {
+    <#
+    .SYNOPSIS
+        Returns the ordered Server install-chain method names from config.
+    #>
+    param($WaConfig)
+
+    $hasChain = $null -ne $WaConfig.PSObject.Properties['serverChain']
+    if ($hasChain) {
+        $chain = @($WaConfig.serverChain)
+        if ($chain.Count -gt 0) { return $chain }
+    }
+
+    return @("chocolatey", "official", "winget")
+}
+
+function Wait-WaProcessWithTimeout {
+    <#
+    .SYNOPSIS
+        Waits up to $TimeoutSeconds for $Process; kills it on expiry.
+        Returns @{ exited = $bool; exitCode = $int; timedOut = $bool }.
+    #>
+    param(
+        [Parameter(Mandatory)] $Process,
+        [Parameter(Mandatory)] $LogMessages,
+        [int]$TimeoutSeconds = 600,
+        [string]$Label = "installer"
+    )
+
+    $hasExited = $Process.WaitForExit($TimeoutSeconds * 1000)
+    if (-not $hasExited) {
+        try { $Process.Kill() } catch { }
+        $msg = $LogMessages.messages.timeoutKilled
+        Write-Log (($msg -replace '\{label\}', $Label) -replace '\{seconds\}', $TimeoutSeconds) -Level "error"
+        return @{ exited = $false; exitCode = -1; timedOut = $true }
+    }
+
+    return @{ exited = $true; exitCode = $Process.ExitCode; timedOut = $false }
+}
+
 function Invoke-WhatsAppOfficialInstaller {
     <#
     .SYNOPSIS
@@ -41,7 +139,9 @@ function Invoke-WhatsAppOfficialInstaller {
     param(
         [Parameter(Mandatory)] $Fallback,
         [Parameter(Mandatory)] $LogMessages,
-        [Parameter(Mandatory)] [string]$TriggerReason
+        [Parameter(Mandatory)] [string]$TriggerReason,
+        [int]$DownloadTimeoutSeconds = 300,
+        [int]$InstallTimeoutSeconds = 0
     )
 
     $msgs = $LogMessages.messages
@@ -87,7 +187,7 @@ function Invoke-WhatsAppOfficialInstaller {
         try {
             [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
         } catch { }
-        Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing -ErrorAction Stop
+        Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing -TimeoutSec $DownloadTimeoutSeconds -ErrorAction Stop
         $ProgressPreference = $previousProgress
     } catch {
         Write-FileError -FilePath $dest -Operation "download" -Reason "Invoke-WebRequest from $url failed: $($_.Exception.Message)" -Module "Install-WhatsApp"
@@ -114,7 +214,10 @@ function Invoke-WhatsAppOfficialInstaller {
     $silentArgs = [string]$Fallback.silentArgs
     if ([string]::IsNullOrWhiteSpace($silentArgs)) { $silentArgs = "/S" }
 
-    $timeout = [int]$Fallback.timeoutSeconds
+    $timeout = $InstallTimeoutSeconds
+    if ($timeout -le 0) {
+        $timeout = [int]$Fallback.timeoutSeconds
+    }
     if ($timeout -le 0) { $timeout = 600 }
 
     Write-Log (($msgs.fallbackRunning -replace '\{path\}', $dest) -replace '\{args\}', $silentArgs) -Level "info"
@@ -151,6 +254,178 @@ function Invoke-WhatsAppOfficialInstaller {
 
     Write-Log ($msgs.fallbackSuccess -replace '\{path\}', $installedPath) -Level "success"
     return @{ ok = $true; path = $installedPath; reason = "ok" }
+}
+
+function Invoke-WaChocoStep {
+    <#
+    .SYNOPSIS
+        Server chain step: installs via Chocolatey with a config-driven timeout.
+        Install-ChocoPackage already enforces process-level timeouts with
+        kill-on-expiry; this step scopes them via CHOCO_TIMEOUT_SECONDS.
+        Returns @{ ok = $bool; path = "<path or null>"; reason = "<text>" }.
+    #>
+    param(
+        [Parameter(Mandatory)][string]$PackageName,
+        [Parameter(Mandatory)] $LogMessages,
+        [int]$TimeoutSeconds = 600
+    )
+
+    $msgs = $LogMessages.messages
+    Write-Log (($msgs.serverChocoStep -replace '\{package\}', $PackageName) -replace '\{seconds\}', $TimeoutSeconds) -Level "info"
+
+    $previousChocoTimeout = $env:CHOCO_TIMEOUT_SECONDS
+    $env:CHOCO_TIMEOUT_SECONDS = [string]$TimeoutSeconds
+    try {
+        $isInstalled = Install-ChocoPackage -PackageName $PackageName
+    } finally {
+        $env:CHOCO_TIMEOUT_SECONDS = $previousChocoTimeout
+    }
+
+    if (-not $isInstalled) {
+        Write-Log ($msgs.serverMethodFailed -replace '\{method\}', "chocolatey" -replace '\{reason\}', "choco install returned failure") -Level "warn"
+        return @{ ok = $false; path = $null; reason = "choco install failed" }
+    }
+
+    $installedPath = Get-WhatsAppPath
+    if (-not $installedPath) {
+        Write-FileError -FilePath $PackageName -Operation "verify" -Reason "WhatsApp.exe not found after choco install (server chain)" -Module "Install-WhatsApp"
+        Write-Log ($msgs.serverMethodFailed -replace '\{method\}', "chocolatey" -replace '\{reason\}', "post-install verify failed") -Level "warn"
+        return @{ ok = $false; path = $null; reason = "post-install verify failed" }
+    }
+
+    return @{ ok = $true; path = $installedPath; reason = "ok" }
+}
+
+function Invoke-WaWingetStep {
+    <#
+    .SYNOPSIS
+        Server chain step: installs via winget (only when winget is on PATH).
+        Enforces a hard timeout with kill-on-expiry.
+        Returns @{ ok = $bool; path = "<path or null>"; reason = "<text>" }.
+    #>
+    param(
+        [Parameter(Mandatory)] $WaConfig,
+        [Parameter(Mandatory)] $LogMessages,
+        [int]$TimeoutSeconds = 600
+    )
+
+    $msgs = $LogMessages.messages
+
+    $hasWinget = Test-HasWinget
+    if (-not $hasWinget) {
+        Write-Log $msgs.wingetMissing -Level "warn"
+        return @{ ok = $false; path = $null; reason = "winget not on PATH" }
+    }
+
+    $wingetId = [string]$WaConfig.wingetId
+    if ([string]::IsNullOrWhiteSpace($wingetId)) { $wingetId = "WhatsApp.WhatsApp" }
+
+    Write-Log (($msgs.wingetRunning -replace '\{id\}', $wingetId) -replace '\{seconds\}', $TimeoutSeconds) -Level "info"
+
+    try {
+        $proc = Start-Process -FilePath "winget" -ArgumentList @("install", "--id", $wingetId, "--silent", "--accept-source-agreements", "--accept-package-agreements") -PassThru -WindowStyle Hidden -ErrorAction Stop
+    } catch {
+        Write-Log ($msgs.wingetFailed -replace '\{error\}', $_.Exception.Message) -Level "error"
+        return @{ ok = $false; path = $null; reason = "start winget failed" }
+    }
+
+    $wait = Wait-WaProcessWithTimeout -Process $proc -LogMessages $LogMessages -TimeoutSeconds $TimeoutSeconds -Label "winget install $wingetId"
+    if ($wait.timedOut) {
+        return @{ ok = $false; path = $null; reason = "winget timed out after ${TimeoutSeconds}s" }
+    }
+
+    if ($wait.exitCode -ne 0) {
+        Write-Log ($msgs.wingetFailed -replace '\{error\}', "exit code $($wait.exitCode)") -Level "error"
+        return @{ ok = $false; path = $null; reason = "winget exit $($wait.exitCode)" }
+    }
+
+    $installedPath = Get-WhatsAppPath
+    if (-not $installedPath) {
+        Write-FileError -FilePath $wingetId -Operation "verify" -Reason "winget completed (exit 0) but WhatsApp.exe not found in expected locations" -Module "Install-WhatsApp"
+        Write-Log $msgs.wingetVerifyFailed -Level "error"
+        return @{ ok = $false; path = $null; reason = "post-install verify failed" }
+    }
+
+    Write-Log ($msgs.wingetSuccess -replace '\{path\}', $installedPath) -Level "success"
+    return @{ ok = $true; path = $installedPath; reason = "ok" }
+}
+
+function Invoke-WaServerChainStep {
+    <#
+    .SYNOPSIS
+        Dispatches one named Server chain method. Returns @{ ok; path; reason }.
+    #>
+    param(
+        [Parameter(Mandatory)][string]$Method,
+        [Parameter(Mandatory)] $WaConfig,
+        [Parameter(Mandatory)] $LogMessages,
+        [int]$DownloadTimeoutSeconds = 300,
+        [int]$InstallTimeoutSeconds = 600
+    )
+
+    switch ($Method.ToLowerInvariant()) {
+        "chocolatey" {
+            return Invoke-WaChocoStep -PackageName $WaConfig.chocoPackage -LogMessages $LogMessages -TimeoutSeconds $InstallTimeoutSeconds
+        }
+        "official" {
+            $hasFallback = $null -ne $WaConfig.PSObject.Properties['fallback']
+            if (-not $hasFallback) {
+                return @{ ok = $false; path = $null; reason = "no fallback config" }
+            }
+            return Invoke-WhatsAppOfficialInstaller -Fallback $WaConfig.fallback -LogMessages $LogMessages -TriggerReason "server chain: official installer" -DownloadTimeoutSeconds $DownloadTimeoutSeconds -InstallTimeoutSeconds $InstallTimeoutSeconds
+        }
+        "winget" {
+            return Invoke-WaWingetStep -WaConfig $WaConfig -LogMessages $LogMessages -TimeoutSeconds $InstallTimeoutSeconds
+        }
+        default {
+            return @{ ok = $false; path = $null; reason = "unknown chain method '$Method'" }
+        }
+    }
+}
+
+function Invoke-WaServerInstallChain {
+    <#
+    .SYNOPSIS
+        Runs the Server install chain (Chocolatey -> official -> winget),
+        verifying Get-WhatsAppPath after each step. Stops at first success.
+        Returns $true on success.
+    #>
+    param(
+        [Parameter(Mandatory)] $WaConfig,
+        [Parameter(Mandatory)] $LogMessages
+    )
+
+    $msgs = $LogMessages.messages
+    $methods = Get-WaServerChain -WaConfig $WaConfig
+    $total = @($methods).Count
+    $index = 0
+
+    $downloadTimeout = Get-WaTimeoutSeconds -WaConfig $WaConfig -Key "downloadSeconds" -DefaultSeconds 300
+    $installTimeout = Get-WaTimeoutSeconds -WaConfig $WaConfig -Key "installSeconds" -DefaultSeconds 600
+
+    foreach ($method in $methods) {
+        $index++
+        $stepMsg = $msgs.serverChainStep
+        $stepMsg = $stepMsg -replace '\{index\}', $index
+        $stepMsg = $stepMsg -replace '\{total\}', $total
+        Write-Log ($stepMsg -replace '\{method\}', $method) -Level "info"
+
+        $result = Invoke-WaServerChainStep -Method $method -WaConfig $WaConfig -LogMessages $LogMessages -DownloadTimeoutSeconds $downloadTimeout -InstallTimeoutSeconds $installTimeout
+        $isSuccess = $result.ok -and $result.path
+        if ($isSuccess) {
+            Write-Log (($msgs.serverChainSuccess -replace '\{method\}', $method) -replace '\{path\}', $result.path) -Level "success"
+            $version = "unknown"
+            try { $version = (Get-Item $result.path).VersionInfo.ProductVersion } catch { }
+            Save-InstalledRecord -Name "whatsapp" -Version $version -Method "server-$method"
+            return $true
+        }
+
+        Write-Log (($msgs.serverMethodFailed -replace '\{method\}', $method) -replace '\{reason\}', $result.reason) -Level "warn"
+    }
+
+    Save-InstalledError -Name "whatsapp" -ErrorMessage "Server install chain exhausted -- all $total methods failed"
+    Write-Log ($msgs.serverChainExhausted -replace '\{count\}', $total) -Level "error"
+    return $false
 }
 
 function Install-WhatsApp {
@@ -190,7 +465,18 @@ function Install-WhatsApp {
     }
 
     Write-Log $msgs.notFound -Level "info"
+
+    $isServer = Test-IsWindowsServer
+    if ($isServer) {
+        $productType = Get-WaOsProductType
+        Write-Log ($msgs.serverDetected -replace '\{type\}', $productType) -Level "warn"
+        return Invoke-WaServerInstallChain -WaConfig $WaConfig -LogMessages $LogMessages
+    }
+
     Write-Log $msgs.installing -Level "info"
+
+    $downloadTimeout = Get-WaTimeoutSeconds -WaConfig $WaConfig -Key "downloadSeconds" -DefaultSeconds 300
+    $installTimeout = Get-WaTimeoutSeconds -WaConfig $WaConfig -Key "installSeconds" -DefaultSeconds 600
 
     $hasFallbackConfig = $null -ne $WaConfig.PSObject.Properties['fallback']
     $fallback = if ($hasFallbackConfig) { $WaConfig.fallback } else { $null }
@@ -202,7 +488,7 @@ function Install-WhatsApp {
             Save-InstalledError -Name "whatsapp" -ErrorMessage "choco install whatsapp failed and no fallback configured"
             return $false
         }
-        $result = Invoke-WhatsAppOfficialInstaller -Fallback $fallback -LogMessages $LogMessages -TriggerReason "choco install returned failure"
+        $result = Invoke-WhatsAppOfficialInstaller -Fallback $fallback -LogMessages $LogMessages -TriggerReason "choco install returned failure" -DownloadTimeoutSeconds $downloadTimeout -InstallTimeoutSeconds $installTimeout
         if (-not $result.ok) {
             Save-InstalledError -Name "whatsapp" -ErrorMessage "choco failed; fallback failed: $($result.reason)"
             return $false
@@ -229,7 +515,7 @@ function Install-WhatsApp {
             Save-InstalledError -Name "whatsapp" -ErrorMessage "Verify failed: WhatsApp.exe not in expected locations after install"
             return $false
         }
-        $result = Invoke-WhatsAppOfficialInstaller -Fallback $fallback -LogMessages $LogMessages -TriggerReason "choco install verify failed"
+        $result = Invoke-WhatsAppOfficialInstaller -Fallback $fallback -LogMessages $LogMessages -TriggerReason "choco install verify failed" -DownloadTimeoutSeconds $downloadTimeout -InstallTimeoutSeconds $installTimeout
         if (-not $result.ok) {
             Save-InstalledError -Name "whatsapp" -ErrorMessage "choco verify failed; fallback failed: $($result.reason)"
             return $false
