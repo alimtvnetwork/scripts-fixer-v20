@@ -7,6 +7,7 @@
 | 22 | [22-deep-uninstaller-suite](./22-deep-uninstaller-suite/01-overview.md) | `active` | Antigravity deep uninstaller with project/conversation state backup, AGM uninstaller, Windows Copilot purge, Chris Titus Edge removal, and enhanced dev-clean |
 | 23 | [23-vmware-codex-claude-ui](./23-vmware-codex-claude-ui/01-vmware-installer-spec.md) | `active` | VMware installation improvements (Windows & Linux) and cross-platform Codex UI & Claude Code Desktop UI |
 | 24 | [24-vmware-clear-help-codex-plot](./24-vmware-clear-help-codex-plot/01-clear-and-help-routing-spec.md) | `active` | VMware host verification, clear commands harmonization, GitMap subcommand help, and Codex/Plot UI release v1.56.0 |
+| 25 | [install-whatsapp-on-windows-server](./install-whatsapp-on-windows-server/readme.md) | `active` | WhatsApp installation engine for Windows Server (native launcher wrapper), regular Windows (winget), and Ubuntu (4-tier resolution) |
 
 ## Commands
 

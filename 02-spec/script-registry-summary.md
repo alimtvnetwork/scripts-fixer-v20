@@ -877,7 +877,7 @@ conemu-menu, conemu-context-menu, conemu+menu, essentials, basic, minimal, conem
 ### Script 49: WhatsApp
 
 - **Folder**: `49-install-whatsapp`
-- **Description**: WhatsApp Desktop client (installed via Chocolatey, falls back to official installer)
+- **Description**: WhatsApp Desktop client (Winget, Chocolatey, Official Installer & Windows Server Desktop Engine)
 - **Choco package**: `whatsapp`
 
 **Keywords** (2):

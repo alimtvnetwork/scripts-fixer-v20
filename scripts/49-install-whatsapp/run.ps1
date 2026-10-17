@@ -29,8 +29,10 @@ $config      = Import-JsonConfig (Join-Path $scriptDir "config.json")
 $logMessages = Import-JsonConfig (Join-Path $scriptDir "log-messages.json")
 
 $hasHelpFlag = $Help -or ($Command -eq "--help")
+
 if ($hasHelpFlag) {
     Show-ScriptHelp -LogMessages $logMessages
+
     return
 }
 
@@ -38,7 +40,7 @@ Write-Banner -Title $logMessages.scriptName
 
 Write-InstallPaths `
     -Tool   "WhatsApp Desktop" `
-    -Source "Windows Server Engine | Chocolatey | Official" `
+    -Source "Windows Server Engine | Winget | Chocolatey | Official" `
     -Temp   ($env:TEMP + "\WhatsApp") `
     -Target ($env:LOCALAPPDATA + "\WhatsApp")
 Initialize-Logging -ScriptName $logMessages.scriptName
@@ -48,15 +50,16 @@ try {
     Invoke-GitPull
 
     $isUninstall = $Command.ToLower() -eq "uninstall"
+
     if ($isUninstall) {
         Uninstall-WhatsApp -WaConfig $config.whatsapp -LogMessages $logMessages
+
         return
     }
 
-    $ok = Install-WhatsApp -WaConfig $config.whatsapp -LogMessages $logMessages
+    $isInstallSuccess = Install-WhatsApp -WaConfig $config.whatsapp -LogMessages $logMessages
 
-    $isSuccess = [bool]$ok
-    if ($isSuccess) {
+    if ($isInstallSuccess) {
         Write-Log $logMessages.messages.setupComplete -Level "success"
     } else {
         Write-Log ($logMessages.messages.installFailed -replace '\{error\}', "See errors above") -Level "error"

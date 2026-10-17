@@ -1,1 +1,31 @@
-{"aliases":[],"commands":["install","check","repair","uninstall"],"depends_on":[],"destructive":false,"id":"49","idempotent":true,"name":"WhatsApp for Linux (flatpak|.deb)","phase":"04","platforms":{"linux":{"entrypoint":"run.sh","folder":"49-install-whatsapp"}},"schemaVersion":"1.0","summary":"WhatsApp for Linux (flatpak|.deb)","tags":[]}
+{
+  "aliases": [
+    "whatsapp",
+    "wa"
+  ],
+  "commands": [
+    "install",
+    "check",
+    "repair",
+    "uninstall"
+  ],
+  "depends_on": [],
+  "destructive": false,
+  "id": "49",
+  "idempotent": true,
+  "name": "WhatsApp Desktop (snap|flatpak|deb|PWA)",
+  "phase": "04",
+  "platforms": {
+    "linux": {
+      "entrypoint": "run.sh",
+      "folder": "49-install-whatsapp"
+    }
+  },
+  "schemaVersion": "1.0",
+  "summary": "WhatsApp Desktop (snap|flatpak|deb|PWA)",
+  "tags": [
+    "messaging",
+    "desktop",
+    "chat"
+  ]
+}

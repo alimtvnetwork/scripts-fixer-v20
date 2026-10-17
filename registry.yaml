@@ -430,6 +430,10 @@ scripts:
   - id: '49'
     windows:
       folder: 49-install-whatsapp
+    linux:
+      folder: 49-install-whatsapp
+      phase: '04'
+      title: WhatsApp Desktop (snap|flatpak|deb|PWA)
   - id: '50'
     windows:
       folder: 50-install-onenote

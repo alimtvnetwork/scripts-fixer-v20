@@ -34,7 +34,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$versionFile = Join-Path $PSScriptRoot "scripts" "version.json"
+$versionFile = Join-Path (Join-Path $PSScriptRoot "scripts") "version.json"
 
 $isVersionFilePresent = Test-Path $versionFile
 if (-not $isVersionFilePresent) {
@@ -105,7 +105,7 @@ Write-Host "[ OK ] scripts/version.json: $currentVersion -> $newVersion" -Foregr
 # per-script config.json. CI also runs this and fails on drift -- doing it
 # here means a local `bump-version.ps1` push will never trip the CI check.
 
-$generatorScript = Join-Path $PSScriptRoot "scripts" "_internal" "generate-registry-summary.cjs"
+$generatorScript = Join-Path (Join-Path (Join-Path $PSScriptRoot "scripts") "_internal") "generate-registry-summary.cjs"
 $isGeneratorPresent = Test-Path $generatorScript
 if ($isGeneratorPresent) {
     $nodeCmd = Get-Command node -ErrorAction SilentlyContinue
@@ -137,15 +137,15 @@ else {
 
 $nodeCmd2 = Get-Command node -ErrorAction SilentlyContinue
 if ($null -ne $nodeCmd2) {
-    $syncVersion = Join-Path $PSScriptRoot "tools" "sync-version.cjs"
+    $syncVersion = Join-Path (Join-Path $PSScriptRoot "tools") "sync-version.cjs"
     if (Test-Path $syncVersion) {
         & node $syncVersion | Out-Host
     }
-    $registrySync = Join-Path $PSScriptRoot "tools" "registry-sync.cjs"
+    $registrySync = Join-Path (Join-Path $PSScriptRoot "tools") "registry-sync.cjs"
     if (Test-Path $registrySync) {
         & node $registrySync | Out-Host
     }
-    $latestJson = Join-Path $PSScriptRoot ".gitmap" "release" "latest.json"
+    $latestJson = Join-Path (Join-Path (Join-Path $PSScriptRoot ".gitmap") "release") "latest.json"
     if (Test-Path $latestJson) {
         $latestObj = [PSCustomObject]@{
             version = $newVersion

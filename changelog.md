@@ -1,5 +1,16 @@
 # Changelog
 
+## [v1.61.0] - 2026-10-17
+
+### Added
+- **Windows Server WhatsApp Installation Engine (`scripts/49-install-whatsapp/`)**: Implemented native Chromium-backed desktop launcher engine (`WhatsApp.exe`) in user local application data, with segregated user data profile, Start Menu and Desktop shortcuts, `whatsapp://` URL protocol handler, and watchdog timeouts bypassing Store incompatibility (`0x803fb104`).
+- **Standard Windows Client Support (`scripts/49-install-whatsapp/helpers/whatsapp.ps1`)**: Added non-interactive `winget` resolution (`--disable-interactivity --accept-package-agreements --accept-source-agreements`) with timeout watchdog, falling back to Chocolatey, official setup, and native launcher.
+- **Ubuntu & Linux Multi-Tier Parity (`scripts-linux/49-install-whatsapp/run.sh`)**: Implemented 4-tier Linux resolution ladder (Tier 1: Snap `whatsapp-for-linux`, Tier 2: Flatpak `io.github.eneshecan.WhatsAppForLinux`, Tier 3: GitHub Releases `.deb`, Tier 4: Chromium/Chrome desktop PWA wrapper) with XDG desktop integration.
+- **Linux Dispatcher & Registry Integration (`registry.yaml`, `scripts-linux/run.sh`)**: Registered script `49` for Linux in `registry.yaml`, compiled `scripts-linux/registry.json`, and wired `whatsapp` / `wa` aliases into `scripts-linux/run.sh`.
+- **Architectural Specifications & Plans (`02-spec/21-app/install-whatsapp-on-windows-server/`)**: Comprehensive specifications and subtask plans covering root cause analysis, operating system detection, execution watchdogs, acceptance criteria, and idempotency.
+
+---
+
 ## [v1.60.1] - 2026-10-16
 
 ### Added

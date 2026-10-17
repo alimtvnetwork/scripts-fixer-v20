@@ -6,9 +6,12 @@
   },
   "whatsapp": {
     "enabled": true,
+    "wingetPackage": "9NKSQGP7F2NH",
+    "wingetSource": "msstore",
+    "wingetTimeoutSeconds": 60,
     "chocoPackage": "whatsapp",
     "name": "WhatsApp",
-    "desc": "WhatsApp Desktop client (Chocolatey, Official Installer & Windows Server Desktop Engine)",
+    "desc": "WhatsApp Desktop client (Winget, Chocolatey, Official Installer & Windows Server Desktop Engine)",
     "skipDevDirPrompt": true,
     "serverEngine": {
       "isEnabled": true,

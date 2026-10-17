@@ -47,6 +47,7 @@
 | 36 | `34-antigravity-deep-uninstaller-suite.md` | Antigravity State Backup & Deep Wipe, AGM, Copilot, Edge Uninstallers & Dev-Clean | `completed` | 2026-09-28 |
 | 37 | `35-vmware-codex-claude-ui.md` | VMware Installation Improvements & Cross-Platform Codex UI / Claude Code Desktop UI | `completed` | 2026-10-02 |
 | 38 | `24-vmware-clear-help-codex-plot.md` | VMware Verification, Clear Commands Harmonization, GitMap Help & Codex/Plot UI Release | `completed` | 2026-10-03 |
+| 39 | `install-whatsapp-on-windows-server.md` | Install WhatsApp on Windows Server (Native Launcher), Regular Windows & Ubuntu | `completed` | 2026-10-17 |
 
 ---
 

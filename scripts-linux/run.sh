@@ -24,6 +24,7 @@ export SCRIPT_ID="root"
 
 VERB=""; ONLY_ID=""; PARALLEL=1; JSON_OUT=0; ONLY_DRIFT=0
 DB_REST=(); SERVICES_REST=(); STARTUP_MGR_REST=(); SCHEDULE_MGR_REST=(); MACRO_MGR_REST=(); STORAGE_MGR_REST=(); CLUSTER_MGR_REST=()
+RUN_ONE_ID=""; RUN_ONE_VERB=""; RUN_ONE_REST=()
 PYTHON_BIN=""
 if python3 -V >/dev/null 2>&1; then
   PYTHON_BIN="python3"
@@ -327,6 +328,10 @@ EOF
         VERB="os-tool-passthrough"; OS_TOOL="codex"; shift; OS_TOOL_REST=("$@"); break ;;
     claude|claude-code|claude-ui)
         VERB="os-tool-passthrough"; OS_TOOL="claude-code"; shift; OS_TOOL_REST=("$@"); break ;;
+    # ---- top-level shortcuts for WhatsApp (script 49) ----
+    whatsapp|wa)
+        [ -n "$VERB" ] && RUN_ONE_VERB="$VERB"
+        VERB="run-one-passthrough"; RUN_ONE_ID="49"; shift; RUN_ONE_REST=("$@"); break ;;
     *)
         # `./run.sh install wordpress [args]` lands here AFTER install was consumed.
         # Re-route it through the wp passthrough so the user-friendly form works.
@@ -355,7 +360,11 @@ EOF
         if [ "$VERB" = "uninstall" ] && { [ "$1" = "agy" ] || [ "$1" = "antigravity" ]; }; then
             VERB="agy-passthrough"; shift; AGY_REST=("uninstall" "$@"); break
         fi
-        if [ "$VERB" = "install" ] || [ "$VERB" = "update" ] || [ "$VERB" = "uninstall" ]; then
+        if [ "$VERB" = "install" ] || [ "$VERB" = "update" ] || [ "$VERB" = "check" ] || [ "$VERB" = "repair" ] || [ "$VERB" = "uninstall" ]; then
+            if [ "$1" = "whatsapp" ] || [ "$1" = "wa" ]; then
+                RUN_ONE_VERB="$VERB"
+                VERB="run-one-passthrough"; RUN_ONE_ID="49"; shift; RUN_ONE_REST=("$@"); break
+            fi
             if [ "$1" = "vmware" ]; then
                 VERB="os-tool-passthrough"; OS_TOOL="vmware"; shift; OS_TOOL_REST=("$@"); break
             fi
@@ -1538,6 +1547,24 @@ EOF
     else
       bash "$_tool_script"
     fi
+    exit $?
+    ;;
+  run-one-passthrough)
+    _ro_verb="${RUN_ONE_VERB:-install}"
+    _ro_filtered=()
+    for _a in "${RUN_ONE_REST[@]:-}"; do
+      [ -n "$_a" ] && _ro_filtered+=("$_a")
+    done
+
+    if [ "${#_ro_filtered[@]}" -gt 0 ]; then
+      case "${_ro_filtered[0]}" in
+        install|check|repair|uninstall)
+          _ro_verb="${_ro_filtered[0]}"
+          ;;
+      esac
+    fi
+
+    run_one "$RUN_ONE_ID" "$_ro_verb"
     exit $?
     ;;
   install|check|repair|uninstall)

@@ -6,6 +6,11 @@
     "checking": "Checking for existing WhatsApp Desktop install...",
     "alreadyInstalled": "WhatsApp Desktop already installed at: {path}",
     "notFound": "WhatsApp Desktop not found -- resolving installation strategy",
+    "wingetInstalling": "Attempting install via winget (ID: 9NKSQGP7F2NH, source: msstore)...",
+    "wingetNotFound": "winget not found on system -- falling back to Chocolatey",
+    "wingetTimeout": "winget operation exceeded timeout of {seconds}s and was terminated",
+    "wingetVerifyFailed": "winget install reported completion but WhatsApp.exe was not detected in expected locations",
+    "wingetSuccess": "WhatsApp Desktop installed via winget at: {path}",
     "installing": "Installing whatsapp via Chocolatey...",
     "installSuccess": "WhatsApp Desktop installed at: {path}",
     "installFailed": "WhatsApp installation failed: {error}",
@@ -15,8 +20,8 @@
     "browserNotFound": "No compatible Chromium engine (Chrome or Edge) found on system",
     "launcherCreated": "Native WhatsApp launcher compiled and installed at: {path}",
     "shortcutsCreated": "WhatsApp Start Menu, Desktop shortcuts, and whatsapp:// protocol created",
-    "fallbackTriggered": "Chocolatey path failed -- falling back to official WhatsApp installer ({reason})",
-    "fallbackDisabled": "Fallback disabled in config -- aborting after Chocolatey failure",
+    "fallbackTriggered": "Standard install path failed -- falling back to official WhatsApp installer ({reason})",
+    "fallbackDisabled": "Fallback disabled in config -- aborting after standard install failure",
     "fallbackDownloading": "Downloading official installer from {url} -> {dest}",
     "fallbackDownloadOk": "Downloaded {bytes} bytes to {dest}",
     "fallbackDownloadFailed": "Download failed from {url}: {error}",
@@ -46,6 +51,9 @@
     "commands": {
       "install": "Install WhatsApp Desktop (default)",
       "uninstall": "Uninstall WhatsApp Desktop, remove tracking"
+    },
+    "parameters": {
+      "-Help": "Show script help and parameter syntax"
     },
     "examples": [
       ".\\run.ps1 install whatsapp",

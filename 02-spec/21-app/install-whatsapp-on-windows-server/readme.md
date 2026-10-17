@@ -129,3 +129,61 @@ Located at `scripts-linux/49-install-whatsapp/run.sh`:
 2. Functions target <= 8-15 lines.
 3. Every external process call MUST have a strict timeout watchdog.
 4. Relative Git paths only across all documentation and code.
+
+---
+
+## 7. Acceptance Criteria
+
+- **AC-1 (Windows Server Native Launcher)**: Running `scripts/49-install-whatsapp/run.ps1` on Windows Server 2022/2025 creates `%LOCALAPPDATA%\WhatsApp\WhatsApp.exe`, sets up an isolated `%LOCALAPPDATA%\WhatsApp\User Data` directory, creates Start Menu and Desktop shortcuts, and registers `whatsapp://` URL protocol handler without failing on Store `0x803fb104`.
+- **AC-2 (Standard Windows Client Support)**: Running `scripts/49-install-whatsapp/run.ps1` on Windows 10/11 queries `winget` using `--disable-interactivity --accept-package-agreements --accept-source-agreements` with bounded timeout, falling back cleanly to the native wrapper engine if Store fails.
+- **AC-3 (Ubuntu / Linux Multi-Tier Parity)**: Running `scripts-linux/49-install-whatsapp/run.sh` attempts Tier 1 (Snap), Tier 2 (Flatpak), Tier 3 (GitHub Releases .deb), and Tier 4 (Chromium/Chrome PWA fallback), creating `~/.local/bin/whatsapp` and `~/.local/share/applications/whatsapp.desktop` if package managers are unavailable.
+- **AC-4 (Timeout & Anti-Hang Enforcement)**: All network requests, package installations, and process executions are bounded by watchdog timers (max 30-60s) preventing indefinite CI/CD hangs or interactive prompts.
+- **AC-5 (Idempotency & Reversibility)**: Running the installer a second time detects the existing installation and exits with code `0`. Running with verb `uninstall` completely purges all created shortcuts, registry keys, and application binaries.
+- **AC-6 (Coding Guidelines & Relative Paths)**: 100% compliance with `AGENTS.md` - strict positive boolean naming (`is*`, `has*`), functions <= 8-15 lines, no nested ifs, CODE RED logging (`Write-InstallPaths`, `Write-FileError`), and zero absolute filesystem paths across all code and documentation.
+
+---
+
+## Commands
+
+| Command | Description |
+|---|---|
+| `.\run.ps1 -I 49` | Install WhatsApp Desktop across Windows Server or standard Windows |
+| `.\run.ps1 install whatsapp` | Alias to install WhatsApp Desktop via root dispatcher |
+| `.\run.ps1 -I 49 uninstall` | Uninstall WhatsApp Desktop, purge shortcuts, registry handlers, and binary |
+| `bash scripts-linux/49-install-whatsapp/run.sh` | Install WhatsApp on Ubuntu / Linux via Snap, Flatpak, Deb, or PWA |
+| `bash scripts-linux/run.sh whatsapp` | Dispatch WhatsApp installer via Linux root dispatcher |
+
+---
+
+## Flags
+
+| Flag | Type | Description |
+|---|---|---|
+| `-Help` / `--help` | switch | Display script help and usage information |
+| `-PurgeUserData` | switch | Optional flag during uninstall to remove isolated user profile directory |
+
+---
+
+## Exit Codes
+
+| Exit Code | Meaning |
+|---|---|
+| `0` | Success / Idempotent skip |
+| `1` | Installation or verification failure |
+| `2` | Unknown command or invalid argument |
+
+---
+
+## Verification
+
+Run PowerShell verification:
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/49-install-whatsapp/run.ps1
+Test-Path "$env:LOCALAPPDATA\WhatsApp\WhatsApp.exe"
+```
+
+Run Linux syntax verification:
+```bash
+bash -n scripts-linux/49-install-whatsapp/run.sh
+```
+

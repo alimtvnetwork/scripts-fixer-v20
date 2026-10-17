@@ -25,8 +25,12 @@
 
 Implementation folder for **Script 49 — Install Whatsapp**. Installs WhatsApp Desktop across Windows Server (2019/2022/2025) and client Windows (10/11):
 - **Windows Server Engine**: Solves the Microsoft Store / Winget platform rejection (`0x803fb104`) on Windows Server by compiling and deploying a native application launcher at `%LOCALAPPDATA%\WhatsApp\WhatsApp.exe` backed by an isolated Chromium profile (`%LOCALAPPDATA%\WhatsApp\User Data`), desktop shortcuts, Start Menu integration, and `whatsapp://` URL protocol handling.
-- **Client Windows Engine**: Installs via Chocolatey / Winget, falling back to the official installer and the native desktop engine if standard methods fail.
-- **Strict Watchdog Enforcement**: All external operations have strict timeout bounds (30s) to prevent hangs.
+- **Client Windows Waterfall**: Orchestrates automated installation on Windows 10/11 through a multi-tiered pipeline:
+  1. **Winget MSStore**: Installs package `9NKSQGP7F2NH` with `--disable-interactivity --accept-package-agreements --accept-source-agreements --silent` bounded by a 60-second watchdog.
+  2. **Chocolatey Fallback**: Deploys `whatsapp` package via Chocolatey if winget is unavailable or unverified.
+  3. **Official Installer Fallback**: Downloads official setup payload, validating against corrupted stubs (< 1MB) with a 30-second watchdog.
+  4. **Native Engine Fail-Safe**: Falls back to the Windows Server Native Desktop Launcher engine if all external package channels are exhausted.
+- **Strict Watchdog Enforcement**: All external operations have strict timeout bounds (60s for winget, 30s for installers) to prevent unattended automation hangs.
 
 ## Quick start
 
@@ -38,7 +42,7 @@ Implementation folder for **Script 49 — Install Whatsapp**. Installs WhatsApp 
 .\run.ps1 install whatsapp
 .\run.ps1 install wa
 
-# Uninstall (sweeps registry, launcher executable, and shortcuts)
+# Uninstall (sweeps registry, launcher executable, shortcuts, and tracking)
 .\run.ps1 -I 49 uninstall
 ```
 
@@ -46,9 +50,9 @@ Implementation folder for **Script 49 — Install Whatsapp**. Installs WhatsApp 
 
 Windows Server environments lack consumer Microsoft Store packages and reject MSIX Store packages with error `0x803fb104`. Script 49 automatically detects Windows Server editions (`Test-IsWindowsServer`) and activates the Native Desktop Launcher Engine:
 1. Detects available Chromium browser (Google Chrome or Microsoft Edge).
-2. Compiles a native Windows executable at `%LOCALAPPDATA%\WhatsApp\WhatsApp.exe`.
+2. Compiles a native Windows executable at `%LOCALAPPDATA%\WhatsApp\WhatsApp.exe` via `Add-Type`.
 3. Creates isolated user profile directory `%LOCALAPPDATA%\WhatsApp\User Data`.
-4. Creates Start Menu and Desktop shortcuts with the WhatsApp icon.
+4. Creates Start Menu and Desktop shortcuts with safe desktop path resolution.
 5. Registers the `whatsapp://` URL protocol handler in the user registry.
 
 ## Layout
@@ -56,9 +60,9 @@ Windows Server environments lack consumer Microsoft Store packages and reject MS
 | File | Purpose |
 |------|---------|
 | `run.ps1` | Entry point dispatched by the root `run.ps1`. |
-| `helpers/whatsapp.ps1` | Core logic for Windows Server engine, Chocolatey install, official fallback, and cleanup. |
+| `helpers/whatsapp.ps1` | Core logic for Windows Server engine, winget, Chocolatey, official fallback, and cleanup. |
 | `config.json` | Configuration containing timeout bounds, package names, registry keys, and shortcut paths. |
-| `log-messages.json` | Localized and structured log catalog. |
+| `log-messages.json` | Localized and structured log catalog for winget, timeouts, and engine status. |
 | `manifest.json` | Script manifest metadata conforming to schema 1.0. |
 | `readme.md` | User documentation and usage guide. |
 

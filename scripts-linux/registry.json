@@ -213,6 +213,12 @@
       "title": "Ubuntu font (apt)"
     },
     {
+      "id": "49",
+      "folder": "49-install-whatsapp",
+      "phase": "04",
+      "title": "WhatsApp Desktop (snap|flatpak|deb|PWA)"
+    },
+    {
       "id": "51",
       "folder": "51-install-flameshot",
       "phase": "10",

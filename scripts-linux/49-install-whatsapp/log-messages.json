@@ -1,1 +1,30 @@
-{"description":"Log messages for 49-install-whatsapp (Ubuntu)","messages":{"addingFlathub":"[49] adding flathub remote","alreadyInstalled":"[49] WhatsApp already installed","debDepsFix":"[49] dpkg exited non-zero (deps?) -- running apt-get install -f","debDownloading":"[49] downloading .deb: {url}","debFallback":"[49] flatpak path failed -- trying .deb fallback","debInstalling":"[49] installing .deb via dpkg","debOk":"[49] installed via .deb ({pkg})","flatpakAppFail":"[49] flatpak install failed/timed out for {appId} -- trying next","flatpakAppOk":"[49] installed via flatpak: {appId}","flatpakInstalled":"[49] flatpak installed","installingFlatpak":"[49] flatpak missing -- installing via apt","noMethod":"[49] all install methods failed","notDebian":"[49] not Ubuntu/Debian -- refusing","start":"[49] Starting WhatsApp installer","tryingFlatpakApp":"[49] trying flatpak install: {appId}","uninstalled":"[49] WhatsApp removed","verifyFail":"[49] WhatsApp not installed","verifyOk":"[49] WhatsApp detected"}}
+{
+  "description": "Log messages for 49-install-whatsapp (Ubuntu)",
+  "messages": {
+    "start": "[49] Starting WhatsApp installer",
+    "alreadyInstalled": "[49] WhatsApp already installed",
+    "notDebian": "[49] not Ubuntu/Debian -- refusing",
+    "tryingSnap": "[49] trying snap install: whatsapp-for-linux",
+    "snapOk": "[49] installed via snap: whatsapp-for-linux",
+    "snapFail": "[49] snap path failed -- trying flatpak",
+    "installingFlatpak": "[49] flatpak missing -- installing via apt",
+    "flatpakInstalled": "[49] flatpak installed",
+    "addingFlathub": "[49] adding flathub remote",
+    "tryingFlatpakApp": "[49] trying flatpak install: {appId}",
+    "flatpakAppOk": "[49] installed via flatpak: {appId}",
+    "flatpakAppFail": "[49] flatpak install failed/timed out for {appId} -- trying next",
+    "debFallback": "[49] flatpak path failed -- trying .deb fallback",
+    "debDownloading": "[49] downloading .deb: {url}",
+    "debInstalling": "[49] installing .deb via dpkg",
+    "debDepsFix": "[49] dpkg exited non-zero -- running apt-get install -f",
+    "debOk": "[49] installed via .deb ({pkg})",
+    "pwaFallback": "[49] .deb path failed -- trying PWA fallback",
+    "pwaNoBrowser": "[49] no supported browser found for PWA",
+    "pwaDeploying": "[49] deploying PWA launcher with browser: {browser}",
+    "noMethod": "[49] all install methods failed",
+    "verifyOk": "[49] WhatsApp detected",
+    "verifyFail": "[49] WhatsApp not installed",
+    "uninstallAll": "[49] uninstalling WhatsApp across all tiers",
+    "uninstalled": "[49] WhatsApp removed"
+  }
+}

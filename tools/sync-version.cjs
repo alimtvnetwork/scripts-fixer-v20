@@ -16,20 +16,20 @@ const ROOT = path.resolve(__dirname, "..");
 const SRC = path.join(ROOT, "scripts", "version.json");
 const DST = path.join(ROOT, "version.json");
 
-const canonical = JSON.parse(fs.readFileSync(SRC, "utf8")).version;
+const canonical = JSON.parse(fs.readFileSync(SRC, "utf8").replace(/^\uFEFF/, "")).version;
 if (!canonical) {
   console.error(`[FAIL] no .version in ${SRC}`);
   process.exit(2);
 }
 
 const today = new Date().toISOString().slice(0, 10);
-const root = JSON.parse(fs.readFileSync(DST, "utf8"));
+const root = JSON.parse(fs.readFileSync(DST, "utf8").replace(/^\uFEFF/, ""));
 delete root.Version;
 const updated = { ...root, version: canonical, updated: today };
 const out = JSON.stringify(updated, null, 2) + "\n";
 
 if (process.argv.includes("--check")) {
-  const onDisk = fs.readFileSync(DST, "utf8");
+  const onDisk = fs.readFileSync(DST, "utf8").replace(/^\uFEFF/, "");
   // Compare only version field to avoid date churn on read-only checks.
   const onDiskParsed = JSON.parse(onDisk);
   if (onDiskParsed.version !== canonical || onDiskParsed.Version !== undefined) {
