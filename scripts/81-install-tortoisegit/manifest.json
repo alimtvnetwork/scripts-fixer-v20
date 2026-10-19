@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "id": "81",
+  "name": "TortoiseGit 2.4.0.2 (choco)",
+  "summary": "TortoiseGit Windows Explorer Git client (v2.4.0.2)",
+  "aliases": [
+    "tortoisegit",
+    "tgit",
+    "tortoise-git"
+  ],
+  "platforms": {
+    "windows": {
+      "folder": "81-install-tortoisegit",
+      "entrypoint": "run.ps1"
+    }
+  },
+  "depends_on": [
+    "07-install-git"
+  ],
+  "idempotent": true,
+  "destructive": false,
+  "commands": [
+    "install",
+    "check",
+    "uninstall"
+  ],
+  "phase": "02",
+  "tags": [
+    "git",
+    "vcs",
+    "gui",
+    "windows",
+    "shell-extension"
+  ]
+}

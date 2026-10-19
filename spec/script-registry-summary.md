@@ -1,6 +1,6 @@
 # Script Registry Summary
 
-> Auto-generated report of all 74 registered scripts, 583 keywords, and 123 mode entries.
+> Auto-generated report of all 75 registered scripts, 587 keywords, and 123 mode entries.
 > Regenerate with: `node scripts/_internal/generate-registry-summary.cjs`
 
 ## Overview
@@ -81,6 +81,7 @@
 | 77 | 77-install-utorrent | 4 | -- |
 | 78 | 78-install-codex | 8 | -- |
 | 79 | 79-install-plotcode | 7 | -- |
+| 81 | 81-install-tortoisegit | 4 | -- |
 
 ## Detailed Script Reference
 
@@ -1175,6 +1176,19 @@ plotcode, plot, install-plotcode, plotcode-ui, all-ai, ai-suite, ai
 
 ---
 
+### Script 81: TortoiseGit
+
+- **Folder**: `81-install-tortoisegit`
+- **Description**: Windows Explorer shell interface for Git
+- **Choco package**: `tortoisegit`
+
+**Keywords** (4):
+```
+tortoisegit, tortoise-git, tgit, tortoise
+```
+
+---
+
 ## Combo Keywords
 
 Keywords that trigger multiple scripts in sequence.
@@ -1320,8 +1334,8 @@ Keywords routed to top-level dispatchers (not script IDs).
 
 | Metric | Count |
 |--------|-------|
-| Registered scripts | 74 |
-| Total keywords (numeric-target) | 583 |
+| Registered scripts | 75 |
+| Total keywords (numeric-target) | 587 |
 | Subcommand keywords | 62 |
 | Mode entries | 123 |
 | Scripts with modes | 13 |

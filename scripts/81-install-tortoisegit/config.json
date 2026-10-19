@@ -1,0 +1,18 @@
+{
+  "devDir": {
+    "mode": "smart",
+    "default": "auto",
+    "override": ""
+  },
+  "tortoisegit": {
+    "enabled": true,
+    "name": "TortoiseGit",
+    "desc": "Windows Explorer shell interface for Git",
+    "chocoPackage": "tortoisegit",
+    "version": "2.4.0.2",
+    "nupkgUrl": "https://packages.chocolatey.org/TortoiseGit.2.4.0.2.nupkg",
+    "chocoUrl": "https://community.chocolatey.org/packages/TortoiseGit/2.4.0.2",
+    "sha256_x64": "DF65D96A8B0AB9D04D3A45591C166CE37AFE0BE77DBDFCB243CD19F89EE860F3",
+    "sha256_x32": "9D703393CA4979E8C559FB8D320CBF7FBE7025EDE90A688B6F0EEEE7973C83E5"
+  }
+}

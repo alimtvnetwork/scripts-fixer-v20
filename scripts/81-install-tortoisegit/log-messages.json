@@ -1,0 +1,41 @@
+{
+  "scriptName": "Install TortoiseGit",
+  "description": "Installs TortoiseGit 2.4.0.2 -- Windows Shell interface for Git using Chocolatey or direct MSI fallback.",
+  "messages": {
+    "notAdmin": "This script requires admin privileges. Please run as Administrator.",
+    "checking": "Checking for TortoiseGit...",
+    "found": "TortoiseGit is already installed",
+    "notFound": "TortoiseGit not found -- installing...",
+    "installing": "Installing TortoiseGit 2.4.0.2 via Chocolatey...",
+    "installSuccess": "TortoiseGit 2.4.0.2 installed successfully",
+    "installFailed": "TortoiseGit install failed: {error}",
+    "downloading": "Downloading TortoiseGit 2.4.0.2 package...",
+    "extracting": "Extracting TortoiseGit installer MSI...",
+    "msiInstalling": "Running silent MSI installation...",
+    "notInPath": "TortoiseGit installed (may need explorer/shell restart to refresh shell overlays)",
+    "setupComplete": "TortoiseGit 2.4.0.2 setup complete",
+    "disabled": "TortoiseGit install is disabled in config",
+    "uninstalling": "Uninstalling TortoiseGit...",
+    "uninstallSuccess": "TortoiseGit uninstalled successfully.",
+    "uninstallFailed": "TortoiseGit uninstall failed -- package may need manual removal.",
+    "uninstallComplete": "Uninstall complete. Package removed, tracking purged."
+  },
+  "help": {
+    "commands": {
+      "install": "Install TortoiseGit 2.4.0.2 (default)",
+      "check": "Check if TortoiseGit is installed",
+      "uninstall": "Uninstall TortoiseGit, remove tracking, clean up"
+    },
+    "parameters": {
+      "-Help": "Show script help and parameter syntax"
+    },
+    "examples": [
+      ".\\run.ps1 -I 81",
+      ".\\run.ps1 install tortoisegit",
+      ".\\run.ps1 install tgit",
+      ".\\run.ps1 -I 81 -- check",
+      ".\\run.ps1 -I 81 -- -Help",
+      ".\\run.ps1 -I 81 -- uninstall"
+    ]
+  }
+}

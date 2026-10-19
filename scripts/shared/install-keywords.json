@@ -114,6 +114,18 @@
     "githubdesktop": [
       8
     ],
+    "tortoisegit": [
+      81
+    ],
+    "tortoise-git": [
+      81
+    ],
+    "tgit": [
+      81
+    ],
+    "tortoise": [
+      81
+    ],
     "cpp": [
       9
     ],
@@ -1935,6 +1947,15 @@
   },
   "claude-code": {
     "id": "80"
+  },
+  "tortoisegit": {
+    "id": "81"
+  },
+  "tgit": {
+    "id": "81"
+  },
+  "tortoise-git": {
+    "id": "81"
   },
   "tar": {
     "id": "81"

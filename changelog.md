@@ -1,5 +1,15 @@
 # Changelog
 
+## [v1.62.0] - 2026-10-19
+
+### Added
+- Add TortoiseGit 2.4.0.2 installer (Script 81) with Chocolatey package support and standalone offline MSI extraction fallback
+- Register TortoiseGit keywords and aliases (tortoisegit, tortoise-git, tgit, tortoise) in script registry and install-keywords.json
+- Add application specification in 02-spec/81-install-tortoisegit/
+- Add OS direct invocation wrapper scripts/os/windows/install-tortoisegit.ps1
+
+---
+
 ## [v1.61.11] - 2026-10-18
 
 ### Added

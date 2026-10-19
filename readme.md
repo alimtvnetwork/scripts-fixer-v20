@@ -2053,6 +2053,7 @@ A modular collection of **46 PowerShell scripts** that automate everything from 
 | 51 | **[Lightshot](scripts/51-install-lightshot/)** | Install Lightshot + opinionated registry tweaks | Yes |
 | 52 | **[VSCode Folder Repair](scripts/52-vscode-folder-repair/)** | Repair VSCode folder context-menu (subcommands: dry-run, restore, refresh, ...) | Yes |
 | 59 | **[ConEmu Context Menu](scripts/59-conemu-context-menu/)** | Add a **ConEmu** submenu with **Open Here** + **Open as Admin** to folder & background right-click menus | Yes |
+| 81 | **[TortoiseGit](scripts/81-install-tortoisegit/)** | Install TortoiseGit 2.4.0.2 Windows Explorer Git client via Chocolatey / MSI | Yes |
 
 ---
 
@@ -2612,6 +2613,7 @@ scripts/
   45-install-docker/           # Docker Desktop + Compose
   46-install-kubernetes/       # kubectl + minikube + Helm
   59-conemu-context-menu/      # ConEmu submenu right-click menu
+  81-install-tortoisegit/      # TortoiseGit Windows Explorer Git client (v2.4.0.2)
   audit/                       # Audit scanner
 spec/                          # Specifications per script
 suggestions/                   # Improvement ideas

@@ -26,6 +26,7 @@ dist-ssr
 .gitmap/pipeline/
 .gitmap/*.log
 release-assets
+.release/
 /.logs
 /.installed
 /.resolved

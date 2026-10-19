@@ -635,6 +635,8 @@ scripts:
       phase: '15'
       title: Change OpenSSH listening port (backup+validate+prompt+ufw)
   - id: '81'
+    windows:
+      folder: 81-install-tortoisegit
     linux:
       folder: 81-change-port-mysql
       phase: '15'
