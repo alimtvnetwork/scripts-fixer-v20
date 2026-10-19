@@ -74,6 +74,8 @@ antigravity-resume_task.json
 .antigravity_resume_task.json
 antigravity_resume_task.json
 .antigravity-resume_task.json
+*antigravity*resume_task*.json
+.antigravity_resume_task*.json
 
 
 # GitMap & Task Persistence
