@@ -21,6 +21,12 @@
     "developer":    { "kind": "exact",    "target": "dev" },
     "devadvance":   { "kind": "exact",    "target": "dev-advance" },
     "dev-advanced": { "kind": "exact",    "target": "dev-advance" },
-    "full":         { "kind": "exact",    "target": "dev-advance" }
+    "full":         { "kind": "exact",    "target": "dev-advance" },
+
+    "dev-rust":         { "kind": "exact",    "target": "agm-build-tools" },
+    "agm-tools":        { "kind": "exact",    "target": "agm-build-tools" },
+    "agm-build":        { "kind": "exact",    "target": "agm-build-tools" },
+    "rust-build-tools": { "kind": "exact",    "target": "agm-build-tools" },
+    "build-tools":      { "kind": "exact",    "target": "agm-build-tools" }
   }
 }

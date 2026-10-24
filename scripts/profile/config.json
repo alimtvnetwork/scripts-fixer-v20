@@ -453,6 +453,24 @@
           "label": "Antigravity Manager"
         }
       ]
+    },
+    "agm-build-tools": {
+      "label": "AGM Build Tools",
+      "description": "Antigravity Manager build toolchain: Rust (rustup + cargo + rustfmt + clippy) + LLVM & Clang (compiler toolchain & libclang for bindgen).",
+      "steps": [
+        {
+          "kind": "script",
+          "id": 44,
+          "mode": "all",
+          "label": "Rust (rustup + cargo + rustfmt + clippy)"
+        },
+        {
+          "kind": "script",
+          "id": 110,
+          "mode": "all",
+          "label": "LLVM & Clang (compiler toolchain + libclang)"
+        }
+      ]
     }
   },
   "modeEnvVars": {
