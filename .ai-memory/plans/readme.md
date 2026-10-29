@@ -2,3 +2,7 @@
 
 See [01-index.md](./01-index.md) for the master index of all plans (pending & completed).
 Latest completed plan: [install-whatsapp-on-windows-server.md](./completed/install-whatsapp-on-windows-server.md)
+
+## Recent Completed Tasks Register
+
+- 2026-10-29 — Recorded the warm-up gate session. Sequences 08 through 13 remain pending catalogs. The live gate engine is in go-email-reader commit `f3864ee`.

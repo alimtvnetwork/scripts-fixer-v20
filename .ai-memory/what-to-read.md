@@ -161,3 +161,6 @@ Run the **write-memory** prompt: `01-prompts/01-write-memory.md`. It enforces au
 ## Changelog
 
 - `2026-09-13T07:44:14Z` — Added `folder-structure.md`, `coding-guidelines.md`, and `02-spec/commands/02-nginx-domain-manager.md`. Pointed master memory and plans to `01-index.md`. Synchronized root `readme.md` AI onboarding table.
+- .ai-memory/memory/readme.md
+- .ai-memory/memory/learned/01-recent-session-2026-10-29.md
+- .ai-memory/plans/readme.md

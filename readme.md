@@ -2795,3 +2795,9 @@ You may use, copy, modify, merge, publish, distribute, sublicense, and/or sell c
 
 See `.ai-memory/plans/01-index.md` for the **Recent Completed Tasks Register** tracking the last 20 tasks.
 
+
+## Memory
+
+- .ai-memory/memory/readme.md
+- .ai-memory/memory/learned/01-recent-session-2026-10-29.md
+- .ai-memory/plans/readme.md
