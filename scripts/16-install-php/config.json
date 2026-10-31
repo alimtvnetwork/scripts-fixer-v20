@@ -2,6 +2,7 @@
   "enabled": true,
   "php": {
     "enabled": true,
+    "version": "8.5.12",
     "chocoPackage": "php",
     "verifyCommand": "php",
     "versionFlag": "--version"

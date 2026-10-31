@@ -62,22 +62,24 @@ if ($Help -or $Command -eq "--help") {
 
 # -- Interactive prompt (collect PHP version BEFORE installing anything) -----
 #  -Interactive | --interactive | -i  -> ask before any install verb.
-#  Windows Chocolatey installs the latest by default; the captured answer is
-#  persisted to .resolved/16-interactive.json so downstream tools have an
-#  audit trail of what the operator requested.
+#  Default PHP is pinned to 8.5.12 (not Chocolatey latest): the captured
+#  answer is persisted to .resolved/16-interactive.json so downstream tools
+#  have an audit trail of what the operator requested. The pinned version is
+#  passed to Install-Php, which installs it via choco --version; a previously
+#  selected 'latest' never silently stands in for 8.5.12.
 $argList = @()
 try { $argList = @($MyInvocation.UnboundArguments) } catch { $argList = @() }
 $isInteractive = $Interactive -or (Test-InteractiveFlag -Argv $argList)
-if ([string]::IsNullOrWhiteSpace($PhpVersion)) { $PhpVersion = 'latest' }
+if ([string]::IsNullOrWhiteSpace($PhpVersion)) { $PhpVersion = '8.5.12' }
 
 if ($isInteractive) {
     Write-Host ""
     Write-Host "  --interactive: collecting PHP version" -ForegroundColor Cyan
-    $PhpVersion = Read-PromptWithDefault -Label 'PHP version (latest|8.1|8.2|8.3)' -Default $PhpVersion -Validator { param($v) Test-PhpVersion -Value $v }
+    $PhpVersion = Read-PromptWithDefault -Label 'PHP version (8.5.12|8.1|8.2|8.3|latest)' -Default $PhpVersion -Validator { param($v) Test-PhpVersion -Value $v }
     Write-Host ("  -> PHP version='{0}'" -f $PhpVersion) -ForegroundColor Green
 }
 if (-not (Test-PhpVersion -Value $PhpVersion)) {
-    Write-Host ("Invalid -PhpVersion '{0}' (expected: latest|8.1|8.2|8.3)" -f $PhpVersion) -ForegroundColor Red
+    Write-Host ("Invalid -PhpVersion '{0}' (expected: 8.5.12|8.1|8.2|8.3|latest)" -f $PhpVersion) -ForegroundColor Red
     return
 }
 # Persist captured answer.
@@ -101,7 +103,7 @@ Write-Banner -Title $logMessages.scriptName
 # -- Triple-path install trio (Source / Temp / Target) -----------------------
 Write-InstallPaths `
     -Tool   "PHP" `
-    -Source "https://chocolatey.org/install (pkg: php)" `
+    -Source "https://chocolatey.org/install (pkg: php, default version 8.5.12 pinned via --version)" `
     -Temp   ($env:TEMP + "\chocolatey") `
     -Target "C:\tools\php"
 # -- Initialize logging --------------------------------------------------------
@@ -147,7 +149,7 @@ Write-Host ""
 $phpOk = $true
 $isPhpNeeded = $Mode -ne "phpmyadmin-only"
 if ($isPhpNeeded) {
-    $phpOk = Install-Php -Config $config.php -LogMessages $logMessages
+    $phpOk = Install-Php -Config $config.php -LogMessages $logMessages -PhpVersion $PhpVersion
 } else {
     Write-Log "Skipping PHP installation (phpmyadmin-only mode)" -Level "info"
 }

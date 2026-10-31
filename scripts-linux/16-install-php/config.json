@@ -1,1 +1,1 @@
-{ "install": { "apt": "php-cli php-fpm" } }
+{ "install": { "apt": "php8.5-cli php8.5-fpm", "source": "ondrej/php PPA", "version": "8.5.12" } }

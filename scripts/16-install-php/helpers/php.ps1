@@ -16,8 +16,16 @@ if ((Test-Path $_chocoUtilsPath) -and -not (Get-Command Install-ChocoPackage -Er
 function Install-Php {
     param(
         [PSCustomObject]$Config,
-        $LogMessages
+        $LogMessages,
+        [string]$PhpVersion = ''
     )
+
+    # Requested version: caller > config > pinned default. Never fall back
+    # to an unpinned install: 'latest' is only honoured when explicitly asked.
+    $requestedVersion = $PhpVersion
+    if ([string]::IsNullOrWhiteSpace($requestedVersion)) { $requestedVersion = $Config.version }
+    if ([string]::IsNullOrWhiteSpace($requestedVersion)) { $requestedVersion = '8.5.12' }
+    $isPinned = $requestedVersion -match '^[0-9]+\.[0-9]+\.[0-9]+$'
 
     $isDisabled = -not $Config.enabled
     if ($isDisabled) {
@@ -32,6 +40,40 @@ function Install-Php {
         $version = try { & $Config.verifyCommand $Config.versionFlag 2>&1 | Select-Object -First 1 } catch { $null }
         $versionStr = if ($version) { "$version".Trim() } else { "" }
         $hasVersion = -not [string]::IsNullOrWhiteSpace($versionStr)
+        $installedVersion = if ($versionStr -match 'PHP\s+([0-9]+\.[0-9]+\.[0-9]+)') { $Matches[1] } else { "" }
+        $isExactMatch = $isPinned -and ($installedVersion -eq $requestedVersion)
+
+        # Pinned request + exact version already present: done, no reinstall.
+        if ($isExactMatch) {
+            Write-Log ($LogMessages.messages.phpFound -replace '\{version\}', $version) -Level "info"
+            Save-InstalledRecord -Name "php" -Version $versionStr
+            return $true
+        }
+
+        # Pinned request + different version present: a different PHP is NOT
+        # a success. Move it to the pinned version instead of reporting ok.
+        if ($isPinned -and $hasVersion -and -not $isExactMatch) {
+            Write-Log ("PHP {0} found, but {1} was requested -- upgrading to the pinned version." -f $installedVersion, $requestedVersion) -Level "warn"
+            $hasChocoProcess = $null -ne (Get-Command Invoke-ChocoProcess -ErrorAction SilentlyContinue)
+            if ($hasChocoProcess) {
+                $upgradeResult = Invoke-ChocoProcess -ArgumentList @("upgrade", $Config.chocoPackage, "--version", $requestedVersion, "--allow-downgrade", "-y") -Label "choco upgrade $($Config.chocoPackage) $requestedVersion"
+                $hasUpgradeFailed = -not $upgradeResult.Success
+                if ($hasUpgradeFailed) {
+                    Write-Log ($LogMessages.messages.phpInstallFailed -replace '\{error\}', "choco upgrade to $requestedVersion failed") -Level "error"
+                    return $false
+                }
+                $env:Path = [Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [Environment]::GetEnvironmentVariable("Path", "User")
+                $versionAfter = try { & $Config.verifyCommand $Config.versionFlag 2>&1 | Select-Object -First 1 } catch { $null }
+                $installedAfter = if ("$versionAfter" -match 'PHP\s+([0-9]+\.[0-9]+\.[0-9]+)') { $Matches[1] } else { "" }
+                if ($installedAfter -eq $requestedVersion) {
+                    Write-Log ($LogMessages.messages.phpInstallSuccess -replace '\{version\}', $versionAfter) -Level "success"
+                    Save-InstalledRecord -Name "php" -Version "$versionAfter".Trim()
+                    return $true
+                }
+            }
+            Write-Log ($LogMessages.messages.phpInstallFailed -replace '\{error\}', "installed PHP $installedVersion does not match pinned $requestedVersion") -Level "error"
+            return $false
+        }
 
         # Check .installed/ tracking
         if ($hasVersion) {
@@ -60,7 +102,11 @@ function Install-Php {
     Write-Log $LogMessages.messages.phpInstalling -Level "info"
 
     try {
-        $isInstalled = Install-ChocoPackage -PackageName $Config.chocoPackage
+        $isInstalled = if ($isPinned) {
+            Install-ChocoPackage -PackageName $Config.chocoPackage -Version $requestedVersion
+        } else {
+            Install-ChocoPackage -PackageName $Config.chocoPackage
+        }
         $hasInstallFailed = -not $isInstalled
         if ($hasInstallFailed) {
             Write-FileError -FilePath "php.exe" -Operation "resolve" -Reason "Chocolatey install returned failure for '$($Config.chocoPackage)'" -Module "Install-Php"
@@ -81,6 +127,13 @@ function Install-Php {
     if ($phpCmd) {
         $version = & $Config.verifyCommand $Config.versionFlag 2>&1 | Select-Object -First 1
         $versionStr = "$version".Trim()
+        $installedAfter = if ($versionStr -match 'PHP\s+([0-9]+\.[0-9]+\.[0-9]+)') { $Matches[1] } else { "" }
+        $isWrongVersion = $isPinned -and ($installedAfter -ne $requestedVersion)
+        if ($isWrongVersion) {
+            Write-Log ($LogMessages.messages.phpInstallFailed -replace '\{error\}', "installed PHP $installedAfter does not match pinned $requestedVersion") -Level "error"
+            Save-InstalledError -Name "php" -ErrorMessage "installed PHP $installedAfter does not match pinned $requestedVersion"
+            return $false
+        }
         Write-Log ($LogMessages.messages.phpInstallSuccess -replace '\{version\}', $version) -Level "success"
         Save-InstalledRecord -Name "php" -Version $versionStr
 

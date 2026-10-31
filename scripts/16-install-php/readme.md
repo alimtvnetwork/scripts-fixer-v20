@@ -25,6 +25,18 @@
 
 Implementation folder for **Script 16 — Install Php**. The full design contract lives in the spec.
 
+## PHP version
+
+The default PHP version is pinned to **8.5.12** — it is not an unpinned
+"latest" install. On Windows it installs via Chocolatey as
+`choco install php --version 8.5.12 -y`, and an already-installed PHP of a
+different version is upgraded to the pinned version instead of being
+reported as done. Pass `-PhpVersion` to request a different version
+explicitly. On Linux the same pin is applied from the Ondrej PHP
+repository (see `scripts-linux/16-install-php/run.sh`); on macOS
+Homebrew cannot pin a patch version, so `brew install php@8.5` gives the
+latest 8.5.x, not 8.5.12 exactly.
+
 ## Quick start
 
 ```powershell
