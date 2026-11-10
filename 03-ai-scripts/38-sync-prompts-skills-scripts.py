@@ -161,13 +161,18 @@ EXCLUDE_EXTS = {
 
 
 def is_spec_21(path: Path) -> bool:
-    """Check if directory/file belongs to 02-spec/21-* or higher application specs which must NEVER be synced."""
+    """Check if directory/file belongs to 02-spec/21-* or higher application specs which must NEVER be synced (excluding 27-bug-reporting)."""
     norm = str(path).replace("\\", "/").lower()
 
     if "/02-spec/" not in norm and not norm.startswith("02-spec/"):
         return False
 
+    if "/02-spec/27-" in norm or norm.startswith("02-spec/27-") or "/02-spec/27_bug" in norm or "27-bug-reporting" in norm:
+        return False
+
     for i in range(21, 100):
+        if i == 27:
+            continue
         pattern = f"{i:02d}-"
 
         if f"/02-spec/{pattern}" in norm or norm.startswith(f"02-spec/{pattern}"):
