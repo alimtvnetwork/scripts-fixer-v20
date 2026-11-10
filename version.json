@@ -1,5 +1,5 @@
 {
-  "releaseDate": "2026-11-07",
+  "releaseDate": "2026-11-10",
   "syncManifest": {
     "manifestVersion": "1.0.0",
     "generatedAt": "2026-11-01T09:39:32Z",
@@ -1445,5 +1445,5 @@
     }
   },
   "updated": "2026-10-19",
-  "version": "1.62.46"
+  "version": "1.62.47"
 }
