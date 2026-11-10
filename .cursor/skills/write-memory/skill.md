@@ -5,7 +5,7 @@ description: "Persist session decisions, learned conventions, resolved ambiguiti
 
 # Memory Persistence & Issue Logging
 
-> **Invocation:** `@[write-memory](file;.cursor/skills/write-memory)`
+> **Invocation:** `@[write-memory](directory;.cursor/skills/write-memory)`
 
 Persist what happened this turn so the next AI knows everything without guessing. Every decision, plan change, unresolved ambiguity, newly discovered pattern, and fixed bug must be written to `.ai-memory/` before this turn ends.
 

@@ -5,6 +5,8 @@ description: "Executes the Legacy Grouped Task Decomposition - Planning Spec pro
 
 # Legacy Grouped Task Decomposition - Planning Spec
 
+> **Invocation:** `@[plan-steps-by-groups](directory;.agents/skills/plan-steps-by-groups)`
+
 Source prompt: `01-prompts/12-old-plan-prompts/03-plan-steps-by-groups.md`
 
 ## Instructions

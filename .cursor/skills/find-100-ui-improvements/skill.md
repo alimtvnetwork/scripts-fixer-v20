@@ -5,7 +5,7 @@ description: "Executes the Find 100 Improvements in the UI Level prompt. Autonom
 
 # Find 100 Improvements in the UI Level
 
-> **Invocation:** `@[find-100-ui-improvements](file;.cursor/skills/find-100-ui-improvements)`
+> **Invocation:** `@[find-100-ui-improvements](directory;.cursor/skills/find-100-ui-improvements)`
 
 Source prompt: `01-prompts/30-improvements/01-find-100-improvements-in-ui-level.md`
 

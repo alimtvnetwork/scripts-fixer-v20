@@ -5,7 +5,7 @@ description: "Autonomously audits, refactors, and validates repository-wide bool
 
 # Skill: Coding Guidelines — Booleans, Naming & Enums (`cg-boolean-and-naming`)
 
-> **Invocation:** `@[cg-boolean-and-naming](file;.cursor/skills/cg-boolean-and-naming)`
+> **Invocation:** `@[cg-boolean-and-naming](directory;.cursor/skills/cg-boolean-and-naming)`
 
 This skill governs autonomous execution for boolean conventions, semantic naming, enum standardization, and conditional flattening across all source files in alignment with `02-spec/02-coding-guidelines/`.
 

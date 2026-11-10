@@ -3,15 +3,22 @@
 Format input text according to exact execution with minor release template below without conversational filler or commentary.
 
 1. Capture input text verbatim, stripping verbal fillers (`um`, `ah`, `uh`, `like`, leading `Okay`, excess `so`) while preserving technical directives, parameters, flags, and file paths.
-2. Derive `<task title>` as task subject (e.g. `SEO Writing and Folder Structure Instructions`). Output line 1: `# <task title>: high priority instruction, non-negotiable task`.
+2. Derive `<task title>` as task subject (e.g. `Implement Feature X with Minor Release`). Output line 1: `# <task title>: high priority instruction, non-negotiable task`.
 3. Output `${Input Text Verbatim}` directly beneath title.
 4. Output task name and slug subheaders:
    - `## task: <task title>`
-   - `## slug: <task-slug>` (lowercase-hyphenated; when authoring directories and plan files, format as XX-<task-slug> where XX is the zero-padded sequence of that folder, e.g. `## slug: 24-seo-writing-and-folder-structure-instructions`).
-5. Construct `# Actionable Items Must Follow Non-Negotiable`: include fixed items 1-4 (pull first, spec/plan enqueue in `02-spec/21-app/XX-<slug>/` and `.ai-memory/plans/pending/XX-<slug>.md` with planning decoupled from execution, GitMap search primacy, relative Git paths mandate), discrete technical directives from input as items 5..N, penultimate CI/CD verification (`gitmap pe -t`), and final minor version bump ceremony via python script and `gitmap cpr`.
-6. Append mandatory release skill invocation suffix pointing to @[minor-bump](file;.agents/skills/minor-bump).
-7. Output plain markdown text only. Never wrap in fenced code blocks (no ```markdown or ``` fences).
-8. Relative Paths: Only add relative paths (`02-spec/...`, `.ai-memory/...`, `cmd/...`); never add absolute paths.
+   - `## slug: <task-slug>` (lowercase-hyphenated).
+5. Construct `# Actionable Items Must Follow Non-Negotiable`:
+   - Item 1: `1. Git pull BEFORE starting any work — first try \`gitmap pull <repo path>\` (or run \`gitmap pull\` in repository folder); if that fails, fall back to regular \`git pull\` and resolve merge conflicts.`
+   - Item 2: `2. Write spec under 02-spec/21-app/XX-<slug>/ and enqueue plan in .ai-memory/plans/pending/XX-<slug>.md (subtasks in .ai-memory/plans/subtasks/XX-<slug>/) first.`
+   - Item 3: `3. Search codebase exclusively via GitMap (gitmap aum search, gitmap find, gitmap cat, gitmap ps, gitmap py); TOTAL BAN on rg, ripgrep, grep, Select-String.`
+   - Item 4: `4. Strictly use relative Git paths (02-spec/..., .ai-memory/..., cmd/...); never add absolute paths.`
+   - Item 5: `5. Execute core task implementation adhering strictly to coding guidelines.`
+   - Item 6: `6. Verify pipeline telemetry via \`gitmap pe -t\` until 100% green.`
+   - Item 7: `7. Execute minor version bump release ceremony via \`python 03-ai-scripts/37-bump-version.py -t minor -s "<summary>"\` (or \`gitmap cpr "vX.Y.Z - summary"\`).`
+   followed by discrete directives from input as items 8..N.
+6. Append mandatory agent invocation suffix.
+7. Output plain markdown only. Never wrap in fenced code blocks.
 
 ${Input Text Verbatim} = Cleaned input text without verbal filler words.
 
@@ -22,25 +29,28 @@ Output Format:
 ${Input Text Verbatim}
 
 ## task: <task title>
-## slug: <task-slug>  (should not contain `xx-` here. )
+## slug: <task-slug> (should not contain `xx-` here. )
 
 # Actionable Items Must Follow Non-Negotiable
 
 1. Git pull BEFORE starting any work — first try `gitmap pull <repo path>` (or run `gitmap pull` in repository folder); if that fails, fall back to regular `git pull` and resolve any merge conflicts so the repository is completely up to date and clean before starting.
-2. Write spec under 02-spec/21-app/XX-<slug>/ and enqueue plan task in .ai-memory/plans/pending/XX-<slug>.md (subtasks in .ai-memory/plans/subtasks/XX-<slug>/) first, (xx should be figured out by the folder structure and running AI tools, xx  is sequence 01, 02)
+2. Write spec under 02-spec/21-app/XX-<slug>/ and enqueue plan task in .ai-memory/plans/pending/XX-<slug>.md (subtasks in .ai-memory/plans/subtasks/XX-<slug>/) first, (xx should be figured out by the folder structure and running AI tools, xx is sequence 01, 02)
 3. Search codebase exclusively via GitMap (gitmap aum search, gitmap find, gitmap cat, gitmap ps, gitmap py, gitmap llm train); TOTAL BAN on rg, ripgrep, grep, git grep, Select-String
 4. Strictly use relative Git paths (02-spec/..., .ai-memory/..., cmd/...); only add the relative paths, never add the absolute path during your work, and ensure this is respected on the release page and in release notes as well
-5. [Fifth actionable technical directive extracted from input]
-6. Verify live CI/CD pipeline health via gitmap pe -t until green
-7. Execute minor version bump release ceremony via python 03-ai-scripts/37-bump-version.py -t minor -s "<summary>", update changelog.md, commit atomically via gitmap cpr, tag release, and push to remote tracking branch
+5. Execute core task implementation adhering strictly to coding guidelines.
+6. Verify pipeline telemetry via `gitmap pe -t` until 100% green before cutting release.
+7. Execute minor version bump release ceremony via `python 03-ai-scripts/37-bump-version.py -t minor -s "<summary>"` (or `gitmap cpr "vX.Y.Z - summary"`).
+8. Push all release commits and tags upstream (`gitmap push --tags` / `git push --tags`).
 
 ## Must follow and spawn agent using
 
-@[minor-bump](file;.agents/skills/minor-bump)
+1. @[execute-parent-task-with-n-steps-v6](directory;.agents/skills/execute-parent-task-with-n-steps-v6)
+2. If any bug, error, or regression is mentioned: @[fix-with-rca](directory;.agents/skills/fix-with-rca)
 
 ## Additional Instructions
 
 - [/plan](slashCommand;plan) first before doing work for improved work or less friction, faster execution for AI and coding without errors and following Coding Guidelines.
-- [/learn](slashCommand;learn) from @[gitmap](file;.agents/skills/gitmap) skill to leverage GitMap high-speed search, toolchain discovery, and caching.
+- [/learn](slashCommand;learn) from @[gitmap](directory;.agents/skills/gitmap) skill to leverage GitMap high-speed search, toolchain discovery, and caching.
+- After learning and planning, immediately begin executing the plan without asking for confirmation. Autonomous execution must proceed seamlessly through completion.
 - Track in-flight file touches and prevent write collisions using GitMap RC Heatmap (`gitmap rc heatmap status` / `gitmap rc heatmap tree` / `gitmap rc heatmap live` / `gitmap rc heatmap sync`).
 - Only add relative paths, never add absolute paths during work; this must be respected on release page and in release notes as well.

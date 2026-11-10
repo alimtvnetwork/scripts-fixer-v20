@@ -5,7 +5,7 @@ description: "Safely clean build artifacts, test outputs, and temporary files wh
 
 # Clean Artifacts and Git History
 
-> **Invocation:** `@[clean-artifacts-and-git-history](file;.cursor/skills/clean-artifacts-and-git-history)`
+> **Invocation:** `@[clean-artifacts-and-git-history](directory;.cursor/skills/clean-artifacts-and-git-history)`
 
 Enforces repository cleanliness and guards against accidental commit of generated files.
 

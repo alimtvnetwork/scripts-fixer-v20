@@ -5,7 +5,7 @@ description: "Autonomously ingest, follow, and execute referenced external promp
 
 # Skill: Follow External Prompts & Guidelines (`cg-follow-other-prompts`)
 
-> **Invocation:** `@[cg-follow-other-prompts](file;.agents/skills/cg-follow-other-prompts)`
+> **Invocation:** `@[cg-follow-other-prompts](directory;.agents/skills/cg-follow-other-prompts)`
 
 This skill governs autonomous ingestion, synthesis, and execution of referenced external prompts, task instructions, and coding guideline directives across target codebases in bounded micro-batches.
 

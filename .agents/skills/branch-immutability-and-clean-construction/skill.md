@@ -5,6 +5,8 @@ description: "Executes the Branch Immutability And Clean Construction prompt. Au
 
 # Branch Immutability And Clean Construction
 
+> **Invocation:** `@[branch-immutability-and-clean-construction](directory;.agents/skills/branch-immutability-and-clean-construction)`
+
 Source prompt: `01-prompts/15-cg-execute/33-branch-immutability-and-clean-construction.md`
 
 ## Instructions

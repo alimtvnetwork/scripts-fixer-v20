@@ -5,6 +5,8 @@ description: "Autonomously develop, test, and modify GitMap's multi-node SSH del
 
 # GitMap SSH & Fleet Cluster Skill (`gitmap-ssh-cluster-fleet`)
 
+> **Invocation:** `@[gitmap-ssh-cluster-fleet](directory;.agents/skills/gitmap-ssh-cluster-fleet)`
+
 ## Mission & Purpose
 This skill provides authoritative architectural guidance, code navigation, and execution rules for developing, auditing, and enhancing GitMap's multi-node SSH orchestration, cluster management, node joining, and remote task execution.
 

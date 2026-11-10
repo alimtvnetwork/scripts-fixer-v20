@@ -6,6 +6,8 @@ description: >-
 
 # Automated Release Orchestrator
 
+> **Invocation:** `@[release-orchestrator](directory;.cursor/skills/release-orchestrator)`
+
 Execute full automated release orchestration, semantic version bumping, branch management, and tag creation using Python scripts.
 
 ## Core Directives & 5-Step Release Branching Mandate

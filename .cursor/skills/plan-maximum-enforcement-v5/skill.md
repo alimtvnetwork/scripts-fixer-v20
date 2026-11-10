@@ -5,6 +5,8 @@ description: "Executes the Legacy High-Discipline Planning Protocol (v5) - Plann
 
 # Legacy High-Discipline Planning Protocol (v5) - Planning Spec
 
+> **Invocation:** `@[plan-maximum-enforcement-v5](directory;.cursor/skills/plan-maximum-enforcement-v5)`
+
 Source prompt: `01-prompts/12-old-plan-prompts/04-plan-maximum-enforcement-v5.md`
 
 ## Instructions

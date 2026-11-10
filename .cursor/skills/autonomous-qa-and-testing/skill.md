@@ -7,6 +7,7 @@ description: "Autonomously run test suites, verify quality gates, and prevent re
 
 > [!IMPORTANT]
 > **Owner Command Required:** Running unit tests and test suites (`go test`, `npm run test`, `pytest`) is strictly prohibited in standard development turns. Tests may ONLY be run when explicitly commanded by the repository owner, or as part of the mandatory pre-release quality gate during a release ceremony. In routine turns, the full CI/CD runner is banned; run targeted single-file linters instead. The full runner (`06-cicd-local-runner.py`) may ONLY run when explicitly commanded by the repository owner.
+> **Invocation:** `@[autonomous-qa-and-testing](directory;.cursor/skills/autonomous-qa-and-testing)`  
 
 Executes comprehensive testing, linting verification, and quality gate validation.
 

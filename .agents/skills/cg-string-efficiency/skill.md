@@ -5,7 +5,7 @@ description: "Autonomously audits, optimizes, and refactors string operations an
 
 # Skill: String Operations & Memory Efficiency (`cg-string-efficiency`)
 
-> **Invocation:** `@[cg-string-efficiency](file;.agents/skills/cg-string-efficiency)`
+> **Invocation:** `@[cg-string-efficiency](directory;.agents/skills/cg-string-efficiency)`
 
 This skill governs autonomous auditing, optimization, and refactoring of inefficient string operations, comparisons, case conversions, and loop allocations across polyglot codebases (Go, TypeScript, Python, PHP, Rust, C#).
 

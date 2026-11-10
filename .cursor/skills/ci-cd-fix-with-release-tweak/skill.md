@@ -5,6 +5,8 @@ description: "Executes the Release-Triggered CI/CD Fix Tweak with Targeted Smart
 
 # Release-Triggered CI/CD Fix Tweak with Targeted Smart Testing
 
+> **Invocation:** `@[ci-cd-fix-with-release-tweak](directory;.cursor/skills/ci-cd-fix-with-release-tweak)`
+
 Source prompt: `01-prompts/16-ci-cd/02-ci-cd-fix-with-release-tweak.md`
 
 ## Instructions

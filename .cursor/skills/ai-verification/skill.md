@@ -6,7 +6,7 @@ description: >-
 
 # High Priority Instruction: Retrospective AI Verification Audit
 
-> **Invocation:** `@[ai-verification](file;.cursor/skills/ai-verification)`
+> **Invocation:** `@[ai-verification](directory;.cursor/skills/ai-verification)`
 
 Use this skill when tasked with performing a retrospective verification of recent tasks in Cursor environments. It audits generated specifications for acceptance criteria, inspects completed subtasks, verifies coding guideline compliance, and monitors CI/CD health via GitMap telemetry.
 

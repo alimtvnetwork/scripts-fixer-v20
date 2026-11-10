@@ -5,7 +5,7 @@ description: "Autonomously audit, extend, migrate, and modify GitMap's three-tie
 
 # GitMap Split-DB Engine Skill (`gitmap-split-db-engine`)
 
-> **Invocation:** `@[gitmap-split-db-engine](file;.agents/skills/gitmap-split-db-engine)`
+> **Invocation:** `@[gitmap-split-db-engine](directory;.agents/skills/gitmap-split-db-engine)`
 
 ## Mission & Purpose
 This skill provides authoritative architectural guidance, code navigation, and execution rules for designing, migrating, and maintaining GitMap's multi-database SQLite Split-DB storage tier.

@@ -6,6 +6,8 @@ description: >-
 
 # CAT Product Recording Feature Enhancement
 
+> **Invocation:** `@[cat-product-recording-feature-enhancement](directory;.agents/skills/cat-product-recording-feature-enhancement)`
+
 ## Strategic Overview
 Enhance the CAT product recording and bug reporting engine to capture deep UI telemetry (XPath, bounding box, padding, colors, distance, sequence number, visual spring animation) and serialize recordings into structured Markdown using standard V6 and V7 prompt templates. Images are stored locally near the binary in `bug-reports/<seq>-<date>/` and referenced via `[sequence_instance_what](file:;<absolute_path>)` without polluting codebase assets. Provide multi-export options (ZIP, Copy V6, Copy V7), email dispatch, Supabase rolling synchronization (<=450MB limit, 14-day data eviction), top-level error management inspection, direct local execution without redundant zipping, and clean terminal lifecycle teardown.
 

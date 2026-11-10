@@ -5,6 +5,8 @@ description: "Executes the String Operations And Efficiency prompt. Autonomously
 
 # String Operations And Efficiency
 
+> **Invocation:** `@[string-operations-and-efficiency](directory;.cursor/skills/string-operations-and-efficiency)`
+
 Source prompt: `01-prompts/15-cg-execute/23-string-operations-and-efficiency.md`
 
 ## Instructions

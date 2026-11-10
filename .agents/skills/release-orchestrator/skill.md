@@ -26,6 +26,7 @@ Execute full automated release orchestration, semantic version bumping, branch m
      > **TOTAL BAN ON CPF FOR RELEASES:** Never use `gitmap cpf` for releases (which marks them as `Feature:`). Always use `gitmap cpr`.
      > **TOTAL BAN ON NESTED PREFIXES:** Never pass `chore(release):`, `release:`, or `feat:` inside the message argument. GitMap adds the prefix automatically!
      > **TOTAL BAN ON THIRD BRACKETS:** Never use square brackets `[...]` or colons `:` in arguments. Format as `"RELEASE - vX.Y.Z <scope>"`.
+> **Invocation:** `@[release-orchestrator](directory;.agents/skills/release-orchestrator)`  
    - **Step 4:** Create the annotated git tag on the release commit: `git tag -a vX.Y.Z -m "Release vX.Y.Z"`.
    - **Step 5:** Put the release commit back to the `main` branch (`git checkout main && git merge release/vX.Y.Z`), push `main`, `release/vX.Y.Z`, and tag `vX.Y.Z` to `origin`, then restore the starting branch.
 6. **Automated Release Execution (2-Tier Toolchain):**

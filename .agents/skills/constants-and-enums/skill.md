@@ -5,6 +5,8 @@ description: "Executes the \u274c FORBIDDEN: Magic string comparisons prompt. Au
 
 # ❌ FORBIDDEN: Magic string comparisons
 
+> **Invocation:** `@[constants-and-enums](directory;.agents/skills/constants-and-enums)`
+
 Source prompt: `01-prompts/15-cg-execute/06-constants-and-enums.md`
 
 ## Instructions

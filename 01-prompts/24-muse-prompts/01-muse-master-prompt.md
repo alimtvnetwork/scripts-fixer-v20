@@ -1,6 +1,16 @@
 # MUSE MASTER ONBOARDING PROMPT — AUTONOMOUS AI AGENT DIRECTIVE
 
-> **Prompt Version:** 1.0.0
+> **Prompt Version:** 2.0.0 (2026-11-11 Real Onboarding Hardened Edition)
+> ### 📝 2026-11-11 Onboarding Hardening Changelog (v6.6.0)
+> - **GitMap Pinned Install:** Unauthenticated GitHub API requests hit 403 rate-limits on `releases/latest`. Pinned install to `install-quick.sh --dir ~/.local/bin --version v6.98.1` with `git ls-remote --tags` fallback. Verify with `gitmap version` (not `gitmap version`).
+> - **Installer ~/.bashrc Fix:** Clean up plain-text syntax breaking lines added to `~/.bashrc` and verify `source ~/.bashrc`.
+> - **Auth Check Cleanup:** Removed non-existent `gitmap login --status`. Verify auth strictly via `gh auth status` and `ssh -T git@github.com`.
+> - **SSH Key Creation via GitMap First:** Run `gitmap ssh create "<email>-muse<sequence>-<operator>"` directly first (no `-y`, comment as positional, default path `~/.ssh/id_rsa`).
+> - **SSH HOME Mismatch Fix:** When running as root, copy keys and known_hosts to `/root/.ssh` and test explicit identity first (`ssh -i ~/.ssh/id_rsa -T git@github.com`).
+> - **Clone Flags & Self-Lock Workaround:** Clone with `--ssh --no-vscode-sync --target-dir ~/workspace/repos`. Work around v6.98.1 SQLite DB self-lock bug in `gitmap pa` by reading `~/workspace/repos/.gitmap/output/gitmap.json` and using plain `git pull --ff-only`.
+> - **Problematic Repo Disconnect Handling:** Defer `alim-seo-writing` after 3 failed `fetch-pack: unexpected disconnect` attempts as an open item without stalling onboarding.
+> - **Identity Invariant & File Delivery:** Mandatory prompt for missing identity variables; deliver public keys strictly as downloadable files.
+
 > **Location:** `01-prompts/24-muse-prompts/01-muse-master-prompt.md`
 > **Skill:** `muse-master-prompt` (`.agents/skills/muse-master-prompt/skill.md`)
 >
@@ -83,15 +93,13 @@ Run these checks in order. Nothing else proceeds until all pass:
 1. **Terminal mode:** run a trivial command (`echo ok`). If you cannot run shell
    commands, STOP and say so plainly — the rest of this protocol cannot run.
 2. **git:** `git --version`. Must be present.
-3. **GitHub CLI:** `gh auth status`.
+3. **GitHub CLI & SSH Authentication:** `gh auth status` and `ssh -T git@github.com` (note: `gitmap login --status` does NOT exist in v6.98.1; remove it).
    - If authenticated → record the account, continue.
-   - If NOT authenticated → run `gh auth login`, walk the user through the device
-     flow, then re-run `gh auth status`. **STOP here until it passes.** No repo
-     cloning, no pushing, no private reads before this.
-4. **GitMap auth:** `gitmap login --status` (or `gitmap login` then verify).
-   - If not authenticated → run `gitmap login` (paste a token when asked, or use
-     the `--web` browser flow), then verify with `gitmap login --status`.
-   - **STOP here until it passes.** GitMap's GitHub-backed commands need this.
+   - If NOT authenticated → prompt for missing email, sequence, operator (never guess), then run `gitmap ssh create "<email>-muse<sequence>-<operator>"` first (no `ssh-keygen` first, no `-y` flag; positional text is comment, default path is `~/.ssh/id_rsa`).
+   - SSH HOME mismatch: If running as root, copy keys to `/root/.ssh` (`chmod 700 /root/.ssh && chmod 600 /root/.ssh/*`) and test explicit first (`ssh -i ~/.ssh/id_rsa -T git@github.com`).
+   - Deliver public key as a downloadable file at `~/.ssh/id_rsa.pub` (never paste raw key into chat text to prevent corruption) and designate as **Authentication Key** in GitHub.
+   - **STOP here until it passes.** Verification success: `Hi alimtvnetwork! You've successfully authenticated`.
+4. **GitMap Verification:** Verify with `gitmap version` (NOT `gitmap version`, which is an unknown command).
 5. Record to memory: user name, timezone, and `MODE=turbo`.
 
 **Why this order matters:** auth is the #1 cause of mid-task stalls. Doing it now
@@ -99,10 +107,10 @@ means commits, pushes, and clones later never wait on the user.
 
 ### Phase 2 — GitMap Intake: Clone, Build, Learn, Reuse
 
-1. **Clone** the public GitMap repository (or the pinned URL/version the user gave
-   in Phase 0):
-   `git clone https://github.com/alimtvnetwork/gitmap-v28.git`
-2. **Build** it and prove the binary runs (`gitmap --version` or the repo's
+1. **Clone** the GitMap repository (or the pinned URL/version the user gave in Phase 0):
+   `curl -fsSL https://raw.githubusercontent.com/alimtvnetwork/gitmap-v28/main/install-quick.sh | bash -s -- --dir ~/.local/bin --version v6.98.1` (pinned install to avoid 403 on releases/latest; check ~/.bashrc and comment broken lines; source ~/.bashrc)
+   - **Private Repository & Zip Upload Option:** GitMap (`gitmap-v28`) is a private repository. If automated cloning is restricted by network gates or missing credentials, upload GitMap as a `.zip` archive (`gitmap.zip`) directly into the Muse workspace and extract it into `gitmap-v28`.
+2. **Build** it and prove the binary runs (`gitmap version` or the repo's
    documented build command). If the build fails, read the repo's build docs and
    retry once with the documented fix before reporting.
 3. **Learn** the GitMap AI-agent SOP — the 5-phase lifecycle, in exact order:
@@ -371,7 +379,7 @@ When building or changing any user-facing surface, apply these concepts from
 - [ ] **V-01** Terminal works (a command actually ran).
 - [ ] **V-02** `gh auth status` passes (GitHub CLI connected).
 - [ ] **V-03** `gitmap login --status` passes (GitMap authenticated to GitHub).
-- [ ] **V-04** GitMap cloned from the public URL, built, and `gitmap --version` runs.
+- [ ] **V-04** GitMap cloned from the public URL, built, and `gitmap version` runs.
 - [ ] **V-05** Repo list captured from Phase 0 (or explicitly recorded as "none").
 - [ ] **V-06** Operating contract checklist (Phase 3) written to memory.
 - [ ] **V-07** Coding guidelines + design system read; one-line summaries recorded.

@@ -5,7 +5,7 @@ description: "Autonomously inspect files, track in-flight touches without UDF fl
 
 # GitMap Heatmap & File Inspection Skill (`gitmap-heatmap`)
 
-> **Invocation:** `@[gitmap-heatmap](file;.agents/skills/gitmap-heatmap)`
+> **Invocation:** `@[gitmap-heatmap](directory;.agents/skills/gitmap-heatmap)`
 
 ## Mission & Purpose
 This skill provides authoritative architectural guidance, CLI commands, and execution rules for inspecting files, tracking cognitive traces, logging agent actions, and preventing file write collisions using GitMap's SQLite Heatmap tier (`repodb/heatmap.db` and `<EffectiveDataDir>/heatmap.db`).

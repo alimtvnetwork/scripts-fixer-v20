@@ -7,7 +7,7 @@
 
 [/goal](slashCommand;goal) Add the next 100 design-system improvements so a weak AI can still produce a professional slide or a compact tree in one shot.
 
-[/learn](slashCommand;learn) Read [gitmap](file;.agents/skills/gitmap) and the spec folder `02-spec/21-app/35-coding-guideline-and-design-system-spec-improvements/` before writing.
+[/learn](slashCommand;learn) Read [gitmap](directory;.agents/skills/gitmap) and the spec folder `02-spec/21-app/35-coding-guideline-and-design-system-spec-improvements/` before writing.
 
 ## Must do
 

@@ -5,7 +5,7 @@ description: "Executes the Testing And Coverage prompt. Autonomously scan every 
 
 # Testing And Coverage
 
-> **Invocation:** `@[testing-and-coverage](file;.cursor/skills/testing-and-coverage)`
+> **Invocation:** `@[testing-and-coverage](directory;.cursor/skills/testing-and-coverage)`
 
 Source prompt: `01-prompts/15-cg-execute/11-testing-and-coverage.md`
 

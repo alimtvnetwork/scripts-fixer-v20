@@ -5,7 +5,7 @@ description: "Enforce enterprise Go single-return Result containers (result.Wrap
 
 # Result Wrapper & AppError Return Sovereignty
 
-> **Invocation:** `@[result-wrapper-and-apperror-returns](file;.cursor/skills/result-wrapper-and-apperror-returns)`
+> **Invocation:** `@[result-wrapper-and-apperror-returns](directory;.cursor/skills/result-wrapper-and-apperror-returns)`
 
 Source prompt: `01-prompts/15-cg-execute/19-result-wrapper-and-apperror-returns.md`
 

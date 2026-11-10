@@ -5,6 +5,8 @@ description: "Executes the Canonical Prompt Library prompt. Indexes every canoni
 
 # Canonical Prompt Library
 
+> **Invocation:** `@[prompt-library](directory;.agents/skills/prompt-library)`
+
 Source prompt: `01-prompts/readme.md`
 
 ## Instructions

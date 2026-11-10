@@ -5,7 +5,7 @@ description: "Conduct Ent Go ORM feasibility analysis and implement multi-format
 
 # ENT Goal Feasibility and Email Command Integration Skill
 
-> **Invocation:** `@[ent-goal-feasibility-and-email-command-integration](file;.cursor/skills/ent-goal-feasibility-and-email-command-integration)`
+> **Invocation:** `@[ent-goal-feasibility-and-email-command-integration](directory;.cursor/skills/ent-goal-feasibility-and-email-command-integration)`
 
 ## Mission & Purpose
 This skill provides authoritative architectural guidance, code navigation, and execution rules for:

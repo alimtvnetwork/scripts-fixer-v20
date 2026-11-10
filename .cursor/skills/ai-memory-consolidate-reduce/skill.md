@@ -5,7 +5,7 @@ description: "Autonomously cluster, consolidate, and re-sequence completed plan 
 
 # AI Memory Consolidation, Reduction & Safety Backup
 
-> **Invocation:** `@[ai-memory-consolidate-reduce](file;.cursor/skills/ai-memory-consolidate-reduce)`
+> **Invocation:** `@[ai-memory-consolidate-reduce](directory;.cursor/skills/ai-memory-consolidate-reduce)`
 
 Trigger Keywords & Aliases: `ai-memory-consolidate-reduce`, `consolidate-plans`, `consolidate completed plans`, `clean completed plans`, `resequence completed plans`, `merge plans`, `archive completed plans`, `cleanup plans completed`, `memory consolidation`, `backup and consolidate plans`, `compact plans`, `reduce plan file count`, `compact completed plans`
 

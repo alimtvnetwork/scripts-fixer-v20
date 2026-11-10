@@ -5,6 +5,8 @@ description: "Executes the Legacy Specification Planning Engine - Planning Spec 
 
 # Legacy Specification Planning Engine - Planning Spec
 
+> **Invocation:** `@[plan-spec-steps](directory;.cursor/skills/plan-spec-steps)`
+
 Source prompt: `01-prompts/12-old-plan-prompts/05-plan-spec-steps.md`
 
 ## Instructions

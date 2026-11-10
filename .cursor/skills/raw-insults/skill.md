@@ -5,6 +5,8 @@ description: "Executes the Uncompromising Quality & Zero-Tolerance Anti-Careless
 
 # Uncompromising Quality & Zero-Tolerance Anti-Carelessness - Core Discipline
 
+> **Invocation:** `@[raw-insults](directory;.cursor/skills/raw-insults)`
+
 Source prompt: `01-prompts/18-insults/01-raw-insults.md`
 
 ## Instructions

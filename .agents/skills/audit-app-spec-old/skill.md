@@ -5,6 +5,8 @@ description: "Executes the Application Specification Blind-AI Audit - Quality Pr
 
 # Application Specification Blind-AI Audit - Quality Protocol
 
+> **Invocation:** `@[audit-app-spec-old](directory;.agents/skills/audit-app-spec-old)`
+
 Source prompt: `01-prompts/12-old-plan-prompts/06-audit-app-spec-old.md`
 
 ## Instructions

@@ -25,7 +25,7 @@ WAVES = ceil(subtasks / (A x H))
 > **Trigger Keywords & Aliases:**  
 > `next-100-ideas-for-improvements`, `next-100-ideas`, `ideas-for-improvements`, `next-ideas`, `100-ideas`, `ideation-flywheel`, `innovate-100`  
 >
-> **Companion Antigravity Skill:** [`next-100-ideas-for-improvements`](file;.agents/skills/next-100-ideas-for-improvements)  
+> **Companion Antigravity Skill:** [`next-100-ideas-for-improvements`](directory;.agents/skills/next-100-ideas-for-improvements)  
 > **Companion Cursor Skill:** [`next-100-ideas-for-improvements`](file;.cursor/skills/next-100-ideas-for-improvements)  
 >
 > **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**  
@@ -59,7 +59,7 @@ WAVES = ceil(subtasks / (A x H))
 
 Before executing the tasks below, check if this prompt is already installed as a native IDE Skill in the workspace.
 
-1. If `.agents/skills/next-100-ideas-for-improvements/skill.md` does not exist in the workspace, create it now with IDE-detectable link syntax `[next-100-ideas-for-improvements](file;.agents/skills/next-100-ideas-for-improvements)`.
+1. If `.agents/skills/next-100-ideas-for-improvements/skill.md` does not exist in the workspace, create it now with IDE-detectable link syntax `[next-100-ideas-for-improvements](directory;.agents/skills/next-100-ideas-for-improvements)`.
 2. If `.cursor/skills/next-100-ideas-for-improvements/skill.md` does not exist in the workspace, create it now with IDE-detectable Cursor skill link syntax `[next-100-ideas-for-improvements](file;.cursor/skills/next-100-ideas-for-improvements)`.
 3. Once installed, rely on progressive disclosure for future runs. Do not keep the entire prompt in active memory if not needed.
 

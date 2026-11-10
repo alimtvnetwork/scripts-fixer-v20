@@ -25,7 +25,7 @@ WAVES = ceil(subtasks / (A x H))
 > **Trigger Keywords & Aliases:**  
 > `check-pending-improvements`, `check-improvements`, `pending-improvements`, `improvements-status`, `how many improvements are pending`, `list-pending-improvements`, `improvements-dashboard`  
 >
-> **Companion Antigravity Skill:** [`check-pending-improvements`](file;.agents/skills/check-pending-improvements)  
+> **Companion Antigravity Skill:** [`check-pending-improvements`](directory;.agents/skills/check-pending-improvements)  
 > **Companion Cursor Skill:** [`check-pending-improvements`](file;.cursor/skills/check-pending-improvements)  
 >
 > **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**  
@@ -60,7 +60,7 @@ WAVES = ceil(subtasks / (A x H))
 
 Before executing the inspection tasks below, check if this prompt is already installed as a native IDE Skill in the workspace:
 
-1. If `.agents/skills/check-pending-improvements/skill.md` does not exist in the workspace, create it now with IDE-detectable link syntax `[check-pending-improvements](file;.agents/skills/check-pending-improvements)`.
+1. If `.agents/skills/check-pending-improvements/skill.md` does not exist in the workspace, create it now with IDE-detectable link syntax `[check-pending-improvements](directory;.agents/skills/check-pending-improvements)`.
 2. If `.cursor/skills/check-pending-improvements/skill.md` does not exist in the workspace, create it now with IDE-detectable Cursor skill link syntax `[check-pending-improvements](file;.cursor/skills/check-pending-improvements)`.
 3. Once installed, rely on progressive disclosure for future runs. Do not keep the entire prompt in active memory if not needed.
 

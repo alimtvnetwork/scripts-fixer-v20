@@ -38,3 +38,9 @@ trigger: always_on
   - **Git Commit History & Code Diff Search**: For commit log and pickaxe diff searches (-S), ALWAYS use `gitmap log -S "<pattern>" [path]`, `gitmap log --grep="<pattern>" [path]`, or `gitmap aum search-commits "<pattern>" [path]`.
   - **TOTAL BAN on Ad-Hoc Python Subprocess Snippets**: TOTAL BAN on executing `python -c "import os, subprocess; ... git log ..."` or inline Python scripts to query git history, grep files, or traverse directories.
   - **TOTAL BAN on Raw Grep Tools**: TOTAL BAN on raw `git grep`, `grep -rn`, `ripgrep`, or `Select-String` when `gitmap aum search` is available.
+  - **Spec Sequence Discovery Invariant**: When determining the next or latest specification sequence number (XX), ALWAYS execute 'gitmap spec next' (or 'gitmap spec latest' / 'gitmap spec list'). TOTAL BAN on executing inline Python snippets ('python -c "import os; dirs = ..."') or shell loops to inspect directories or calculate spec sequences.
+
+  ### 6. Binary Replacement & Swap Protocol
+  - **Mandatory `gitmap swap-binary` for Local Recompilation**: When recompiling `gitmap` from source, NEVER attempt to directly copy or overwrite running executables with raw `cp` or `Copy-Item` (which causes Windows Error 5 `Access is denied` or Unix `ETXTBSY`). ALWAYS execute `gitmap swap-binary --from <path> --kill --force` (alias: `gitmap swap`).
+  - **Atomic Renaming Pattern**: Any in-place binary updater or swapper must rename existing executables to `.old` (falling back to `.bak`) with retry loops prior to placing new binaries.
+

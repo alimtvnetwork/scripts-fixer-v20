@@ -5,6 +5,8 @@ description: "Executes the File Size And Function Reduction prompt. Autonomously
 
 # File Size And Function Reduction
 
+> **Invocation:** `@[file-size-and-function-reduction](directory;.agents/skills/file-size-and-function-reduction)`
+
 Source prompt: `01-prompts/15-cg-execute/22-file-size-and-function-reduction.md`
 
 ## Instructions

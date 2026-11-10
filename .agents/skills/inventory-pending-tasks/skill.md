@@ -5,7 +5,7 @@ description: "Discover, catalog, and sequence all pending plans, subtasks, and u
 
 # Inventory Pending Tasks
 
-> **Invocation:** `@[inventory-pending-tasks](file;.agents/skills/inventory-pending-tasks)`
+> **Invocation:** `@[inventory-pending-tasks](directory;.agents/skills/inventory-pending-tasks)`
 
 Audits and catalogs pending work across `.ai-memory/plans/pending/`, `.ai-memory/plans/subtasks/`, `.ai-memory/issues/`, and `.ai-memory/cicd-issues/`.
 

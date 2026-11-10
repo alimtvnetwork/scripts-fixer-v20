@@ -5,6 +5,8 @@ description: "Executes the Python Script DRY Architecture, Enums, Pluggable Cach
 
 # Python Script DRY Architecture, Enums, Pluggable Caching & Fast AI Reading Specification
 
+> **Invocation:** `@[python-dry-architecture-and-caching](directory;.agents/skills/python-dry-architecture-and-caching)`
+
 Source prompt: `01-prompts/08-dry-code/01-python-dry-architecture-and-caching.md`
 
 ## Instructions

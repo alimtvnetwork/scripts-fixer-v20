@@ -5,7 +5,7 @@ description: "Executes the Python File Manipulator CLI Specification - Tooling S
 
 # Python File Manipulator CLI Specification - Tooling Spec
 
-> **Invocation:** `@[python-file-manipulator](file;.cursor/skills/python-file-manipulator)`
+> **Invocation:** `@[python-file-manipulator](directory;.cursor/skills/python-file-manipulator)`
 
 Source prompt: `01-prompts/20-ai-fix-script-prompts/01-python-file-manipulator.md`
 

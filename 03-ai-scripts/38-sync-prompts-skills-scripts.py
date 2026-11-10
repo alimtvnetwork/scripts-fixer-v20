@@ -109,7 +109,7 @@ def get_sync_dirs() -> list[tuple[str, str, bool]]:
                 if m:
                     num = int(m.group(1))
 
-                    if 1 <= num <= 20:
+                    if (1 <= num <= 20) or num == 27:
                         rel = f"02-spec/{name}"
                         dirs.append((rel, rel, False))
 
@@ -746,6 +746,29 @@ def ensure_pre_release(
     return pre_tag
 
 
+def validate_target_skills(target: Path) -> tuple[bool, str]:
+    """Validate skill YAML frontmatter in repository using 53-skill-frontmatter-validator.py."""
+    validator_script = SOURCE_ROOT / "03-ai-scripts" / "53-skill-frontmatter-validator.py"
+    if not validator_script.exists():
+        return True, ""
+
+    skill_dirs = [
+        target / ".agents" / "skills",
+        target / ".cursor" / "skills",
+    ]
+    existing_dirs = [str(d) for d in skill_dirs if d.exists()]
+    if not existing_dirs:
+        return True, ""
+
+    cmd = [sys.executable, str(validator_script)] + existing_dirs
+    proc = subprocess.run(cmd, capture_output=True, text=True, cwd=str(target))
+    if proc.returncode != 0:
+        err_msg = proc.stderr.strip() or proc.stdout.strip() or "Skill frontmatter validation failed"
+        return False, err_msg
+
+    return True, ""
+
+
 def sync_repo(target: Path, is_dry_run: bool = False, is_push_disabled: bool = False, is_force: bool = False) -> dict[str, object]:
     result: dict[str, object] = {
         "repo": target.name,
@@ -1042,6 +1065,14 @@ def sync_repo(target: Path, is_dry_run: bool = False, is_push_disabled: bool = F
 
         return result
 
+    # 4b. Validate synchronized skill definitions against frontmatter standard
+    is_valid, val_err = validate_target_skills(target)
+    if not is_valid:
+        result["error"] = f"Skill frontmatter validation failed: {val_err[:120]}"
+        print(f"[ERROR] {target.name:<32} | Skill validation failure: {val_err}", file=sys.stderr)
+
+        return result
+
     # 5. Check git status
     _, out, _ = run_cmd("git status --porcelain", target)
 
@@ -1272,6 +1303,12 @@ def main() -> None:
     print(f"No push           : {is_push_disabled}")
     print(f"Force             : {is_force}")
     print("=" * 95)
+
+    # Pre-flight: Validate canonical source skills before mirroring
+    is_source_valid, source_val_err = validate_target_skills(SOURCE_ROOT)
+    if not is_source_valid:
+        print(f"[FATAL] Source canonical skills failed frontmatter validation:\n{source_val_err}", file=sys.stderr)
+        sys.exit(1)
 
     summary = []
     has_parallel_pool = args.workers > 1 and len(targets) > 1

@@ -123,7 +123,7 @@ If any step fails, halt immediately, surface the diagnostic context, and resolve
    ```
    If `gh` is missing and available via package manager (`winget install GitHub.cli`, `brew install gh`, `apt install gh`), offer or attempt installation.
 3. **Optional GitMap Acceleration Check:**
-   Check if `gitmap` is installed (`gitmap version`). If available, use GitMap commands for high-speed indexing; if unavailable, seamlessly use standard native `git` commands.
+   Check if `gitmap` is installed (`gitmap version (NOT gitmap --version)`). If available, use GitMap commands for high-speed indexing; if unavailable, seamlessly use standard native `git` commands.
 4. **Step 1 Report:**
    Output Step 1 Report with exact toolchain versions.
 
@@ -150,6 +150,9 @@ If any step fails, halt immediately, surface the diagnostic context, and resolve
    - **Option (b): SSH Key Generation & File Delivery Protocol**
      1. Generate SSH key with standardized identifier:
         ```bash
+        # GitMap SSH generation (preferred):
+        gitmap ssh create "<email>-muse<muse-sequence>-<operator-name>" -y
+        # Or standard native ssh-keygen fallback:
         ssh-keygen -t ed25519 -C "<user-email>-muse-session" -f ~/.ssh/id_ed25519 -N ""
         eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_ed25519
         ```
@@ -175,7 +178,7 @@ If any step fails, halt immediately, surface the diagnostic context, and resolve
    - **Case A: User provides a Remote Git URL:**
      - Clone automatically into workspace directory (`~/workspace/repos/<repo-name>` or `./<repo-name>`):
        ```bash
-       git clone <provided-url>
+       gitmap clone <provided-url> --ssh --no-vscode-sync --target-dir ~/workspace/repos || git clone <provided-url>
        cd <repo-name>
        ```
      - Verify checkout on default branch (`main` or `master`).
@@ -197,6 +200,9 @@ If any step fails, halt immediately, surface the diagnostic context, and resolve
        If the user provided a remote URL, add it: `git remote add origin <url>`.
    - **Case D: User provides multiple repositories:**
      - Clone/link each repository in sequence under `~/workspace/repos/`.
+   - **Case E: Private Repository & Zip Upload Option:**
+     - If the target repository (such as `gitmap` or internal proprietary tools) is private and SSH/PAT access is not yet configured, the operator may upload the repository as a `.zip` archive (e.g. `gitmap.zip`) directly to Muse.
+     - Muse automatically extracts the archive into `./` or `~/workspace/repos/<repo-name>`, verifies the Git work tree (`git rev-parse --is-inside-work-tree`), and resumes the onboarding ritual seamlessly.
 3. **Auto-Start Invariant:**
    Once the repository details are provided, Muse **IMMEDIATELY and AUTONOMOUSLY** clones/links, configures remotes, checks out the branch, and advances without pausing for extra confirmation.
 4. **Step 3 Report:**
@@ -210,7 +216,7 @@ If any step fails, halt immediately, surface the diagnostic context, and resolve
    Navigate into each onboarded repository and synchronize:
    ```bash
    git fetch origin
-   git pull --ff-only origin $(git branch --show-current) || git pull origin $(git branch --show-current)
+   git pull --ff-only origin $(git branch --show-current) || git pull origin $(git branch --show-current) # Work around DB self-lock via gitmap.json if gitmap pa errors
    ```
 2. **Conflict & Tree Hygiene Check:**
    - Verify `git status --porcelain` is clean.

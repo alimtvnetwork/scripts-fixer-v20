@@ -5,7 +5,7 @@ description: "Autonomously audit, extend, test, and modify GitMap's repository d
 
 # GitMap Scanner and Cloner Skill (`gitmap-scanner-and-cloner`)
 
-> **Invocation:** `@[gitmap-scanner-and-cloner](file;.agents/skills/gitmap-scanner-and-cloner)`
+> **Invocation:** `@[gitmap-scanner-and-cloner](directory;.agents/skills/gitmap-scanner-and-cloner)`
 
 ## Mission & Purpose
 This skill provides authoritative architectural guidance, code navigation, and execution rules for developing, auditing, and enhancing GitMap's repository scanning, formatting, and re-cloning engine.

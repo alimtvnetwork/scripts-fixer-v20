@@ -5,7 +5,7 @@ description: "Appends the next 100 design-system checks for slides, motion, and 
 
 # Design System Spec Improvements
 
-> **Invocation:** `@[design-system-spec-improvements](file;.agents/skills/design-system-spec-improvements)`
+> **Invocation:** `@[design-system-spec-improvements](directory;.agents/skills/design-system-spec-improvements)`
 
 Read and follow `01-prompts/30-improvements/08-design-system-spec-improvements.md`.
 

@@ -5,6 +5,8 @@ description: "Executes the Legacy Maximum Enforcement Planning Protocol - Planni
 
 # Legacy Maximum Enforcement Planning Protocol - Planning Spec
 
+> **Invocation:** `@[plan-maximum-enforcement](directory;.agents/skills/plan-maximum-enforcement)`
+
 Source prompt: `01-prompts/12-old-plan-prompts/01-plan-maximum-enforcement.md`
 
 ## Instructions

@@ -20,6 +20,24 @@ The continuum spans 7 foundational stages:
 
 All improvements adhere to structured specification schemas, enforce the **Zero Harm / Regression Safety Matrix**, provide backward compatibility guarantees, and include concrete, copy-paste ready implementation blueprints.
 
+## How to run (CLI, UI, Telegram)
+
+The same flywheel is a first-class option on all three surfaces. It plans 100 improvements as **10 batches of 10**, then each `next` step implements one batch via `07-implement-next-10-improvements.md`. Ledger: `.ai-memory/improvements/flywheel.json`.
+
+```text
+agm improvements help
+agm improvements plan ui --dry-run --json
+agm improvements status --json
+agm improvements next --dry-run --json
+agm next10 --dry-run
+```
+
+`--dry-run` writes or previews the ledger without enqueueing a prompt (safe on Default / v2). Omit it to dispatch into the instance queue.
+
+- **UI:** Telegram page → 100 Improvements Flywheel (Plan 100 / Next 10 / Status capsule).
+- **Telegram:** `/improvements`, `/improvements plan [ui|code|system|ideas]`, `/improvements next`, `/next10`. Buttons: Plan 100, Next 10, Status, Check (`im:pl`, `im:n10`, `im:st`, `im:ck`).
+
+
 > [!NOTE]
 > **Continuous Improvement Flywheel Invariant:**  
 > Running discovery prompts in this category persists the identified 100 improvement items into `.ai-memory/plans/pending/XX-<slug>.md` along with subtasks in `.ai-memory/plans/subtasks/XX-<slug>/`. Detailing prompts expand these candidates into exhaustive multi-step execution roadmaps, inspection prompts aggregate real-time triage dashboards, and batch execution prompts chew through backlogs 10 items at a time on command `"next"`.
@@ -39,7 +57,8 @@ All improvements adhere to structured specification schemas, enforce the **Zero 
 | [`05-next-100-ideas-for-improvements.md`](05-next-100-ideas-for-improvements.md) | V6 / 1.0.0 | Generative Innovation & Superpowers | Autonomously surveys target repositories across a 5-layer diagnostic inspection to synthesize 100 concrete, high-leverage improvement and innovation ideas across 10 ideation clusters with strict review-first gating, grounded codebase anchors, and actionable pending plan enqueueing. |
 | [`06-check-pending-improvements.md`](06-check-pending-improvements.md) | V6 / 1.0.0 | Backlog Inspection & Telemetry | Autonomously scans `.ai-memory/plans/pending/` and `.ai-memory/plans/subtasks/` using GitMap high-speed commands to render an executive improvement dashboard with category breakdowns, priority tiers (P0–P3), completion KPIs, and the Next 10 Queue for immediate execution handoff. |
 | [`07-implement-next-10-improvements.md`](07-implement-next-10-improvements.md) | V6 / 1.0.0 | Fast-Forward Batch Implementation | Autonomously implements the next 10 unexecuted improvements from the backlog using the Fast-Forwarding Protocol (strictly NO-BUILD and NO-TEST during implementation) while strictly enforcing the 8-Pillar Coding Guideline Matrix, repeatable on user command `"next"`. |
-| [`08-design-system-spec-improvements.md`](08-design-system-spec-improvements.md) | 1.0.0 | Design system spec | Appends the next 100 slide, motion, and tree checks under `02-spec/21-app/35-coding-guideline-and-design-system-spec-improvements/` without renumbering prior `DS-IMP` ids. |
+| [`08-design-system-spec-improvements.md`](08-design-system-spec-improvements.md) | V6 / 1.0.0 | Design System Spec | Autonomously appends design-system token checks and contracts for visual slide presentation and motion. |
+| [`09-next-100-security-improvements.md`](09-next-100-security-improvements.md) | V6 / 1.0.0 | Security & Hardening | 100 security improvements across 10 security clusters: credential vaulting, Tauri IPC sandboxing, process execution safety, REST endpoint security, SQLite SQL injection defense, path traversal prevention, prompt sanitization, multi-instance isolation, PII telemetry privacy, and supply chain integrity. |
 
 ---
 
@@ -224,13 +243,13 @@ Every improvement generated or detailed under Category 30 adheres to the strict 
 Each prompt in this category is accompanied by symmetric, production-grade skills installed in both Antigravity Agents and Cursor IDE:
 
 - **Antigravity Agents:**
-  - [`next-100-ui-improvements`](file;.agents/skills/next-100-ui-improvements)
-  - [`next-100-code-improvements`](file;.agents/skills/next-100-code-improvements)
-  - [`next-100-whole-system-improvements`](file;.agents/skills/next-100-whole-system-improvements)
-  - [`next-detail-out-100-improvements`](file;.agents/skills/next-detail-out-100-improvements)
-  - [`next-100-ideas-for-improvements`](file;.agents/skills/next-100-ideas-for-improvements)
-  - [`check-pending-improvements`](file;.agents/skills/check-pending-improvements)
-  - [`implement-next-10-improvements`](file;.agents/skills/implement-next-10-improvements)
+  - [`next-100-ui-improvements`](directory;.agents/skills/next-100-ui-improvements)
+  - [`next-100-code-improvements`](directory;.agents/skills/next-100-code-improvements)
+  - [`next-100-whole-system-improvements`](directory;.agents/skills/next-100-whole-system-improvements)
+  - [`next-detail-out-100-improvements`](directory;.agents/skills/next-detail-out-100-improvements)
+  - [`next-100-ideas-for-improvements`](directory;.agents/skills/next-100-ideas-for-improvements)
+  - [`check-pending-improvements`](directory;.agents/skills/check-pending-improvements)
+  - [`implement-next-10-improvements`](directory;.agents/skills/implement-next-10-improvements)
 - **Cursor IDE:**
   - [`next-100-ui-improvements`](file;.cursor/skills/next-100-ui-improvements)
   - [`next-100-code-improvements`](file;.cursor/skills/next-100-code-improvements)
@@ -253,6 +272,5 @@ Each prompt in this category is accompanied by symmetric, production-grade skill
 ├── 05-next-100-ideas-for-improvements.md
 ├── 06-check-pending-improvements.md
 ├── 07-implement-next-10-improvements.md
-├── 08-design-system-spec-improvements.md
 └── readme.md
 ```

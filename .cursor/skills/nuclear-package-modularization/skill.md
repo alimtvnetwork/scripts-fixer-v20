@@ -5,6 +5,8 @@ description: "Autonomously modularize monolithic Go packages into smaller acycli
 
 # Nuclear Package Modularization & Heavy Test Isolation
 
+> **Invocation:** `@[nuclear-package-modularization](directory;.cursor/skills/nuclear-package-modularization)`
+
 ## Purpose & Overview
 
 Autonomously decompose large, monolithic Go packages into small, acyclic packages following a strict Directed Acyclic Graph (DAG) architecture to eliminate compiler bloat and test latency, while isolating heavy subprocess tests into blackbox test packages (`tests/heavy_test/` under `package heavy_test`), maintaining an accurate test inventory (`.ai-memory/test-inventory.json`), and enforcing the 5-day cache freshness decision engine.

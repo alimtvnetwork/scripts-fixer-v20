@@ -5,7 +5,7 @@ description: "Author, structure, sequence, and validate repository specification
 
 # Specification Authoring & Validation Guide
 
-> **Invocation:** `@[spec-authoring-and-validation](file;.cursor/skills/spec-authoring-and-validation)`
+> **Invocation:** `@[spec-authoring-and-validation](directory;.cursor/skills/spec-authoring-and-validation)`
 
 This skill governs the creation, organization, and automated validation of architectural specifications in `02-spec/`, primarily under the canonical application specifications folder `02-spec/21-app/`.
 

@@ -13,8 +13,9 @@ Format input text according to exact high-priority execution template below with
    - Item 4: `4. Search codebase exclusively via GitMap (gitmap aum search, gitmap find, gitmap cat); TOTAL BAN on rg, ripgrep, grep, Select-String.`
    - Item 5: `5. Strictly use relative Git paths (02-spec/..., .ai-memory/..., cmd/...); no absolute paths or file:/// URIs.`
    - Items 6..N: Technical directives extracted from input.
+   - If connecting to GitMap or private repository on Muse, mention `.zip` archive upload option (`gitmap.zip`) and standardized SSH key creation format: `gitmap ssh create "<email>-muse<muse-sequence>-<operator-name>" -y`.
    - Penultimate/Final (if requested): `Verify CI via gitmap pe -t until green` and `Execute minor version bump release ceremony via python 03-ai-scripts/37-bump-version.py -t minor -s "<summary>"`.
-6. Append the Muse Overnight Autopilot Checklist, agent suffix link, and Additional Instructions.
+6. Append the Muse Overnight Autopilot Checklist, dual-item agent suffix links (directory syntax), and Additional Instructions.
 7. Output plain markdown only. Never wrap in fenced code blocks (no ```markdown or ``` fences).
 8. Relative Paths: Only add relative paths (`02-spec/...`, `.ai-memory/...`, `cmd/...`); never add absolute paths.
 
@@ -49,11 +50,13 @@ ${Input Text Verbatim}
 
 ## Must follow and spawn agent using
 
-@[execute-parent-task-with-n-steps-v6](file;.agents/skills/execute-parent-task-with-n-steps-v6)
+1. @[execute-parent-task-with-n-steps-v6](directory;.agents/skills/execute-parent-task-with-n-steps-v6)
+2. If any bug, error, or regression is mentioned: @[fix-with-rca](directory;.agents/skills/fix-with-rca)
 
 ## Additional Instructions
 
-- [/plan](slashCommand;plan) first before doing work for improved work or less friction, faster work and more pure and effective work.
-- [/learn](slashCommand;learn) from @[gitmap](file;.agents/skills/gitmap) skill to leverage GitMap high-speed search, toolchain discovery, and caching.
+- [/plan](slashCommand;plan) first before doing work for improved work or less friction, faster execution for AI and coding without errors and following Coding Guidelines.
+- [/learn](slashCommand;learn) from @[gitmap](directory;.agents/skills/gitmap) skill to leverage GitMap high-speed search, toolchain discovery, and caching.
+- After learning and planning, immediately begin executing the plan without asking for confirmation. Autonomous execution must proceed seamlessly through completion.
 - Track in-flight file touches and prevent write collisions using GitMap RC Heatmap (`gitmap rc heatmap status` / `gitmap rc heatmap live`).
 - Only add relative paths, never add absolute paths during work; this must be respected on release page and in release notes as well.

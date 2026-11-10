@@ -6,7 +6,7 @@ description: >-
 
 # Next Detail Out 100 Improvements
 
-> **Invocation:** `@[next-detail-out-100-improvements](file;.cursor/skills/next-detail-out-100-improvements)`
+> **Invocation:** `@[next-detail-out-100-improvements](directory;.cursor/skills/next-detail-out-100-improvements)`
 
 Source Prompt: `01-prompts/30-improvements/04-next-detail-out-100-improvements.md`
 

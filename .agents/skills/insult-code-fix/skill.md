@@ -5,6 +5,8 @@ description: "Executes the Strict Discipline Code Remediation - Quality Protocol
 
 # Strict Discipline Code Remediation - Quality Protocol
 
+> **Invocation:** `@[insult-code-fix](directory;.agents/skills/insult-code-fix)`
+
 Source prompt: `01-prompts/09-commit-and-multi-agent-code-fix/06-insult-code-fix.md`
 
 ## Instructions

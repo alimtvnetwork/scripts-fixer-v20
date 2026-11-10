@@ -5,6 +5,8 @@ description: "Executes the 1. Find unexported domain structs declared inline in 
 
 # 1. Find unexported domain structs declared inline in implementation files (should be in types.go)
 
+> **Invocation:** `@[extract-generic-types-to-types-go](directory;.cursor/skills/extract-generic-types-to-types-go)`
+
 Source prompt: `01-prompts/15-cg-execute/20-extract-generic-types-to-types-go.md`
 
 ## Instructions

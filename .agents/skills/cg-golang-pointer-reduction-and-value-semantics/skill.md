@@ -5,7 +5,7 @@ description: "Autonomously audits, plans, and refactors Golang codebases to redu
 
 # Skill: Golang Pointer Reduction & Value Semantics (`cg-golang-pointer-reduction-and-value-semantics`)
 
-> **Invocation:** `@[cg-golang-pointer-reduction-and-value-semantics](file;.agents/skills/cg-golang-pointer-reduction-and-value-semantics)`
+> **Invocation:** `@[cg-golang-pointer-reduction-and-value-semantics](directory;.agents/skills/cg-golang-pointer-reduction-and-value-semantics)`
 
 This skill governs autonomous execution for migrating Golang codebases to value semantics, reducing heap allocations, and eliminating pointer indirection and nil-dereference panics across all Go packages.
 

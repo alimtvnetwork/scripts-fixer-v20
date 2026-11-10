@@ -5,6 +5,8 @@ description: "Executes the Cross-Platform CI/CD & Run Scripts Fix prompt. First 
 
 # Cross-Platform CI/CD & Run Scripts Fix
 
+> **Invocation:** `@[fix-ci-cd-and-run-scripts](directory;.agents/skills/fix-ci-cd-and-run-scripts)`
+
 Source prompt: `01-prompts/16-ci-cd/05-fix-ci-cd-and-run-scripts.md`
 
 ## Instructions

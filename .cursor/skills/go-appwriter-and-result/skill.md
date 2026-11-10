@@ -5,7 +5,7 @@ description: "Implement enterprise Go packages using structured AppError, monadi
 
 # Go Architecture: AppWriter, Result Wrappers, & AppError
 
-> **Invocation:** `@[go-appwriter-and-result](file;.cursor/skills/go-appwriter-and-result)`
+> **Invocation:** `@[go-appwriter-and-result](directory;.cursor/skills/go-appwriter-and-result)`
 
 This skill provides guidelines for writing and maintaining enterprise Go code within `04-code/golang/pkg/` and `cli/`.
 

@@ -15,7 +15,7 @@ This skill manages automated identity switching, sandboxed bot configurations, a
 > 
 > Before applying any bot identity, GitMap automatically backs up the original human identity to `original_user.json` to enable non-destructive restoration. AI agents are **STRICTLY FORBIDDEN** from committing under human developer credentials (`MD ALIM UL KARIM`, personal emails, etc.). Commits authored under human accounts in automated sessions cause misplaced attribution, pollute repository history, and violate the autonomous audit invariant.
 >
-> **Invocation:** `@[gitmap-automation-bot](file;.agents/skills/gitmap-automation-bot)`  
+> **Invocation:** `@[gitmap-automation-bot](directory;.agents/skills/gitmap-automation-bot)`  
 
 ### Trigger Keywords & Directives
 - `automation bot`, `autobot`, `gitmap automation`, `ai automation bot`

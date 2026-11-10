@@ -5,6 +5,8 @@ description: "Executes the Memory Retrieval & Project Context Ingestion prompt. 
 
 # Memory Retrieval & Project Context Ingestion
 
+> **Invocation:** `@[read-memory-old](directory;.agents/skills/read-memory-old)`
+
 Source prompt: `01-prompts/03-read-write/02-read-memory-old.md`
 
 ## Instructions

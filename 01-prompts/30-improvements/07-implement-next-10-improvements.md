@@ -25,7 +25,7 @@ WAVES = ceil(subtasks / (A x H))
 > **Trigger Keywords & Aliases:**  
 > `implement-next-10-improvements`, `implement-improvements`, `implement-next-10`, `next-10-improvements`, `next`, `run-next-10`, `fast-forward-improvements`  
 >
-> **Companion Antigravity Skill:** [`implement-next-10-improvements`](file;.agents/skills/implement-next-10-improvements)  
+> **Companion Antigravity Skill:** [`implement-next-10-improvements`](directory;.agents/skills/implement-next-10-improvements)  
 > **Companion Cursor Skill:** [`implement-next-10-improvements`](file;.cursor/skills/implement-next-10-improvements)  
 >
 > **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**  
@@ -63,7 +63,7 @@ WAVES = ceil(subtasks / (A x H))
 
 Before executing the implementation tasks below, check if this prompt is already installed as a native IDE Skill in the workspace:
 
-1. If `.agents/skills/implement-next-10-improvements/skill.md` does not exist in the workspace, create it now with IDE-detectable link syntax `[implement-next-10-improvements](file;.agents/skills/implement-next-10-improvements)`.
+1. If `.agents/skills/implement-next-10-improvements/skill.md` does not exist in the workspace, create it now with IDE-detectable link syntax `[implement-next-10-improvements](directory;.agents/skills/implement-next-10-improvements)`.
 2. If `.cursor/skills/implement-next-10-improvements/skill.md` does not exist in the workspace, create it now with IDE-detectable Cursor skill link syntax `[implement-next-10-improvements](file;.cursor/skills/implement-next-10-improvements)`.
 3. Once installed, rely on progressive disclosure for future runs. Do not keep the entire prompt in active memory if not needed.
 

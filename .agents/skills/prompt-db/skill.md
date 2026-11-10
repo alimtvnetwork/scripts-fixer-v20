@@ -5,6 +5,8 @@ description: "Autonomously explore, extract, share, export, and visualize AI pro
 
 # Prompt Database (`prompt.db`) & Conversation Sharing Skill
 
+> **Invocation:** `@[prompt-db](directory;.agents/skills/prompt-db)`
+
 This skill trains AI agents and developers to interact with the GitMap Prompt Database (`gitmap pdb` / `gitmap promptdb`), managing AI conversations, prompt prompts, attachments, and analytical summaries across projects.
 
 ---

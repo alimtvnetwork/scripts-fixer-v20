@@ -5,7 +5,7 @@ description: "Executes the Guideline Fix Execution & Linter Remediation prompt. 
 
 # Guideline Fix Execution & Linter Remediation
 
-> **Invocation:** `@[audit-execute-coding-guideline-fix](file;.cursor/skills/audit-execute-coding-guideline-fix)`
+> **Invocation:** `@[audit-execute-coding-guideline-fix](directory;.cursor/skills/audit-execute-coding-guideline-fix)`
 
 Source prompt: `01-prompts/05-coding-guidelines/02-execute-coding-guideline-fix.md`
 

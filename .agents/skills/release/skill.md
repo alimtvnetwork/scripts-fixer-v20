@@ -5,7 +5,7 @@ description: "Unified release management orchestrator governing major, minor, pa
 
 # Unified Release Management & Version Bump Orchestrator (`release`)
 
-> **Invocation:** `@[release](file;.agents/skills/release)`
+> **Invocation:** `@[release](directory;.agents/skills/release)`
 
 ## Overview
 

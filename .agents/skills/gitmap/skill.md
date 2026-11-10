@@ -5,7 +5,7 @@ description: "Autonomous developer companion and CLI for ultra-fast repository s
 
 # GitMap Autonomous Engineering Skill
 
-> **Invocation:** `@[gitmap](file;.agents/skills/gitmap)`
+> **Invocation:** `@[gitmap](directory;.agents/skills/gitmap)`
 
 ## Non-Negotiable Command Replacement Matrix (DO NOT USE X; USE GITMAP Y)
 

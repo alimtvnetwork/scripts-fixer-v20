@@ -5,6 +5,8 @@ description: "Executes the Isolate Destructive Os And Heavy Unit Tests prompt. A
 
 # Isolate Destructive Os And Heavy Unit Tests
 
+> **Invocation:** `@[isolate-destructive-os-and-heavy-unit-tests](directory;.cursor/skills/isolate-destructive-os-and-heavy-unit-tests)`
+
 Source prompt: `01-prompts/15-cg-execute/24-isolate-destructive-os-and-heavy-unit-tests.md`
 
 ## Instructions

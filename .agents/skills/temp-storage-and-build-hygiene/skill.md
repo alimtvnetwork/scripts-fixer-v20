@@ -5,7 +5,7 @@ description: "Enforce repository-scoped temporary directory isolation and mandat
 
 # Temp Storage & Build Hygiene
 
-> **Invocation:** `@[temp-storage-and-build-hygiene](file;.agents/skills/temp-storage-and-build-hygiene)`
+> **Invocation:** `@[temp-storage-and-build-hygiene](directory;.agents/skills/temp-storage-and-build-hygiene)`
 
 ## Core Directives
 

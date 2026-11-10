@@ -5,6 +5,8 @@ description: "Executes the Code Dryness And Library Extraction prompt. Autonomou
 
 # Code Dryness And Library Extraction
 
+> **Invocation:** `@[code-dryness-and-library-extraction](directory;.cursor/skills/code-dryness-and-library-extraction)`
+
 Source prompt: `01-prompts/15-cg-execute/29-code-dryness-and-library-extraction.md`
 
 ## Instructions

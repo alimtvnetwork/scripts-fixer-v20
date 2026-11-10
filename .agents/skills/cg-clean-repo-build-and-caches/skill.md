@@ -5,7 +5,7 @@ description: "Autonomously clean repository build issues, purge temporary direct
 
 # Skill: Clean Repository Build Issues & Polyglot Caches (`cg-clean-repo-build-and-caches`)
 
-> **Invocation:** `@[cg-clean-repo-build-and-caches](file;.agents/skills/cg-clean-repo-build-and-caches)`
+> **Invocation:** `@[cg-clean-repo-build-and-caches](directory;.agents/skills/cg-clean-repo-build-and-caches)`
 
 This skill governs autonomous diagnosis and systematic cleanup of repository build issues, stale build artifacts, temporary directories, and polyglot caches across OS, Go, pnpm/npm, Vite, Python, and Rust toolchains.
 

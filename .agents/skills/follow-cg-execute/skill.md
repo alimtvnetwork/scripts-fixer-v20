@@ -5,7 +5,7 @@ description: "Master 39-step orchestrator for executing all coding guideline com
 
 # Master 39-Step Coding Guideline Orchestrator (`follow-cg-execute`)
 
-> **Invocation:** `@[follow-cg-execute](file;.agents/skills/follow-cg-execute)`
+> **Invocation:** `@[follow-cg-execute](directory;.agents/skills/follow-cg-execute)`
 
 ## 1. Overview & Operational Directive
 

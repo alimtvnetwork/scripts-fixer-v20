@@ -18,19 +18,33 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 def update_skill_invocation(file_path: str, skill_name: str, is_cursor: bool) -> bool:
     skill_dir = ".cursor/skills" if is_cursor else ".agents/skills"
-    inv_line = f"> **Invocation:** `@[{skill_name}](file;{skill_dir}/{skill_name})`"
+    inv_line = f"> **Invocation:** `@[{skill_name}](directory;{skill_dir}/{skill_name})`"
 
     with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
         content = f.read()
 
     # If invocation already exists with exact format, skip
-    if f"> **Invocation:** `@[{skill_name}](file;{skill_dir}/{skill_name})`" in content:
+    if f"> **Invocation:** `@[{skill_name}](directory;{skill_dir}/{skill_name})`" in content:
         return False
+
+    # If invocation exists with legacy file format, upgrade to directory format
+    legacy_inv = f"> **Invocation:** `@[{skill_name}](file;{skill_dir}/{skill_name})`"
+    if legacy_inv in content:
+        content = content.replace(legacy_inv, inv_line)
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        return True
 
     # If invocation exists with bare format without backticks, update it
     bare_pattern = f"> **Invocation:** @[{skill_name}](file;{skill_dir}/{skill_name})"
+    bare_dir_pattern = f"> **Invocation:** @[{skill_name}](directory;{skill_dir}/{skill_name})"
     if bare_pattern in content:
         content = content.replace(bare_pattern, inv_line)
+        with open(file_path, "w", encoding="utf-8") as f:
+            f.write(content)
+        return True
+    if bare_dir_pattern in content:
+        content = content.replace(bare_dir_pattern, inv_line)
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(content)
         return True

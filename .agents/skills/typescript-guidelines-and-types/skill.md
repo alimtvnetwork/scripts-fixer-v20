@@ -5,7 +5,7 @@ description: "Executes the Typescript Guidelines And Types prompt. Autonomously 
 
 # Typescript Guidelines And Types
 
-> **Invocation:** `@[typescript-guidelines-and-types](file;.agents/skills/typescript-guidelines-and-types)`
+> **Invocation:** `@[typescript-guidelines-and-types](directory;.agents/skills/typescript-guidelines-and-types)`
 
 Source prompt: `01-prompts/15-cg-execute/15-typescript-guidelines-and-types.md`
 

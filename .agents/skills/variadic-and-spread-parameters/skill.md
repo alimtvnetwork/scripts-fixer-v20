@@ -5,6 +5,8 @@ description: "Executes the Variadic & Spread Parameters prompt. Autonomously sca
 
 # Variadic & Spread Parameters, Rest Elements & Slices
 
+> **Invocation:** `@[variadic-and-spread-parameters](directory;.agents/skills/variadic-and-spread-parameters)`
+
 Source prompt: `01-prompts/15-cg-execute/36-variadic-and-spread-parameters.md`
 Companion skill: `.agents/skills/cg-variadic-and-spread-parameters/skill.md`
 

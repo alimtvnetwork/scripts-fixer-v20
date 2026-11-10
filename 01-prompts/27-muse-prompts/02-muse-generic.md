@@ -24,6 +24,18 @@ BUDGET         = 400 (Steps: 100 Plan & Spec, 150 Subtasks & Prerequisites, 150 
 
 ---
 
+> [!IMPORTANT]
+> ### 📝 2026-11-11 Onboarding Hardening Changelog (v6.6.0)
+> - **GitMap Pinned Install:** Unauthenticated GitHub API requests hit 403 rate-limits on `releases/latest`. Pinned install to `install-quick.sh --dir ~/.local/bin --version v6.98.1` with `git ls-remote --tags` fallback. Verify with `gitmap version` (not `gitmap --version`).
+> - **Installer ~/.bashrc Fix:** Clean up plain-text syntax breaking lines added to `~/.bashrc` and verify `source ~/.bashrc`.
+> - **Auth Check Cleanup:** Removed non-existent `gitmap login --status`. Verify auth strictly via `gh auth status` and `ssh -T git@github.com`.
+> - **SSH Key Creation via GitMap First:** Run `gitmap ssh create "<email>-muse<sequence>-<operator>"` directly first (no `-y`, comment as positional, default path `~/.ssh/id_rsa`).
+> - **SSH HOME Mismatch Fix:** When running as root, copy keys and known_hosts to `/root/.ssh` and test explicit identity first (`ssh -i ~/.ssh/id_rsa -T git@github.com`).
+> - **Clone Flags & Self-Lock Workaround:** Clone with `--ssh --no-vscode-sync --target-dir ~/workspace/repos`. Work around v6.98.1 SQLite DB self-lock bug in `gitmap pa` by reading `~/workspace/repos/.gitmap/output/gitmap.json` and using plain `git pull --ff-only`.
+> - **Problematic Repo Disconnect Handling:** Defer `alim-seo-writing` after 3 failed `fetch-pack: unexpected disconnect` attempts as an open item without stalling onboarding.
+> - **Identity Invariant & File Delivery:** Mandatory prompt for missing identity variables; deliver public keys strictly as downloadable files.
+
+
 ## 📋 1. Letterly-Style Task Ingestion & Planning Initiation Template
 
 Whenever an incoming user request or task is provided, the agent MUST format and structure the task plan using the following canonical Letterly standard:
@@ -45,17 +57,19 @@ ${Input Text Verbatim}
 5. Inspect active file leases & contention via `gitmap agent heatmap` before editing shared files; log all file exploration and modifications with rationale using `gitmap heatmap log`.
 6. Execute bounded subtasks in micro-batches of 5–8 files each, strictly preserving implicit positive booleans, error envelopes, and coding guidelines.
 7. Finish each completed task with ONE single GitMap commit covering all its files together, pushed immediately — git is a quick draft, no per-step verification. Never scatter one task across micro-commits.
-8. Run retrospective AI verification prompt/script (01-prompts/25-ai-verification/01-retrospective-ai-verification.md / 03-ai-scripts/47-retrospective-ai-verification.py) or skill [ai-verification](file;.agents/skills/ai-verification) to audit specs, touched files, code quality, and CI/CD status upon task completion (`gitmap pe -t`).
+8. Run retrospective AI verification prompt/script (01-prompts/25-ai-verification/01-retrospective-ai-verification.md / 03-ai-scripts/47-retrospective-ai-verification.py) or skill [ai-verification](directory;.agents/skills/ai-verification) to audit specs, touched files, code quality, and CI/CD status upon task completion (`gitmap pe -t`).
 
 ## Must follow and spawn agent using
 
-@[execute-parent-task-with-n-steps-v6](file;.agents/skills/execute-parent-task-with-n-steps-v6)
+1. @[execute-parent-task-with-n-steps-v6](directory;.agents/skills/execute-parent-task-with-n-steps-v6)
+2. If any bug, error, or crash is mentioned: @[fix-with-rca](directory;.agents/skills/fix-with-rca)
 
 ## Additional Instructions
 
 - Execute within the 400-step lifecycle budget: Phase 1 (Steps 1..100) planning and spec authoring, Phase 2 (Steps 101..250) sanitization, archival, and prerequisites, Phase 3 (Steps 251..400) worker swarm implementation, targeted checks, and retrospective verification.
 - [/plan](slashCommand;plan) first before doing the work for improved work or less friction.
-- [/learn](slashCommand;learn) from @[gitmap](file;.agents/skills/gitmap) skill to leverage GitMap high-speed search, toolchain discovery, and caching.
+- [/learn](slashCommand;learn) from @[gitmap](directory;.agents/skills/gitmap) skill to leverage GitMap high-speed search, toolchain discovery, and caching.
+- After learning and planning, immediately start executing the plan without asking for confirmation. Autonomous execution must proceed seamlessly through completion.
 - Track in-flight file touches, prevent write collisions, and query the cognitive graph via GitMap RC Heatmap (`gitmap rc heatmap status` / `gitmap rc heatmap tree` / `gitmap rc heatmap live` / `gitmap rc heatmap sync`). If RC does not exist, auto-provision it linked to the mission folder; connect the roadmap to the heatmap command so newly spawned subagents can join dynamically without redundant reads; verify prior task existence and prompt MD5 hash code before initialization.
 - Only add relative paths, never add absolute paths during your work; this should be respected on the release page and in release notes as well.
 ```
@@ -177,11 +191,17 @@ Clean git trees are required before any code inspection or editing:
 > **No Silent Advance Rule:** After EVERY step, REPORT BACK: what you did plus the verification output. Never skip a report, never silently advance. If a step is already satisfied, verify it and report that.
 
 1. **Step 1: Check, Install, or Update GitMap:**
-   - Verify `gitmap version`.
-   - If missing, install immediately:
+   - **Private Repository Intake & Zip Upload Protocol:** GitMap (`gitmap-v28`) is a private repository. If network restrictions, private repository access barriers, or missing tokens prevent `curl` or `git clone` from pulling GitMap directly from GitHub during Muse onboarding, download or package GitMap as a `.zip` archive from your local workspace (`gitmap.zip`) and upload it directly into the Muse environment (e.g. into `~/workspace/repos/gitmap-v28` or root workspace). Extract the zip and run or compile GitMap directly.
+   - Verify with `gitmap version` (NOT `gitmap --version`, which is an unknown command).
+   - If missing, install pinned version (avoid unauthenticated GitHub API 403 on releases/latest):
      - Linux/macOS:
        ```bash
-       curl -fsSL https://raw.githubusercontent.com/alimtvnetwork/gitmap-v28/main/install-quick.sh | bash
+       # Discover working tag via git ls-remote:
+       git ls-remote --tags https://github.com/alimtvnetwork/gitmap-v28.git
+       # Pinned install v6.98.1:
+       curl -fsSL https://raw.githubusercontent.com/alimtvnetwork/gitmap-v28/main/install-quick.sh | bash -s -- --dir ~/.local/bin --version v6.98.1
+       # Inspect ~/.bashrc, comment out any non-comment broken lines added by installer, and verify:
+       source ~/.bashrc
        ```
      - Windows PowerShell:
        ```powershell
@@ -194,18 +214,25 @@ Clean git trees are required before any code inspection or editing:
    - **REPORT:** Output `gitmap version` string and whether installed or updated.
 
 2. **Step 2: Check Git & GitHub Authentication:**
-   - Run `gh auth status` and `gitmap login --status`.
-   - If unauthenticated, prompt user to log in (`gh auth login` or `gitmap login --web`) before performing remote operations.
-   - **REPORT:** Active authenticated account.
+   - Run `gh auth status` and `ssh -T git@github.com` (note: `gitmap login --status` does NOT exist in v6.98.1).
+   - If unauthenticated, prompt the operator for missing `<email>`, `<sequence>`, `<operator>` before generating key (never guess).
+   - Run `gitmap ssh create` first (no `ssh-keygen` first, no `-y` flag; positional text is comment, default path is `~/.ssh/id_rsa`):
+     ```bash
+     gitmap ssh create "<email>-muse<muse-sequence>-<operator-name>"
+     ```
+   - SSH HOME mismatch: If running as root, copy keys to `/root/.ssh` (`chmod 700 /root/.ssh && chmod 600 /root/.ssh/*`) and test explicit identity first (`ssh -i ~/.ssh/id_rsa -T git@github.com`).
+   - Deliver public key strictly as a downloadable file at `~/.ssh/id_rsa.pub` (never paste into chat text) and designate as **Authentication Key** in GitHub.
+   - **REPORT:** Active authenticated account (`Hi <user>! You've successfully authenticated`).
 
 3. **Step 3: Dynamic Repository Onboarding Gate:**
    - **DO NOT ASSUME REPOSITORIES.** Prompt the user:
      > *"Which repositories would you like to onboard? Please provide git clone URLs or local folder paths (e.g., `https://github.com/org/repo.git`), or press Enter to onboard the current working directory."*
-   - Clone provided repositories into `~/workspace/repos/<repo-name>` using `gitmap clone <url> ~/workspace/repos/<dir>` (or link existing folders).
+   - Clone provided repositories using `gitmap clone <url> --ssh --no-vscode-sync --target-dir ~/workspace/repos` (or link existing folders). If a repository disconnects repeatedly (`fetch-pack: unexpected disconnect`), retry max 3 times then defer as open item.
    - **REPORT:** List of onboarded repositories.
 
 4. **Step 4: Pull & Sync Handpicked Repositories:**
    - Run `cd ~/workspace/repos && gitmap pa` (or `gitmap pull` in current repository).
+   - Work around v6.98.1 DB self-lock bug: if `gitmap pa` locks itself, treat `~/workspace/repos/.gitmap/output/gitmap.json` as source of truth and verify with plain `git pull --ff-only` per repo directory.
    - Ensure clean, conflict-free working trees.
    - **REPORT:** Pull summary across repositories.
 

@@ -72,6 +72,12 @@ Follow this sequence before and during any repository modification task:
 | **49** | `49-commit-and-push-all-repos.py` | Multi-repository workspace discoverer, atomic conventional committer & remote push | ~25ms | `git`, `multi-repo`, `commit-all`, `push-all`, `workspace`, `sync` |
 | **51** | `51-helptext-generator.py` | DRY help topic generator: renders `cli/helptext/*.md` from HelpDisplay structs via the `cli/tool/helptextemitter` Go emitter (`--topics`, `--check` drift mode) | ~2s | `help`, `helptext`, `generator`, `dry`, `cli-help-displayer` |
 | **52** | `52-file-size-check.py` | Go file line-count enforcement (spec 243.4): fails (exit 1) when any `.go` file under `cli/` crosses 500 lines (`--limit` override); diff-aware ratchet via `--staged` / `--diff REF` / `--files`; wired into `50-fastgate.py` pre-commit as the "Go File Size" gate | ~3s | `file-size`, `line-count`, `enforcement`, `pre-commit`, `fastgate`, `spec-243` |
+| **53** | `53-skill-frontmatter-validator.py` | Validates YAML frontmatter across all Antigravity and Cursor skill files | ~15ms | `skills`, `frontmatter`, `validator`, `antigravity`, `yaml` |
+| **57** | `57-test-task429-e2e.py` | Multi-subsystem E2E test runner validating Onboarding, Turbo mode, RBAC, and crypto | ~10s | `e2e`, `test`, `rbac`, `onboarding`, `crypto` |
+| **58** | `58-test-task443-ai-resolve-e2e.py` | E2E verification for AI Commit Resolve, Tree Error Visualizer, and backup vault | ~12s | `e2e`, `test`, `ai-resolve`, `conflict`, `tree-error` |
+| **59** | `59-mcp-and-agm-fleet-deploy.py` | Cross-compilation, deployment, version synchronization, and desktop screenshot verification for GitMap & AGM | ~5s | `deploy`, `fleet`, `agm`, `gitmap`, `screenshot`, `ssh` |
+| **68** | `68-modernize-letterly-prompts.py` | Modernizes Letterly & Cursor prompts: directory-based skill references, dual-item agent spawning, immediate execution without confirmation, and V7 consolidation | ~200ms | `letterly`, `cursor`, `prompts`, `formatter`, `skills`, `dual-item` |
+| **69** | `69-harden-muse-master-prompts.py` | Hardens V6 Muse master prompts with real onboarding fixes (pinned install, bashrc fix, auth clean, GitMap SSH first, root mismatch, clone flags, disconnect deferral, file delivery) | ~150ms | `muse`, `onboarding`, `gitmap`, `ssh`, `prompts`, `fixes` |
 
 ---
 
@@ -1280,6 +1286,38 @@ python 03-ai-scripts/47-git-reconcile-and-resolve-conflict.py resolve-conflicts 
 
 # Output structured JSON report for programmatic agent consumption
 python 03-ai-scripts/47-git-reconcile-and-resolve-conflict.py --check --json
+```
+
+</details>
+
+<details>
+<summary><strong>53 — <code>53-skill-frontmatter-validator.py</code>: Antigravity & Cursor Skill YAML Frontmatter Validator</strong></summary>
+
+#### Why It Exists
+
+Prevents IDE customization loader failures (`Skill skill.md invalid frontmatter format`) in Google Antigravity and Cursor. When skill files are committed without opening or closing `---` fences, or without mandatory `name:` and `description:` keys, IDE loaders fail and emit error notifications. This script guarantees permanent regression prevention by enforcing frontmatter schema across all skills before commit.
+
+#### What It Does
+
+- Recursively scans `.agents/skills/` and `.cursor/skills/` for all `skill.md` and `SKILL.md` definitions.
+- Validates that line 1 is strictly the opening fence `---`.
+- Validates that a closing fence `---` exists and isolates the frontmatter block.
+- Validates YAML syntax using `yaml.safe_load` into a key-value dictionary.
+- Enforces non-empty `name` matching standard lowercase identifiers.
+- Enforces non-empty `description` outlining skill scope and activation criteria.
+- Exits with code 0 on clean validation, or code 1 with explicit file paths and diagnostics.
+
+#### CLI Usage & Examples
+
+```bash
+# Validate all skills across .agents/skills and .cursor/skills
+python 03-ai-scripts/53-skill-frontmatter-validator.py
+
+# Run validation with detailed verbose logging
+python 03-ai-scripts/53-skill-frontmatter-validator.py --verbose
+
+# Automatically repair syntax and quote description fields
+python 03-ai-scripts/53-skill-frontmatter-validator.py --fix
 ```
 
 </details>

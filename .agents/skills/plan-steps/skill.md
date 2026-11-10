@@ -5,6 +5,8 @@ description: "Executes the Legacy Step-by-Step Task Decomposition - Planning Spe
 
 # Legacy Step-by-Step Task Decomposition - Planning Spec
 
+> **Invocation:** `@[plan-steps](directory;.agents/skills/plan-steps)`
+
 Source prompt: `01-prompts/12-old-plan-prompts/02-plan-steps.md`
 
 ## Instructions

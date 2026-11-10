@@ -119,14 +119,14 @@ def run_git(args: List[str], repo_root: Path, check_exit: bool = True) -> Tuple[
 def commit_merge_resolution(repo_root: Path) -> bool:
     """Commit a mechanically resolved merge via gitmap cbf (no push).
 
-    Canonical message is "GIT - auto-resolve merge conflicts" so the
-    formatter emits "Bug: GIT - auto-resolve merge conflicts". Falls back
+    Canonical message is "reconcile - auto-resolve merge conflicts" so the
+    formatter emits "Bug: reconcile - auto-resolve merge conflicts". Falls back
     to raw git commit with the same formatted message when gitmap is
     unavailable (bootstrap) or the gitmap commit fails.
     """
     import shutil
 
-    message = "GIT - auto-resolve merge conflicts"
+    message = "reconcile - auto-resolve merge conflicts"
     gitmap_bin = shutil.which("gitmap")
     if gitmap_bin:
         result = subprocess.run(

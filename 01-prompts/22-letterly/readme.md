@@ -19,26 +19,26 @@ This collection contains deterministic prompt transformation templates designed 
 | **11** | [`11-git-pull-first-letterly.md`](11-git-pull-first-letterly.md) | Git Pull First | Formats input into pull-first execution directives ensuring gitmap pull runs before any work | `execute-parent-task-with-n-steps-v6` |
 | **12** | [`12-muse-long-update-letterly.md`](12-muse-long-update-letterly.md) | Muse Long Update | Formats input into Muse long-running overnight execution with gitmap update first, rate-limited gitmap pa / repo pull, autopilot ambiguity logging, pragmatic commits, and conditional CI release | `execute-parent-task-with-n-steps-v6` |
 | **13** | [`13-muse-sleepy-letterly.md`](13-muse-sleepy-letterly.md) | Muse Sleepy Mode | Formats input into "I am sleepy" autopilot execution with repo pull first, closest-choice ambiguity resolution, morning review log, no-build/no-test default, and pragmatic commits | `execute-parent-task-with-n-steps-v6` |
-| **14** | [`14-execute-recommit-time-restricted-letterly.md`](14-execute-recommit-time-restricted-letterly.md) | Recommit & Time-Restricted | Formats voice dictation with on-call time restrictions (< 08:00 AM weekdays, anytime weekends in target timezone), recommit instructions, autobot identity, and V7 execution engine | `execute-parent-task-with-n-steps-v7` |
+| **14** | [`14-execute-parent-task-v7-letterly.md`](14-execute-parent-task-v7-letterly.md) | Execute Parent Task (V7 Engine) | Formats voice dictation with V7 master autonomous execution engine (Option 1: Time-Restricted commits before 08:00 AM weekdays; Option 2: Unrestricted), autobot identity, and dual-window quotas | `execute-parent-task-with-n-steps-v7` |
+| **15** | [`15-plan-parent-task-letterly.md`](15-plan-parent-task-letterly.md) | Plan Parent Task (N-Steps Blueprint) | Formats input into architectural planning specification and pending backlog task without immediate code execution | `plan-spec-steps-v2` |
+| **16** | [`16-plan-steps-by-groups-letterly.md`](16-plan-steps-by-groups-letterly.md) | Plan Steps by Groups | Formats input into modular layer-by-layer architectural blueprint (Data, Core, API, UI, Verification) with zero code execution | `plan-steps-by-groups` |
+| **17** | [`17-plan-coding-guideline-audit-letterly.md`](17-plan-coding-guideline-audit-letterly.md) | Plan Coding Guideline Audit | Formats input into coding standard compliance audit, scorecard, and remediation micro-batch backlog | `plan-coding-guideline-audit` |
 
 ### Cursor Prompt Suite (`23-cursor-prompts/`)
 
-For Cursor environments requiring `.cursor/skills/` resolution, see [`../23-cursor-prompts/readme.md`](../23-cursor-prompts/readme.md) which houses the dedicated Cursor prompt suite (`01-mobile-letterly-cursor.md` through `14-execute-recommit-time-restricted-letterly-cursor.md`).
+For Cursor environments requiring `.cursor/skills/` resolution, see [`../23-cursor-prompts/readme.md`](../23-cursor-prompts/readme.md) which houses the dedicated Cursor prompt suite (`01-mobile-letterly-cursor.md` through `17-plan-coding-guideline-audit-letterly-cursor.md`).
 
 ## Core Invariants
 
 1. **Zero Conversational Filler:** Never output "Certainly! Here is your output:".
 2. **Lossless Verbatim Capture:** Never drop specific technical flags, file paths, or commands from input.
-3. **Mandatory Canonical Skill Triggers:** Every formatted prompt must conclude with its designated canonical skill trigger: `[<skill-name>](file;.agents/skills/<skill-name>)`.
-4. **Standard Letterly Suffix:** All prompt files in this directory strictly carry the `-letterly.md` file suffix.
-5. **Strict Relative Git Paths Only:** Only add the relative paths, never add the absolute path during your work, and ensure this is respected on the release page and in release notes as well.
-6. **Decoupled Execution Engine:** Letterly prompts remain generic and decoupled from internal engine step budgeting; lifecycle execution parameters and concurrency are encapsulated directly within the invoked skills (e.g. `execute-parent-task-with-n-steps-v6`).
-7. **Heatmap Telemetry & Write Collision Mandate:** All Letterly formatters embed the GitMap Heatmap one-liner (`gitmap heatmap discuss` / `gitmap heatmap log` / `gitmap heatmap live`) to track in-flight file touches, prevent write collisions across parallel agent swarms ($A = 3$, Capacity = 6), and transparently report 3-tier database locations.
-
-## GitMap Heatmap One-Liner Integration
-
-All 11 Letterly formatters enforce GitMap Heatmap integration:
-- **Desktop & Multi-Line Formatters (`02`–`06`, `08`–`11`):** Include the `Heatmap Mandate` in the numbered instructions and embed `- Track in-flight file touches and prevent write collisions using GitMap Heatmap (\`gitmap heatmap discuss\` / \`gitmap heatmap log\` / \`gitmap heatmap live\`) with transparent 3-tier database location reporting.` under `## Additional Instructions`.
-- **Mobile Single-Line Formatters (`01`, `07`):** Embed `track file touches and prevent write collisions using GitMap Heatmap (gitmap heatmap discuss / log / live); ` within the continuous single-line directives.
-- **3-Tier Database Reporting:** Enforces transparency across Host Root (`~/.gitmap/agent-root.db`), Repo-Cache (`repo-cache/.heatmap/<ai-slug>/<repo-slug>/heatmap.db`), and Local Task DB (`.ai-memory/temp-agents/<slug>/agent-task.db`).
-
+3. **Mandatory Canonical Skill Triggers:** Every formatted prompt must conclude with its designated canonical skill trigger: `[<skill-name>](directory;.agents/skills/<skill-name>)`.
+4. **Dual-Item Agent Invocation:** All execution formatters enforce dual-item agent spawning:
+   - Primary task execution engine (`execute-parent-task-with-n-steps-v6` or `v7`).
+   - Grounded bug remediation trigger: `If any bug, error, or regression is mentioned: @[fix-with-rca](directory;.agents/skills/fix-with-rca)`.
+5. **Immediate Execution Without Confirmation:** Under `## Additional Instructions`, all execution formatters strictly enforce:
+   `- After learning and planning, immediately begin executing the plan without asking for confirmation. Autonomous execution must proceed seamlessly through completion.`
+6. **Standard Letterly Suffix:** All prompt files in this directory strictly carry the `-letterly.md` file suffix.
+7. **Strict Relative Git Paths Only:** Only add the relative paths, never add the absolute path during your work, and ensure this is respected on the release page and in release notes as well.
+8. **Decoupled Execution Engine:** Letterly prompts remain generic and decoupled from internal engine step budgeting; lifecycle execution parameters and concurrency are encapsulated directly within the invoked skills.
+9. **Heatmap Telemetry & Write Collision Mandate:** All Letterly formatters embed the GitMap Heatmap one-liner (`gitmap rc heatmap status` / `gitmap rc heatmap tree` / `gitmap rc heatmap live` / `gitmap rc heatmap sync`) to track in-flight file touches, prevent write collisions across parallel agent swarms ($A = 3$, Capacity = 6), and transparently report 3-tier database locations.

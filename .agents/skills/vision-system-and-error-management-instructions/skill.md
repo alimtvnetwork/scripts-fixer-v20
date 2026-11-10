@@ -8,4 +8,6 @@ description: >-
 
 # Vision System and Error Management Instructions
 
+> **Invocation:** `@[vision-system-and-error-management-instructions](directory;.agents/skills/vision-system-and-error-management-instructions)`
+
 Autonomous execution protocol for stabilizing Vision System window controls, enforcing error management and SplitDB logging, providing deterministic element targeting via XPath and ID for CLI automation, resolving menu hover and simulation transition glitches, upgrading ROI and pattern configuration with multi-shape tools and Photoshop-style Layers panel, calibrating grayscale bit-depth contrast manipulation, and integrating Supabase and Email bug export telemetry.

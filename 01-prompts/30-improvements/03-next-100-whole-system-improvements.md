@@ -654,12 +654,12 @@ Every single improvement across the 10 System Clusters MUST strictly adhere to t
 1. **Identifier & Subsystem:** `SYS-IMP-033` | Skill Formatting | `.agents/skills/` & `.cursor/skills/`
 2. **System-Level UX Impact:** Enables one-click IDE navigation and skill loading directly from chat and prompt markdown.
 3. **Cause:** Using raw filesystem paths (`file:///...`) or appending `/skill.md` breaks IDE interactive skill detection.
-4. **Effect:** Formats links strictly as `[<skill>](file;.agents/skills/<skill>)` for Antigravity and `(file;.cursor/skills/<skill>)` for Cursor.
+4. **Effect:** Formats links strictly as `[<skill>](directory;.agents/skills/<skill>)` for Antigravity and `(file;.cursor/skills/<skill>)` for Cursor.
 5. **Zero Harm / Regression Safety:** Replaces non-clickable text with interactive links; zero filesystem changes.
 6. **Backward Compatibility Guarantee:** Renders as clean readable markdown in standard text viewers.
 7. **Concrete Implementation Blueprint:**
    ```markdown
-   [next-100-whole-system-improvements](file;.agents/skills/next-100-whole-system-improvements)
+   [next-100-whole-system-improvements](directory;.agents/skills/next-100-whole-system-improvements)
    [/plan](slashCommand;plan)
    ```
 8. **Binary Verification & Acceptance Criteria:** Skill path linter confirms zero occurrences of `.md` inside link URI targets.

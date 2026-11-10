@@ -5,6 +5,8 @@ description: "Executes the [V2] Release-Triggered CI/CD Fix N-Step Continuous Lo
 
 # [V2] Release-Triggered CI/CD Fix N-Step Continuous Loop & Automated Release Ceremony
 
+> **Invocation:** `@[ci-cd-fix-with-release-n-steps](directory;.cursor/skills/ci-cd-fix-with-release-n-steps)`
+
 Source prompt: `01-prompts/16-ci-cd/09-ci-cd-fix-with-release-n-steps.md`
 
 ## Instructions

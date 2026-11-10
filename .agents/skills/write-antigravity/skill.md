@@ -5,7 +5,7 @@ description: "Author, update, and persist Antigravity skills, rules, and configu
 
 # Antigravity Customization Architecture & Rule Authoring
 
-> **Invocation:** `@[write-antigravity](file;.agents/skills/write-antigravity)`
+> **Invocation:** `@[write-antigravity](directory;.agents/skills/write-antigravity)`
 
 Maintains and authors Antigravity agent customizations, including skills (`.agents/skills/<slug>/skill.md`), rules (`.agents/rules/<slug>.md`), and tooling integrations.
 

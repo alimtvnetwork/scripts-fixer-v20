@@ -5,6 +5,8 @@ description: "Executes the Temporary End-to-End Tests & Isolated On-Demand Valid
 
 # Temporary End-to-End Tests & Isolated On-Demand Validation
 
+> **Invocation:** `@[temp-end-to-end-test](directory;.cursor/skills/temp-end-to-end-test)`
+
 Source prompt: `01-prompts/21-temp-end-to-end-tests/01-temp-end-to-end-test.md`
 
 ## Instructions

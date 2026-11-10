@@ -6,5 +6,7 @@ description: >-
 
 # Snap 24 Event 20 UI and Functionality Issues
 
+> **Invocation:** `@[snap-24-event-20-ui-and-functionality-issues](directory;.agents/skills/snap-24-event-20-ui-and-functionality-issues)`
+
 ## Overview
 Resolve critical UI selection deadlocks in the vision workpiece canvas, enforce ROI as strictly rectangular while allocating multi-shape tools to Pattern Search, capture all analysis execution phases with screenshots and step names, implement an Event Explorer with category filters, generate authentic GitMap Letterly V6/V7 prompts with exact action items and skill links, eliminate export dropdown and modal scrolling glitches, copy local ZIP/folder paths directly to clipboard for AI consumption, and sanitize diagnostics into clean key-attribute formats with authentic function names in stack traces. Snapshots must never be saved to codebase assets.

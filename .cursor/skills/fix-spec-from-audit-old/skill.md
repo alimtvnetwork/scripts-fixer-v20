@@ -5,6 +5,8 @@ description: "Executes the Specification Remediation from Audit Findings - Plann
 
 # Specification Remediation from Audit Findings - Planning Spec
 
+> **Invocation:** `@[fix-spec-from-audit-old](directory;.cursor/skills/fix-spec-from-audit-old)`
+
 Source prompt: `01-prompts/12-old-plan-prompts/07-fix-spec-from-audit-old.md`
 
 ## Instructions

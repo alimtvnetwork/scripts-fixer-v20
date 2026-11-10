@@ -67,6 +67,68 @@
 
 ---
 
+## AC-BUG-001: Bug-recording spec folder exists and is linked
+
+**GIVEN** the canonical bug-recording spec (task 324, Spec 03 Part 1)
+**WHEN** the `04-bug-recording/` folder is inspected
+**THEN** it contains `01-bug-record-schema-spec.md`, `02-recording-pipeline-spec.md`, `03-blind-readiness-audit-spec.md`, `readme.md`, and the machine-readable `error-codes.json` index
+**AND** the parent folder readme categories table and this criteria file link it
+
+---
+
+## AC-BUG-002: Schema traced to real capture paths
+
+**GIVEN** the canonical bug record schema
+**WHEN** each REQUIRED field is checked against the trace table
+**THEN** every REQUIRED field cites a real capture path (file + line) in Antigravity-Manager, cat-my-v12, or gitmap-v28
+**AND** every TARGET field is marked with a named owner and date, never presented as if it already exists
+
+---
+
+## AC-BUG-003: Blind-readiness audit executed per repo
+
+**GIVEN** the blind-readiness checklist
+**WHEN** it is run against Antigravity-Manager, cat-my-v12, and gitmap-v28
+**THEN** every item has a pass/fail per repo
+**AND** every fail has a disposition (fixed in the wave, deferred as TARGET with owner and date, or filed as a bug with a spec cross-reference)
+
+---
+
+## AC-BUG-004: CLI/UI parity rule stated with an executable check
+
+**GIVEN** the CLI/UI parity rule
+**WHEN** the pipeline spec is read
+**THEN** the rule states the executable check (CLI list vs UI list, compare id sets)
+**AND** the Cat-My modal case is the worked example and Spec 01's local-first fix is referenced, not re-specified
+
+---
+
+## AC-BUG-005: Spec synced to coding-guidelines-v24
+
+**GIVEN** the gitmap-v28 bug-recording spec
+**WHEN** the fleet sync mechanism mirrors `02-spec/03-error-manage/` to coding-guidelines-v24
+**THEN** the mirrored files are byte-identical and the cross-links resolve
+**AND** any conflict with an existing coding-guidelines rule is resolved in favour of the coding-guidelines rule, with the amendment recorded in the spec
+
+---
+
+## AC-BUG-006: No absolute filesystem paths
+
+**GIVEN** the new spec files
+**WHEN** they are scanned for absolute paths
+**THEN** no absolute filesystem paths appear; all references are relative Git paths in the `repo: path` form
+
+---
+
+## AC-BUG-007: Bug-recording error codes registered
+
+**GIVEN** the `BUG` error codes (18250–18255) in the schema spec
+**WHEN** the error-code registry is checked
+**THEN** the `BUG` prefix is registered in `03-error-code-registry/error-codes-master.json` (range 18250–18299) and in `02-registry.md`
+**AND** the registry validators pass with no collisions
+
+---
+
 ## Cross-References
 
 - [Overview](./readme.md)

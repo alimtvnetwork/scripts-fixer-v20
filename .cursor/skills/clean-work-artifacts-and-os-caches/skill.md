@@ -5,6 +5,8 @@ description: "Executes the Automatic execution after displaying the Plan table p
 
 # Automatic execution after displaying the Plan table
 
+> **Invocation:** `@[clean-work-artifacts-and-os-caches](directory;.cursor/skills/clean-work-artifacts-and-os-caches)`
+
 Source prompt: `01-prompts/15-cg-execute/35-clean-work-artifacts-and-os-caches.md`
 
 ## Instructions

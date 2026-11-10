@@ -5,7 +5,7 @@ description: "Executes the QA Testing Automation & Test Suite Verification promp
 
 # QA Testing Automation & Test Suite Verification
 
-> **Invocation:** `@[autonomous-qa-and-testing-v4](file;.cursor/skills/autonomous-qa-and-testing-v4)`
+> **Invocation:** `@[autonomous-qa-and-testing-v4](directory;.cursor/skills/autonomous-qa-and-testing-v4)`
 
 Source prompt: `01-prompts/06-testing-and-qa/01-autonomous-qa-and-testing-v4.md`
 

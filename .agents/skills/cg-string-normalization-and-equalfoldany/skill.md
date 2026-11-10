@@ -5,7 +5,7 @@ description: "Autonomously audits, refactors, and standardizes string normalizat
 
 # Skill: String Normalization, `EqualFoldAny` & Centralized Utility Discovery (`cg-string-normalization-and-equalfoldany`)
 
-> **Invocation:** `@[cg-string-normalization-and-equalfoldany](file;.agents/skills/cg-string-normalization-and-equalfoldany)`
+> **Invocation:** `@[cg-string-normalization-and-equalfoldany](directory;.agents/skills/cg-string-normalization-and-equalfoldany)`
 
 This skill governs autonomous execution for auditing, refactoring, and standardizing repetitive string normalization (`ToLower`, `TrimSpace`) and chained equality checks (`EqualFold` OR-chains) across Go, TypeScript, and Rust codebases.
 

@@ -5,7 +5,7 @@ description: "Executes the Application Specification Audit prompt. Autonomously 
 
 # Application Specification Audit
 
-> **Invocation:** `@[audit-app-spec](file;.cursor/skills/audit-app-spec)`
+> **Invocation:** `@[audit-app-spec](directory;.cursor/skills/audit-app-spec)`
 
 Source prompt: `01-prompts/13-plan-audit/03-audit-app-spec.md`
 

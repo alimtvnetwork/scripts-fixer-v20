@@ -5,7 +5,7 @@ description: "Autonomously scan, audit, discover, and document 100 grounded code
 
 # Next 100 Code Improvements
 
-> **Invocation:** `@[next-100-code-improvements](file;.agents/skills/next-100-code-improvements)`
+> **Invocation:** `@[next-100-code-improvements](directory;.agents/skills/next-100-code-improvements)`
 
 Source Prompt: `01-prompts/30-improvements/02-next-100-code-improvements.md`
 

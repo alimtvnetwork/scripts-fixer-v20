@@ -5,6 +5,8 @@ description: "Executes the Pipeline Architecture & Cross-Platform Python Automat
 
 # Pipeline Architecture & Cross-Platform Python Automation
 
+> **Invocation:** `@[cicd-pipeline-create](directory;.agents/skills/cicd-pipeline-create)`
+
 Source prompt: `01-prompts/16-ci-cd/07-cicd-pipeline-create.md`
 
 ## Instructions

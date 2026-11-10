@@ -5,6 +5,8 @@ description: "Executes the CI/CD Fix Tweak with Targeted Smart Testing & RCA pro
 
 # CI/CD Fix Tweak with Targeted Smart Testing & RCA
 
+> **Invocation:** `@[ci-cd-fix-tweak](directory;.cursor/skills/ci-cd-fix-tweak)`
+
 Source prompt: `01-prompts/16-ci-cd/01-ci-cd-fix-tweak.md`
 
 ## Instructions

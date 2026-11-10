@@ -5,6 +5,8 @@ description: "Executes the Proofreading & Semantic Consistency Verification - Qu
 
 # Proofreading & Semantic Consistency Verification - Quality Protocol
 
+> **Invocation:** `@[proofread](directory;.agents/skills/proofread)`
+
 Source prompt: `01-prompts/03-read-write/06-proofread.md`
 
 ## Instructions

@@ -5,6 +5,8 @@ description: "Execute full release ceremony, SemVer version bumps, package synch
 
 # Release Management
 
+> **Invocation:** `@[release-management](directory;.cursor/skills/release-management)`
+
 Conducts the standardized release ceremony with the mandatory 5-step release branching lifecycle.
 
 ## Steps & 5-Step Release Branching Mandate

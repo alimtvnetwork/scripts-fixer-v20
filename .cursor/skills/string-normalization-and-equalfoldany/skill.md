@@ -5,6 +5,8 @@ description: "Executes the String Normalization & EqualFoldAny prompt. Autonomou
 
 # String Normalization & EqualFoldAny
 
+> **Invocation:** `@[string-normalization-and-equalfoldany](directory;.cursor/skills/string-normalization-and-equalfoldany)`
+
 Source prompt: `01-prompts/15-cg-execute/37-string-normalization-and-equalfoldany.md`
 Companion skill: `.agents/skills/cg-string-normalization-and-equalfoldany/skill.md`
 

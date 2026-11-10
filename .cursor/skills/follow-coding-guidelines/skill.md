@@ -5,7 +5,7 @@ description: "Autonomously enforce, audit, and follow repository coding guidelin
 
 # Follow Coding Guidelines Autonomous Skill
 
-> **Invocation:** `@[follow-coding-guidelines](file;.cursor/skills/follow-coding-guidelines)`
+> **Invocation:** `@[follow-coding-guidelines](directory;.cursor/skills/follow-coding-guidelines)`
 
 ## Overview
 

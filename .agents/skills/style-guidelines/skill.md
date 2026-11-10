@@ -5,7 +5,7 @@ description: "Executes the \u274c WRONG: Assignment directly followed by if with
 
 # ❌ WRONG: Assignment directly followed by if without blank line
 
-> **Invocation:** `@[style-guidelines](file;.agents/skills/style-guidelines)`
+> **Invocation:** `@[style-guidelines](directory;.agents/skills/style-guidelines)`
 
 Source prompt: `01-prompts/15-cg-execute/10-style-guidelines.md`
 

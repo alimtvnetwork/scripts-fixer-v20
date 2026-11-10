@@ -5,6 +5,8 @@ description: "Executes the Consolidated Discipline & Rigorous Code Quality Proto
 
 # Consolidated Discipline & Rigorous Code Quality Protocol - Core Discipline
 
+> **Invocation:** `@[consolidated-insults-v2](directory;.agents/skills/consolidated-insults-v2)`
+
 Source prompt: `01-prompts/18-insults/02-consolidated-insults-v2.md`
 
 ## Instructions

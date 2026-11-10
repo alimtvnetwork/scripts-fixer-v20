@@ -9,7 +9,7 @@ description: >-
 
 # Read Memory (Enhanced)
 
-> **Invocation:** `@[read-memory-enhanced](file;.agents/skills/read-memory-enhanced)`
+> **Invocation:** `@[read-memory-enhanced](directory;.agents/skills/read-memory-enhanced)`
 
 ## Ambiguity folder path (non-negotiable)
 

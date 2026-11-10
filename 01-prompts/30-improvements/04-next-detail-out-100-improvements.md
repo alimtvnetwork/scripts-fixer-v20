@@ -797,14 +797,14 @@ Run only fast, file-scoped checks on modified markdown documents (NO builds, NO 
 
 ## Companion Skills & Links
 
-- Antigravity Skill: [`next-detail-out-100-improvements`](file;.agents/skills/next-detail-out-100-improvements)
+- Antigravity Skill: [`next-detail-out-100-improvements`](directory;.agents/skills/next-detail-out-100-improvements)
 - Cursor IDE Skill: [`next-detail-out-100-improvements`](file;.cursor/skills/next-detail-out-100-improvements)
 - Related Skills:
-  - [`next-100-ui-improvements`](file;.agents/skills/next-100-ui-improvements)
-  - [`next-100-code-improvements`](file;.agents/skills/next-100-code-improvements)
-  - [`next-100-whole-system-improvements`](file;.agents/skills/next-100-whole-system-improvements)
-  - [`next-detail-out-100-improvements`](file;.agents/skills/next-detail-out-100-improvements)
-  - [`execute-parent-task-with-n-steps-v6`](file;.agents/skills/execute-parent-task-with-n-steps-v6)
+  - [`next-100-ui-improvements`](directory;.agents/skills/next-100-ui-improvements)
+  - [`next-100-code-improvements`](directory;.agents/skills/next-100-code-improvements)
+  - [`next-100-whole-system-improvements`](directory;.agents/skills/next-100-whole-system-improvements)
+  - [`next-detail-out-100-improvements`](directory;.agents/skills/next-detail-out-100-improvements)
+  - [`execute-parent-task-with-n-steps-v6`](directory;.agents/skills/execute-parent-task-with-n-steps-v6)
 - Slash Commands: [`[/goal]`](slashCommand;goal), [`[/learn]`](slashCommand;learn), [`[/plan]`](slashCommand;plan)
 - Master Prompts Catalog: [`01-prompts/readme.md`](01-prompts/readme.md)
 - Improvements Index: [`01-prompts/30-improvements/readme.md`](01-prompts/30-improvements/readme.md)

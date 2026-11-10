@@ -5,7 +5,7 @@ description: "Develop, theme, and maintain modern React UI components using Tail
 
 # React UI, Components & Theming Design System
 
-> **Invocation:** `@[react-ui-theming-design](file;.agents/skills/react-ui-theming-design)`
+> **Invocation:** `@[react-ui-theming-design](directory;.agents/skills/react-ui-theming-design)`
 
 This skill guides frontend component engineering, theme token management, and accessibility standards across `src/`.
 

@@ -5,7 +5,7 @@ description: "Executes the React Frontend Guidelines prompt. Autonomously scan, 
 
 # React Frontend Guidelines
 
-> **Invocation:** `@[react-frontend-guidelines](file;.agents/skills/react-frontend-guidelines)`
+> **Invocation:** `@[react-frontend-guidelines](directory;.agents/skills/react-frontend-guidelines)`
 
 Source prompt: `01-prompts/15-cg-execute/08-react-frontend-guidelines.md`
 

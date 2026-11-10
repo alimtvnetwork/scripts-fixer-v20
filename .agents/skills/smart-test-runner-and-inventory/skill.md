@@ -5,7 +5,7 @@ description: "Autonomously orchestrate smart incremental test execution, central
 
 # Smart Test Runner & Centralized Inventory Manifest
 
-> **Invocation:** `@[smart-test-runner-and-inventory](file;.agents/skills/smart-test-runner-and-inventory)`
+> **Invocation:** `@[smart-test-runner-and-inventory](directory;.agents/skills/smart-test-runner-and-inventory)`
 
 > **Scope:** Multi-Repository Test Execution & Caching Engine
 

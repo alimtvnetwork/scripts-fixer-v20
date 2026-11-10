@@ -5,7 +5,7 @@ description: "Author, structure, sequence, and validate repository specification
 
 # Specification Authoring & Validation Guide
 
-> **Invocation:** `@[spec-authoring-and-validation](file;.agents/skills/spec-authoring-and-validation)`
+> **Invocation:** `@[spec-authoring-and-validation](directory;.agents/skills/spec-authoring-and-validation)`
 
 This skill governs the creation, organization, and automated validation of architectural specifications in `02-spec/`, primarily under the canonical application specifications folder `02-spec/21-app/`.
 
@@ -59,6 +59,26 @@ Proceeding directly to specification authoring in 02-spec/21-app/ and subtask pl
 ```
 
 MANDATORY SAME-TURN TOOL CHAIN: The breakdown text above and your first tool call MUST be emitted in the EXACT SAME TURN. Never end the turn with text alone.
+
+---
+
+## Step 1: Sequence Number Discovery (Mandatory `gitmap spec next`)
+
+When determining the next or latest specification sequence number (`XX` or `NN`), the AI MUST run:
+```bash
+# ✅ MANDATORY: Claim the next sequence number atomically
+gitmap spec next
+
+# Or inspect the highest existing specification sequence
+gitmap spec latest
+
+# Or list all specifications sorted by sequence
+gitmap spec list
+```
+> [!CRITICAL]
+> **TOTAL BAN ON AD-HOC PYTHON DIRECTORY TRAVERSAL:**
+> NEVER execute inline Python snippets (e.g. `python -c "import os; dirs = [d for d in os.listdir('02-spec/21-app')...]"`) or shell loops to inspect directories or calculate spec sequences.
+> The AI MUST obtain `XX` directly via `gitmap spec next` (or `gitmap spec latest`), ensuring zero process overhead and concurrency safety.
 
 ---
 

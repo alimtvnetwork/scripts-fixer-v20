@@ -5,7 +5,7 @@ description: "Executes the Reverse Engineering Spec Writer & System Architecture
 
 # Reverse Engineering Spec Writer & System Architecture Discovery
 
-> **Invocation:** `@[spec-write-from-reverse-engineering](file;.cursor/skills/spec-write-from-reverse-engineering)`
+> **Invocation:** `@[spec-write-from-reverse-engineering](directory;.cursor/skills/spec-write-from-reverse-engineering)`
 
 Source prompt: `01-prompts/03-read-write/08-spec-write-from-reverse-engineering.md`
 

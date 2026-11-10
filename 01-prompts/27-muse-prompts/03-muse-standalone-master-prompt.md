@@ -73,6 +73,13 @@ Every onboarding step must conclude with an explicit visible report in the chat:
   # Or verify SSH connection
   ssh -T git@github.com || true
   ```
+- **SSH Key Creation (when connecting):**
+  ```bash
+  # GitMap SSH generation (preferred):
+  gitmap ssh create "<email>-muse<muse-sequence>-<operator-name>" -y
+  # Or standard ssh-keygen fallback:
+  ssh-keygen -t ed25519 -C "<user-email>-muse-session" -f ~/.ssh/id_ed25519 -N ""
+  ```
 - **REPORT:** Git version and current authentication state.
 
 ### Step 2: Git Repository Connection Gate
@@ -100,6 +107,8 @@ Every onboarding step must conclude with an explicit visible report in the chat:
       git init -b main
       git remote add origin <user-provided-url>
       ```
+- **Private Repositories & Zip Upload Option:**
+  If the target repository is private (e.g. `gitmap` or internal enterprise repos) where SSH or token credentials are not pre-configured on Muse, the user may upload the repository as a `.zip` archive (e.g. `gitmap.zip`). Muse will extract the archive to the workspace root, verify the Git work tree, and proceed with onboarding.
 - **REPORT:** Active repository path, remote `origin` URL, and active branch.
 
 ### Step 3: Upstream Synchronization ("Pull First" Invariant)
@@ -135,7 +144,7 @@ Every onboarding step must conclude with an explicit visible report in the chat:
 
 ## 📁 3. Recommended Folder Structure & Adaptive Architecture
 
-To ensure high maintainability, clean separation of concerns, and rapid AI navigation, Muse provides a **battle-tested recommended directory structure**. 
+To ensure high maintainability, clean separation of concerns, and rapid AI navigation, Muse provides a **battle-tested recommended directory structure**.
 
 > [!NOTE]
 > **Adaptable to Your Choice:** While the structure below is our strong recommendation, **it is entirely optional**. If your project uses an existing or different convention (e.g., Next.js `app/`, Go flat packages, Django apps, mono-repo workspaces), Muse will respect, detect, and seamlessly adapt to your chosen structure.

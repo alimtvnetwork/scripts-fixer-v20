@@ -5,7 +5,7 @@ description: "Executes the SEO Content Optimization & Meta Tag Auditing - Conten
 
 # SEO Content Optimization & Meta Tag Auditing - Content Workflow
 
-> **Invocation:** `@[seo-optimization](file;.cursor/skills/seo-optimization)`
+> **Invocation:** `@[seo-optimization](directory;.cursor/skills/seo-optimization)`
 
 Source prompt: `01-prompts/11-content-and-seo/03-seo-optimization.md`
 

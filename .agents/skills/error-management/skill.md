@@ -5,6 +5,8 @@ description: "Executes the Error Management prompt. Autonomously scan, plan, ref
 
 # Error Management
 
+> **Invocation:** `@[error-management](directory;.agents/skills/error-management)`
+
 Source prompt: `01-prompts/15-cg-execute/02-error-management.md`
 
 ## Instructions

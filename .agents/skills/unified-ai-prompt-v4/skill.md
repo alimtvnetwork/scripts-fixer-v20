@@ -5,6 +5,8 @@ description: "Executes the Unified AI Autonomous Execution Protocol - Core Proto
 
 # Unified AI Autonomous Execution Protocol - Core Protocol
 
+> **Invocation:** `@[unified-ai-prompt-v4](directory;.agents/skills/unified-ai-prompt-v4)`
+
 Source prompt: `01-prompts/02-core-workflow/03-unified-ai-prompt-v4.md`
 
 ## Instructions

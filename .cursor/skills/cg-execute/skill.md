@@ -5,7 +5,7 @@ description: "Executes the Coding Guideline Execution Suite (cg-execute) - Index
 
 # Coding Guideline Execution Suite (cg-execute) - Index & Catalog
 
-> **Invocation:** `@[cg-execute](file;.cursor/skills/cg-execute)`
+> **Invocation:** `@[cg-execute](directory;.cursor/skills/cg-execute)`
 
 Source prompt: `01-prompts/15-cg-execute/readme.md`
 

@@ -5,7 +5,7 @@ description: "Autonomously discover, transfer, optimize, and embed screenshot an
 
 # Image Transfer & Documentation Asset Ingestion Skill (`image-transfer`)
 
-> **Invocation:** `@[image-transfer](file;.agents/skills/image-transfer)`
+> **Invocation:** `@[image-transfer](directory;.agents/skills/image-transfer)`
 
 This skill guides autonomous AI agents in discovering, transferring, verifying, and embedding screenshot and architecture diagram assets into documentation and specifications without relying on ad-hoc Python scripts or raw shell commands.
 

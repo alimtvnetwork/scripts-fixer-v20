@@ -5,6 +5,8 @@ description: "Autonomously inspect files, track in-flight touches without UDF fl
 
 # GitMap Heatmap & File Inspection Skill (`gitmap-heatmap`)
 
+> **Invocation:** `@[gitmap-heatmap](directory;.cursor/skills/gitmap-heatmap)`
+
 > **Invocation:** `@[gitmap-heatmap](file;.agents/skills/gitmap-heatmap)`
 
 ## Mission & Purpose

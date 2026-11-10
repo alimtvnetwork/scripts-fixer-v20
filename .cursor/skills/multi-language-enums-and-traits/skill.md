@@ -5,7 +5,7 @@ description: "Executes the Multi Language Enums And Traits prompt. Autonomously 
 
 # Multi Language Enums And Traits
 
-> **Invocation:** `@[multi-language-enums-and-traits](file;.cursor/skills/multi-language-enums-and-traits)`
+> **Invocation:** `@[multi-language-enums-and-traits](directory;.cursor/skills/multi-language-enums-and-traits)`
 
 Source prompt: `01-prompts/15-cg-execute/16-multi-language-enums-and-traits.md`
 
