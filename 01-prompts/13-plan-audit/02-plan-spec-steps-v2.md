@@ -4,14 +4,14 @@ description: "Architectural planning directive establishing dual-agent concurren
 ---
 
 ```text
-N = 300 (Total self-loop steps budget — editable top-header parameter, default: 300)
+N = 400 (Total self-loop steps budget — editable top-header parameter, default: 400)
 A = 2   (MANDATORY number of spawned autonomous subagents running concurrently via invoke_subagent, default: 2)
 H = 2   (Operational hands per agent: dual-task batch capacity & parallel tool dispatch, default: 2)
 C = 30  (Tool calls per worker before it must report, default: 30)
 
 System Concurrency Capacity = A × H = 2 agents × 2 hands = 4 concurrent subtask operations
-PHASE_1_BUDGET = N / 2   (Steps 1 .. 150: Planning, Parallel Discovery Subagents, Detailed Spec, and Lean Subtask Generation)
-PHASE_2_BUDGET = N / 2   (Steps 151 .. 300: Mandatory Parallel Subagent Execution, Self-Looping, Targeted Quality Linting)
+PHASE_1_BUDGET = N / 2   (Steps 1 .. 200: Planning, Parallel Discovery Subagents, Detailed Spec, and Lean Subtask Generation)
+PHASE_2_BUDGET = N / 2   (Steps 201 .. 400: Mandatory Parallel Subagent Execution, Self-Looping, Targeted Quality Linting)
 WAVES = ceil(subtasks / (A x H))
 ```
 
@@ -198,7 +198,7 @@ To execute these generated subtasks in continuous sequence with 2-agent concurre
 ## Variables — check if you are confused only.
 
 ```text
-n            = <default = 150, if not defined> = 50 steps confirmed
+n            = <default = 400, if not defined> = 400 steps confirmed
 domains      = Cli | Plugin | Contract | Ci | Last defined Spec above
 plan-slug    = Context given above or below.
 domains      = get from the spec given or context given, ask questions if any

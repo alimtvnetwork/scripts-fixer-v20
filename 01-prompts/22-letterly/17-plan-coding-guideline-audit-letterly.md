@@ -29,7 +29,7 @@ ${Input Text Verbatim}
 1. Git pull BEFORE starting any work — first try `gitmap pull <repo path>` (or run `gitmap pull` in repository folder); if that fails, fall back to regular `git pull` and resolve any merge conflicts so the repository is completely up to date and clean before starting.
 2. Scan target codebase against `02-spec/02-coding-guidelines/` to catalog all coding standard violations across error sovereignty, positive booleans, function line limits, and split DB encapsulation.
 3. Author comprehensive audit scorecard and remediation matrix under `02-spec/25-app-spec-audit/XX-<slug>-audit.md`.
-4. Enqueue remediation master plan in `.ai-memory/plans/pending/XX-<slug>.md` and bounded 5–8 file micro-batch subtasks under `.ai-memory/plans/subtasks/XX-<slug>/`.
+4. Enqueue remediation master plan in `.ai-memory/plans/pending/XX-<slug>.md` and bounded 5–8 file micro-batch subtasks under `.ai-memory/plans/subtasks/XX-<slug>/` structured as exactly 400 granular self-looping steps (Phase 1: 1–200, Phase 2: 201–400).
 5. Search codebase exclusively via GitMap (`gitmap aum search`, `gitmap find`, `gitmap cat`, `gitmap ps`, `gitmap py`, `gitmap llm train`); TOTAL BAN on rg, ripgrep, grep, git grep, Select-String.
 6. Strictly use relative Git paths (`02-spec/...`, `.ai-memory/...`, `cmd/...`); only add the relative paths, never add the absolute path during your work, and ensure this is respected on the release page and in release notes as well.
 7. STRICTLY PLANNING ONLY: Total ban on code modification, compilation, local builds, or test suite execution during this planning phase (NO-BUILD, NO-TEST, NO-CODE-CHANGES).
@@ -45,6 +45,7 @@ ${Input Text Verbatim}
 ## Additional Instructions
 
 - [/plan](slashCommand;plan) first before doing work for improved work or less friction, faster execution for AI and coding without errors and following Coding Guidelines.
+- Formulate remediation master plan in exactly 400 granular self-looping steps (Phase 1: 1–200, Phase 2: 201–400) detailing an actionable AI roadmap.
 - [/learn](slashCommand;learn) from @[gitmap](directory;.agents/skills/gitmap) skill to leverage GitMap high-speed search, toolchain discovery, and caching.
 - All compliance audit matrices, scorecards, and remediation micro-batches are offboarded to @[plan-coding-guideline-audit](directory;.agents/skills/plan-coding-guideline-audit).
 - Keep all created specifications in `02-spec/25-app-spec-audit/` and plans in `.ai-memory/plans/pending/XX-<slug>.md` and `.ai-memory/plans/subtasks/XX-<slug>/` without starting immediate code execution.

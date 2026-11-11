@@ -27,7 +27,7 @@ ${Input Text Verbatim}
 # Actionable Items Must Follow Non-Negotiable
 
 1. Git pull BEFORE starting any work — first try `gitmap pull <repo path>` (or run `gitmap pull` in repository folder); if that fails, fall back to regular `git pull` and resolve any merge conflicts so the repository is completely up to date and clean before starting.
-2. Write spec under `02-spec/21-app/XX-<slug>/` and enqueue plan task in `.ai-memory/plans/pending/XX-<slug>.md` (subtasks in `.ai-memory/plans/subtasks/XX-<slug>/`) first (xx is folder sequence 01, 02).
+2. Write spec under `02-spec/21-app/XX-<slug>/` and enqueue plan task in `.ai-memory/plans/pending/XX-<slug>.md` (subtasks in `.ai-memory/plans/subtasks/XX-<slug>/`) with exactly 400 granular self-looping steps (Phase 1: 1–200, Phase 2: 201–400) first (xx is folder sequence 01, 02).
 3. Search codebase exclusively via GitMap (`gitmap aum search`, `gitmap find`, `gitmap cat`, `gitmap ps`, `gitmap py`, `gitmap llm train`); TOTAL BAN on rg, ripgrep, grep, git grep, Select-String.
 4. Strictly use relative Git paths (`02-spec/...`, `.ai-memory/...`, `cmd/...`); never add absolute filesystem paths during work.
 5. Write the first step on task decomposition and bounded subtasks under `.ai-memory/plans/subtasks/XX-<slug>/`.
@@ -45,6 +45,7 @@ ${Input Text Verbatim}
 ## Additional Instructions
 
 - [/plan](slashCommand;plan) first before doing work for improved work or less friction, faster execution for AI and coding without errors and following Coding Guidelines.
+- Formulate master plan in exactly 400 granular self-looping steps (Phase 1: 1–200, Phase 2: 201–400) detailing an actionable AI roadmap.
 - [/learn](slashCommand;learn) from @[gitmap](directory;.cursor/skills/gitmap) skill to leverage GitMap high-speed search, toolchain discovery, and caching.
 - All planning protocols, dual-agent concurrency (A=2, H=2), spec modularization, and no-build/no-test constraints are offboarded to @[plan-spec-steps-v2](directory;.cursor/skills/plan-spec-steps-v2).
 - If any ambiguity arises, record it under `.ai-memory/ambiguous-questions/01-new-ambiguity/XX-<slug>-ambiguity.md` and immediately go ahead with planning without asking the user.

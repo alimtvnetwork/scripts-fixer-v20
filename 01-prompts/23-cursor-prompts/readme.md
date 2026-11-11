@@ -23,17 +23,18 @@ Deterministic prompt transformation templates specifically adapted for Cursor ID
 | **15** | [`15-plan-parent-task-letterly-cursor.md`](15-plan-parent-task-letterly-cursor.md) | Plan Blueprint | Planning spec and pending backlog t | `plan-spec-steps-v2` |
 | **16** | [`16-plan-steps-by-groups-letterly-cursor.md`](16-plan-steps-by-groups-letterly-cursor.md) | Plan Steps Groups | Modular blueprint with zero code ex | `plan-steps-by-groups` |
 | **17** | [`17-plan-coding-guideline-audit-letterly-cursor.md`](17-plan-coding-guideline-audit-letterly-cursor.md) | Guideline Audit | Compliance audit, scorecard, remedi | `plan-coding-guideline-audit` |
-| **18** | [`18-cursor-manager-memory-and-instruction.md`](18-cursor-manager-memory-and-instruction.md) | Manager: plan | Cursor manager: pull, push, spec, p | `ai-instruction-packet` |
-| **19** | [`19-cursor-verify-and-replan.md`](19-cursor-verify-and-replan.md) | Manager: verify | Verifies cited lines, authors plan  | `ai-instruction-packet` |
+| **18** | [`18-sync-letterly-cursor.md`](18-sync-letterly-cursor.md) | Sync Mode (Fleet Synchronizer) | Native fleet sync across prompts, skills, coding-guideline.json | `gitmap-fleet-sync` |
+| **19** | [`19-cursor-manager-memory-and-instruction.md`](19-cursor-manager-memory-and-instruction.md) | Manager: plan | Cursor manager: pull, push, spec, p | `ai-instruction-packet` |
+| **20** | [`20-cursor-verify-and-replan.md`](20-cursor-verify-and-replan.md) | Manager: verify | Verifies cited lines, authors plan  | `ai-instruction-packet` |
 
 ## Core Invariants
 
 1. **Zero Conversational Filler:** Never output "Certainly! Here is your output:".
-2. **Lossless Verbatim Capture & Anti-Mutation Mandate:** Never drop specific technical flags, file paths, or commands from input. TOTAL BAN on mutating, softening, summarizing, or altering input text in any way beyond removing verbal fillers; all tone, urgency, emotion, and directives must be preserved 100% strictly intact.
+2. **Lossless Verbatim Anti-Mutation:** Never drop specific technical flags, file paths, or commands from input. TOTAL BAN on mutating, softening, or altering input text beyond verbal fillers; preserve tone, urgency, directives 100% intact.
 3. **Mandatory Canonical Skill Triggers:** Every formatted prompt must conclude with its designated canonical skill trigger: `[<skill-name>](directory;.cursor/skills/<skill-name>)`.
 4. **Dual-Item Agent Invocation:** All execution formatters enforce primary execution engine (`execute-parent-task-with-n-steps-v6` or `v7`) and bug remediation (`fix-with-rca`).
 5. **Immediate Execution Without Confirmation:** Under `## Additional Instructions`, all execution formatters enforce immediate autonomous execution post-planning without asking user confirmation.
 6. **Standard Cursor Suffix:** All formatters in this directory strictly carry the `-letterly-cursor.md` file suffix.
 7. **Strict Relative Git Paths Only:** Only add relative paths (`02-spec/...`, `.ai-memory/...`, `cmd/...`); never add absolute filesystem paths.
 8. **Decoupled Execution Engine:** Prompts remain compact (< 5550 chars); execution lifecycle mechanics are offboarded to invoked skills.
-9. **Heatmap Telemetry & Write Collision Mandate:** All formatters embed GitMap Heatmap (`gitmap rc heatmap status` / `gitmap rc heatmap tree` / `gitmap rc heatmap live` / `gitmap rc heatmap sync`) to track file touches and prevent write collisions.
+9. **Heatmap Telemetry & Collision Safety:** All formatters embed GitMap Heatmap (`gitmap rc heatmap status` / `gitmap rc heatmap tree` / `gitmap rc heatmap live` / `gitmap rc heatmap sync`) to track file touches and prevent write collisions.
