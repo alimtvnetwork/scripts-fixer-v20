@@ -46,6 +46,7 @@ ${Input Text Verbatim}
 
 ## Additional Instructions
 
+- [/goal](slashCommand;goal) Follow exactly to the high instruction which is given and the checklist that has been given on top.
 - [/plan](slashCommand;plan) first before doing work for improved work or less friction, faster work and more pure and effective work.
 - [/learn](slashCommand;learn) from @[gitmap](directory;.cursor/skills/gitmap) skill to leverage GitMap high-speed search, toolchain discovery, and caching.
 - Track in-flight file touches and prevent write collisions using GitMap RC Heatmap (`gitmap rc heatmap status` / `gitmap rc heatmap live`).

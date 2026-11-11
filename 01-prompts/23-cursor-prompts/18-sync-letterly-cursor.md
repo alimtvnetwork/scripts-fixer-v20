@@ -45,6 +45,7 @@ ${Input Text Verbatim}
 
 ## Additional Instructions
 
+- [/goal](slashCommand;goal) Follow exactly to the high instruction which is given and the checklist that has been given on top.
 - [/plan](slashCommand;plan) first before doing work for improved work or less friction, faster execution for AI and coding without errors and following Coding Guidelines.
 - [/learn](slashCommand;learn) from @[gitmap](directory;.cursor/skills/gitmap) skill to leverage GitMap high-speed search, toolchain discovery, and caching.
 - All multi-repository 3-way synchronization, Merkle hash calculations, conflict resolutions, and fleet operations are offboarded to @[gitmap-fleet-sync](directory;.cursor/skills/gitmap-fleet-sync).

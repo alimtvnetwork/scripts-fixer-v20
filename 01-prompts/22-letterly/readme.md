@@ -40,3 +40,4 @@ For Cursor environments requiring `.cursor/skills/` resolution, see [`../23-curs
 7. **Strict Relative Git Paths Only:** Only add relative paths (`02-spec/...`, `.ai-memory/...`, `cmd/...`); never add absolute filesystem paths.
 8. **Decoupled Execution Engine:** Prompts remain generic and compact (< 5550 chars); execution lifecycle mechanics and concurrency are offboarded to invoked skills.
 9. **Heatmap Telemetry & Collision Safety:** All Letterly formatters embed GitMap Heatmap (`gitmap rc heatmap status` / `gitmap rc heatmap tree` / `gitmap rc heatmap live` / `gitmap rc heatmap sync`) to track file touches and prevent write collisions.
+10. **Canonical Anti-Gravity Goal Format:** Under `## Additional Instructions`, all multi-line formatters enforce the sovereign goal directive: `- [/goal](slashCommand;goal) Follow exactly to the high instruction which is given and the checklist that has been given on top.`

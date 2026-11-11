@@ -41,6 +41,7 @@ ${Input Text Verbatim}
 
 ## Additional Instructions
 
+- [/goal](slashCommand;goal) Follow exactly to the high instruction which is given and the checklist that has been given on top.
 - [/plan](slashCommand;plan) first before doing work for improved work, faster execution for AI and coding without errors and following Coding Guidelines.
 - All execution lifecycle, tree swarm hierarchy, dynamic agent join, bot identity, and time restriction parameters are offboarded to @[execute-parent-task-with-n-steps-v7](directory;.cursor/skills/execute-parent-task-with-n-steps-v7).
 - [/learn](slashCommand;learn) from @[gitmap](directory;.cursor/skills/gitmap) skill immediately following planning to leverage GitMap high-speed search, toolchain discovery, and caching.

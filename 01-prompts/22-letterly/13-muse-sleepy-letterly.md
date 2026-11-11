@@ -46,6 +46,7 @@ ${Input Text Verbatim}
 
 ## Additional Instructions
 
+- [/goal](slashCommand;goal) Follow exactly to the high instruction which is given and the checklist that has been given on top.
 - [/plan](slashCommand;plan) first before doing work for improved work or less friction, faster execution for AI and coding without errors and following Coding Guidelines.
 - [/learn](slashCommand;learn) from @[gitmap](directory;.agents/skills/gitmap) skill to leverage GitMap high-speed search, toolchain discovery, and caching.
 - After learning and planning, immediately begin executing the plan without asking for confirmation. Autonomous execution must proceed seamlessly through completion.

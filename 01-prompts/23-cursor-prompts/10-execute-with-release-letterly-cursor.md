@@ -45,6 +45,7 @@ ${Input Text Verbatim}
 
 ## Additional Instructions
 
+- [/goal](slashCommand;goal) Follow exactly to the high instruction which is given and the checklist that has been given on top.
 - [/learn](slashCommand;learn) from @[gitmap](directory;.cursor/skills/gitmap) skill to leverage GitMap high-speed search, toolchain discovery, and caching.
 - [/plan](slashCommand;plan) first before doing work for improved work or less friction, faster execution for AI and coding without errors and following Coding Guidelines.
 - All release ceremonies and version bump standards are offboarded to @[release](directory;.cursor/skills/release).

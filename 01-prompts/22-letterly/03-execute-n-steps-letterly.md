@@ -44,6 +44,7 @@ ${Input Text Verbatim}
 
 ## Additional Instructions
 
+- [/goal](slashCommand;goal) Follow exactly to the high instruction which is given and the checklist that has been given on top.
 - [/learn](slashCommand;learn) from @[gitmap](directory;.agents/skills/gitmap) skill for high-speed search and caching.
 - [/plan](slashCommand;plan) first before doing work for improved execution without errors following Coding Guidelines.
 - Formulate master plan in 100 granular self-looping steps detailing an actionable AI roadmap.

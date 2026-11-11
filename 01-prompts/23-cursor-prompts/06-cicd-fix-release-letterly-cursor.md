@@ -44,6 +44,7 @@ ${Input Text Verbatim}
 
 ## Additional Instructions
 
+- [/goal](slashCommand;goal) Follow exactly to the high instruction which is given and the checklist that has been given on top.
 - [/plan](slashCommand;plan) first before doing work for improved work or less friction, faster execution for AI and coding without errors and following Coding Guidelines.
 - All pipeline telemetry extraction, failure dossiers (`gitmap pe -t`), 4-part RCA generation, and dynamic loop waiting are offboarded to @[ci-cd-fix-gitmap-release](directory;.cursor/skills/ci-cd-fix-gitmap-release).
 - All SemVer arithmetic, version manifests, and `gitmap cpr` tag ceremonies are offboarded to @[release](directory;.cursor/skills/release).
