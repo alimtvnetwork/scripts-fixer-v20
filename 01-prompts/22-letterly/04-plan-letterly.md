@@ -8,16 +8,9 @@ Format input text according to exact planning template below without conversatio
 4. Output task name and slug subheaders:
    - `## task: <task title>`
    - `## slug: <task-slug>` (lowercase-hyphenated; when authoring directories and plan files, format as XX-<task-slug> where XX is the zero-padded sequence of that folder, e.g. `## slug: 24-seo-writing-and-folder-structure-instructions`).
-5. Under `# Actionable Items Must Follow Non-Negotiable`, ensure:
-   - Item 1: `1. Git pull BEFORE starting any work — first try \`gitmap pull <repo path>\` (or run \`gitmap pull\` in repository folder); if that fails, fall back to regular \`git pull\` and resolve any merge conflicts so the repository is completely up to date and clean before starting.`
-   - Item 2: `2. Write plan and architectural spec first under 02-spec/21-app/XX-<slug>/ adhering to 02-spec/01-spec-authoring-guide/ (where XX is zero-padded folder sequence)`
-   - Item 3: `3. Search codebase exclusively via GitMap (gitmap aum search, gitmap find, gitmap cat, gitmap ps, gitmap py, gitmap llm train); TOTAL BAN on rg, ripgrep, grep, git grep, Select-String`
-   - Item 4: `4. Strictly use relative Git paths (02-spec/..., .ai-memory/..., cmd/...); only add the relative paths, never add the absolute path during your work, and ensure this is respected on the release page and in release notes as well`
-   - Item 5: `5. Write first step on task decomposition and bounded subtasks under .ai-memory/plans/subtasks/XX-<slug>/`
-   - Item 6: `6. Enforce strict no-build and no-test rules throughout planning phase`
-   followed by discrete architectural requirements from input as items 7..N.
-6. Append mandatory planning skill invocation suffix.
-7. Output plain markdown text only. Never wrap in fenced code blocks (no ```markdown or ``` fences).
+5. Construct `# Actionable Items Must Follow Non-Negotiable`: include fixed items 1-7 (pull first, spec/plan enqueue with architecture decoupled from execution, GitMap search primacy, relative Git paths mandate, first step on task decomposition, strict NO-BUILD/NO-TEST rules, and binary acceptance criteria), followed by discrete planning directives extracted from input text as items 8..N.
+6. Append mandatory planning skill invocation suffix pointing to directory-based skill references.
+7. Output plain markdown text only. Never wrap in fenced code blocks.
 8. Relative Paths: Only add relative paths (`02-spec/...`, `.ai-memory/...`, `cmd/...`); never add absolute paths.
 
 ${Input Text Verbatim} = Input text verbatim as is without filler words. Strict zero-mutation policy: never alter, soften, summarize, or rewrite input text in any way; preserve all directives, parameters, and tone 100% intact.
@@ -34,22 +27,27 @@ ${Input Text Verbatim}
 # Actionable Items Must Follow Non-Negotiable
 
 1. Git pull BEFORE starting any work — first try `gitmap pull <repo path>` (or run `gitmap pull` in repository folder); if that fails, fall back to regular `git pull` and resolve any merge conflicts so the repository is completely up to date and clean before starting.
-2. Write spec under 02-spec/21-app/XX-<slug>/ and enqueue plan task in .ai-memory/plans/pending/XX-<slug>.md (subtasks in .ai-memory/plans/subtasks/XX-<slug>/) first, (xx should be figured out by the folder structure and running AI tools, xx is sequence 01, 02)
-3. Search codebase exclusively via GitMap (gitmap aum search, gitmap find, gitmap cat, gitmap ps, gitmap py, gitmap llm train); TOTAL BAN on rg, ripgrep, grep, git grep, Select-String
-4. Strictly use relative Git paths (02-spec/..., .ai-memory/..., cmd/...); only add the relative paths, never add the absolute path during your work, and ensure this is respected on the release page and in release notes as well
-5. Write the first step on task decomposition and bounded subtasks under .ai-memory/plans/subtasks/XX-<slug>/
-6. Enforce strict no-build and no-test rules throughout the planning phase
-7. Define binary acceptance criteria for every subtask
+2. Write spec under `02-spec/21-app/XX-<slug>/` and enqueue plan task in `.ai-memory/plans/pending/XX-<slug>.md` (subtasks in `.ai-memory/plans/subtasks/XX-<slug>/`) first (xx is folder sequence 01, 02).
+3. Search codebase exclusively via GitMap (`gitmap aum search`, `gitmap find`, `gitmap cat`, `gitmap ps`, `gitmap py`, `gitmap llm train`); TOTAL BAN on rg, ripgrep, grep, git grep, Select-String.
+4. Strictly use relative Git paths (`02-spec/...`, `.ai-memory/...`, `cmd/...`); never add absolute filesystem paths during work.
+5. Write the first step on task decomposition and bounded subtasks under `.ai-memory/plans/subtasks/XX-<slug>/`.
+6. Enforce strict no-build and no-test rules throughout the planning phase (NO-BUILD, NO-TEST, NO-CODE-CHANGES).
+7. Define binary acceptance criteria and verification requirements for every subtask before closing the turn.
+8. ....other steps and more steps sequentially from the input direction. Create more steps in between.
 
-## Must follow and spawn agent using
+## Must follow and spawn agent using (Non-Negotiable)
 
 1. @[plan-spec-steps-v2](directory;.agents/skills/plan-spec-steps-v2)
 2. If any bug, error, or regression is mentioned: @[fix-with-rca](directory;.agents/skills/fix-with-rca)
+3. @[coding-guidelines](directory;.agents/skills/coding-guidelines)
+4. @[error-management](directory;.agents/skills/error-management)
 
 ## Additional Instructions
 
 - [/plan](slashCommand;plan) first before doing work for improved work or less friction, faster execution for AI and coding without errors and following Coding Guidelines.
 - [/learn](slashCommand;learn) from @[gitmap](directory;.agents/skills/gitmap) skill to leverage GitMap high-speed search, toolchain discovery, and caching.
+- All planning protocols, dual-agent concurrency (A=2, H=2), spec modularization, and no-build/no-test constraints are offboarded to @[plan-spec-steps-v2](directory;.agents/skills/plan-spec-steps-v2).
+- If any ambiguity arises, record it under `.ai-memory/ambiguous-questions/01-new-ambiguity/XX-<slug>-ambiguity.md` and immediately go ahead with planning without asking the user.
 - Keep all created specifications in `02-spec/21-app/XX-<slug>/` and plans in `.ai-memory/plans/pending/XX-<slug>.md` without starting immediate code execution.
 - Track in-flight file touches and prevent write collisions using GitMap RC Heatmap (`gitmap rc heatmap status` / `gitmap rc heatmap tree` / `gitmap rc heatmap live` / `gitmap rc heatmap sync`).
 - Only add relative paths, never add absolute paths during work; this must be respected on release page and in release notes as well.

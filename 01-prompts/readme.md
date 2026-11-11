@@ -114,7 +114,7 @@ All 28 active canonical prompt categories reside directly at the root of `01-pro
 | **20** | `20-ai-fix-script-prompts/` | `01-python-file-manipulator.md` | Dedicated AI utility script prompt definitions |
 | **21** | `21-temp-end-to-end-tests/` | `01-temp-end-to-end-test.md` | Isolated temporary end-to-end tests with skip-by-default guards |
 | **22** | `22-letterly/` | `01-mobile-letterly.md` through `10-execute-with-release-letterly.md` | Voice dictation prompt formatters for mobile, desktop, execution, and releases |
-| **23** | `23-cursor-prompts/` | `01` through `15` Letterly formatters, plus `16-cursor-manager-memory-and-instruction.md` and `17-cursor-verify-and-replan.md` | Cursor formatters, plus the manager prompts for planning an AI instruction and for verifying another AI |
+| **23** | `23-cursor-prompts/` | `01-mobile-letterly-cursor.md` through `10-execute-with-release-letterly-cursor.md` | Cursor IDE prompt formatters targeting `.cursor/skills/` resolution |
 | **24** | `24-sync/` | `01-sync.md`, `02-sync-other-codebase.md` | Multi-repository synchronization engine: pull base branch, safety backup, asset mirroring with 5 boundary protections, atomic commit, and release tagging |
 | **25** | `25-ai-verification/` | `01-retrospective-ai-verification.md` | Retrospective quality audit, guideline verification, and CI validation |
 | **26** | `26-gitmap/` | `01-gitmap-core-engine.md` | GitMap AI training curriculum, streaming regex search, toolchain locator, and autonomous companion |

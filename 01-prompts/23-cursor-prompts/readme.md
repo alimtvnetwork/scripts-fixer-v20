@@ -10,7 +10,7 @@ Deterministic prompt transformation templates specifically adapted for Cursor ID
 | **02** | [`02-desktop-letterly-cursor.md`](02-desktop-letterly-cursor.md) | Desktop Structured | Voice dictation to structured instr | `execute-parent-task-with-n-steps-v6` |
 | **03** | [`03-execute-n-steps-letterly-cursor.md`](03-execute-n-steps-letterly-cursor.md) | Execute N-Steps | Verbatim input capture with discret | `execute-parent-task-with-n-steps-v6` |
 | **04** | [`04-plan-letterly-cursor.md`](04-plan-letterly-cursor.md) | Planning Spec | Architectural planning directives w | `plan-spec-steps-v2` |
-| **05** | [`05-release-letterly-cursor.md`](05-release-letterly-cursor.md) | Minor Release (Letter U) | Minor release update ceremony direc | `minor-bump` |
+| **05** | [`05-release-letterly-cursor.md`](05-release-letterly-cursor.md) | Minor Release (Letter U) | Minor release update ceremony direc | `release` |
 | **06** | [`06-cicd-fix-release-letterly-cursor.md`](06-cicd-fix-release-letterly-cursor.md) | CI/CD Fix & Release | `gitmap pe -t` diagnosis, 4-part RC | `ci-cd-fix-gitmap-release` |
 | **07** | [`07-mobile-cicd-fix-letterly-cursor.md`](07-mobile-cicd-fix-letterly-cursor.md) | Mobile CI/CD Fix | Mobile prompt diagnosing via `gitma | `ci-cd-fix-gitmap-release` |
 | **08** | [`08-run-letterly-cursor.md`](08-run-letterly-cursor.md) | Run Script | Run instructions via `./run.ps1` /  | `run` |

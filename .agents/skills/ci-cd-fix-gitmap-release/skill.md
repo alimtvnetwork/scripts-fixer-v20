@@ -20,7 +20,7 @@ flowchart TD
     D --> E["Surgical Code Remediation (Disjoint Files)"]
     E --> F["Local Targeted Linters (exit 0)"]
     F --> G["Minor Version Bump (37-bump-version.py -t minor)"]
-    G --> H["Atomic GitMap Commit & Push (gitmap cpf)"]
+    G --> H["Atomic GitMap Commit & Push (gitmap cpr)"]
     H --> A
 ```
 
@@ -55,7 +55,7 @@ For every detected failure, document a 4-part RCA under `.ai-memory/cicd-issues/
    `python 03-ai-scripts/37-bump-version.py -t minor -s "<summary of fixes>"`
 2. Verify manifests (`package.json`, `version.json`, `readme.md`, `changelog.md`) are updated.
 3. Commit atomically via GitMap:
-   `gitmap cpf "<module> - fix CI/CD and release minor version"`
+   `gitmap cpr "vX.Y.Z - fix CI/CD and release minor version"`
 4. Tag release version (`git tag -a vX.Y.Z -m "..."`) and push to origin (`git push origin vX.Y.Z`).
 
 ### Step 6: Loop & Verify

@@ -1,4 +1,4 @@
-# CI/CD Fix & Release Mode — Cursor Prompt Formatter
+# CI/CD Fix & Release Mode — Letterly Prompt Formatter
 
 Format input text according to exact CI/CD fix and minor release template below without conversational filler or commentary.
 
@@ -8,16 +8,10 @@ Format input text according to exact CI/CD fix and minor release template below 
 4. Output task name and slug subheaders:
    - `## task: <task title>`
    - `## slug: <task-slug>` (lowercase-hyphenated).
-5. Construct `# Actionable Items Must Follow Non-Negotiable`:
-   - Item 1: `1. Git pull BEFORE starting any work — first try \`gitmap pull <repo path>\` (or run \`gitmap pull\` in repository folder); if that fails, fall back to regular \`git pull\` and resolve merge conflicts.`
-   - Item 2: `2. Query live CI/CD pipeline telemetry via \`gitmap pe -t\` to extract exact step failures and bounded stack traces.`
-   - Item 3: `3. Formulate 4-part Root Cause Analysis (Symptom, Trigger, Root Cause, Mitigation) and apply surgical fixes.`
-   - Item 4: `4. Verify fix locally using local pipeline runner (e.g. \`python 03-ai-scripts/06-cicd-local-runner.py\`).`
-   - Item 5: `5. Execute minor version bump release ceremony via \`python 03-ai-scripts/37-bump-version.py -t minor -s "<summary>"\`.`
-   - Item 6: `6. Strictly use relative Git paths (02-spec/..., .ai-memory/..., cmd/...); never add absolute paths.`
-   followed by discrete directives from input as items 7..N.
-6. Append mandatory CI/CD fix and release skill invocation suffix.
+5. Construct `# Actionable Items Must Follow Non-Negotiable`: include fixed items 1-7 (pull first, query live telemetry via `gitmap pe -t`, 4-part RCA and surgical fixes, local runner verification, minor release bump via `gitmap cpr`, relative Git paths, and push commits/tags), followed by input directives as items 8..N.
+6. Append mandatory CI/CD healing and release skill invocation suffix.
 7. Output plain markdown only. Never wrap in fenced code blocks.
+8. Relative Paths: Only add relative paths (`02-spec/...`, `.ai-memory/...`, `cmd/...`); never add absolute paths.
 
 ${Input Text Verbatim} = Input text verbatim as is without filler words. Strict zero-mutation policy: never alter, soften, summarize, or rewrite input text in any way; preserve all directives, parameters, and tone 100% intact.
 
@@ -36,18 +30,23 @@ ${Input Text Verbatim}
 2. Query live CI/CD pipeline telemetry via `gitmap pe -t` to extract exact step failures and bounded stack traces.
 3. Formulate 4-part Root Cause Analysis (Symptom, Trigger, Root Cause, Mitigation) and apply surgical fixes.
 4. Verify fix locally using local pipeline runner script (e.g. `python 03-ai-scripts/06-cicd-local-runner.py`).
-5. Execute minor version bump release ceremony via `python 03-ai-scripts/37-bump-version.py -t minor -s "<summary>"` upon green pipeline.
+5. Execute minor version bump release ceremony via `python 03-ai-scripts/37-bump-version.py -t minor -s "<summary>"` (or `gitmap cpr "vX.Y.Z - summary"`) upon green pipeline.
 6. Strictly use relative Git paths (02-spec/..., .ai-memory/..., cmd/...); only add the relative paths, never add the absolute path during your work, and ensure this is respected on the release page and in release notes as well.
 7. Push all commits and release tags upstream (`gitmap push --tags` / `git push --tags`).
+8. ....other steps and more steps sequentially from the input direction.
 
-## Must follow and spawn agent using
+## Must follow and spawn agent using (Non-Negotiable)
 
 1. @[ci-cd-fix-gitmap-release](directory;.cursor/skills/ci-cd-fix-gitmap-release)
 2. If any bug, error, or regression is mentioned: @[fix-with-rca](directory;.cursor/skills/fix-with-rca)
+3. @[release](directory;.cursor/skills/release)
+4. @[coding-guidelines](directory;.cursor/skills/coding-guidelines)
 
 ## Additional Instructions
 
 - [/plan](slashCommand;plan) first before doing work for improved work or less friction, faster execution for AI and coding without errors and following Coding Guidelines.
+- All pipeline telemetry extraction, failure dossiers (`gitmap pe -t`), 4-part RCA generation, and dynamic loop waiting are offboarded to @[ci-cd-fix-gitmap-release](directory;.cursor/skills/ci-cd-fix-gitmap-release).
+- All SemVer arithmetic, version manifests, and `gitmap cpr` tag ceremonies are offboarded to @[release](directory;.cursor/skills/release).
 - [/learn](slashCommand;learn) from @[gitmap](directory;.cursor/skills/gitmap) skill to leverage GitMap live telemetry, pipeline self-healing, and toolchain caching.
 - After learning and planning, immediately begin executing the plan without asking for confirmation. Autonomous execution must proceed seamlessly through completion.
 - Track in-flight file touches and prevent write collisions using GitMap RC Heatmap (`gitmap rc heatmap status` / `gitmap rc heatmap tree` / `gitmap rc heatmap live` / `gitmap rc heatmap sync`).

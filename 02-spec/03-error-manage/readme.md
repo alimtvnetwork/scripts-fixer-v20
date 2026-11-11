@@ -71,6 +71,7 @@ Consolidated error management specification covering error resolution/debugging,
 | 01 | [Error Resolution](./01-error-resolution/readme.md) | Debugging guides, retrospectives, verification patterns, cheat sheet, cross-reference diagram | 14 |
 | 02 | [Error Architecture](./02-error-architecture/readme.md) | Cross-stack 3-tier error handling, error modal, response envelope, apperror package, logging, notifications | 22 |
 | 03 | [Error Code Registry](./03-error-code-registry/readme.md) | Master registry, integration guide, schemas, scripts, templates, collision resolution, utilization report | 18 |
+| 04 | [Bug Recording](./04-bug-recording/readme.md) | Canonical bug record schema, capture → persist → surface pipeline, CLI/UI parity rule, blind-readiness audit | 4 |
 
 > 📖 **Quick onboarding?** See [03-structure.md](./03-structure.md) for a full visual tree with role-based entry points.
 

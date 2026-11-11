@@ -10,7 +10,7 @@ Deterministic prompt transformation templates designed to format Letterly voice 
 | **02** | [`02-desktop-letterly.md`](02-desktop-letterly.md) | Desktop Structured | Formats voice dictation into high-priority instructions and V6 suffix | `execute-parent-task-with-n-steps-v6` |
 | **03** | [`03-execute-n-steps-letterly.md`](03-execute-n-steps-letterly.md) | Execute N-Steps | Verbatim input capture with discrete action items and V6 engine | `execute-parent-task-with-n-steps-v6` |
 | **04** | [`04-plan-letterly.md`](04-plan-letterly.md) | Planning Spec | Architectural planning directives with no-build rules | `plan-spec-steps-v2` |
-| **05** | [`05-release-letterly.md`](05-release-letterly.md) | Minor Release (Letter U) | Minor release update ceremony directives | `minor-bump` |
+| **05** | [`05-release-letterly.md`](05-release-letterly.md) | Minor Release (Letter U) | Minor release update ceremony directives | `release` |
 | **06** | [`06-cicd-fix-release-letterly.md`](06-cicd-fix-release-letterly.md) | CI/CD Fix & Release | `gitmap pe -t` telemetry diagnosis, 4-part RCA, and minor release | `ci-cd-fix-gitmap-release` |
 | **07** | [`07-mobile-cicd-fix-letterly.md`](07-mobile-cicd-fix-letterly.md) | Mobile CI/CD Fix | Mobile prompt diagnosing via `gitmap pe -t` and triggering release | `ci-cd-fix-gitmap-release` |
 | **08** | [`08-run-letterly.md`](08-run-letterly.md) | Run Script | Run instructions via `./run.ps1` / `./run.sh` with auto install | `run` |

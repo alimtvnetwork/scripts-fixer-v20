@@ -478,11 +478,7 @@ def record_recent_changes(changed_files: list[str]) -> dict[str, Any]:
         if TEST_INVENTORY_PATH.is_file():
             try:
                 inv = json.loads(TEST_INVENTORY_PATH.read_text(encoding="utf-8"))
-                tests_val = inv.get("tests", {})
-                if isinstance(tests_val, dict):
-                    inventory_tests = tests_val
-                elif isinstance(tests_val, list):
-                    inventory_tests = {str(i): t for i, t in enumerate(tests_val) if isinstance(t, dict)}
+                inventory_tests = inv.get("tests", {})
             except Exception:
                 pass
 
