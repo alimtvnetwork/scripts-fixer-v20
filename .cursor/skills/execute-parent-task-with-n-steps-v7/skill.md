@@ -324,7 +324,21 @@ Every code modification executed across any subtask or wave must pass the 12-Pil
   - Option 2 (isTimeRestricted: false; default): no window checks; commit immediately; persisted git timestamps and database entries remain normalized to UTC.
 - **R13 No Polling / Immediate Turn Yielding.** When calling `invoke_subagent`, make it the sole tool action at turn end, print progress line (`Dispatched Worker 01 .. Worker <A> (wave k / WAVES); waiting for their results.`) and **STOP CALLING TOOLS**. Never poll in loop. Check `manage_subagents` once if wave runs long.
 - **R14 Two-Strike Retry Cap & Anti-Looping.** Tool failing twice: worker replies `STATUS: BLOCKED` with exact error and stops. Lead takes over and logs `LEAD_FALLBACK: <reason>`. Subtask failing two remediation rounds is marked `FAILED` with RCA (Section 12).
-- **R15 100% Ambiguity & Decision Boundaries.** Non-blocking: choose conservative option, log in ledger `Assumptions:`, proceed. Blocking: `ask_question` once, log in `.ai-memory/ambiguous-questions/01-new-ambiguity/`, continue unblocked tasks.
+- **R15 Ambiguity Protocol & Autonomous Continuation (Dimension to Folder Structure):**
+  - **Zero User Interruptions Invariant:** If there is any question, ambiguity, or missing detail, the AI MUST write it directly into `.ai-memory/ambiguous-questions/01-new-ambiguity/<sequence>-<slug>-ambiguity.md` (and mirror under `.ai-memory/ambiguity/`).
+  - **DO NOT ASK THE USER:** The AI agent MUST NOT pause, prompt, or ask the user in chat. It MUST proceed autonomously and go ahead with sound architectural defaults unless the user explicitly commanded *"Ask me the question"*. Asking questions in chat without an explicit user command is an auto-reject protocol violation.
+  - **Folder Structure Persistence:** Every unresolved question, ambiguity, missing asset, or architectural deduction must be recorded in `.ai-memory/ambiguous-questions/01-new-ambiguity/<sequence>-<slug>-ambiguity.md` documenting:
+    1. Unresolved item or missing asset.
+    2. Searched locations and queries attempted.
+    3. Selected autonomous resolution / working assumption.
+    4. Impact boundary and verification method.
+  - **High-Visibility Autonomous Callout:** Output an informational notice in visible chat while continuing execution immediately:
+    ```markdown
+    > [!NOTE]
+    > **Ambiguity Logged to Folder:** `.ai-memory/ambiguous-questions/01-new-ambiguity/<sequence>-<slug>-ambiguity.md`
+    > **Working Assumption:** [Autonomous default applied] — proceeding autonomously without user interruption.
+    ```
+  - **Issue & RCA Routing:** If any bug, unexpected failure, CI/CD break, or Root Cause Analysis (RCA) problem arises, document it immediately in the dedicated issues folder: `.ai-memory/issues/<issue-slug>.md` (or `.ai-memory/cicd-issues/<issue-slug>.md` for CI/CD failures) with grounded 4-part RCA (1. Symptom & Context, 2. Root Cause Analysis, 3. Surgical Fix, 4. Verification Evidence). Never leave unresolved bugs or error traces floating in chat alone.
 - **R16 Zero Generated Artifacts Committed.** Never commit build caches, logs, temp scripts, or newly generated code (Hard Rule 1) unless repository already tracked them.
 - **R17 Zero Secrets in Standard Repos.** Never write credentials, tokens, passwords, or `.env` contents into tracked files, commits, ledger, plans, specs, or prompts (`agents.md` section 9).
   - *Secrets Gate (lead, before GitMap call):*
@@ -469,7 +483,14 @@ You must use `invoke_subagent` to delegate both planning discovery and spec auth
 > 5. **Clean Turn-Yielding:** When calling `invoke_subagent`, make it the final tool action of the turn. Emit the status line and IMMEDIATELY STOP CALLING TOOLS to allow platform reactive wakeup. Chaining additional tools or tight polling crashes the message queue.
 
 1. **Planning Step (A = 3 `research` Discovery Subagents):** Lead agent calls `invoke_subagent` to spawn 3 read-only discovery subagents (`TypeName: "research"`, `Role: "Research 01: Architecture & Blast Radius"`, `Role: "Research 02: Specs & Dependency Mapping"`, `Role: "Research 03: Repository Dependencies & Fleet Sync Targets"`). Their prompt MUST instruct them to research the codebase using GitMap high-speed search (`gitmap aum search "<symbol>" [dir] [-e <.ext>]`, `gitmap find`, `gitmap lf`, `gitmap cat`) — NEVER `rg`, `ripgrep`, PowerShell `Select-String`, or `git grep` — define symbol boundaries and caller dependencies, and return their structured findings to the lead in their final message.
-   - *Master Plan Generation (Lead Agent):* The lead orchestrator receives all three discovery reports, synthesizes findings, and writes the unified Execution Plan (`.ai-memory/plans/pending/nn-<slug>.md`) and the Root Task JSON Manifest.
+   - *Master Plan Generation (Lead Agent in 100 Steps):* The lead orchestrator receives all three discovery reports, synthesizes findings, and writes the unified Execution Plan (`.ai-memory/plans/pending/nn-<slug>.md`) in 100 granular steps detailed as an actionable AI checklist and roadmap that AI can follow accurately. If any ambiguity or missing detail arises, persist it to `.ai-memory/ambiguous-questions/01-new-ambiguity/<sequence>-<slug>-ambiguity.md`. Do NOT ask the user; proceed autonomously and go ahead unless the user explicitly commanded "Ask me the question".
+   - *Post-Planning Dedicated AI Instruction Generation:* Immediately upon completing the 100-step plan, create dedicated AI instructions to ensure downstream worker agents follow through accurately and nothing gets missed.
+   - *Coding Guidelines Quick Checklist Enforcement:* Ensure every subtask enforces:
+     * Functions strictly <= 15 lines (<= 8 lines preferred).
+     * Zero magic strings or raw literals (PascalCase enums with `Type` suffix).
+     * Zero nested if statements (flattened with guard clauses & early returns).
+     * Positive booleans only (`is*`/`has*` prefixes; no negative booleans).
+     * Vertical spacing: blank line before `return` and after closing `}`.
    - *Tool Call:* Lead must execute the `invoke_subagent` tool as the final action in the turn, print `Dispatched Planning Agents`, and then STOP CALLING TOOLS to wait for `<SYSTEM_MESSAGE>` reactive wakeup.
 2. **Spec Step (A = 3 `self` Authoring Subagents):** Once planning is synthesized, the lead agent calls `invoke_subagent` to spawn 3 authoring subagents (`TypeName: "self"`). Their prompt MUST instruct them to author modular, strictly disjoint spec files and subtask plans:
    - Subagent 1 writes `02-spec/21-app/nn-<slug>/01-architecture-spec.md` and subtasks `.ai-memory/plans/subtasks/nn-<slug>/01-<name>.md`.

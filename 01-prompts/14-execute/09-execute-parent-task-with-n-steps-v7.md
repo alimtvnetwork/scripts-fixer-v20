@@ -163,7 +163,11 @@ Followed by confirmed task breakdown with explicit `Understood / AI Comprehensio
 
 ### Phase 1C: Planning & Spec Step (Steps 1–100)
 - Research codebase via 3 `research` subagents.
+- Formulate master plan in 100 granular steps detailed as an actionable AI checklist and roadmap that AI can follow accurately.
 - Author specs in `02-spec/21-app/XX-<slug>/` and plans in `.ai-memory/plans/pending/XX-<slug>.md` via 3 authoring subagents.
+- Ambiguity Protocol: If any question or ambiguity arises, write it directly to `.ai-memory/ambiguous-questions/01-new-ambiguity/XX-<slug>-ambiguity.md`. Do NOT ask the user — proceed autonomously and go ahead unless the user explicitly commanded "Ask me the question".
+- Create dedicated AI instructions post-planning to ensure downstream worker agents follow through accurately and nothing gets missed.
+- Enforce Coding Guidelines quick checklist on all planned subtasks: functions <= 15 lines (<= 8 lines preferred), zero magic strings, zero nested ifs, positive booleans (`is*`/`has*`), blank line before `return` and after closing `}`.
 - Initialize SQLite task database at `.ai-memory/temp-agents/<slug>/agent-task.db`.
 - **Subtask Planning Invariant (CRITICAL):**
   * TOTAL BAN on creating, generating, or adding an E2E testing subtask (e.g. `TASK-XX: E2E Test Suite Remediation (Achieve 100% Pass in ...)`) unless the user prompt EXPLICITLY requested E2E testing!
@@ -197,6 +201,7 @@ Followed by confirmed task breakdown with explicit `Understood / AI Comprehensio
 - **R10 Zero Unauthorized Releases:** Never bump versions unless requested.
 - **R11 Leaf Error Sovereignty:** Leaf functions return errors directly; never call exit handlers.
 - **R11b Strict Relative Git Paths:** Absolute paths and `file:///` URIs are banned.
+- **R15 Ambiguity Protocol & Autonomous Continuation:** Any question or ambiguity must be written to `.ai-memory/ambiguous-questions/01-new-ambiguity/XX-<slug>-ambiguity.md`. Do NOT ask the user; proceed autonomously unless user explicitly commanded "Ask me the question".
 
 ---
 

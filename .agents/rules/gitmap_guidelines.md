@@ -44,3 +44,9 @@ trigger: always_on
   - **Mandatory `gitmap swap-binary` for Local Recompilation**: When recompiling `gitmap` from source, NEVER attempt to directly copy or overwrite running executables with raw `cp` or `Copy-Item` (which causes Windows Error 5 `Access is denied` or Unix `ETXTBSY`). ALWAYS execute `gitmap swap-binary --from <path> --kill --force` (alias: `gitmap swap`).
   - **Atomic Renaming Pattern**: Any in-place binary updater or swapper must rename existing executables to `.old` (falling back to `.bak`) with retry loops prior to placing new binaries.
 
+  ### 7. Remote Protocol, SSH Identity & URL Rewriting Standards
+  - **Universal SSH Protocol**: All repositories in developer working directories (`~/git-work/`) MUST point to the `alimtvnetwork` namespace via pure SSH (`git@github.com:alimtvnetwork/<repo>.git`). TOTAL BAN on embedding personal access tokens (`https://ghp_...@github.com/...`) in remote URLs.
+  - **Git Config insteadOf Hygiene**: Always configure `url."git@github.com:".insteadOf` with exact byte prefix matching without leading or trailing whitespace (`url."git@github.com:".insteadOf = https://github.com/`).
+  - **Namespace Forking First**: Never push to non-owned or legacy namespaces (`aukgit`, `garrytan`, `Evatix`). Fork to `alimtvnetwork` via `gh repo fork <upstream>/<repo> --clone=false`, update `origin`, and retain upstream as a secondary tracking remote.
+
+
