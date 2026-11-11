@@ -1,6 +1,6 @@
 # Letterly Prompt Formatters (`22-letterly`)
 
-Deterministic prompt transformation templates designed to ingest raw voice-dictated user transcripts from Letterly (mobile and desktop) and format them into rigorous, non-negotiable agent prompts.
+Deterministic prompt transformation templates designed to format Letterly voice dictation into rigorous agent prompts.
 
 ## Directory Index
 
@@ -31,7 +31,7 @@ For Cursor environments requiring `.cursor/skills/` resolution, see [`../23-curs
 ## Core Invariants
 
 1. **Zero Conversational Filler:** Never output "Certainly! Here is your output:".
-2. **Lossless Verbatim Capture:** Never drop specific technical flags, file paths, or commands from input.
+2. **Lossless Verbatim Capture & Anti-Mutation Mandate:** Never drop specific technical flags, file paths, or commands from input. TOTAL BAN on mutating, softening, summarizing, or altering input text in any way beyond removing verbal fillers; all tone, urgency, emotion, and directives must be preserved 100% strictly intact.
 3. **Mandatory Canonical Skill Triggers:** Every formatted prompt must conclude with its designated canonical skill trigger: `[<skill-name>](directory;.agents/skills/<skill-name>)`.
 4. **Dual-Item Agent Invocation:** All execution formatters enforce primary execution engine (`execute-parent-task-with-n-steps-v6` or `v7`) and bug remediation (`fix-with-rca`).
 5. **Immediate Execution Without Confirmation:** Under `## Additional Instructions`, all execution formatters enforce immediate autonomous execution post-planning without asking user confirmation.

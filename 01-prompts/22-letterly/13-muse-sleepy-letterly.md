@@ -2,23 +2,16 @@
 
 Format input text according to exact high-priority execution template below without conversational filler or commentary.
 
-1. Clean input text verbatim, stripping verbal fillers (`um`, `ah`, `uh`, `like`, leading `Okay`, excess `so`) while preserving technical details, flags, and file paths.
+1. Keep input text verbatim as is, only stripping verbal fillers (`um`, `ah`, `uh`, `like`, leading `Okay`, excess `so`). TOTAL BAN on mutating, softening, summarizing, or altering input text in any way. Keep input 100% strictly intact, preserving all tone, urgency, emotion, technical flags, and file paths.
 2. Derive `<task title>` as task subject (e.g. `SEO Writing and Folder Structure Instructions`). Output line 1: `# <task title>: high priority instruction, non-negotiable task`.
 3. Output `${Input Text Verbatim}` directly beneath title.
 4. Output subheaders: `## task: <task title>` and `## slug: <task-slug>` (lowercase-hyphenated).
-5. Under `# Actionable Items Must Follow Non-Negotiable`, ensure:
-   - Item 1: `1. Git pull BEFORE starting any work — first try \`gitmap pull\`; if that fails, fall back to \`git pull\` in target repository.`
-   - Item 2: `2. Write spec under 02-spec/21-app/XX-<slug>/ and enqueue plan in .ai-memory/plans/pending/XX-<slug>.md first (NO-BUILD, NO-TEST during planning).`
-   - Item 3: `3. Search codebase exclusively via GitMap (gitmap aum search, gitmap find, gitmap cat); TOTAL BAN on rg, ripgrep, grep, Select-String.`
-   - Item 4: `4. Strictly use relative Git paths (02-spec/..., .ai-memory/..., cmd/...); no absolute paths or file:/// URIs.`
-   - Items 5..N: Technical directives extracted from input.
-   - If connecting to GitMap or private repository on Muse, mention `.zip` archive upload option (`gitmap.zip`) and standardized SSH key creation format: `gitmap ssh create "<email>-muse<muse-sequence>-<operator-name>" -y`.
-   - Penultimate/Final (if requested): `Verify CI via gitmap pe -t until green` and `Execute minor version bump release ceremony via python 03-ai-scripts/37-bump-version.py -t minor -s "<summary>"`.
+5. Under `# Actionable Items Must Follow Non-Negotiable`: include fixed items (git pull via gitmap, spec/plan enqueue, GitMap search primacy, relative Git paths), followed by technical directives from input.
 6. Append the "I am sleepy" Autopilot Checklist, dual-item agent suffix links (directory syntax), and Additional Instructions.
 7. Output plain markdown only. Never wrap in fenced code blocks (no ```markdown or ``` fences).
 8. Relative Paths: Only add relative paths (`02-spec/...`, `.ai-memory/...`, `cmd/...`); never add absolute paths.
 
-${Input Text Verbatim} = Cleaned input text without verbal filler words.
+${Input Text Verbatim} = Input text verbatim as is without filler words. Strict zero-mutation policy: never alter, soften, summarize, or rewrite input text in any way; preserve all directives, parameters, and tone 100% intact.
 
 Output Format:
 

@@ -2,7 +2,7 @@
 
 Format input text according to exact planning-only template below without conversational filler or commentary.
 
-1. Clean input text verbatim, stripping verbal fillers while strictly preserving architectural requirements, scope boundaries, and design constraints.
+1. Keep input text verbatim as is, only stripping verbal fillers (`um`, `ah`, `uh`, `like`, leading `Okay`, excess `so`). TOTAL BAN on mutating, softening, summarizing, or altering input text in any way. Keep input 100% strictly intact, preserving all tone, urgency, emotion, technical flags, and file paths.
 2. Derive `<task title>` as task subject (e.g. `Architect Cache Eviction Engine`). Output line 1: `# <task title>: high priority instruction, non-negotiable task`.
 3. Output `${Input Text Verbatim}` directly beneath title.
 4. Output task name and slug subheaders (`## task: <task title>`, `## slug: <task-slug>`).
@@ -11,7 +11,7 @@ Format input text according to exact planning-only template below without conver
 7. Output plain markdown only. Never wrap in fenced code blocks.
 8. Relative Paths: Only add relative paths (`02-spec/...`, `.ai-memory/...`, `cmd/...`); never add absolute paths.
 
-${Input Text Verbatim} = Cleaned input text without verbal filler words.
+${Input Text Verbatim} = Input text verbatim as is without filler words. Strict zero-mutation policy: never alter, soften, summarize, or rewrite input text in any way; preserve all directives, parameters, and tone 100% intact.
 
 Output Format:
 

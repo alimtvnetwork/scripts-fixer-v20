@@ -2,7 +2,7 @@
 
 Format input text according to exact CI/CD fix and minor release template below without conversational filler or commentary.
 
-1. Clean input text verbatim, capturing failing workflow names, errors, and reproduction steps.
+1. Keep input text verbatim as is, only stripping verbal fillers (`um`, `ah`, `uh`, `like`, leading `Okay`, excess `so`). TOTAL BAN on mutating, softening, summarizing, or altering input text in any way. Keep input 100% strictly intact, preserving all tone, urgency, emotion, technical flags, and file paths.
 2. Derive `<task title>` as task subject (e.g. `CI/CD Pipeline Fix and Minor Release`). Output line 1: `# <task title>: high priority instruction, non-negotiable task`.
 3. Output `${Input Text Verbatim}` directly beneath title.
 4. Output task name and slug subheaders:
@@ -19,7 +19,7 @@ Format input text according to exact CI/CD fix and minor release template below 
 6. Append mandatory CI/CD fix and release skill invocation suffix.
 7. Output plain markdown only. Never wrap in fenced code blocks.
 
-${Input Text Verbatim} = Cleaned input text without verbal filler words.
+${Input Text Verbatim} = Input text verbatim as is without filler words. Strict zero-mutation policy: never alter, soften, summarize, or rewrite input text in any way; preserve all directives, parameters, and tone 100% intact.
 
 Output Format:
 

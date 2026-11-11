@@ -2,7 +2,7 @@
 
 Format input text according to exact mobile single-line template below without conversational filler or commentary.
 
-1. Clean input text verbatim, stripping verbal fillers (`um`, `ah`, `uh`, `like`, leading `Okay`, excess `so`) while strictly preserving technical details, file paths, commands, and requirements.
+1. Keep input text verbatim as is, only stripping verbal fillers (`um`, `ah`, `uh`, `like`, leading `Okay`, excess `so`). TOTAL BAN on mutating, softening, summarizing, or altering input text in any way. Keep input 100% strictly intact, preserving all tone, urgency, emotion, technical flags, and file paths.
 2. Derive `<task title>` as task subject (e.g. `SEO Writing and Folder Structure Instructions`). Derive `<task-slug>` as lowercase-hyphenated task title (e.g. `seo-writing-and-folder-structure-instructions`).
 3. Extract discrete understandable tasks from input text as ordered list: `1. [task-1], 2. [task-2], 3. [task-3]`.
 4. Prefix single line with slash commands: `[/goal](slashCommand;goal) [/learn](slashCommand;learn) from [gitmap](directory;.agents/skills/gitmap) [/plan](slashCommand;plan) `.
@@ -13,7 +13,7 @@ Format input text according to exact mobile single-line template below without c
 9. Conclude single line with: ` - strictly use relative git paths only; only add relative paths, never add absolute paths during work (this must be respected on release page and in release notes as well); must follow the skill 1. @[execute-parent-task-with-n-steps-v6](directory;.agents/skills/execute-parent-task-with-n-steps-v6), 2. If any bug, error, or regression is mentioned: @[fix-with-rca](directory;.agents/skills/fix-with-rca)`.
 10. Output exactly that single continuous paragraph with ZERO newlines and ZERO line breaks.
 
-${Input Text Verbatim} = Cleaned input text without verbal filler words.
+${Input Text Verbatim} = Input text verbatim as is without filler words. Strict zero-mutation policy: never alter, soften, summarize, or rewrite input text in any way; preserve all directives, parameters, and tone 100% intact.
 
 Output Format:
 [/goal](slashCommand;goal) [/learn](slashCommand;learn) from [gitmap](directory;.agents/skills/gitmap) [/plan](slashCommand;plan) # <task title> - high priority instruction, non-negotiable task (task: <task title>, slug: <task-slug>): ${Input Text Verbatim}; do gitmap pull <repo path> (fallback git pull) and resolve conflicts before starting; write spec under 02-spec/21-app/XX-<slug>/ and enqueue plan in .ai-memory/plans/pending/XX-<slug>.md (subtasks in .ai-memory/plans/subtasks/XX-<slug>/) first (xx is sequence 01, 02); planning is strictly dedicated to architecture and decoupled from execution (no-build, no-test, no-code-changes); search codebase exclusively via GitMap; track file touches and prevent write collisions using GitMap RC Heatmap (gitmap rc heatmap status / tree / live / sync); strictly use relative git paths only; after learning and planning, immediately begin executing the plan without asking for confirmation; discrete understandable tasks to execute: 1. [task-1], 2. [task-2], 3. [task-3] - strictly use relative git paths only; only add relative paths, never add absolute paths during work (this must be respected on release page and in release notes as well); must follow the skill 1. @[execute-parent-task-with-n-steps-v6](directory;.agents/skills/execute-parent-task-with-n-steps-v6), 2. If any bug, error, or regression is mentioned: @[fix-with-rca](directory;.agents/skills/fix-with-rca)

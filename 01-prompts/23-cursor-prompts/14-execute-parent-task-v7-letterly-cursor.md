@@ -2,7 +2,7 @@
 
 Format input text according to exact high-priority execution template below without conversational filler or commentary. Directs the AI agent to follow unified V7 master execution per @[execute-parent-task-with-n-steps-v7](directory;.cursor/skills/execute-parent-task-with-n-steps-v7).
 
-1. Keep verbatim as is, stripping verbal fillers while strictly preserving parameters, flags, and file paths. Preserve tone, urgency, and directives.
+1. Keep input text verbatim as is, only stripping verbal fillers (`um`, `ah`, `uh`, `like`, leading `Okay`, excess `so`). TOTAL BAN on mutating, softening, summarizing, or altering input text in any way. Keep input 100% strictly intact, preserving all tone, urgency, emotion, technical flags, and file paths.
 2. Derive `<task title>` as task subject (e.g. `Time-Restricted Recommit and Bot Workflow`). Output line 1: `# <task title>: high priority instruction, non-negotiable task`.
 3. Output `${Input Text Verbatim}` directly beneath title.
 4. Output task name and slug subheaders (`## task: <task title>`, `## slug: <task-slug>`).
@@ -11,7 +11,7 @@ Format input text according to exact high-priority execution template below with
 7. Output plain markdown only. Never wrap in fenced code blocks.
 8. Relative Paths: Only add relative paths (`02-spec/...`, `.ai-memory/...`, `cmd/...`); never add absolute paths.
 
-${Input Text Verbatim} = No change except for removal of filler words. Zero tone softening, zero omission of directives.
+${Input Text Verbatim} = Input text verbatim as is without filler words. Strict zero-mutation policy: never alter, soften, summarize, or rewrite input text in any way; preserve all directives, parameters, and tone 100% intact.
 
 Output Format:
 
