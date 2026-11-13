@@ -6,3 +6,10 @@
 4. **Single Result Container Return Types:** In Go, functions returning collections/values alongside errors MUST return `appfault.ResultMap[K, V]`, `appfault.ResultSlice[T]`, or `appfault.Result[T]` from `04-code/golang/pkg/appfault` instead of multi-value error tuples. Functions with side-effects only return `*appfault.AppError`. Result struct boolean fields MUST use affirmative prefixes (`isDefined bool`, bare `defined bool` is strictly banned).
 5. **Pointer-Attached Null Safety & Method Composition:** All Result inspection methods MUST attach to pointer receivers (`(r *Result[T])`, `(rs *ResultSlice[T])`, `(rm *ResultMap[K, V])`) with line-1 `if r == nil` guards returning safe defaults. Methods MUST compose existing methods (`r.IsFailure()`, `r.IsSuccess()`, `r.Count()`). Enforce core predicates `IsCountOtherThan(N)`, `IsEmpty()`, `HasRecord()`, `IsDefined()`.
 6. **Mandatory types.go Single Reusable Type Definition:** All domain payload structs (e.g. `ScheduleExportBundle`) and repeated generic Result envelopes (`type ScheduleExportBundleResult = result.ResultSlice[ScheduleExportBundle]`) MUST be defined in a dedicated `types.go` file within each package as a single reusable named type. Never declare unexported structs or raw generic Result envelopes inline in implementation files.
+
+## Bug recorder images
+
+A bug event that has a screenshot shows Previous image and Next image on that image.
+Previous is disabled on the first image. Next is disabled on the last image.
+The buttons move through that session's screenshots and do not rewrite the event order.
+

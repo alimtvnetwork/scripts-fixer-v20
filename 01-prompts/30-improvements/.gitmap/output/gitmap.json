@@ -1,0 +1,25 @@
+[
+  {
+    "id": 0,
+    "slug": "repo-cache",
+    "repoId": "repo-cache",
+    "repoName": "repo-cache",
+    "httpsUrl": "https://github.com/alimtvnetwork/repo-cache",
+    "sshUrl": "",
+    "discoveredUrl": "https://github.com/alimtvnetwork/repo-cache",
+    "branch": "main",
+    "branchSource": "",
+    "relativePath": "../repo-cache",
+    "absolutePath": "D:\\work\\repo-cache",
+    "cloneInstruction": "git clone https://github.com/alimtvnetwork/repo-cache ../repo-cache",
+    "notes": "companion:repo-cache",
+    "depth": 0,
+    "transport": "",
+    "identifiedTransport": "",
+    "primaryAlias": "rc",
+    "aliases": [
+      "companion:repo-cache",
+      "special:rc"
+    ]
+  }
+]

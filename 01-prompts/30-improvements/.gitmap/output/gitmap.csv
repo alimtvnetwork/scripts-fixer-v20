@@ -1,0 +1,2 @@
+repoName,httpsUrl,sshUrl,branch,branchSource,relativePath,absolutePath,cloneInstruction,notes,depth,repoId,discoveredUrl,transport
+repo-cache,https://github.com/alimtvnetwork/repo-cache,,main,,../repo-cache,D:\work\repo-cache,git clone https://github.com/alimtvnetwork/repo-cache ../repo-cache,companion:repo-cache,0,repo-cache,https://github.com/alimtvnetwork/repo-cache,

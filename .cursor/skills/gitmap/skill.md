@@ -150,6 +150,9 @@ All styles automatically print Tokyo Night formatted lines with gutter line numb
 ### 5. High-Performance Automation (AUM) & File Discovery
 - `gitmap aum search "<pattern>" [dir] [--ext <ext>] [-r] [-i]` (alias: `gitmap aum grep`) — Multi-core streaming live search with lazy regex and binary filtering. ALWAYS scope with target `[dir]` and `--ext`. Replaces slow PowerShell `Select-String`, `Get-ChildItem -Recurse`, and `git grep`. TOTAL BAN on PowerShell `Select-String`, `rg`, `ripgrep`, and `git grep`.
   * **Named-Flag Support:** Fully supports `--query <pattern>` (or `-q <pattern>`, `--pattern <pattern>`) and `--root <dir>` (or `--dir <dir>`, `-d <dir>`, `--path <dir>`, `-p <dir>`) in any argument position (e.g. `gitmap aum search --root "cli" --query "cmdpipeline"`, `gitmap aum search --query "func Run" --dir cli -e .go`). Positional and named flags can be freely interchanged.
+  * **Flexible Extension Syntax:** Supports `-e <ext>`, `--ext <ext>`, `--extension <ext>` (e.g. `-e .go`, `--ext go`, `-e .go,.ts`, `-e go,ts`). Leading dot is optional, multiple comma-separated extensions are normalized automatically, and matching is case-insensitive.
+  * **PowerShell Profile Safety:** Shell wrapper passes all flags and parameters directly via `@args` without Advanced Function parameter binding, completely preventing `-e` collisions with PowerShell's `-ErrorAction` / `-ErrorVariable`.
+  * **MCP Tool Integration:** Native MCP tool `gitmap_aum_search` directly supports optional `"ext"` filter (e.g. `{"query": "cursor", "path": "cli", "ext": ".go"}`).
 - `gitmap search "<query>" [--limit <n>]` — Instant SQLite cached symbol & keyword search across scanned repositories using DH2D split-db hot cache (also accepts `--query <q>`, `-q <q>`, `--pattern <p>`, `--root <r>`).
 - `gitmap aum guard` — Enforces 500 KB limit, large JSON exclusion, and binary null-byte probe.
 - `gitmap aum sequence` — Markdown sequence gap detector and `# XX Title` autofixer.
