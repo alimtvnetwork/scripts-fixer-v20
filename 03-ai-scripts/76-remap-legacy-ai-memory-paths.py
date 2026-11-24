@@ -35,6 +35,11 @@ MAPPING_RULES: List[Tuple[str, str]] = [
     (".ai-memory/question-and-ambiguity/", ".ai-memory/ambiguity/resolved/"),
     ("ambiguous-questions/01-new-ambiguity/", "ambiguity/new/"),
     ("ambiguous-questions/02-ambiguity-resolved/", "ambiguity/resolved/"),
+    (".ai-memory/01-new-ambiguity/", ".ai-memory/ambiguity/new/"),
+    (".ai-memory/02-ambiguity-resolved/", ".ai-memory/ambiguity/resolved/"),
+    ("01-new-ambiguity/", "ambiguity/new/"),
+    ("02-ambiguity-resolved/", "ambiguity/resolved/"),
+    ("question-and-ambiguity/", "ambiguity/"),
 
     # RCA and Issues
     (".ai-memory/pending-issues/", ".ai-memory/rca/new/"),

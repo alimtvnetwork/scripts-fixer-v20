@@ -40,7 +40,7 @@ Paste `01-muse-master-prompt.md` into a fresh Muse chat and execute the 9 steps 
 |---|---|---|---|
 | 1 | Step 1 — 7-Zip Prerequisite, GitMap First & AGM Setup | Verify 7-Zip (`p7zip-full` / `7z`); on fresh nodes install GitMap FIRST via zero-credential GitLab script (`curl ... install.sh` / `irm ... install.ps1` with automated 7-Zip extraction); install Antigravity Manager (AGM / ADM) alongside; verify `gitmap version` and `agm version` | Internet / 7-Zip / Go installed |
 | 2 | Step 2 — Dual Login (GitHub & GitLab), SSH Keygen & Hard Gate | `gh auth status` and `ssh -T git@gitlab.com` fast-path bypass; if not logged in, ask user for SSH key format/sequence (`<operator>-muse<sequence>-<tag>`), generate key via GitMap or ssh-keygen, share public key immediately before learning, guide user to add to BOTH GitHub and GitLab, wait for user confirmation (`[DONE]`), verify dual SSH connectivity and CLI (device flow if required); strict ban on Gmail and unapproved personal email | Step 1 |
-| 3 | Step 3 — Clone Default Repositories & Establish Side Chats | Clone 13 default repos (`repo-cache`, `supabase-running-v2`, `lara-publishing-v1`, `lara-quick-public`, etc.) using `gitmap clone <url> <destination>`; seed 5 side chats + 3 vault repos; secondary repos require explicit approval | Step 2 |
+| 3 | Step 3 — Clone Default Repositories & Establish Side Chats | Clone 13 default repos (`repo-cache`, `supabase-running-v2`, `lara-publishing-v1`, `lara-quick-public`, etc.) using `gitmap clone <url> <destination>`; seed 6 side chats (including `repo-cache repo`) + 2 vault repos; secondary repos require explicit approval | Step 2 |
 | 4 | Step 4 — Pull All Repositories | Pull repos avoiding DB self-lock via plain `git pull --ff-only` per repo | Step 3 |
 | 5 | Step 5 — Read Master Prompt, Custom Skills & Ingest Operating Contract | Read master prompt; learn GitMap skills directly from cloned codebase paths; ingest TURBO-01..05 & GUARD-01..09 | Step 4 |
 | 6 | Step 6 — Memory Synchronization, Vault Training & Scripts | Run `gitmap llm train muse --days 7`; ingest DECISION TRACE and SINCE LAST READ; leverage `repo-cache/01-os-optimization/scripts/` for workstation hygiene | Step 5 |
@@ -140,6 +140,15 @@ Muse must learn GitMap commands, LLM training workflows, and skills directly fro
 
 ### 7. Deduplicated Architecture & Single Catalog
 All duplicate loose prompts in the folder root (`01-muse-master-prompt.md`, `02-muse-generic.md`, `03-muse-standalone-master-prompt.md`, `04-muse-universal-master-prompt.md`, `05-muse-execute-in-a-step.md`) and subfolder readmes (`general/readme.md`, `private/readme.md`) have been removed. The directory houses exactly one authoritative root `readme.md` guiding the sequenced two-tier structure.
+
+### 8. Clean Machine Invariant (Zero Residual Data on Machine)
+Whenever an AI completes or terminates a task, **there must be ABSOLUTELY NOTHING remaining leftover on the machine**, even amidst operational confusion, mid-task crashes, or subagent failures. All temporary files, scratch scripts (`scratch/*`, `tmp*`), stray logs, and ephemeral directories MUST be systematically deleted or unlinked before reporting completion. Conversation summaries, protobuf caches, and storage pins must be kept 100% in sync with disk.
+
+### 9. Logical Git Conflict Resolution & Commit Invariant
+If any git conflict arises (merge conflict, rebase conflict, index lock, or diverged remote branch), the AI must NEVER abort, panic, or bypass the conflict. The AI must inspect conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`), resolve every conflict logically, preserving incoming intent and local business logic without regressing functionality, verify all local test suites, stage resolved paths explicitly, and commit atomically with clean upstream push. No task is marked complete without clean upstream push.
+
+### 10. Universal Model Prompts & AI Self-Training (`gitmap universal-prompts ls`)
+Muse integrates GitMap universal model prompts via `gitmap universal-prompts ls` (or `gitmap universal-prompts --json`). When facing unfamiliar task categories, the AI must run `gitmap universal-prompts ls`, identify the corresponding prompt, execute its runnable training command example (`gitmap llm train <name>`), and learn the required patterns before modifying code. Every prompt in the catalog provides an executable training command that any AI model can run and learn.
 
 ---
 

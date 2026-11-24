@@ -382,7 +382,7 @@ Hard rules:
 - Folder is `.ai-memory/learned/`, never `memories/`.
 - Adding a memory file always updates `.ai-memory/learned/readme.md`.
 - Adding, moving, or completing a plan always updates `.ai-memory/plans/readme.md`.
-- Ambiguity folders: `01-new-ambiguity/` for open, `02-ambiguity-resolved/` for answered. On answer, MOVE the file (never copy) so it exists in exactly one place. Every resolved file carries a `## Resolution` section.
+- Ambiguity folders: `ambiguity/new/` for open, `ambiguity/resolved/` for answered. On answer, MOVE the file (never copy) so it exists in exactly one place. Every resolved file carries a `## Resolution` section.
 - Never guess past an open ambiguity. If one exists and is relevant to the current task, stop and surface it before doing work.
 - Editing existing memory or index files preserves unrelated content. No silent truncation.
 - Any code-base change bumps the minor version.
@@ -433,7 +433,7 @@ Then stop. No next-step suggestions, no exploratory questions.
 7. [ ] Skimmed `.ai-memory/plans/completed/` for recent history.
 8. [ ] [/learn](slashCommand;learn) every file in `.ai-memory/spec/commands/`.
 9. [ ] [/learn](slashCommand;learn) every file in `.ai-memory/rca/resolved/` and `.ai-memory/rca/resolved/`.
-10. [ ] [/learn](slashCommand;learn) every file in `.ai-memory/ambiguity/new/` and `02-ambiguity-resolved/`.
+10. [ ] [/learn](slashCommand;learn) every file in `.ai-memory/ambiguity/new/` and `ambiguity/resolved/`.
 11. [ ] Scanned for broken links or missing docs and surfaced them under open ambiguities.
 12. [ ] Ingested active schema models, DB column conventions, and API route shapes.
 13. [ ] Verified runtime dependencies and package compatibility.

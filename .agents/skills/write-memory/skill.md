@@ -67,9 +67,9 @@ Reply with this exact markdown block:
 ## Current State Summary
 
 - Total pending plans: [N]  (from .ai-memory/plans/readme.md)
-- Total open ambiguities: [N]  (from 01-new-ambiguity/)
-- Total CI/CD issues open: [N]  (from cicd-index.md)
-- Total institutional memory files: [N]  (from .ai-memory/learned/readme.md)
+- Total open ambiguities: [N]  (from .ai-memory/ambiguity/new/)
+- Total open RCA issues: [N]  (from .ai-memory/rca/new/)
+- Total learned memory files: [N]  (from .ai-memory/learned/readme.md)
 
 Next turn will read this state cleanly.
 ```

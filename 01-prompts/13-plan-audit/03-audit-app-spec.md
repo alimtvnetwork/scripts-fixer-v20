@@ -165,7 +165,7 @@ ls 02-spec/17-consolidated-guidelines
 
 # 3. the plan surface that consumes the spec
 
-ls .ai-memory/plans/pending .ai-memory/plans/subtasks/*/ .ai-memory/ambiguity/01-new-ambiguity
+ls .ai-memory/plans/pending .ai-memory/plans/subtasks/*/ .ai-memory/ambiguity/new
 ``
 
 Inventory table shape, written into `audit-file` as section 1:

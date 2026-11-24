@@ -269,7 +269,7 @@ Ambiguity is not a license to guess. It is a file to write.
 - Open: `.ai-memory/ambiguity/new/xx-<slug>.md`
 - Answered: `.ai-memory/ambiguity/resolved/xx-<slug>.md`
 
-When answered: `mv` from `01-new-ambiguity/` to `02-ambiguity-resolved/`, flip `Status: resolved`, and append a `## Resolution` block.
+When answered: `mv` from `ambiguity/new/` to `ambiguity/resolved/`, flip `Status: resolved`, and append a `## Resolution` block.
 
 ---
 

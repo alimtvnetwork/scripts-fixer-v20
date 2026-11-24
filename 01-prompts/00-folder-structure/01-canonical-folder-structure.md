@@ -52,40 +52,36 @@ All dates are UTC. All filenames are lowercase kebab-case with a two-digit zero-
       subtasks/                        # Bounded micro-tasks (xx-<slug>/01-step.md)
       completed/                       # Archived completed parent plans & subtasks
 
-    memory/                            # Long-term institutional cognitive memory (SINGULAR)
-      readme.md                      # Master table of contents & CODE RED rules
-      architecture/                    # System architecture decisions & split-DB patterns
-      constraints/                     # Non-negotiable technical constraints
-      done/                            # Historical completed milestones
-      features/                        # Feature-specific knowledge and requirements
-      issues/                          # Root cause analyses and bug postmortems
-      patterns/                        # Reusable design and coding patterns
-      processes/                       # Operational and maintenance procedures
-      project/                         # Project metadata and author attributions
-      standards/                       # Coding standards and enum specifications
-      style/                           # Code style and naming conventions
-      suggestions/                     # Granular suggestion trackers
-      workflow/                        # Sprint and migration state trackers
+    ambiguity/                         # Ambiguity lifecycle (new/ -> resolved/)
+      new/                             # Active architectural queries
+      resolved/                        # Closed decisions & resolutions
+      README.md                        # Ambiguity domain gateway
 
-    prompts/                           # Prompt repository & category hierarchy
-      01-prompts-category/             # Canonical source for categorized prompt modules (01-22)
-      *.md                             # Synced flat prompts generated from categories
+    rca/                               # 4-part Root Cause Analyses and issue logs
+      new/                             # Active bugs & triage
+      resolved/                        # Remediated post-mortems
+      README.md                        # RCA domain gateway
 
-    release/                           # Release automation & version bumping hub
-      release-method.md                # Authoritative version bump registry
-      bump_versions.py                 # Automated regex-based version mutator
-      issues/                          # Release failure logs and diagnostics
+    avoid/                             # Modular negative constraints
+      00-default.md                    # Core non-negotiable invariants
+      README.md                        # Avoid domain gateway
 
-    question-and-ambiguity/            # Ambiguity resolution & iteration counters
-      readme.md                        # Open and resolved ambiguity log
-      task-counter.md                  # Task iteration metrics
+    learned/                           # Flat sequential cross-session knowledge storage
+      default-memory.md                # Project baseline learnings
+      readme.md                        # Learned knowledge index
 
-    suggestions/                       # Detailed suggestion proposals
-      readme.md                      # Index of active suggestions
-      completed/                       # Archived implemented proposals
+    plans/                             # Micro-task execution center
+      pending/                         # High-level active parent plans (XX-<slug>.md)
+      subtasks/                        # Bounded micro-tasks (XX-<slug>/01-step.md)
+      completed/                       # Archived completed parent plans & subtasks
+      suggestions/                     # Autonomous AI suggestions & backlog
+      readme.md                        # Master registry of active and completed plans
 
-    rca/resolved/                       # CI pipeline failure diagnostics and RCAs
-    assets/                            # Mockups, diagrams, and reference media
+    research/                          # Spikes, experimental benchmarks, and guidelines
+      README.md                        # Research gateway
+
+    screenshots/                       # UI Ground Truth visual captures (*.png)
+      README.md                        # Visual captures gateway
 ```
 
 ---

@@ -1352,7 +1352,7 @@ Every single improvement across the 10 System Clusters MUST strictly adhere to t
    CI/CD Issues  -> .ai-memory/rca/resolved/XX-<slug>.md (Index: .ai-memory/rca/README.md)
    App Issues    -> 02-spec/22-app-issues/XX-<slug>.md (Index: 02-spec/22-app-issues/readme.md)
    ```
-8. **Binary Verification & Acceptance Criteria:** Audit confirms zero CI/CD issues in `22-app-issues` and zero app bugs in `cicd-issues`.
+8. **Binary Verification & Acceptance Criteria:** Audit confirms zero CI/CD issues in `22-app-issues` and zero app bugs in `.ai-memory/rca/resolved/`.
 
 #### SYS-IMP-077: GitMap Forensic Crash Diagnostic Suite (`gitmap agent crashed`)
 1. **Identifier & Subsystem:** `SYS-IMP-077` | Swarm Forensics | `cmd/gitmap/agent_crashed.go`

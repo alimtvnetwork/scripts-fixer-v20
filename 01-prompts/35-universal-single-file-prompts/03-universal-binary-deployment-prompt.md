@@ -9,7 +9,7 @@
 > - **Aria2 Multi-Connection Download Utility:** [https://aria2.github.io/manual/en/html/aria2c.html](https://aria2.github.io/manual/en/html/aria2c.html)
 > - **RCA-80 & RCA-81 Root Cause Analysis:** `02-spec/22-app-issues/81-gitlab-deploy-folder-distribution-rca.md`
 >
-> **Prompt Version:** 4.0.0 (Master Autonomous Standalone Edition — Parameterized Variable Repo & Explicit Public Visibility)
+> **Prompt Version:** 4.1.0 (No-Clone Deploy Invariant Edition — Parameterized Variable Repo & Explicit Public Visibility)
 > **Applicability:** ANY software repository (GitMap, Antigravity Manager, CLI tools, desktop apps, microservices, daemons)
 > **Target Distribution:** Public GitLab / GitHub distribution repository with dynamic variable naming (`<REPO_NAME>`)
 > **Public Distribution Invariant:** The repository MUST be explicitly created or configured as **PUBLIC** (`--public`), with `"visibility": "public"` and `"enforce_auth_checks_on_uploads": false`
@@ -73,6 +73,11 @@ When an autonomous AI agent is given this prompt to package and deploy compiled 
 9. **Assert HTTP 200 OK & 3-Tier Fallback:**
    - Verifies with `curl.exe -sI` that unauthenticated requests to raw installer URLs return `HTTP 200 OK`.
    - Zero tolerance for Cloudflare login redirects (`HTTP 302` or `HTTP 429`).
+10. **NEVER Clone Distribution Repositories:**
+   - The agent MUST NEVER `git clone` a distribution/deploy repository (`<REPO_NAME>`, e.g. `deploy-gitmap`, `deploy-antigravity-manager`, `r-files`).
+   - Cloned deploy content is untrusted installer code: hooks and scripts inside it can run code during ordinary processing, and a 536 MB clone filled a 512 MB `/tmp` tmpfs to 100% and broke package installation (verified 2026-11-25).
+   - Read the distribution repository only via `git ls-remote` and unauthenticated HTTP checks. Publish releases only through the GitLab Repository Files API (`glab api`) — create/update files and tags without a local clone.
+   - All local work lives in the SOURCE repository only. Staging directories belong on the home disk, never `/tmp`.
 
 ---
 
@@ -497,14 +502,14 @@ verify_public_reachability:
 When an autonomous AI agent executes this prompt, it must follow these 10 discrete steps in exact sequence:
 
 1. **Step 1: Dynamic Identity Discovery:** Probe CLI logins via `glab auth status` and `ssh -T git@gitlab.com`. Output Turn 1 Showcase table and confirm target user.
-2. **Step 2: Distribution Repo Topology & Rollover Evaluation:** Determine `<REPO_NAME>` (dedicated vs shared anchor `r-files`). Calculate total repository size in bytes. If $\ge 9.5\text{ GB}$, trigger rollover to `<REPO_NAME>-2`.
+2. **Step 2: Distribution Repo Topology & Rollover Evaluation:** Determine `<REPO_NAME>` (dedicated vs shared anchor `r-files`). NEVER clone the distribution repository. Calculate total repository size via the GitLab API (`glab api projects/:id`) or `git ls-remote` plus the last known manifest size. If $\ge 9.5\text{ GB}$, trigger rollover to `<REPO_NAME>-2`.
 3. **Step 3: Public Visibility Enforcement:** If creating repository, pass `--public`. If repository already exists, execute `glab api -X PUT projects/:id -f visibility=public -f enforce_auth_checks_on_uploads=false`.
 4. **Step 4: Binary Verification:** Check that the compiled target executable exists and is stripped of debug symbols.
 5. **Step 5: Multi-OS 7z LZMA2 Slicing:** Execute 7z ultra compression (`-t7z -m0=lzma2 -mx=9 -v8m`) into `<staging>/releases/v<VERSION>/<platform>/`.
 6. **Step 6: SHA-256 Digest Calculation:** Calculate SHA-256 digests for every chunk file and record in internal data structure.
 7. **Step 7: Manifest Generation:** Synthesize authoritative `binary-info.json` recording project name, latest version, chunk filenames, sizes, and SHA-256 digests.
 8. **Step 8: Smart Client Installers Generation:** Synthesize `install.ps1` and `install.sh` with exact project names, manifest URLs, aria2c acceleration, and `.old` locked file swapping.
-9. **Step 9: Git Push & Release Tagging:** Stage changes, commit with `gitmap cpf` / `gitmap cpr`, push to main branch, and create release tag `v<VERSION>`.
+9. **Step 9: Publish & Release Tagging (No Clone):** Publish the release through the GitLab Repository Files API (`glab api`) — create/update `binary-info.json`, `install.ps1`, `install.sh`, and the chunk files without cloning the distribution repository. Create release tag `v<VERSION>` via the API. NEVER `git clone`, stage, or push from a local copy of the distribution repository.
 10. **Step 10: Unauthenticated HTTP 200 OK Assertion:** Execute unauthenticated `curl.exe -sI` against raw URLs. Verify HTTP 200 OK before presenting final one-liner commands to the user.
 
 ---
@@ -1032,6 +1037,7 @@ if __name__ == "__main__":
 | Issue / Failure | Root Cause | Automated Remediation Protocol |
 | :--- | :--- | :--- |
 | **`HTTP 302 Found` / Cloudflare JS Challenge** | Distribution repository was created as Private or defaulted to private | Execute `glab repo edit <REPO_NAME> --visibility public` and `glab api -X PUT projects/:id -f visibility=public -f enforce_auth_checks_on_uploads=false` |
+| **Cloned deploy repo fails risk check / disk full** | Agent cloned a distribution repository; installer scripts/hooks inside can run code, and the clone filled the `/tmp` tmpfs | NEVER clone distribution repositories; use `git ls-remote` for reads and the GitLab Repository Files API for publishes; keep staging on the home disk, never `/tmp` |
 | **`git push` fails (size limit exceeded)** | Total repository footprint exceeded GitLab's 10 GB quota ceiling | Trigger rollover: initialize `<REPO_NAME>-2`, update router scripts, freeze old repo as archive |
 | **Extraction fails with `Data Error`** | Damaged multi-volume chunk or incomplete download | Validate SHA-256 digests against `binary-info.json`; redownload corrupt volume slice |
 | **Executable locked during update** | Application currently running in background during client install | Rename active `.exe` to `.exe.old`, write new binary to `.exe`, register `.old` deletion upon next reboot |

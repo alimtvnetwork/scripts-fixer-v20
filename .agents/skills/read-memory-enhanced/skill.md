@@ -194,7 +194,7 @@ Hard rules:
 - Folder is `.ai-memory/learned/`, never `memories/`.
 - Adding a memory file always updates `.ai-memory/learned/readme.md`.
 - Adding, moving, or completing a plan always updates `.ai-memory/plans/readme.md`.
-- Ambiguity folders: `01-new-ambiguity/` for open, `02-ambiguity-resolved/` for answered. On answer, MOVE the file (never copy) so it exists in exactly one place. Every resolved file carries a `## Resolution` section.
+- Ambiguity folders: `.ai-memory/ambiguity/new/` for open, `.ai-memory/ambiguity/resolved/` for answered. On answer, MOVE the file (never copy) so it exists in exactly one place. Every resolved file carries a `## Resolution` section.
 - Never guess past an open ambiguity. If one exists and is relevant to the current task, stop and surface it before doing work.
 - Editing existing memory or index files preserves unrelated content. No silent truncation.
 - Any code-base change bumps the minor version.
@@ -237,7 +237,7 @@ Then stop. No next-step suggestions, no exploratory questions.
 - [ ] Skimmed `.ai-memory/plans/completed/` for recent history
 - [ ] Read every file in `.ai-memory/spec/commands/`
 - [ ] Read every file in `.ai-memory/rca/resolved/` and `.ai-memory/rca/resolved/`
-- [ ] Read every file in `.ai-memory/ambiguity/new/` and `02-ambiguity-resolved/`
+- [ ] Read every file in `.ai-memory/ambiguity/new/` and `ambiguity/resolved/`
 - [ ] Read `02-spec/17-consolidated-guidelines/` in numeric order (or noted missing)
 - [ ] Read `02-spec/01-spec-authoring-guide/` in numeric order (or noted missing)
 - [ ] Can name CODE RED rules, naming conventions, error-handling philosophy without guessing

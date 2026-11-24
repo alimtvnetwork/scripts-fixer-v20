@@ -39,6 +39,8 @@
 > GIST_MEMORY_PROMPT              = https://gist.github.com/alimtvnetwork/faa0881913e4029b36951828418f5316
 > GIST_MUSE_GENERAL_PROMPT        = https://gist.github.com/alimtvnetwork/e75dbfc1ff43a8c8f88195f68e96a5f4
 > GIST_MUSE_PRIVATE_PROMPT        = https://gist.github.com/alimtvnetwork/4d6e347794cedca220f78c1ad5a7dc35
+> GIST_UNIVERSAL_DEPLOY_PROMPT    = https://gist.github.com/alimtvnetwork/029a817118a07a7ff270eb1d8b20a6eb
+> DEPLOY_SPEC_CANONICAL_PATH      = 01-prompts/32-universal-deploy/01-universal-binary-deployment-prompt.md
 > DEFAULT_REPOS                   = repo-cache, supabase-running-v2, lara-publishing-v1, lara-quick-public, gitmap-v28, coding-guidelines-v24
 > MODE                            = turbo        # turbo = act within task scope without asking; never permission-spam
 > COMMIT_STYLE                    = atomic-push  # one atomic commit per task, pushed immediately

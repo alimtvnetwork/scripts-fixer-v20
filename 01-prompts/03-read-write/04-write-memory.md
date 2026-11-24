@@ -17,7 +17,7 @@ Memory in chat is lost the moment the turn finishes. Memory in `.ai-memory/` is 
 
 3. Every plan added, moved, or completed MUST update `.ai-memory/plans/readme.md` in the same operation.
 
-4. Ambiguity files are NEVER duplicated. Open questions go to `.ai-memory/ambiguity/new/01-<slug>.md`. When answered, the file is MOVED (`mv`) to `.ai-memory/ambiguity/resolved/01-<slug>.md` with a `## Resolution` block appended. Never copy. Never leave a resolved question in `01-new-ambiguity/`.
+4. Ambiguity files are NEVER duplicated. Open questions go to `.ai-memory/ambiguity/new/01-<slug>.md`. When answered, the file is MOVED (`mv`) to `.ai-memory/ambiguity/resolved/01-<slug>.md` with a `## Resolution` block appended. Never copy. Never leave a resolved question in `ambiguity/new/`.
 
 5. Never overwrite `.ai-memory/strictly-avoid.md`. Append only. If a rule was already there, do not duplicate it.
 
@@ -25,7 +25,7 @@ Memory in chat is lost the moment the turn finishes. Memory in `.ai-memory/` is 
 
 7. Output the completion block with real, audited numbers. Placeholders like `[X]` or `[N]` in the final response are auto-reject.
 
-8. Ambiguity moves, never copies. Answered file goes from `01-new-ambiguity/` to `02-ambiguity-resolved/` with a `## Resolution` block appended and `Status: resolved` flipped in the same move.
+8. Ambiguity moves, never copies. Answered file goes from `ambiguity/new/` to `ambiguity/resolved/` with a `## Resolution` block appended and `Status: resolved` flipped in the same move.
 
 9. Root `readme.md` and `.ai-memory/what-to-read.md` stay in sync. Same file list, same order, no drift. Every write-memory run updates both.
 
@@ -41,7 +41,7 @@ Memory in chat is lost the moment the turn finishes. Memory in `.ai-memory/` is 
     - Simple tasks consolidation: Routine, ephemeral, or minor simple tasks that do not warrant individual files may be consolidated into overarching session summaries or existing trackers to prevent file bloat.
     - CRITICAL - Detailed specs must NEVER be consolidated or shrunk: Detailed specifications, architectural designs, non-negotiable rules, domain specifications (e.g. `02-spec/21-app/`), and complex requirement documents MUST NEVER be consolidated, summarized, resumed, or reduced in size. They must be preserved with 100% fidelity, exact wording, and full granularity.
 
-15. Anti-hallucination and clarifying questions: If any file, spec, or user intent is ambiguous or missing, the AI MUST NOT guess or hallucinate. It must ask clarifying questions or record an open ambiguity in `01-new-ambiguity/01-<slug>.md`.
+15. Anti-hallucination and clarifying questions: If any file, spec, or user intent is ambiguous or missing, the AI MUST NOT guess or hallucinate. It must ask clarifying questions or record an open ambiguity in `ambiguity/new/01-<slug>.md`.
 
 16. Fast Cached Exploration: When reading repository files or discovering directories for context ingestion, use `python 03-ai-scripts/17-fast-file-reader.py --list-folder <dir>` (<15ms via `tmp/cache/`) rather than slow raw recursive PowerShell commands.
     - **If Missing (Re-creation):** If `03-ai-scripts/17-fast-file-reader.py` is not found, immediately recreate it using Python standard libraries (`os`, `sys`, `pathlib`, `re`, `argparse`, `json`). It MUST support flags: `--list-folder <path> [--ext .md,.ts]`, `--read-file <path> [--max-bytes N]`, and `--search-pattern "<regex>" [--path <dir>]`. Ensure strict UTF-8 output (`sys.stdout.reconfigure(encoding="utf-8")`) and implement local caching.
@@ -89,7 +89,7 @@ Walk `.ai-memory/` recursively. Read all of these if they exist; note missing an
 9. `.ai-memory/rca/README.md` and every file under `.ai-memory/rca/resolved/`
 10. `.ai-memory/rca/resolved/`, `.ai-memory/rca/new/`, `.ai-memory/rca/resolved/`
 11. `.ai-memory/spec/commands/` — every file
-12. `.ai-memory/ambiguity/new/` and `02-ambiguity-resolved/` — every file
+12. `.ai-memory/ambiguity/new/` and `ambiguity/resolved/` — every file
 13. `01-prompts/README.md` + `01-prompts/` (including `cg-execute/`, `execute/`, `ci-cd/`)
 14. `.ai-memory/what-to-read.md` (and ensure `03-ai-scripts/readme.md` is linked)
 15. `.agents/skills/` (`<slug>/skill.md`) and `.agents/rules/`
@@ -197,7 +197,7 @@ Reply with this exact markdown block, real numbers only:
 ## Current State Summary
 
 - Total pending plans: [N]  (from .ai-memory/plans/readme.md)
-- Total open ambiguities: [N]  (from 01-new-ambiguity/)
+- Total open ambiguities: [N]  (from ambiguity/new/)
 - Total CI/CD issues open: [N]  (from cicd-index.md)
 - Total institutional memory files: [N]  (from .ai-memory/learned/readme.md)
 
@@ -215,13 +215,13 @@ Next turn will read this state cleanly.
 5. [ ] Every new memory file placed under a topic folder, never at the memory root.
 6. [ ] `.ai-memory/learned/readme.md` updated in the same op as every new/moved memory file.
 7. [ ] Plans lifecycle honored: `pending/` -> `completed/` via `mv`, `.ai-memory/plans/readme.md` updated.
-8. [ ] `suggestions.md` tracker updated; verbatim captures under `.ai-memory/suggestions/` with `index.md`.
-9. [ ] Issues routed correctly: `pending-issues/` / `solved-issues/` / `rca/resolved/`; `cicd-index.md` updated; no duplicates.
-10. [ ] `strictly-avoid.md` appended (not overwritten) with links to solved files.
-11. [ ] Verbatim user directives and recent conversations captured under `.ai-memory/learned/` or `.ai-memory/learned/`.
+8. [ ] Plans suggestions updated under `.ai-memory/plans/suggestions/` with `README.md`.
+9. [ ] Issues routed correctly: `.ai-memory/rca/new/` / `.ai-memory/rca/resolved/`; no duplicates.
+10. [ ] `strictly-avoid.md` updated with links to `.ai-memory/avoid/` files.
+11. [ ] Verbatim user directives and recent conversations captured under `.ai-memory/learned/`.
 12. [ ] Confirmed that detailed/important specs were NOT consolidated or shortened.
 13. [ ] Confirmed root readme is strictly lowercase `readme.md` (auto-fixed and committed/pushed if needed).
-14. [ ] Ambiguities moved via `mv` from `01-new-ambiguity/` to `02-ambiguity-resolved/` with `## Resolution` block.
+14. [ ] Ambiguities moved via `mv` from `.ai-memory/ambiguity/new/` to `.ai-memory/ambiguity/resolved/` with `## Resolution` block.
 15. [ ] `.ai-memory/what-to-read.md` present, changelog-prepended with UTC ISO 8601 timestamp, list in sync with Pre-flight and `readme.md`.
 16. [ ] Root `readme.md` updated: folder structure, canonical read-list pointer, in sync with `what-to-read.md`.
 17. [ ] `coding-guidelines.md` and `01-prompts/01-prompt-library-setup/01-prompt-library-setup.md` (or `prompts.md`) present.

@@ -137,20 +137,13 @@ GitMap is designed with strict domain separation:
       constraints/                     # Non-negotiable technical constraints
       done/                            # Historical completed milestones
       features/                        # Feature-specific knowledge and requirements
-      issues/                          # Root cause analyses and bug postmortems
-      patterns/                        # Reusable design and coding patterns
-      processes/                       # Operational and maintenance procedures
-      project/                         # Project metadata and author attributions
-      standards/                       # Coding standards and enum specifications
-      style/                           # Code style and naming conventions
-      suggestions/                     # Granular suggestion trackers
-      workflow/                        # Sprint and migration state trackers
-    prompts/                           # Prompt repository & category hierarchy
-    release/                           # Release automation & version bumping hub
-    question-and-ambiguity/            # Ambiguity resolution & iteration counters
-    suggestions/                       # Detailed suggestion proposals
-    rca/resolved/                       # CI pipeline failure diagnostics and RCAs
-    assets/                            # Mockups, diagrams, and reference media
+    ambiguity/                         # Ambiguity lifecycle (new/ -> resolved/)
+    rca/                               # Root cause analyses and bug postmortems (new/ -> resolved/)
+    avoid/                             # Modular negative constraints (00-default.md, 01-04)
+    learned/                           # Flat sequential memory files (< 100 lines each)
+    plans/                             # Planning backlog & roadmaps (pending/, active/, completed/, suggestions/)
+    research/                          # Experimental spikes and guidelines
+    screenshots/                       # UI ground truth imagery (*.png)
   docs/                                # User documentation & visual media
     assets/                            # Vector animated terminal SVGs (.svg)
     commands/                          # Modular command & subcommand reference
@@ -165,21 +158,17 @@ The `.ai-memory/` directory functions as the cognitive workspace for autonomous 
 
 | `.ai-memory/` Directory / File | Functional Purpose | Upstream Code / Doc Mapping |
 | :--- | :--- | :--- |
-| **`overview.md`** | High-level project identity, versioning, stack summary, and directory index | Roots `readme.md` & `cli/constants/constants.go` |
+| **`what-to-read.md`** | Mandatory reading order & 12 Mindset Rules | Roots `readme.md` & project navigation |
 | **`folder-structure.md`** | Canonical architectural blueprint | Maps repo topology to agent execution workflows |
-| **`coding-guidelines.md`** | Root coding guidelines mirror | `02-spec/02-coding-guidelines/` |
-| **`strictly-avoid.md`** | Critical anti-patterns, dangerous commands, and forbidden techniques | Safeguards database, git state, and build tags |
-| **`suggestions.md`** | Backlog of architectural proposals and optimizations | Backlog for future release planning |
-| **`plans/`** | Multi-phase task planning lifecycle (`pending/`, `subtasks/`, `completed/`) | Drives agent task execution engines |
-| **`memory/`** | Long-term cross-session knowledge storage |
-| ├── `features/` | Verified feature capabilities and CLI registries | Maps to `cli/cmd/` and `docs/commands/` |
-| ├── `constraints/` | Invariants, hard limits, and non-negotiables | Maps to `02-spec/02-coding-guidelines/` |
-| ├── `specs/` | Spec synchronization and schema caches | Maps to `02-spec/21-app/` |
-| └── `issues/` | Solved regressions and root-cause post-mortems | Maps to `02-spec/02-app-issues/` |
-| **`prompts/`** | Agent personas, subagent templates, and prompt chains | Referenced by agent execution skills |
-| **`audits/`** | Audit logs verifying compliance with repository standards | Output of continuous CI and verification sweeps |
-| **`release/`** | Release automation, version bump scripts, and issue logs | Maps to `02-spec/16-generic-release/` |
-| **`question-and-ambiguity/`** | Ambiguity resolution & iteration counters | Operational governance |
+| **`coding-guidelines.md`** | Root coding guidelines mirror with 10-point checklist | `02-spec/02-coding-guidelines/` |
+| **`strictly-avoid.md`** | Critical anti-patterns, dangerous commands, and forbidden techniques | Links to `.ai-memory/avoid/` |
+| **`ambiguity/`** | Ambiguity lifecycle (`new/`, `resolved/`) | Operational architectural queries |
+| **`rca/`** | 4-part Root Cause Analyses and issue logs (`new/`, `resolved/`) | Maps to bug and regression tracking |
+| **`avoid/`** | Modular negative constraints and invariants | Project-scoped rules |
+| **`learned/`** | Flat sequential cross-session knowledge storage | Flat numbered `.md` files |
+| **`plans/`** | Multi-phase task planning lifecycle (`pending/`, `active/`, `completed/`, `subtasks/`, `suggestions/`) | Drives agent task execution engines |
+| **`research/`** | Spikes, benchmark logs, and experimental investigations | Tech evaluations |
+| **`screenshots/`** | Ground truth UI visual captures (*.png) | UI verification |
 
 ### 3. Detailed Mapping: Code, Specs, Docs to `.ai-memory/`
 

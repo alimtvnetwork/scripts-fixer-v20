@@ -434,7 +434,7 @@ Any autonomous agent operating within an AI-memory-enabled repository must stric
   3. AMBIGUITY RESOLUTION & LOGGING
      ├── Record Design Gaps in ambiguity/new/
      ├── Analyze Trade-Offs & Align Decisions with Spec Contracts
-     └── Archive Resolved Decisions in 02-ambiguity-resolved/
+     └── Archive Resolved Decisions in ambiguity/resolved/
                    │
                    ▼
   4. TURN-END PERSISTENCE

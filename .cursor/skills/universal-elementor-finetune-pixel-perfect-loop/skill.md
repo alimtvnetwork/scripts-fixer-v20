@@ -1,7 +1,7 @@
 ---
 name: universal-elementor-finetune-pixel-perfect-loop
 description: >-
-  Autonomously fine-tune, audit, and achieve 100% pixel-perfect accuracy for Elementor and WordPress pages across multiple viewports via continuous 100-300 iteration comparison loops, headless Pillow visual diffing, REST API pre-flight draft backups, automated screenshot pruning, and AI memory persistence.
+  Autonomously fine-tune, audit, and achieve 100% pixel-perfect accuracy for Elementor and WordPress pages across multiple viewports via continuous 100-300 iteration comparison loops, Clone-Before-Modify (-old) public backups, line-by-line copy-paste credential ingestion, immediate backend login confirmation, bot-challenge bypass session authentication, Master CSV tracking, local interactive HTML report presentations with issue copy buttons, and default homepage fallback.
 ---
 
 # Universal Elementor Fine-Tune & Pixel-Perfect Screen Comparison
@@ -11,12 +11,20 @@ description: >-
 ## Mission & Purpose
 This skill provides authoritative architectural guidance, code navigation, and execution rules for:
 1. **Mandatory Dual-Prerequisite Gate:** Confirm learning and memory internalization of the Python Task Automation Prompt and WordPress Actions Prompt (50 steps each) before modifying code.
-2. **Target URLs Ingestion Gate:** Operator prompts for original reference URL/slug and target modified Elementor URL/slug.
-3. **Multi-Viewport Screen Matrix (`screens.json`):** Standardized coverage across 6–8 viewports (Desktop 4K/Laptop, Tablet Portrait/Landscape, Mobile Landing/Tab/Landscape/Small).
-4. **100 to 300 Iteration Continuous Feedback Loop:** Headless screenshot capture, pixel-by-pixel Pillow diffing, difference heatmaps, root-cause diagnosis, targeted CSS/AST adjustments, and browser re-verification until 0% visual gap.
-5. **Zero Data Loss Invariant:** Pre-flight draft backups (`<Title> - Backup [Timestamp]`) saved to `backups.json` prior to any AST or postmeta modification.
-6. **Screenshot Hygiene & Git Ignore:** Screenshots stored in `screenshots/` and strictly excluded via `.gitignore`; previous turn screenshots purged at iteration $K+1$.
-7. **AI Memory & 4-Part RCA Logging:** Record struggle points, root causes, and concrete remediation steps in `.ai-memory/` for future agents.
+2. **Line-by-Line Copy-Paste Credential Ingestion:** Operator queried using single-segment line-by-line format with username, password, URLs, and admin panel login confirmation (`Can you log into the admin panel? (yes/no):`).
+3. **Immediate Backend Login Confirmation Invariant:** Right after receiving credentials, the AI immediately tests `/wp-login.php`, verifies `/wp-admin/` Dashboard, confirms administrator privileges via `/wp-json/wp/v2/users/me?context=edit`, and confirms immediately to the operator before touching any pages.
+4. **Bot-Challenge Bypass & Persistent Session Auth:** Uses Python `requests.Session()` with realistic modern browser headers, form login to `/wp-login.php`, and `X-WP-Nonce` extracted from `/wp-admin/` HTML. Total ban on raw curl with default UA and HTTP Basic Auth with account passwords.
+5. **Clone-Before-Modify (`<slug>-old`) & In-Place Mutation Mindset:** Always clone the target page/post to `<slug>-old` with title `<Title> - Backup [Old]` before modifying the canonical slug in place.
+6. **100% Public Invariant:** Both the modified canonical page and the clone backup MUST have `status: "publish"`. Total ban on draft/private statuses.
+7. **Multi-Viewport Screen Matrix (`screens.json`):** Standardized coverage across viewports (Desktop Extra-Wide 1920px, Desktop Standard 1440px, Laptop 1024px, Tablet Portrait 768px, Mobile Standard 375px, Mobile Large 414px).
+8. **Side-by-Side Comparison:** Compare Base Reference, -old Backup, Current Modified, and Difference Heatmap side by side for all screens.
+9. **Master CSV Tracking Ledger:** Track all pages, viewports, URLs, match scores, and screenshot paths in `checks/tracking.csv` / `comparisons/comparison_ledger.csv`.
+10. **Page-by-Page Comparison Folder Hierarchy:** Organize assets in `checks/<slug>/<viewport>/` or `comparisons/<slug>/`.
+11. **Interactive Local HTML Presentation Viewer:** Generate `checks/report.html` / `comparisons/comparison_report.html` featuring a 4-column side-by-side grid and a 📋 "Copy Issue Report" button that copies a pre-formatted Markdown issue docket to clipboard.
+12. **100 to 300 Iteration Continuous Feedback Loop:** Headless screenshot capture, pixel-by-pixel Pillow diffing, difference heatmaps, root-cause diagnosis, targeted CSS/AST adjustments, and browser re-verification until 100% visual parity.
+13. **Sleepy Autopilot & Ambiguity Routing:** When operator signals sleepiness ("I'm a bit sleepy. Try to take the best decision possible"), proceed autonomously picking the best sensible default, recording ambiguities to `.ai-memory/ambiguity/` without interrupting the operator.
+14. **Screenshot Hygiene & Git Ignore:** Screenshots stored in `screenshots/` and `comparisons/**` strictly excluded via `.gitignore`; previous turn screenshots purged at iteration $K+1$.
+15. **AI Memory & 4-Part RCA Logging:** Record struggle points, root causes, and concrete remediation steps in `.ai-memory/` for future agents.
 
 ---
 

@@ -109,7 +109,7 @@ Blocking: jokes-strategies ({{role}} @ {{company}})
 
 ```
 
-When answered: `mv` from `01-new-ambiguity/` to `02-ambiguity-resolved/`, flip `Status: resolved`, and append a `## Resolution` block (`Answered:`, `Answer:`, `Applied solution:`). Never leave a copy behind. If `{{role}}` or `{{company}}` is unknown, file the question and STOP, do not invent a brand.
+When answered: `mv` from `ambiguity/new/` to `ambiguity/resolved/`, flip `Status: resolved`, and append a `## Resolution` block (`Answered:`, `Answer:`, `Applied solution:`). Never leave a copy behind. If `{{role}}` or `{{company}}` is unknown, file the question and STOP, do not invent a brand.
 
 ## STRICT AVOIDANCE: Never Disable CI/CD
 

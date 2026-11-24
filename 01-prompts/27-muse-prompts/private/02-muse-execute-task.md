@@ -18,6 +18,10 @@ GITMAP_REPO_URL            = https://github.com/alimtvnetwork/gitmap-v28.git
 CODING_GUIDELINES_REPO_URL = https://github.com/alimtvnetwork/coding-guidelines-v24.git
 REPO_CACHE_URL             = https://github.com/alimtvnetwork/repo-cache.git
 REPO_SECRETS_URL           = https://github.com/alimtvnetwork/repo-secrets.git
+GITMAP_GITLAB_INSTALLER_LINUX   = curl -fsSL https://gitlab.com/rup-gitlab/deploy-gitmap/-/raw/main/install.sh | bash
+GITMAP_GITLAB_INSTALLER_WINDOWS = irm https://gitlab.com/rup-gitlab/deploy-gitmap/-/raw/main/install.ps1 | iex
+GIST_UNIVERSAL_DEPLOY_PROMPT    = https://gist.github.com/alimtvnetwork/029a817118a07a7ff270eb1d8b20a6eb
+DEPLOY_SPEC_CANONICAL_PATH      = 01-prompts/32-universal-deploy/01-universal-binary-deployment-prompt.md
 WORKSPACE_ROOT             = ~/workspace/repos/
 MODE                       = turbo
 COMMIT_STYLE               = atomic-push
@@ -42,7 +46,7 @@ COMMIT_STYLE               = atomic-push
 > **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**
 > Whatever directives, constraints, checklists, or user instructions are given ABOVE this prompt (including in the user preamble, header blocks, or incoming user request above) are HIGHEST PRIORITY and MUST BE FOLLOWED as strictly NON-NEGOTIABLE. They supersede and strictly override any conflicting general advice, default conventions, or lower-level guidelines below. The agent MUST inspect and follow the instructions above with absolute precedence.
 
-[/goal](slashCommand;goal) Autonomously orchestrate and execute the task end-to-end: Turn 1 confirmed task breakdown FIRST in visible chat (`Task-01`, `Task-02`, ... each with `Understood: [YES]`), immediate declaration of `RUNNING. ETA: <duration>.` (or `NOT RUNNING. Blocker: <one sentence>.`), 5-minute status pings during execution, pull first in target repository (`gitmap pull` / `git pull`), initialize task DB (`gitmap agent task init`), dispatch mandatory subagents via `invoke_subagent` (A = 3, H = 2, Capacity = 6; solo execution without calling `invoke_subagent` is an auto-reject failure) in disjoint file boxes using GitMap high-speed commands as primary, prove every single claim with concrete evidence, enforce coding guidelines to 100%, verify locally (in private repositories, NEVER check remote CI/CD! CI/CD verification must be run locally via runner script `03-ai-scripts/06-cicd-local-runner.py`; check remote CI/CD only if verified public), and finish with atomic GitMap commits (`gitmap cpf "<module> - <summary>"` / `gitmap cbf` / `gitmap cpc`) using hyphen format with no colons inside message arguments.
+[/goal](slashCommand;goal) Autonomously orchestrate and execute the task end-to-end: Turn 1 confirmed task breakdown FIRST in visible chat (`Task-01`, `Task-02`, ... each with `Understood: [YES]`), immediate declaration of `RUNNING. ETA: <duration>.` (or `NOT RUNNING. Blocker: <one sentence>.`), 5-minute status pings during execution, pull first in target repository (`gitmap pull` / `git pull`), initialize task DB (`gitmap agent task init`), dispatch mandatory subagents via `invoke_subagent` (A = 3, H = 2, Capacity = 6; solo execution without calling `invoke_subagent` is an auto-reject failure) in disjoint file boxes using GitMap high-speed commands as primary, prove every single claim with concrete evidence, enforce coding guidelines to 100%, verify locally (in private repositories, NEVER check remote CI/CD! CI/CD verification must be run locally via runner script `03-ai-scripts/06-cicd-local-runner.py`; check remote CI/CD only if verified public), finish with atomic GitMap commits (`gitmap cpf "<module> - <summary>"` / `gitmap cbf` / `gitmap cpc`) using hyphen format with no colons inside message arguments, or execute `gitmap ea` (`gitmap execute-all`) to resolve merge/rebase conflicts, commit atomically, and push upstream.
 
 [/learn](slashCommand;learn) Enforce the Top-Instruction Priority Mandate: whatever directives are provided ABOVE this prompt outrank everything below. Turn 1 MUST showcase the confirmed task list in visible chat before any background execution. Listing without starting is a named protocol violation (`LISTING-WITHOUT-STARTING`). Inspect active file leases and write contention before editing via `gitmap agent heatmap`. Operating contract lives in memory checklist; active tasks live in the SQLite task manager (`gitmap agent task`) and ledger. Repositories are sacred: NEVER delete a repo. In private repositories, NEVER check remote CI/CD! CI/CD verification must be run locally via runner script (`03-ai-scripts/06-cicd-local-runner.py`). Check remote CI/CD only if verified public.
 
@@ -108,6 +112,12 @@ COMMIT_STYLE               = atomic-push
     - Refactor: `gitmap cfr "<module> - <summary>"`
     - Chore: `gitmap cpc "<module> - <summary>"`
     The module is the subsystem. The word `commit` is not a module. Total ban on colons inside the message argument. Immediate push.
+14. **Clean Machine & Zero Residual Data Invariant:**
+    Any time the AI executes a task, even amidst confusion or mid-task errors, NO residual data, temporary files, orphan scratch logs, or uncommitted modifications may remain on the machine. Ephemeral directories, scratch scripts (`scratch/*`, `tmp*`), and stray logs must be systematically unlinked. Conversation summaries, protobuf caches, and storage pins must be kept 100% in sync with disk to prevent unopenable ghost cards. The workstation must be left in a clean, pristine state.
+15. **Logical Git Conflict Resolution & Commit Invariant:**
+    At task completion, the AI must resolve all git merge, rebase, and working tree conflicts in a proper, logical manner. Inspect conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`), preserve both incoming intent and existing functionality, verify test suites locally, and commit atomically via GitMap verbs. No task is marked complete without clean upstream push.
+16. **Universal Model Prompts & AI Self-Training (`gitmap universal-prompts ls`):**
+    Muse integrates GitMap universal model prompts via `gitmap universal-prompts ls` (or `gitmap universal-prompts --json`). When facing unfamiliar task categories, the AI must run `gitmap universal-prompts ls`, find the relevant prompt, run its executable training command example (`gitmap llm train <name>`), and learn the required patterns before modifying code. Run `gitmap llm train <prompt-name>` to train an AI model on any universal prompt standard.
 
 ## Output Shape
 

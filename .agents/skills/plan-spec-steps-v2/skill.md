@@ -510,7 +510,7 @@ Blocking: <plan slug(s) or "none">
 
 ```
 
-When answered: `mv` the file into `02-ambiguity-resolved/`, flip
+When answered: `mv` the file into `ambiguity/resolved/`, flip
 `Status: resolved`, and append:
 
 ```markdown
