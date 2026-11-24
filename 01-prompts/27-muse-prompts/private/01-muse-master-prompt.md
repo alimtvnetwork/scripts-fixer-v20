@@ -92,7 +92,7 @@ COMMIT_STYLE               = atomic-push
 - [ ] `/goal` **Step 3: Clone Default Repositories & Establish Side Chats:** Clone 13 default repos using `gitmap clone <url> <destination>` (or `git clone <url>`), create 6 side chats seeded from `chat-seeds/<name>.md` (including `repo-cache repo`), define 2 vault/infra repos without side chats (`repo-secrets`, `scripts-fixture`), discover secondary repos with approval gate, and REPORT.
 - [ ] `/goal` **Step 4: Pull All Handpicked Repositories:** Pull repos avoiding DB self-lock: verify pulls with plain `git pull --ff-only` per repo.
 - [ ] `/learn` **Step 5: Read Master Prompt, Custom Skills & Ingest Operating Contract:** Read `01-muse-master-prompt.md` and custom skills from the cloned GitMap codebase (`~/workspace/repos/gitmap-v28/.agents/skills/gitmap/skill.md`). Ingest TURBO-01..05, GUARD-01..09, obey execution contract for steps 6–9, enforce total ban on fenced code blocks around prompt formatters, and REPORT restating contract.
-- [ ] `/learn` **Step 6: Memory Synchronization & Vault Training:** Read `repo-cache/12-muse-ai/README.md`, run `gitmap llm train muse --days 7`, ingest DECISION TRACE and SINCE LAST READ, read sequenced digest files (`01-overview.md` through `05-conventions.md`), and REPORT. Muse learns GitMap skills directly from the cloned codebase paths.
+- [ ] `/learn` **Step 6: Memory Synchronization & Vault Training:** Read `repo-cache/08-muse-ai/README.md`, run `gitmap llm train muse --days 7`, ingest DECISION TRACE and SINCE LAST READ, read sequenced digest files (`01-overview.md` through `05-conventions.md`), and REPORT. Muse learns GitMap skills directly from the cloned codebase paths.
 - [ ] `/goal` **Step 7: Connect Email via go-email-reader:** Verify configuration in `repo-secrets/11-go-email-reader/`. Enforce password-only prompt rule (never ask for host/port/user if defined, only prompt for missing password), standing SMTP pre-approval, configure default sender and notifier, log to `04-conversation/`, and REPORT.
 - [ ] `/goal` **Step 8: Scan Everything into GitMap:** Run `gitmap scan ~/workspace/repos` after cloning to index all repositories, branches, and trees into `gitmap.db`, check `gitmap heatmap status`, and REPORT scan summary.
 - [ ] `/goal` **Step 9: Final Report Block with Exact 9 Items:** Deliver structured completion report with exactly 9 items including OPEN items from digest (`04-ongoing-projects.md` / `01-overview.md`).
@@ -102,7 +102,7 @@ COMMIT_STYLE               = atomic-push
 - [ ] `/goal` **Logical Conflict Resolution, Atomic Commit & Remote Push Invariant (`gitmap ea`):** At task completion or upon encountering merge/rebase collisions or diverged tracking branches, the AI MUST execute `gitmap ea` (or `gitmap execute-all`) to create a backup snapshot, autonomously resolve git conflicts, stage modified files, commit atomically with clean upstream sync, and push to remote.
 - [ ] `/learn` **Universal Model Prompts & AI Self-Training:** Muse integrates GitMap universal model prompts via `gitmap universal-prompts ls` (or `gitmap universal-prompts`). The AI can run `gitmap llm train <prompt-name>` for any prompt in the catalog to learn and train itself on canonical prompt standards.
 - [ ] `/goal` **Verification, Secrets Gate, Atomic Push & Local Verification:** Targeted file checks plus local build/test verification (Testing and verification: in private repositories, NEVER check remote CI/CD! CI/CD verification must be run locally via runner script (`03-ai-scripts/06-cicd-local-runner.py`). Check remote CI/CD only if verified public.), pre-commit secrets gate (`check-forbidden-strings.py` and `gitmap aum search` -> `gitmap rs`), atomic commit via GitMap hyphen format (`gitmap cpf "<module> - <summary>"`), and immediate push.
-- [ ] `/learn` **Muse Memory IO Re-Sync:** When user says `Muse memory IO read`, run `gitmap llm train muse --days 7`, diff against watermark, read sequenced updates, recreate chats from `12-muse-ai/chat-seeds/*.md`, and maintain standing SMTP pre-approval.
+- [ ] `/learn` **Muse Memory IO Re-Sync:** When user says `Muse memory IO read`, run `gitmap llm train muse --days 7`, diff against watermark, read sequenced updates, recreate chats from `08-muse-ai/chat-seeds/*.md`, and maintain standing SMTP pre-approval.
 
 ---
 
@@ -464,7 +464,7 @@ If any step fails, halt immediately, surface the diagnostic context under CODE R
    - `scripts-fixture`: Passive fixture repository for multi-platform setup scripts (e.g. `scripts/44-install-rust`).
 
 5. **Secondary Repositories Discovery & User Approval Gate:**
-   Inspect `repo-cache/12-muse-ai/02-repos.md` for secondary repositories (`image-generate-v2`, `white-presentation-v1`, `wp-exam-v2`, `minecraft-alim-alima`, `macro-ahk`).
+   Inspect `repo-cache/08-muse-ai/02-repos.md` for secondary repositories (`image-generate-v2`, `white-presentation-v1`, `wp-exam-v2`, `minecraft-alim-alima`, `macro-ahk`).
    **Explicit Gate:** The agent **MUST NOT** clone secondary repositories automatically. Prompt the user:
    > *"Discovered secondary repositories in `02-repos.md`. Would you like to clone any of these now, or proceed with the 13 default repositories?"*
 
@@ -536,7 +536,7 @@ If any step fails, halt immediately, surface the diagnostic context under CODE R
 ### Step 6: Memory Synchronization & Vault Training
 
 1. **Read Baseline Memory:**
-   Read `repo-cache/12-muse-ai/README.md` (or `readme.md`) from workspace root.
+   Read `repo-cache/08-muse-ai/README.md` (or `readme.md`) from workspace root.
 
 2. **Execute Memory Sync & Training Command (Learn GitMap LLM Train):**
    ```bash
@@ -549,7 +549,7 @@ If any step fails, halt immediately, surface the diagnostic context under CODE R
    - **`SINCE LAST READ`:** Incremental updates since the last session's checkpoint.
 
 4. **Read Sequenced Digest Files:**
-   In `repo-cache/12-muse-ai/`, systematically read:
+   In `repo-cache/08-muse-ai/`, systematically read:
    - `01-overview.md` — Workspace identity, mission, and current status.
    - `02-repos.md` — Full catalog of fleet repositories, routing, and owners.
    - `03-people-and-preferences.md` — Operator instructions, communication tone, and styling rules.
@@ -644,7 +644,7 @@ If any step fails, halt immediately, surface the diagnostic context under CODE R
 
 6. **Memory Sync & Decision Trace:**
    - Vault Sync: `gitmap llm train muse --days 7` executed.
-   - Digest Ingested: `12-muse-ai/01-overview.md` through `05-conventions.md`.
+   - Digest Ingested: `08-muse-ai/01-overview.md` through `05-conventions.md`.
    - Key Decisions: [Summary of core decisions loaded].
 
 7. **Email Connectivity & Standing Approval:**
@@ -908,9 +908,9 @@ When the user says **`Muse memory IO read`** (in ANY chat):
 
 1. **Sync the Vault:** Run `gitmap llm train muse --days 7` from workspace root.
 2. **Diff vs Checkpoint:** Read "SINCE LAST READ" section from command output.
-3. **Read Sequenced Files:** Read updated files in `12-muse-ai/` (`01-overview.md` → `05-conventions.md`).
+3. **Read Sequenced Files:** Read updated files in `08-muse-ai/` (`01-overview.md` → `05-conventions.md`).
 4. **Summarize Changes:** Report updates with real numbers and commits.
-5. **Recreate Chats:** Rebuild chats from `12-muse-ai/chat-seeds/*.md`.
+5. **Recreate Chats:** Rebuild chats from `08-muse-ai/chat-seeds/*.md`.
 6. **Standing SMTP Pre-Approval:** User pre-approves ALL `go-email-reader` sending (`send`, `notify`, `forward`). Never seek per-send approval.
 
 ---
