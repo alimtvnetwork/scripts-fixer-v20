@@ -5,7 +5,7 @@ description: "Executes the \u274c FORBIDDEN: Negative boolean flag prompt. Auton
 
 # ❌ FORBIDDEN: Negative boolean flag
 
-> **Invocation:** `@[naming-conventions-and-boolean-prefixes](directory;.cursor/skills/naming-conventions-and-boolean-prefixes)`
+> **Invocation:** `@[naming-conventions-and-boolean-prefixes](directory;.agents/skills/naming-conventions-and-boolean-prefixes)`
 
 Source prompt: `01-prompts/15-cg-execute/05-naming-conventions-and-boolean-prefixes.md`
 

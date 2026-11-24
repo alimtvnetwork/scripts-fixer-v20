@@ -49,7 +49,7 @@ ${Input Text Verbatim}
 - Formulate master plan in exactly 400 granular self-looping steps (Phase 1: 1–200, Phase 2: 201–400) detailing an actionable AI roadmap.
 - [/learn](slashCommand;learn) from @[gitmap](directory;.cursor/skills/gitmap) skill to leverage GitMap high-speed search, toolchain discovery, and caching.
 - All planning protocols, dual-agent concurrency (A=2, H=2), spec modularization, and no-build/no-test constraints are offboarded to @[plan-spec-steps-v2](directory;.cursor/skills/plan-spec-steps-v2).
-- If any ambiguity arises, record it under `.ai-memory/ambiguous-questions/01-new-ambiguity/XX-<slug>-ambiguity.md` and immediately go ahead with planning without asking the user.
+- If any ambiguity arises, record it under `.ai-memory/ambiguity/new/XX-<slug>-ambiguity.md` and immediately go ahead with planning without asking the user.
 - Keep all created specifications in `02-spec/21-app/XX-<slug>/` and plans in `.ai-memory/plans/pending/XX-<slug>.md` without starting immediate code execution.
 - Track in-flight file touches and prevent write collisions using GitMap RC Heatmap (`gitmap rc heatmap status` / `gitmap rc heatmap tree` / `gitmap rc heatmap live` / `gitmap rc heatmap sync`).
 - Only add relative paths, never add absolute paths during work; this must be respected on release page and in release notes as well.

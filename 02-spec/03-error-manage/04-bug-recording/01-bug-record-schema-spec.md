@@ -1,156 +1,220 @@
-# Bug Record Schema Spec (Canonical)
+# Bug Recording Schema & State Machine Specification
 
-**Folder:** `02-spec/03-error-manage/04-bug-recording/`
-**Task:** 324 antigravity-manager-tools-synchronization-ui-improvement
-**Spec:** `Antigravity-Manager: 02-spec/21-app/324-antigravity-manager-tools-synchronization-ui-improvement/spec-03-bug-recording-css-ui-seo.md` §2.3
-**Status:** Canonical target — all three recorders converge on this schema
-**Version:** 1.0.0
-**Updated:** 2026-11-09
-**AI Confidence:** Production-Ready (schema) / Target (convergence)
-**Ambiguity:** None — gaps are listed in `03-blind-readiness-audit-spec.md`, never hidden
+## 1. Executive Summary & Purpose
+This specification establishes the canonical, cross-platform database schema, state machine, and data transfer objects for the unified Bug Recorder subsystem across Antigravity Manager, Antigravity Tools, Cat MY, and GitMap. It guarantees that any autonomous AI agent or engineer can implement the persistence and state management layer with zero ambiguity, zero schema drift, and 100% type safety.
 
 ---
 
-## 1. Purpose
+## 2. Universal 7-State Lifecycle Machine
 
-One bug record shape for every repo in the fleet. A bug recorded in
-Antigravity-Manager, cat-my-v12, or gitmap-v28 must be findable, replayable,
-and comparable from any surface (CLI or UI) without knowing which tool
-recorded it. This document is the target all three recorders converge on;
-it is not a description of what any one of them does today. Where current
-behaviour falls short, the gap is named in §5 and dispositioned in the
-blind-readiness audit (`03-blind-readiness-audit-spec.md`).
+### 2.1 State Transition Graph
+The bug lifecycle strictly enforces a 7-state deterministic finite state machine (FSM). Unauthorized state jumps are rejected with error code `18255` (`BUG-INVALID-STATUS-TRANSITION`).
 
-## 2. Schema
-
-### 2.1 Field table
-
-| Field | Required? | Meaning |
-|---|---|---|
-| `id` | REQUIRED | Stable unique identifier, never reused. Format: repo-scoped slug + sequence (e.g. `BUG-41-05` style per repo convention). |
-| `number` | REQUIRED | Human-visible bug number shown in UI badges (AGM bug-number badge). Monotonic per repo. |
-| `title` | REQUIRED | One line, what broke, in the user's words where possible. |
-| `slug` | REQUIRED | URL/file-safe slug derived from the title; the CLI `--by-slug` lookup key. |
-| `repo` | REQUIRED | Owning repo (`Antigravity-Manager`, `gitmap-v28`, `cat-my-v12`, …). |
-| `status` | REQUIRED | One of `recorded`, `triaged`, `in-progress`, `fixed`, `verified`, `closed`, `reopened`. Transitions are append-only history, never in-place rewrites. |
-| `severity` | REQUIRED | One of `critical`, `major`, `minor`, `cosmetic`. |
-| `created_at` / `updated_at` | REQUIRED | UTC timestamps; `created_at` is immutable. |
-| `reporter` | REQUIRED | Who/what recorded it (user, agent id, or `cli`/`ui`/`auto`). |
-| `environment` | REQUIRED | App version, machine, instance id, OS. Without this a bug is not replayable. |
-| `steps` | REQUIRED | Ordered reproduction steps. Each step: `order`, `action` (what was done), `detail` (enriched context), `target` (XPath root / DOM selector where applicable), `screenshot_ref` (nullable). |
-| `screenshots` | REQUIRED | Authentic DOM captures (never mock/stock images). SVG content is sanitized before storage. Each entry: `path`, `captured_at`, `step_order`. |
-| `session_ref` | REQUIRED | Recording/session that produced the bug (Cat-My `--recording` / `--session`; AGM recorder session). Nullable only for hand-filed bugs, with the reason recorded. |
-| `error_code` | TARGET | Registered code from the error-code registry, when the bug maps to one. |
-| `rca_ref` | TARGET | Link to the root-cause analysis (`.ai-memory/issues/` or spec RCA section) once written. |
-| `offline` | REQUIRED | `true` when recorded while the backend was unreachable (Cat-My `cat:recorder:offline_sessions` path); offline records MUST sync on reconnect, never silently stay local. |
-
-### 2.2 Status machine
-
-```
-recorded → triaged → in-progress → fixed → verified → closed
-   ↑_______________ reopened (from fixed, verified, or closed) _______________|
+```mermaid
+stateDiagram-v2
+    [*] --> recorded: Capture Complete
+    recorded --> triaged: agm bug triage / UI Triage
+    triaged --> in_progress: Assigned to Agent / Dev
+    in_progress --> fixed: PR / Patch Applied
+    fixed --> verified: Regression Suite Passed
+    verified --> closed: Archived / Shipped
+    verified --> reopened: Regression Detected
+    closed --> reopened: Issue Re-emerges
+    reopened --> in_progress: Re-assigned
 ```
 
-- Every transition appends a history entry (`from`, `to`, `at`, `by`,
-  `reason`); the current `status` is derived from the latest entry, never
-  edited in place.
-- `reopened` is a transition target, not a terminal state: a reopened bug
-  returns to `triaged` once it is picked up again.
-- Any status value found in the wild that is not one of the seven above is
-  a defect against the surfacing layer: it maps to `recorded` for display
-  and is filed as a bug with a spec cross-reference. No wild status is
-  silently displayed as if it were canonical.
+### 2.2 Canonical States and Invariants
+1. `recorded`: Initial raw state captured by HUD, CLI, or test harness. All telemetry and snapshots are immutable.
+2. `triaged`: Priority, severity, component ownership, and reproducibility score assigned.
+3. `in-progress`: Active resolution underway by an AI subagent or human engineer. Workspace branch created.
+4. `fixed`: Solution implemented and atomic commit verified.
+5. `verified`: Automated rerun engine or QA pass confirms zero reproduction.
+6. `closed`: Terminal archived state. Stored in local or remote cold storage.
+7. `reopened`: State entered when verification fails or a regression occurs post-close.
 
-### 2.3 Rules
+### 2.3 Strict Transition Matrix
 
-- **IDs are stable across surfaces.** The same bug reached via CLI
-  (`--by-title`, `--by-slug`, `--show`) and via UI (previous-bugs modal)
-  must show the same `id`, `number`, and `status`. A mismatch is a defect,
-  not a display quirk.
-- **Steps are replayable.** A step without an `action` and a `target` (or an
-  explicit "no target — describe why") fails the blind-readiness audit.
-- **Screenshots are evidence, not decoration.** Every screenshot must be
-  traceable to the step and session that produced it; a screenshot with no
-  `captured_at` or no `step_order` is untrusted and flagged by the audit.
-- **No invented data.** A field is only REQUIRED when at least one
-  implementation already captures it (see the trace table in §3); a field
-  no implementation produces is TARGET with a named owner and date, never
-  presented as if it already exists.
+| Current State | Permitted Next States | Guard Condition |
+| :--- | :--- | :--- |
+| `recorded` | `triaged`, `closed` | `hasValidTelemetry` AND `hasStepSequence` |
+| `triaged` | `in-progress`, `closed` | `hasAssignedOwner` OR `isAiAssigned` |
+| `in-progress` | `fixed`, `triaged` | `hasCommitHash` OR `hasResolutionSummary` |
+| `fixed` | `verified`, `reopened` | `hasPassingRerun` OR `hasVerifiedPatch` |
+| `verified` | `closed`, `reopened` | `hasVerificationLogs` |
+| `closed` | `reopened` | `hasRegressionReason` |
+| `reopened` | `in-progress`, `triaged` | `hasUpdatedReproSteps` |
 
-## 3. Capture-path trace (REQUIRED fields → real code)
+---
 
-Every REQUIRED field traces to at least a partial capture path. "Partial"
-is stated explicitly where the current capture does not yet meet the full
-definition — the audit dispositions each partial as a convergence gap.
+## 3. Relational Database Schema (SQLite 3.x)
 
-| Field | Antigravity-Manager | cat-my-v12 | gitmap-v28 |
-|---|---|---|---|
-| `id` | `src/lib/recorder/types.ts:73` (`RecorderSession.id`); `src/stores/recorder-store.ts:66` (`rec-<base36>-<rand>`) | `src/lib/recorder/recorder-sqlite-repository.ts:14-16` (`BugSessionItem.sessionId`, `bugSessionId`) | No bug-session recorder; error records carry appfault codes, not bug ids — TARGET, owner gitmap-v28 repo chat, 2026-11-09 |
-| `number` | PARTIAL — `src/stores/recorder-store.ts:67,71` (`bugSeq` `NN-bug`, a per-session sequence, not a repo-monotonic bug number); badge shown per 323 spec §3.1 | GAP — no human-visible bug number; `--recent-bugs` lists `session_id` only (`bin/errors-cli.py:1135-1147`) | No bug number — TARGET, owner gitmap-v28 repo chat, 2026-11-09 |
-| `title` | `src/lib/recorder/types.ts:60-66` (`BugReportSummary.title`) | `src/lib/recorder/recorder-sqlite-repository.ts:16` (`BugSessionItem.title`); `--by-title` (`bin/errors-cli.py:21`) | Error titles exist in appfault records, not bug titles — TARGET |
-| `slug` | `src/stores/recorder-store.ts:71,394,408` (`slug: bugSeq`, renameable inline) | `task.db` `Slug` column + disk `summary.slug` (`bin/errors-cli.py:21`); `--by-slug` (`bin/errors-cli.py:4332`) | No slug — TARGET |
-| `repo` | Inherent — the recorder runs inside AGM | Inherent — the recorder runs inside cat-my-v12 | Inherent — error records carry the tool name |
-| `status` | GAP — `RecorderSession` (`src/lib/recorder/types.ts:73-91`) has no status field | GAP — `BugSessionItem` has `isArchived` only, no status | GAP — no bug records — TARGET, owners per repo, 2026-11-09 |
-| `severity` | GAP — no severity on sessions | GAP — `--level` (`error`/`warn`/`info`) classifies errors, not bug severity | GAP — TARGET, owners per repo, 2026-11-09 |
-| `created_at` | `src/lib/recorder/types.ts:76,78` (`startedAt`, `stoppedAt`, epoch ms) | `src/lib/recorder/recorder-sqlite-repository.ts:48-49` (`createdAt`, `persistedAt`); `bug_sessions.created_at` (`bin/errors-cli.py:1143`) | Error records carry timestamps; no bug `created_at` — TARGET |
-| `updated_at` | GAP — no `updated_at` on sessions; derivable from the last event timestamp until the field lands | GAP — `persistedAt` is the last-write time, not a canonical `updated_at` | GAP — TARGET, owners per repo, 2026-11-09 |
-| `reporter` | `src/lib/recorder/types.ts:9` (`RecorderActorType`: `user` \| `cli` \| `telegram` \| `system`) | `bin/errors-cli.py:1142` (`machine_username` in the listing); actor is the recording user | `appfault` records carry the operation (`WithOp`); no bug reporter — TARGET |
-| `environment` | PARTIAL — no environment block on the session record; app version, machine, and instance id live in app config, not on the record | `src/lib/recorder/recorder-sqlite-repository.ts:30-34` (`machineHostname`, `machineOs`, `machineUsername`, `machineArch`, `machineSource`) | Partial — CLI records carry host context in diagnostics, not a structured environment block — TARGET |
-| `steps` | `src/lib/recorder/types.ts:34-45` (`RecorderEvent`: `stepNumber`, `description`, `target` with `xpath`, `details`) | `--steps` / `--timeline` / `--inspect-event` (`bin/errors-cli.py`); timeline carries coordinates and XPath | No step capture — TARGET |
-| `screenshots` | `src/lib/recorder/types.ts:47-58` (`CapturedScreenshot`: `stepNumber`, `timestamp`, `dataUrl`); `src/lib/recorder/full-page-capture.ts:272` strips scripts/noscripts/iframes/external stylesheet links before SVG `foreignObject` rasterization | `src/lib/recorder/recorder-sqlite-repository.ts:5-16` (`BugScreenshotRecord`: `sequenceNumber`, `diskPath`, `createdAt`); `screenshot_count` in `bug_sessions` | No screenshot capture — TARGET |
-| `session_ref` | The session IS the record (`RecorderSession.id`) | `--session ID` / `--recording ID_OR_PATH` (`bin/errors-cli.py`); `sessionId` on every row | No sessions — TARGET |
-| `offline` | Sessions persist to localStorage (`src/stores/recorder-store.ts:55-57`, `PREVIOUS_SESSIONS_STORAGE_KEY`); the recorder is local by design, so there is no backend-down path to lose | `src/lib/recorder/recorder-sqlite-repository.ts:76-77` (`OFFLINE_SESSIONS_KEY = "cat:recorder:offline_sessions"`); `source?: "local" \| "backend"` on `BugSessionItem`; modal is local-first (task 324 Spec 01 WI-04) | N/A — no sessions, no offline path |
+### 3.1 `bug_records` Table (Master Entity)
+```sql
+CREATE TABLE IF NOT EXISTS bug_records (
+    id TEXT PRIMARY KEY NOT NULL,                       -- UUID v4 formatted string
+    session_id TEXT NOT NULL,                           -- Recording session identifier
+    session_ref TEXT,                                   -- Optional external session reference or slug
+    title TEXT NOT NULL,                                -- Human-readable issue summary
+    description TEXT,                                   -- Detailed reproduction notes
+    status TEXT NOT NULL DEFAULT 'recorded',           -- 7-state enum value
+    severity TEXT NOT NULL DEFAULT 'medium',           -- low, medium, high, critical
+    priority TEXT NOT NULL DEFAULT 'p2',               -- p0, p1, p2, p3
+    component TEXT NOT NULL DEFAULT 'general',         -- UI, CLI, Backend, Database
+    route TEXT NOT NULL,                               -- Active UI route or CLI command path
+    step_count INTEGER NOT NULL DEFAULT 0,              -- Monotonic count of reproduction steps
+    reproducibility_rate REAL NOT NULL DEFAULT 1.0,     -- Floating point score 0.0 - 1.0
+    operating_system TEXT NOT NULL,                     -- windows, linux, darwin
+    app_version TEXT NOT NULL,                          -- SemVer string (e.g., 6.613.0)
+    user_environment TEXT NOT NULL,                     -- JSON string with screen, memory, locale
+    is_reproducible INTEGER NOT NULL DEFAULT 1,         -- Boolean integer (1 = true, 0 = false)
+    has_network_trace INTEGER NOT NULL DEFAULT 0,       -- Boolean integer
+    has_visual_snapshot INTEGER NOT NULL DEFAULT 0,     -- Boolean integer
+    has_backend_trace INTEGER NOT NULL DEFAULT 0,       -- Boolean integer
+    is_offline INTEGER NOT NULL DEFAULT 0,              -- Boolean integer (1 = recorded offline)
+    is_archived INTEGER NOT NULL DEFAULT 0,             -- Boolean integer (1 = archived)
+    is_synced INTEGER NOT NULL DEFAULT 0,               -- Boolean integer (cloud synchronization)
+    sync_id TEXT,                                       -- Remote sync identifier (Supabase ID)
+    created_at TEXT NOT NULL,                           -- ISO-8601 UTC timestamp
+    updated_at TEXT NOT NULL                            -- ISO-8601 UTC timestamp
+);
 
-## 4. TARGET fields
+CREATE INDEX IF NOT EXISTS idx_bug_records_status ON bug_records(status);
+CREATE INDEX IF NOT EXISTS idx_bug_records_session ON bug_records(session_id);
+CREATE INDEX IF NOT EXISTS idx_bug_records_created ON bug_records(created_at);
+```
 
-| Field | Owner | Date | Disposition |
-|---|---|---|---|
-| `error_code` | gitmap-v28 repo chat (registry) | 2026-11-09 | ADOPTED — `BUG` codes 18250–18255 registered (see §5). Recorders attach the code when the bug maps to one; unmapped bugs carry no code rather than an invented one. |
-| `rca_ref` | Owning repo's chat per bug | 2026-11-09 | ADOPTED as a link field. The RCA lives in `.ai-memory/issues/` (fleet convention) or a spec RCA section; the record stores the relative path, never a copy of the analysis. |
-| `status` (full machine) | AGM repo chat / cat-my-v12 repo chat / gitmap-v28 repo chat | 2026-11-09 | DEFERRED with reason: no implementation has a status field today. The machine in §2.2 is the convergence target; until it lands, wild statuses map to `recorded` per §2.2. |
-| `severity` | AGM repo chat / cat-my-v12 repo chat | 2026-11-09 | DEFERRED with reason: no implementation grades bug severity today. Severity is assigned at triage, not at capture; the capture path must not block on it. |
-| `number` (repo-monotonic) | AGM repo chat / cat-my-v12 repo chat | 2026-11-09 | DEFERRED with reason: AGM's `NN-bug` is a per-session sequence; Cat-My has no number. A repo-monotonic counter needs a shared sequence source per repo; until then the session id is the stable key and the badge shows the session sequence. |
-| `updated_at` | AGM repo chat / cat-my-v12 repo chat | 2026-11-09 | DEFERRED with reason: derivable from the last event/persist time today; a canonical field lands with the status machine. |
+### 3.2 `bug_status_history` Table (Audit Trail)
+```sql
+CREATE TABLE IF NOT EXISTS bug_status_history (
+    id TEXT PRIMARY KEY NOT NULL,                       -- UUID v4
+    bug_id TEXT NOT NULL,                               -- Foreign key referencing bug_records(id)
+    previous_status TEXT NOT NULL,                      -- Status before transition
+    new_status TEXT NOT NULL,                           -- Status after transition
+    transition_reason TEXT,                             -- Rationale for change
+    changed_by TEXT NOT NULL,                           -- User name or agent identifier
+    changed_at TEXT NOT NULL,                           -- ISO-8601 UTC timestamp
+    FOREIGN KEY(bug_id) REFERENCES bug_records(id) ON DELETE CASCADE
+);
 
-## 5. Bug-recording error codes (registry)
+CREATE INDEX IF NOT EXISTS idx_bug_status_history_bug ON bug_status_history(bug_id);
+```
 
-Registered in `02-spec/03-error-manage/03-error-code-registry/error-codes-master.json`
-(prefix `BUG`, integer range 18250–18299, carved from the unallocated
-18250–18999 block) and in `02-spec/03-error-manage/03-error-code-registry/02-registry.md`.
-The machine-readable per-module index is
-`02-spec/03-error-manage/04-bug-recording/error-codes.json` (schema:
-`02-spec/03-error-manage/03-error-code-registry/07-schemas/error-codes-index.schema.json`;
-the registry collision detector reads it — the `IndexFile` in the master
-entry must always point at a JSON index, never at a Markdown spec).
-Go, Rust, Python, and TypeScript recorders use the integer code; the
-`BUG-xxxxx` label is the human form. Codes are never invented inline.
+### 3.3 `bug_telemetry_events` Table (Granular Event Log)
+```sql
+CREATE TABLE IF NOT EXISTS bug_telemetry_events (
+    id TEXT PRIMARY KEY NOT NULL,                       -- UUID v4
+    bug_id TEXT NOT NULL,                               -- Foreign key referencing bug_records(id)
+    step_number INTEGER NOT NULL,                       -- Monotonic 1-based sequence number
+    event_type TEXT NOT NULL,                           -- click, input, navigation, error, api, roi
+    target_selector TEXT,                               -- CSS Selector or XPath
+    target_xpath TEXT,                                  -- Normalized DOM XPath
+    target_tag TEXT,                                    -- HTML tag or CLI argument name
+    target_text TEXT,                                   -- Inner text (sanitized)
+    route TEXT NOT NULL,                                -- Route or working directory
+    coordinates_json TEXT,                              -- Serialized screen/viewport/client coordinates
+    delta_data TEXT,                                    -- JSON serialized delta coordinates or values
+    before_image_path TEXT,                             -- Relative path to pre-event snapshot
+    after_image_path TEXT,                              -- Relative path to post-event snapshot
+    screenshot_kind TEXT NOT NULL DEFAULT 'viewport',   -- fullpage, diagram, viewport, crop
+    backend_context_json TEXT,                          -- Extended backend context (PID, instance, prompt)
+    backend_trace TEXT,                                 -- JSON serialized IPC/API trace
+    dom_context TEXT,                                   -- Surrounding DOM HTML snippet (<= 1024 chars)
+    error_message TEXT,                                 -- Captured console or backend error
+    error_code INTEGER,                                 -- System or HTTP error code
+    duration_ms INTEGER NOT NULL DEFAULT 0,             -- Event execution duration
+    has_visual_diff INTEGER NOT NULL DEFAULT 0,         -- Boolean integer
+    created_at TEXT NOT NULL,                           -- ISO-8601 UTC timestamp
+    FOREIGN KEY(bug_id) REFERENCES bug_records(id) ON DELETE CASCADE
+);
 
-| Code | Label | Meaning | Retryable |
-|---|---|---|---|
-| 18250 | `BUG-CAPTURE-FAILED` | Capture failed; the record was not started. The failure is itself recorded as an error — never a silent loss, never a success report. | No |
-| 18251 | `BUG-PERSIST-FAILED` | Persist to disk/SQLite failed after a successful capture. The in-memory record is retained and the failure is surfaced; the user is told the bug was NOT saved. | Yes |
-| 18252 | `BUG-SESSION-NOT-FOUND` | Lookup by id, slug, title, or session ref missed on every source (disk, SQLite, local cache). | No |
-| 18253 | `BUG-SCREENSHOT-SANITIZE-FAILED` | SVG screenshot content failed sanitization; the screenshot is rejected, the step is kept, the rejection is recorded. | No |
-| 18254 | `BUG-PARITY-MISMATCH` | CLI/UI parity check found an id-set delta. The delta is a filed bug against the surfacing layer, not a data problem. | No |
-| 18255 | `BUG-OFFLINE-SYNC-FAILED` | An offline record failed to sync on reconnect. The local copy is kept and the failure is surfaced; the record is never silently left local. | Yes |
+CREATE INDEX IF NOT EXISTS idx_bug_events_bug_step ON bug_telemetry_events(bug_id, step_number);
+```
 
-## 6. Spec corrections (this spec vs. the parent spec-03 §2.3)
+---
 
-- **REQUIRED framing corrected.** Parent spec-03 §2.3 states REQUIRED fields
-  are "already captured by at least one implementation". That is not
-  literally true for `number` (partial), `status`, `severity`, and
-  `updated_at` (absent everywhere), and for `environment` in AGM. The
-  corrected rule is §2.3 above: REQUIRED means required in the target
-  schema with at least a partial capture path in one implementation; the
-  trace table (§3) states exactly how partial each path is, and the audit
-  dispositions each gap. No field is presented as captured when it is not.
+## 4. Universal JSON Envelopes (Cross-Language DTOs)
 
-## 7. Cross-references
+### 4.1 Master Bug Record Envelope (`bug_record.json`)
+```json
+{
+  "id": "7f8b3c2a-9e1d-4a8f-b632-1a4e5d8c9012",
+  "sessionId": "ses_20261117_004512_891",
+  "title": "Failed to persist split-db configuration during project onboarding",
+  "description": "Clicking 'Apply Split-DB' causes silent unhandled rejection on step 4.",
+  "status": "recorded",
+  "severity": "high",
+  "priority": "p1",
+  "component": "DatabaseManager",
+  "route": "/settings/database",
+  "stepCount": 6,
+  "reproducibilityRate": 1.0,
+  "operatingSystem": "windows",
+  "appVersion": "6.613.0",
+  "userEnvironment": {
+    "screenWidth": 1920,
+    "screenHeight": 1080,
+    "pixelRatio": 1.0,
+    "memoryGb": 32,
+    "locale": "en-US",
+    "theme": "dark"
+  },
+  "isReproducible": true,
+  "hasNetworkTrace": true,
+  "hasVisualSnapshot": true,
+  "hasBackendTrace": true,
+  "isSynced": false,
+  "syncId": null,
+  "createdAt": "2026-11-17T00:45:12.891Z",
+  "updatedAt": "2026-11-17T00:45:12.891Z"
+}
+```
 
-- Pipeline and parity: `02-recording-pipeline-spec.md`
-- Audit results: `03-blind-readiness-audit-spec.md`
-- Parent folder: `../readme.md`
-- Error-code registry: `../03-error-code-registry/readme.md`
-- Parent task spec: `Antigravity-Manager: 02-spec/21-app/324-antigravity-manager-tools-synchronization-ui-improvement/spec-03-bug-recording-css-ui-seo.md`
-- AGM recorder: `Antigravity-Manager: 02-spec/21-app/319-bug-and-audit-recorder-separation/01-bug-and-audit-recorder-separation-spec.md`
-- Cat-My recorder: `cat-my-v12: src/lib/recorder/recorder-sqlite-repository.ts`
+### 4.2 Granular Step Telemetry Envelope (`step_event.json`)
+```json
+{
+  "id": "e4a1c890-5b23-4f91-8cd1-90a12e34f567",
+  "bugId": "7f8b3c2a-9e1d-4a8f-b632-1a4e5d8c9012",
+  "stepNumber": 4,
+  "eventType": "click",
+  "targetSelector": "#btn-apply-split-db",
+  "targetXpath": "/html/body/div[1]/main/form/div[3]/button[2]",
+  "targetTag": "BUTTON",
+  "targetText": "Apply Split-DB",
+  "route": "/settings/database",
+  "deltaData": {
+    "clickX": 450,
+    "clickY": 620,
+    "button": "left"
+  },
+  "beforeImagePath": "screenshots/step_004_before.webp",
+  "afterImagePath": "screenshots/step_004_after.webp",
+  "screenshotKind": "viewport",
+  "backendTrace": {
+    "command": "apply_split_db_config",
+    "handler": "db_split::apply_config",
+    "sourceFile": "crates/core/src/db_split.rs",
+    "sourceLine": 142,
+    "executionTimeMs": 48
+  },
+  "domContext": "<button id=\"btn-apply-split-db\" class=\"btn btn-primary\">Apply Split-DB</button>",
+  "errorMessage": "sqlite3_open_v2 failed: read-only database",
+  "errorCode": 18251,
+  "durationMs": 48,
+  "hasVisualDiff": true,
+  "createdAt": "2026-11-17T00:45:14.210Z"
+}
+```
+
+---
+
+## 5. Software Architectural Invariants
+
+### 5.1 Error Return Sovereignty
+All database queries and mutations must reside behind dedicated Repository interfaces. Function implementations must adhere strictly to:
+- Maximum 15 lines of code per function (target: <= 8 lines).
+- Early return guard clauses with zero nested `if` statements.
+- Return error immediately (`return err` or `return apperror.Wrap(...)`); never invoke `os.Exit` inside leaf repository functions.
+
+### 5.2 Boolean Strictness
+- All boolean variables, fields, parameters, and properties MUST be prefixed with `is` or `has` (e.g., `isReproducible`, `hasVisualSnapshot`, `hasNetworkTrace`).
+- Negative boolean names (such as `isNotValid`, `unverified`, `hasNoErrors`) are banned without exception.

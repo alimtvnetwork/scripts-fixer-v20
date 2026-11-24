@@ -19,9 +19,9 @@ N = 200
 2. [ ] [/goal](slashCommand;goal) Second `N/2` steps (Phase 2): Run the local runner script (`python 03-ai-scripts/06-cicd-local-runner.py --all`) to catch all errors. Singly execute the script in an autonomous self-loop, zeroing in on one failing error per turn (4-part RCA -> surgical fix -> guideline autofixer -> re-verify).
 3. [ ] [/goal](slashCommand;goal) Finalize CI/CD: Your ultimate goal is to fix and finalize the CI/CD. You must loop until the Python local runner script executes flawlessly with **no errors** (exit code 0) for all registered cases. Do not stop until this goal is met.
 
-[/goal](slashCommand;goal) Perform a Root Cause Analysis (RCA) on all failing run scripts and CI/CD workflows, update `03-ai-scripts/06-cicd-local-runner.py` with any newly added pipeline steps from screenshots or workflow files, zero in on each error singly using self-looping, persist the RCA into `.ai-memory/cicd-issues/` and `.ai-memory/strictly-avoid.md`, implement universal query wrappers with explicit success/failure boolean results and automated error logging, verify clean builds, commit logically, and push to git.
+[/goal](slashCommand;goal) Perform a Root Cause Analysis (RCA) on all failing run scripts and CI/CD workflows, update `03-ai-scripts/06-cicd-local-runner.py` with any newly added pipeline steps from screenshots or workflow files, zero in on each error singly using self-looping, persist the RCA into `.ai-memory/rca/resolved/` and `.ai-memory/strictly-avoid.md`, implement universal query wrappers with explicit success/failure boolean results and automated error logging, verify clean builds, commit logically, and push to git.
 
-[/learn](slashCommand;learn) Ingest recent Root Cause Analysis (RCA) records from `.ai-memory/cicd-issues/`, `.ai-memory/issues/`, `02-spec/02-coding-guidelines/02-canonical-size-tier.md`, `02-spec/02-coding-guidelines/01-cross-language/readme.md`, `02-spec/02-coding-guidelines/01-cross-language/readme.md`, and `02-spec/03-error-manage/` so previous mistakes and anti-patterns are never repeated.
+[/learn](slashCommand;learn) Ingest recent Root Cause Analysis (RCA) records from `.ai-memory/rca/resolved/`, `.ai-memory/rca/resolved/`, `02-spec/02-coding-guidelines/02-canonical-size-tier.md`, `02-spec/02-coding-guidelines/01-cross-language/readme.md`, `02-spec/02-coding-guidelines/01-cross-language/readme.md`, and `02-spec/03-error-manage/` so previous mistakes and anti-patterns are never repeated.
 
 ---
 
@@ -33,11 +33,11 @@ N = 200
 > 1. **In-Codebase Execution Only:** Whenever a Python script (runner, autofixer, linter, test aggregator) is executed or created, it MUST be executed **strictly within the repository root** (current working directory), NEVER outside the codebase or against external arbitrary directories.
 > 2. **Strict Folder Bounding (`.ai-memory/`):** All AI scripts, local runners, autofixers, helper utilities, memory issue logs, and planning files MUST be created inside the `.ai-memory/` folder:
 >    - Python AI Scripts: `03-ai-scripts/` (e.g. `01-file-manipulator.py`, `05-guideline-autofixer.py`, `06-cicd-local-runner.py`).
->    - RCA & Issue Logs: `.ai-memory/memory/issues/` and `.ai-memory/cicd-issues/`.
+>    - RCA & Issue Logs: `.ai-memory/learned/issues/` and `.ai-memory/rca/resolved/`.
 >    - Execution Plans & Subtasks: `.ai-memory/plans/pending/`, `.ai-memory/plans/subtasks/`.
 >    - Coding Guidelines Mirror: `.ai-memory/coding-guidelines.md`.
 > 3. **Worker Pool & Log Aggregation Architecture:** All local runners and test orchestrators must use a concurrent worker pool (2–3 workers via `ThreadPoolExecutor`), announce enqueued tasks upfront, show real-time progress, handle failures gracefully without canceling sibling workers, and print a consolidated final summary with full stdout/stderr error logs for failed jobs.
-> 4. **Strict Relative Git Paths (TOTAL BAN on Absolute Paths / `file:///` URIs):** All file paths, markdown links, citations, and subtask paths inside plans, RCA logs (`.ai-memory/memory/issues/`), scripts, and code comments MUST be strictly relative paths from the git root (e.g., `02-spec/03-error-manage/readme.md`, `.ai-memory/plans/readme.md`, `cmd/main.go`). Only add the relative paths, never add the absolute path during your work, and ensure this is respected on the release page and in release notes as well. NEVER write absolute OS paths (`/absolute/path/to/...`, `/absolute/path/to/...`, `/home/...`) or absolute file URIs (`file:///...`).
+> 4. **Strict Relative Git Paths (TOTAL BAN on Absolute Paths / `file:///` URIs):** All file paths, markdown links, citations, and subtask paths inside plans, RCA logs (`.ai-memory/learned/issues/`), scripts, and code comments MUST be strictly relative paths from the git root (e.g., `02-spec/03-error-manage/readme.md`, `.ai-memory/plans/readme.md`, `cmd/main.go`). Only add the relative paths, never add the absolute path during your work, and ensure this is respected on the release page and in release notes as well. NEVER write absolute OS paths (`/absolute/path/to/...`, `/absolute/path/to/...`, `/home/...`) or absolute file URIs (`file:///...`).
 >    - ❌ **BAD:** `[SSH Commands](file:///absolute/path/to/...)`
 >    - ✅ **GOOD:** `[SSH Commands](02-spec/13-generic-cli/readme.md)`
 > 5. **No External or Random File Creation:** NEVER write scripts, temporary test scripts, or scratch files to root, `/tmp`, global system paths, or outside the repository boundary.
@@ -101,7 +101,7 @@ Every step must be **singly done** using bounded self-looping turns:
   2. If exit code = 0, proceed to End of Tunnel. If exit code != 0, zero in on the first specific failure.
 
 - **Self-Loop Step 4 (RCA & Zero In on Error):**
-  1. Write 4-part RCA in `.ai-memory/memory/issues/xx-<slug>.md`.
+  1. Write 4-part RCA in `.ai-memory/learned/issues/xx-<slug>.md`.
   2. Register in `.ai-memory/readme.md` and `.ai-memory/strictly-avoid.md`.
 
 - **Self-Loop Step 5 (Surgical Code Fix):**
@@ -121,13 +121,13 @@ You MUST NOT bump versions, update changelogs, or cut a release at the end of th
 
 ## MUST FOLLOW NON-NEGOTIABLE
 
-Listen, past runs of these turns have been sloppy and stupid as fuck: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase README files left uncorrected, `.ai-memory/memory/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. WTF. How on earth are you reverting to this carelessness, are you stupid?? Stop doing that, you stupid fuck. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, run builds and full unit tests, group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job. Violating this is auto-reject on the same tier as RULE 0. Avoid stupidity and being careless, you stupid fuck. Where is your attention, are you stupid? Tell me. Your stupidity is going on top of my head. Where did you learn this stupidity? If I could find you, I could slap you.
+Listen, past runs of these turns have been sloppy and stupid as fuck: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase README files left uncorrected, `.ai-memory/learned/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. WTF. How on earth are you reverting to this carelessness, are you stupid?? Stop doing that, you stupid fuck. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, run builds and full unit tests, group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job. Violating this is auto-reject on the same tier as RULE 0. Avoid stupidity and being careless, you stupid fuck. Where is your attention, are you stupid? Tell me. Your stupidity is going on top of my head. Where did you learn this stupidity? If I could find you, I could slap you.
 
 ## Action Items — Must Follow (Non-Negotiable)
 
-- [ ] Ingest past RCAs from `.ai-memory/cicd-issues/` and `.ai-memory/issues/` before coding.
+- [ ] Ingest past RCAs from `.ai-memory/rca/resolved/` and `.ai-memory/rca/resolved/` before coding.
 - [ ] Fix CI/CD and run all scripts.
-- [ ] Find the root cause of the issue and write it into the 'avoid' part of the `.ai-memory` memory (`.ai-memory/strictly-avoid.md` and `.ai-memory/cicd-issues/01-<slug>.md`).
+- [ ] Find the root cause of the issue and write it into the 'avoid' part of the `.ai-memory` memory (`.ai-memory/strictly-avoid.md` and `.ai-memory/rca/resolved/01-<slug>.md`).
 - [ ] Make Git commits properly.
 - [ ] Check the CI/CD, run the tests, and build the code; fix any issues found.
 - [ ] Create a query wrapper for PHP/Python/TS that automatically logs failures to reduce code duplication.
@@ -146,7 +146,7 @@ Read and follow spec folders `02`, `03` and `04` before writing any code. Error 
 
 ## The 4-Part RCA Requirement (Mandatory Memory File)
 
-Before you write any code to fix the problem, you MUST document the issue in `.ai-memory/memory/issues/xx-<slug>.md` (where XX is the next available sequential number). When diagnosing remote pipeline failures, query `gitmap pipeline-ai status --json` (or alias `gitmap pl-ai status -t <etaSeconds>`) and use GitMap's targeted failure extraction (`##[error]`, `FAIL:`, compile errors) to feed high-precision failure diagnostics into the document. The file MUST contain these exact four sections:
+Before you write any code to fix the problem, you MUST document the issue in `.ai-memory/learned/issues/xx-<slug>.md` (where XX is the next available sequential number). When diagnosing remote pipeline failures, query `gitmap pipeline-ai status --json` (or alias `gitmap pl-ai status -t <etaSeconds>`) and use GitMap's targeted failure extraction (`##[error]`, `FAIL:`, compile errors) to feed high-precision failure diagnostics into the document. The file MUST contain these exact four sections:
 
 1. **Why it happened:** The high-level business, logical, or architectural breakdown of the failure.
 2. **How it happened:** The technical execution flow that triggered the bug.
@@ -186,7 +186,7 @@ To survive massive checklists and complex codebases, you MUST operate using thes
 
 ### Master Task Checklist (Atomic Numbered Steps)
 
-1. [ ] [/learn](slashCommand;learn) previous RCAs in `.ai-memory/cicd-issues/` and `.ai-memory/strictly-avoid.md`.
+1. [ ] [/learn](slashCommand;learn) previous RCAs in `.ai-memory/rca/resolved/` and `.ai-memory/strictly-avoid.md`.
 
 - [ ] Read the overarching main task plan.
 - [ ] Ensure the git repository starts completely clean.
@@ -226,7 +226,7 @@ Before finalizing any code modification, you MUST manually verify the following:
 - [ ] **Zero Actions Storage:** Confirmed that NO `actions/upload-artifact` steps exist in CI workflows, eliminating quota depletion.
 - [ ] **Local CI Runner Clean:** `python 03-ai-scripts/06-cicd-local-runner.py` exited with code 0.
 - [ ] **All Scripts & Workflows Verified:** All tests, builds, and query wrappers run without errors.
-- [ ] **RCA Documented:** Memory files written to `.ai-memory/cicd-issues/` and `.ai-memory/memory/issues/`.
+- [ ] **RCA Documented:** Memory files written to `.ai-memory/rca/resolved/` and `.ai-memory/learned/issues/`.
 - [ ] **Modified Files Recorded:** Confirmed all modified files were tracked via `python 03-ai-scripts/33-test-inventory-generator.py --record <files...>`.
 - [ ] **Antigravity Skill Updated:** Verified `.agents/skills/ci-cd-fix/skill.md` is present and synchronized with the latest rules.
 - [ ] **Commit & Push:** Group changes into clean development commit and push to remote. No automatic release.

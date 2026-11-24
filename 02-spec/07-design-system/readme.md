@@ -298,4 +298,3 @@ Every heading gradient, link color, button, code block glow, and hover effect up
 ## Verification
 
 Full compliance criteria and automated verification suites are defined in [`97-acceptance-criteria.md`](./97-acceptance-criteria.md) and tracked in `99-consistency-report.md`.
-

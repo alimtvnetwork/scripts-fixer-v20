@@ -5,7 +5,7 @@ description: "Executes the Golang Pointer Reduction And Value Semantics prompt. 
 
 # Golang Pointer Reduction And Value Semantics
 
-> **Invocation:** `@[golang-pointer-reduction-and-value-semantics](directory;.cursor/skills/golang-pointer-reduction-and-value-semantics)`
+> **Invocation:** `@[golang-pointer-reduction-and-value-semantics](directory;.agents/skills/golang-pointer-reduction-and-value-semantics)`
 
 Source prompt: `01-prompts/15-cg-execute/34-golang-pointer-reduction-and-value-semantics.md`
 

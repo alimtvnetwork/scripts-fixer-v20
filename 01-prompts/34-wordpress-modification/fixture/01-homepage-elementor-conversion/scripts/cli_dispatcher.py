@@ -1,0 +1,181 @@
+"""CLI entry point for WordPress automation engine with pluggable pipeline support."""
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+# Ensure root directory is on sys.path so 'scripts.*' imports resolve cleanly
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
+from scripts.core_constants import (
+    DEFAULT_BACKUP_FILENAME,
+    DEFAULT_DIFF_TOLERANCE_PERCENT,
+    DEFAULT_PIPELINE_FILENAME,
+    EncodingConstants,
+)
+from scripts.core_enums import ExitCodeType
+from scripts.pipeline_engine import FileSystemCache, PipelineWrapper
+from scripts.task_logger import TaskLogger
+from scripts.transform_protocol import TransformContext
+from scripts.visual_diff import compute_visual_diff
+from scripts.wp_auth import probe_wp_connection
+from scripts.wp_rest_client import WpRestClient
+
+
+def _build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="WordPress & Elementor Automation Engine")
+    subparsers = parser.add_subparsers(dest="subcommand", required=True)
+    _add_auth_subparser(subparsers)
+    _add_backup_subparser(subparsers)
+    _add_apply_subparser(subparsers)
+    _add_diff_subparser(subparsers)
+    _add_pipeline_subparser(subparsers)
+    return parser
+
+
+def _add_auth_subparser(subparsers: argparse._SubParsersAction) -> None:
+    auth_p = subparsers.add_parser("auth", help="Probe WordPress credentials")
+    auth_p.add_argument("--site-url", required=True)
+    auth_p.add_argument("--username", required=True)
+    auth_p.add_argument("--password", required=True)
+
+
+def _add_backup_subparser(subparsers: argparse._SubParsersAction) -> None:
+    backup_p = subparsers.add_parser("backup", help="Create pre-flight draft backup")
+    backup_p.add_argument("--site-url", required=True)
+    backup_p.add_argument("--username", required=True)
+    backup_p.add_argument("--password", required=True)
+    backup_p.add_argument("--page-id", type=int, required=True)
+
+
+def _add_apply_subparser(subparsers: argparse._SubParsersAction) -> None:
+    apply_p = subparsers.add_parser("apply", help="Apply Elementor AST to page")
+    apply_p.add_argument("--site-url", required=True)
+    apply_p.add_argument("--username", required=True)
+    apply_p.add_argument("--password", required=True)
+    apply_p.add_argument("--page-id", type=int, required=True)
+    apply_p.add_argument("--ast-file", required=True)
+
+
+def _add_diff_subparser(subparsers: argparse._SubParsersAction) -> None:
+    diff_p = subparsers.add_parser("diff", help="Compute visual diff between screenshots")
+    diff_p.add_argument("--before", required=True)
+    diff_p.add_argument("--after", required=True)
+    diff_p.add_argument("--out", default="assets/visual-diff.png")
+    diff_p.add_argument("--tolerance", type=float, default=DEFAULT_DIFF_TOLERANCE_PERCENT)
+
+
+def _add_pipeline_subparser(subparsers: argparse._SubParsersAction) -> None:
+    pipe_p = subparsers.add_parser("pipeline", help="Execute JSON transformation stack")
+    pipe_p.add_argument("--config", default=DEFAULT_PIPELINE_FILENAME)
+    pipe_p.add_argument("--page-id", type=int, default=42)
+    pipe_p.add_argument("--site-url", default="")
+    pipe_p.add_argument("--username", default="")
+    pipe_p.add_argument("--password", default="")
+    pipe_p.add_argument("--ast-file", default="")
+    pipe_p.add_argument("--out-ast", default="")
+    pipe_p.add_argument("--dry-run", action="store_true")
+
+
+def _handle_auth(args: argparse.Namespace, logger: TaskLogger) -> int:
+    res = probe_wp_connection(args.site_url, args.username, args.password)
+    if res.is_failure:
+        logger.error(str(res.error))
+        return ExitCodeType.AUTH_ERROR.value
+
+    logger.success(f"Connected as: {res.value.get('name')} ({args.site_url})")
+    return ExitCodeType.SUCCESS.value
+
+
+def _handle_backup(args: argparse.Namespace, logger: TaskLogger) -> int:
+    client = WpRestClient(args.site_url, args.username, args.password)
+    res = client.create_preflight_backup(args.page_id, Path(DEFAULT_BACKUP_FILENAME))
+    if res.is_failure:
+        logger.error(str(res.error))
+        return ExitCodeType.GENERAL_ERROR.value
+
+    logger.success(f"Created pre-flight backup page ID: {res.value}")
+    return ExitCodeType.SUCCESS.value
+
+
+def _handle_apply(args: argparse.Namespace, logger: TaskLogger) -> int:
+    client = WpRestClient(args.site_url, args.username, args.password)
+    with open(args.ast_file, "r", encoding=EncodingConstants.UTF8) as f:
+        ast_str = f.read()
+    res = client.update_page_ast(args.page_id, ast_str)
+    if res.is_failure:
+        logger.error(str(res.error))
+        return ExitCodeType.GENERAL_ERROR.value
+
+    logger.success(f"Updated page {args.page_id} with new Elementor AST.")
+    return ExitCodeType.SUCCESS.value
+
+
+def _handle_diff(args: argparse.Namespace, logger: TaskLogger) -> int:
+    res = compute_visual_diff(Path(args.before), Path(args.after), Path(args.out), args.tolerance)
+    if res.is_failure:
+        logger.error(str(res.error))
+        return ExitCodeType.DIFF_ERROR.value
+
+    logger.success(f"Visual diff passed: {res.value:.2f}% mismatch (tolerance: {args.tolerance:.2f}%)")
+    return ExitCodeType.SUCCESS.value
+
+
+def _load_initial_ast(ast_file: str, cache: FileSystemCache) -> dict[str, Any]:
+    if ast_file and Path(ast_file).exists():
+        res = cache.get_json(ast_file)
+        if res.is_success:
+            return res.value
+
+    return {"version": "0.4", "elements": [{"id": "hero_1", "elType": "container", "settings": {"_element_id": "hero-section"}}]}
+
+
+def _handle_pipeline(args: argparse.Namespace, logger: TaskLogger) -> int:
+    cache = FileSystemCache()
+    pipe_res = PipelineWrapper.from_json(args.config, cache)
+    if pipe_res.is_failure:
+        logger.error(str(pipe_res.error))
+        return ExitCodeType.GENERAL_ERROR.value
+
+    pipeline = pipe_res.value
+    init_ast = _load_initial_ast(args.ast_file, cache)
+    ctx = TransformContext(site_url=args.site_url, page_id=args.page_id, cache=cache, is_dry_run=args.dry_run)
+    run_res = pipeline.execute(ctx, init_ast, "")
+    if run_res.is_failure:
+        logger.error(str(run_res.error))
+        return ExitCodeType.GENERAL_ERROR.value
+
+    if args.out_ast:
+        Path(args.out_ast).parent.mkdir(parents=True, exist_ok=True)
+        Path(args.out_ast).write_text(json.dumps(run_res.value["ast"], indent=2), encoding=EncodingConstants.UTF8)
+
+    logger.success(f"Executed pipeline '{pipeline.name}' successfully ({run_res.value['step_count']} steps).")
+    return ExitCodeType.SUCCESS.value
+
+
+def main() -> int:
+    parser = _build_parser()
+    args = parser.parse_args()
+    logger = TaskLogger()
+
+    handlers = {
+        "auth": _handle_auth,
+        "backup": _handle_backup,
+        "apply": _handle_apply,
+        "diff": _handle_diff,
+        "pipeline": _handle_pipeline,
+    }
+    handler = handlers.get(args.subcommand)
+    if handler is None:
+        logger.error(f"Unknown subcommand: {args.subcommand}")
+        return ExitCodeType.USAGE_ERROR.value
+
+    return handler(args, logger)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

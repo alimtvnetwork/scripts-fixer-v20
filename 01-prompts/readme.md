@@ -33,20 +33,21 @@ This directory hosts the canonical, production-grade prompts library (V4 archite
    - **Standard Execute & Audit Prompts:** Enforce **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence)** — instructions provided ABOVE the prompt take highest priority.
    - **Below-Steps Prompts (`*-in-below-steps.md`, `32-cg-follow-other-prompts.md`):** Enforce **Bottom-Instruction Priority Mandate (Below Precedence)** — instructions appended after the trailing `--` and `## 🚨 High Priority Instructions Below` header take highest priority.
 
-6. **Canonical V6 Parent Task N-Steps Continuous Loop (`14-execute/02-execute-parent-task-with-n-steps-v6.md`):**
+6. **V8 parent task (`14-execute/10-execute-parent-task-with-n-steps-v8.md`):** GitMap start, required spec, concrete step map under a 400-step ceiling, one parallel wave per turn. V6 and V7 are not changed.
+7. **Canonical V6 Parent Task N-Steps Continuous Loop (`14-execute/02-execute-parent-task-with-n-steps-v6.md`):**
    - Pure parameterization driven entirely by header variables (`N = 300`, `A = 2`, `H = 2`, `C = 30`, `PHASE_1_BUDGET = 150`, `PHASE_2_BUDGET = 150`, `WAVES`) with zero hardcoded literal step or agent counts in the body.
    - **Mandatory Subagent Spawning Gate (`invoke_subagent`, Zero Solo Execution):** Requires spawning `A = 2` concurrent subagents (`H = 2` disjoint tasks per subagent, `TypeName: "self"` in Phase 2) across both Phase 1 discovery/spec generation and Phase 2 code execution.
    - 100% GitMap commit primacy via atomic `gitmap cpf` / `gitmap cpb` (eliminating manual `git add` and `git commit`), upstream `.gitignore` hygiene gate (R8) with automatic untracking of ignored files (`git rm --cached`), SQLite task tracking, self-contained worker briefs with language-specific rules, secrets gate, and <= 3,200-word footprint.
    - Historical versions (V2, V3, V4, V5, and `excute-parent-old.md`) are preserved in [`06-archive/execute/`](06-archive/execute/) and [`06-archive/19-old-execute-prompts/`](06-archive/19-old-execute-prompts/). All previous versions of execution skills have been completely purged from `.agents/skills/` and `.cursor/skills/`, leaving [`execute-parent-task-with-n-steps-v6`](directory;.agents/skills/execute-parent-task-with-n-steps-v6) as the sole canonical execution engine.
 
-7. **Strict Relative Git Paths Mandate (TOTAL BAN on Absolute Paths & `file:///` URIs):**
+8. **Strict Relative Git Paths Mandate (TOTAL BAN on Absolute Paths & `file:///` URIs):**
    - Only add the relative paths, never add the absolute path during your work, and ensure this is respected on the release page and in release notes as well. All references, links, changelogs, manifests, and documentation must strictly use relative paths from repository root.
 
 ---
 
 ## Directory Index
 
-All 28 active canonical prompt categories reside directly at the root of `01-prompts/`:
+All 30 active canonical prompt categories reside directly at the root of `01-prompts/`:
 
 ```text
 01-prompts/
@@ -77,14 +78,32 @@ All 28 active canonical prompt categories reside directly at the root of `01-pro
 ├── 27-muse-prompts/
 ├── 28-mastery-prompts/
 ├── 29-chat-management/
-└── 30-improvements/
-    ├── 01-next-100-ui-improvements.md
-    ├── 02-next-100-code-improvements.md
-    ├── 03-next-100-whole-system-improvements.md
-    ├── 04-next-detail-out-100-improvements.md
-    ├── 05-next-100-ideas-for-improvements.md
-    ├── 06-check-pending-improvements.md
-    ├── 07-implement-next-10-improvements.md
+├── 30-improvements/
+│   ├── 01-next-100-ui-improvements.md
+│   ├── 02-next-100-code-improvements.md
+│   ├── 03-next-100-whole-system-improvements.md
+│   ├── 04-next-detail-out-100-improvements.md
+│   ├── 05-next-100-ideas-for-improvements.md
+│   ├── 06-check-pending-improvements.md
+│   ├── 07-implement-next-10-improvements.md
+│   └── readme.md
+├── 31-next-wheel/
+│   └── readme.md
+├── 32-universal-deploy/
+│   ├── 01-universal-binary-deployment-prompt.md
+│   └── readme.md
+├── 33-universal-python-task/
+│   ├── 01-universal-python-task-automation-prompt.md
+│   ├── readme.md
+│   └── code/
+├── 34-wordpress-modification/
+│   ├── 01-universal-wordpress-elementor-modification-prompt.md
+│   └── readme.md
+└── 35-universal-single-file-prompts/
+    ├── 01-universal-python-task-automation-prompt.md
+    ├── 02-universal-wordpress-elementor-modification-prompt.md
+    ├── 03-universal-binary-deployment-prompt.md
+    ├── 04-developer-daily-master-prompt.md
     └── readme.md
 ```
 
@@ -122,6 +141,11 @@ All 28 active canonical prompt categories reside directly at the root of `01-pro
 | **28** | `28-mastery-prompts/` | `01-mastery-bootstrap-prompt.md` | Foolproof standalone bootstrap prompt: reproduces the full working environment (GitHub, GitMap, repos, memory, chats) from any fresh chat on any machine |
 | **29** | `29-chat-management/` | `01-chat-histories-reread-remove-and-recreate.md` | Chat-history recovery: re-read per-repo side chats, prune stale ones (archive by default, delete only on explicit word), and recreate one `<repo> repo` chat per repo after a VM replacement |
 | **30** | `30-improvements/` | `01-next-100-ui-improvements.md`, `02-next-100-code-improvements.md`, `03-next-100-whole-system-improvements.md`, `04-next-detail-out-100-improvements.md`, `05-next-100-ideas-for-improvements.md`, `06-check-pending-improvements.md`, `07-implement-next-10-improvements.md` | Autonomous continuous improvement, ideation, backlog visibility, and fast-forward implementation suite covering UI, codebase quality, whole-system UX, review dockets, pending counts, and bounded 10-item execution loops without intermediate builds/tests |
+| **31** | `31-next-wheel/` | `readme.md`, `next-wheel/`, `suffixes/`, `partials/` | Spec 277 prompt templates for Next Breakdown, rerun, suffix, and verification flows |
+| **32** | `32-universal-deploy/` | `01-universal-binary-deployment-prompt.md`, `readme.md` | Standalone universal binary deployment engine, dynamic GitLab discovery, 7z LZMA2 chunking, public distribution, and GitHub Gist integration |
+| **33** | `33-universal-python-task/` | `01-universal-python-task-automation-prompt.md`, `readme.md`, `code/` | Universal standalone Python task automation engine, pluggable pipeline architecture (`config/pipeline.json`), dynamic cross-platform environment variables (`config/env.ini` & `cd $WORK`), task-scoped folder architecture (`XX-<slug>/`), cross-platform launchers, monadic `Result[T]` error handling, argparse CLI with `--dry-run`, enums, and structured logging |
+| **34** | `34-wordpress-modification/` | `01-universal-wordpress-elementor-modification-prompt.md`, `02-universal-elementor-finetune-pixel-perfect-loop-prompt.md`, `elementor-modify-pixel-perfect-loop.md`, `readme.md` | Universal WordPress modernization, Elementor conversion engine, pixel-perfect screen comparison fine-tuning loop, and dual-site onboarding interrogation (read-only base website vs target modify website) |
+| **35** | `35-universal-single-file-prompts/` | `01-universal-python-task-automation-prompt.md` through `06-universal-elementor-finetune-pixel-perfect-loop-prompt.md`, `elementor-modify-pixel-perfect-loop.md`, `readme.md` | Sovereign 100% standalone single-file editions of universal prompts (Python Task Engine with Pipeline & `env.ini`, WordPress Elementor Modernization with Dual-Site Interrogation, Binary Deployment, Developer Daily, Email Integration, & Elementor Pixel-Perfect Fine-Tune Loop) with all production reference code, launchers, enums, constants, and error handling embedded |
 
 ---
 

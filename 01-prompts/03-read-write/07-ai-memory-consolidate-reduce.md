@@ -29,7 +29,7 @@ N = total self-loop steps budget that the agents will perform.
 12. [ ] [/goal](slashCommand;goal) Phase 2 (Step D): Execute monotonic continuous re-sequencing (`01-`, `02-`, `03-`, ...) with strictly lowercase filenames and zero sequence gaps.
 13. [ ] [/goal](slashCommand;goal) Phase 2 (Step E): Synchronize `.ai-memory/plans/readme.md`, `.ai-memory/what-to-read.md`, and project memory indexes.
 14. [ ] [/goal](slashCommand;goal) Phase 2 (Step F): Execute local CI quality gates via `python 03-ai-scripts/06-cicd-local-runner.py` with exit code 0 (`exit 0`).
-15. [ ] [/learn](slashCommand;learn) Ingest `.ai-memory/memory/readme.md` for project memory index and past learnings.
+15. [ ] [/learn](slashCommand;learn) Ingest `.ai-memory/learned/readme.md` for project memory index and past learnings.
 16. [ ] [/learn](slashCommand;learn) Ingest `.ai-memory/strictly-avoid.md` for banned anti-patterns and strict constraints.
 17. [ ] [/learn](slashCommand;learn) Ingest `02-spec/02-coding-guidelines/02-canonical-size-tier.md` for canonical file and function size tiers.
 18. [ ] [/learn](slashCommand;learn) Ingest `02-spec/02-coding-guidelines/01-cross-language/readme.md` for hallucination prevention and micro-tasking.
@@ -135,7 +135,7 @@ Compaction is NOT deletion of knowledge. You must strictly preserve:
 2. **Key Codebase Modifications:** Which packages, structs, interfaces, methods, or scripts were added or modified.
 3. **API & Error Contracts:** Explicit signatures, interface rules (e.g. `*appfault.AppError`, `BasicEnum`, `PathInfo`), and data models.
 4. **Verification Proof:** Test commands executed, coverage notes, and CI runner exit status (`exit 0`).
-5. **Traceability Links:** Strictly relative Git paths to specifications (`02-spec/`) and RCA logs (`.ai-memory/memory/issues/`).
+5. **Traceability Links:** Strictly relative Git paths to specifications (`02-spec/`) and RCA logs (`.ai-memory/learned/issues/`).
 
 #### E. Quantifiable Reduction Metric
 
@@ -203,7 +203,7 @@ Every consolidated file generated inside `.ai-memory/plans/completed/` MUST adhe
 
 ## 5. Root Cause Analyses & Bug Fixes Referenced
 
-- [`.ai-memory/memory/issues/XX-rca.md`](.ai-memory/memory/issues/XX-rca.md) — Root cause analysis and resolution details.
+- [`.ai-memory/learned/issues/XX-rca.md`](.ai-memory/learned/issues/XX-rca.md) — Root cause analysis and resolution details.
 ```
 
 ---
@@ -299,7 +299,7 @@ You MUST verify and check off every item during Phase 2:
 > 1. **In-Codebase Execution Only:** Whenever a Python script (runner, autofixer, linter, test aggregator) is executed or created, it MUST be executed **strictly within the repository root** (current working directory), NEVER outside the codebase or against external arbitrary directories.
 > 2. **Strict Folder Bounding (`.ai-memory/`):** All AI scripts, local runners, autofixers, helper utilities, memory issue logs, and planning files MUST be created inside the `.ai-memory/` folder:
 >    - Python AI Scripts: `03-ai-scripts/` (e.g. `01-file-manipulator.py`, `05-guideline-autofixer.py`, `06-cicd-local-runner.py`, `07-relative-path-fixer.py`, `21-sequence-integrity-linter.py`).
->    - RCA & Issue Logs: `.ai-memory/memory/issues/` and `.ai-memory/cicd-issues/`.
+>    - RCA & Issue Logs: `.ai-memory/learned/issues/` and `.ai-memory/rca/resolved/`.
 >    - Execution Plans & Subtasks: `.ai-memory/plans/pending/`, `.ai-memory/plans/subtasks/`.
 >    - Coding Guidelines Mirror: `.ai-memory/coding-guidelines.md`.
 > 3. **Worker Pool & Log Aggregation Architecture:** All local runners and test orchestrators must use a concurrent worker pool (2–3 workers via `ThreadPoolExecutor`), announce enqueued tasks upfront, show real-time progress, handle failures gracefully without canceling sibling workers, and print a consolidated final summary with full stdout/stderr error logs for failed jobs.
@@ -376,4 +376,4 @@ You MUST verify and check off every item during Phase 2:
 
 ## MUST FOLLOW NON-NEGOTIABLE
 
-Listen, past runs of these turns have been sloppy and careless: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase README files left uncorrected, `.ai-memory/memory/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, run builds and full unit tests, group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job.
+Listen, past runs of these turns have been sloppy and careless: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase README files left uncorrected, `.ai-memory/learned/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, run builds and full unit tests, group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job.

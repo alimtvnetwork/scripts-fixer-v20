@@ -5,16 +5,16 @@ description: "Persist session decisions, learned conventions, resolved ambiguiti
 
 # Memory Persistence & Issue Logging
 
-> **Invocation:** `@[write-memory](directory;.cursor/skills/write-memory)`
+> **Invocation:** `@[write-memory](directory;.agents/skills/write-memory)`
 
 Persist what happened this turn so the next AI knows everything without guessing. Every decision, plan change, unresolved ambiguity, newly discovered pattern, and fixed bug must be written to `.ai-memory/` before this turn ends.
 
 ## Hard Rules (Non-Negotiable)
 
-1. Folder is `.ai-memory/memory/`, NEVER `memories/`.
-2. Every new memory file under `.ai-memory/memory/` MUST be registered in `.ai-memory/memory/readme.md` in the same operation.
+1. Folder is `.ai-memory/learned/`, NEVER `memories/`.
+2. Every new memory file under `.ai-memory/learned/` MUST be registered in `.ai-memory/learned/readme.md` in the same operation.
 3. Every plan added, moved, or completed MUST update `.ai-memory/plans/readme.md` in the same operation.
-4. Ambiguity files are NEVER duplicated. Open questions go to `.ai-memory/ambiguous-questions/01-new-ambiguity/xx-<slug>.md`. When answered, the file is MOVED (`mv`) to `.ai-memory/ambiguous-questions/02-ambiguity-resolved/xx-<slug>.md` with a `## Resolution` block appended.
+4. Ambiguity files are NEVER duplicated. Open questions go to `.ai-memory/ambiguity/new/xx-<slug>.md`. When answered, the file is MOVED (`mv`) to `.ai-memory/ambiguity/resolved/xx-<slug>.md` with a `## Resolution` block appended.
 5. Never overwrite `.ai-memory/strictly-avoid.md`. Append only. If a rule was already there, do not duplicate it.
 6. When updating existing files (especially indexes, `strictly-avoid.md`, `suggestions.md`), preserve all unrelated content. No silent truncation.
 7. Strict Relative Git Paths: NEVER write absolute filesystem paths or `file:///` URIs into markdown files, plans, or code comments.
@@ -29,19 +29,19 @@ Persist what happened this turn so the next AI knows everything without guessing
 ```
 New info discovered
 ├─ Institutional knowledge (pattern / convention / decision)?
-│  YES → .ai-memory/memory/learned/xx-<slug>.md + update .ai-memory/memory/readme.md
+│  YES → .ai-memory/learned/xx-<slug>.md + update .ai-memory/learned/readme.md
 ├─ Must never happen again?
 │  YES → append to .ai-memory/strictly-avoid.md
 ├─ Idea, not yet approved?
-│  YES → .ai-memory/suggestions.md
+│  YES → .ai-memory/plans/suggestions/01-legacy-suggestions.md
 ├─ Bug / regression?
-│  YES → .ai-memory/issues/xx-<slug>.md (or .ai-memory/cicd-issues/ if CI/CD)
+│  YES → .ai-memory/rca/resolved/xx-<slug>.md (or .ai-memory/rca/resolved/ if CI/CD)
 ├─ New or changed plan?
 │  YES → .ai-memory/plans/pending/xx-<slug>.md + update .ai-memory/plans/readme.md
 ├─ Ambiguity / unclear requirement blocking progress?
-│  YES → .ai-memory/ambiguous-questions/01-new-ambiguity/xx-<slug>.md
+│  YES → .ai-memory/ambiguity/new/xx-<slug>.md
 └─ User answered an open ambiguity?
-   YES → mv to .ai-memory/ambiguous-questions/02-ambiguity-resolved/xx-<slug>.md + append ## Resolution
+   YES → mv to .ai-memory/ambiguity/resolved/xx-<slug>.md + append ## Resolution
 ```
 
 ## Completion Confirmation
@@ -69,7 +69,7 @@ Reply with this exact markdown block:
 - Total pending plans: [N]  (from .ai-memory/plans/readme.md)
 - Total open ambiguities: [N]  (from 01-new-ambiguity/)
 - Total CI/CD issues open: [N]  (from cicd-index.md)
-- Total institutional memory files: [N]  (from .ai-memory/memory/readme.md)
+- Total institutional memory files: [N]  (from .ai-memory/learned/readme.md)
 
 Next turn will read this state cleanly.
 ```

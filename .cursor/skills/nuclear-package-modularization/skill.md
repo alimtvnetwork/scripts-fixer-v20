@@ -5,7 +5,7 @@ description: "Autonomously modularize monolithic Go packages into smaller acycli
 
 # Nuclear Package Modularization & Heavy Test Isolation
 
-> **Invocation:** `@[nuclear-package-modularization](directory;.cursor/skills/nuclear-package-modularization)`
+> **Invocation:** `@[nuclear-package-modularization](directory;.agents/skills/nuclear-package-modularization)`
 
 ## Purpose & Overview
 

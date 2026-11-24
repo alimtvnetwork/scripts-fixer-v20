@@ -5,7 +5,7 @@ description: "Autonomously extend and troubleshoot interactive macro recording, 
 
 # GitMap Macro Automation Engine Skill (`gitmap-macro-automation-engine`)
 
-> **Invocation:** `@[gitmap-macro-automation-engine](directory;.cursor/skills/gitmap-macro-automation-engine)`
+> **Invocation:** `@[gitmap-macro-automation-engine](directory;.agents/skills/gitmap-macro-automation-engine)`
 
 ## Mission & Purpose
 This skill provides authoritative architectural guidance, code navigation, and execution rules for developing, maintaining, and executing interactive multi-step macros, cross-platform shell command shims, and batch automation scripts in GitMap.
@@ -47,7 +47,7 @@ gitmap macro import ./macro.yaml
 
 ## 3. Core Invariants & Engineering Guardrails
 
-1. **Cross-Platform Desktop Command Shimming:** Never assume Unix utilities exist on Windows. Shell commands like `open` must route through OS-aware adapters (`start` on Windows, `xdg-open` on Linux, `/usr/bin/open` on macOS) as resolved in `.ai-memory/ambiguous-questions/02-ambiguity-resolved/02-macro-step-open-command-behavior.md`.
+1. **Cross-Platform Desktop Command Shimming:** Never assume Unix utilities exist on Windows. Shell commands like `open` must route through OS-aware adapters (`start` on Windows, `xdg-open` on Linux, `/usr/bin/open` on macOS) as resolved in `.ai-memory/ambiguity/resolved/02-macro-step-open-command-behavior.md`.
 2. **Discrete Argument Passing:** Always pass discrete, structured arguments into `exec.Command` rather than passing concatenated shell strings to prevent Windows quote stripping and injection hazards.
 3. **Detached Process Safety:** When launching detached UI applications (such as browsers or editors), ensure process handles are cleanly decoupled so the macro runner does not hang waiting for GUI windows to close.
 4. **Step Timeout & Failure Isolation:** Every macro step must have a bounded timeout and clear error attribution using `*apperror.AppError` (`[E9000:EXECUTION]`).

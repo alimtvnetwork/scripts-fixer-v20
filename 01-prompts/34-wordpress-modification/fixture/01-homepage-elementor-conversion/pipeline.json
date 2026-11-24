@@ -1,0 +1,30 @@
+{
+  "data": {
+    "id": "homepageAvantGardeRedesign",
+    "type": "transformationPipeline",
+    "attributes": {
+      "pipelineName": "Homepage Avant-Garde Redesign",
+      "targetPageId": 42,
+      "cacheEnabled": true,
+      "steps": [
+        {
+          "id": "step01HeroGradient",
+          "type": "pipelineStep",
+          "attributes": {
+            "modulePath": "scripts.transformations.hero_modernization",
+            "className": "HeroModernizationTransform",
+            "isEnabled": true,
+            "description": "Applies dark slate gradient background and glassmorphism styling to hero container",
+            "userRequest": "Make hero section background dark slate gradient with blur",
+            "params": {
+              "targetId": "hero-section",
+              "targetSelector": "selector",
+              "gradient": "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+              "backdropBlur": "16px"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

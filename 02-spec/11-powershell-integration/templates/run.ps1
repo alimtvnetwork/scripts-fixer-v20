@@ -638,11 +638,24 @@ if ($install) {
     Write-Host "  [Backend] Running go mod tidy && go mod download..." -ForegroundColor Yellow
     Push-Location $BackendDir
     try {
-        go mod tidy
-        if ($LASTEXITCODE -ne 0) { throw "go mod tidy failed" }
-        go mod download
-        if ($LASTEXITCODE -ne 0) { throw "go mod download failed" }
-        Write-Host "  ✓ Backend dependencies installed" -ForegroundColor Green
+        $prevEAP = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+        $tidyOut = go mod tidy 2>&1
+        $tidyCode = $LASTEXITCODE
+        $ErrorActionPreference = $prevEAP
+        if ($tidyCode -ne 0) {
+            Write-Host "  ! Warning: go mod tidy encountered issues (continuing with cached modules)" -ForegroundColor Yellow
+        }
+        $prevEAP = $ErrorActionPreference
+        $ErrorActionPreference = "Continue"
+        $dlOut = go mod download 2>&1
+        $dlCode = $LASTEXITCODE
+        $ErrorActionPreference = $prevEAP
+        if ($dlCode -ne 0) {
+            Write-Host "  ! Warning: go mod download returned exit code $dlCode (continuing)" -ForegroundColor Yellow
+        } else {
+            Write-Host "  ✓ Backend dependencies installed" -ForegroundColor Green
+        }
     }
     finally { Pop-Location }
 

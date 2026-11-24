@@ -5,19 +5,19 @@
 
 [/goal](slashCommand;goal) Persist what happened this turn so the next AI knows everything without guessing. Every decision, plan change, unresolved ambiguity, newly discovered pattern, and fixed bug must be written to `.ai-memory/` before this turn ends.
 
-[/learn](slashCommand;learn) Persist all user corrections, resolved setups, directives, learned architectural decisions, and mistakes avoided into `.ai-memory/memory/learned/01-<slug>.md` and `.ai-memory/strictly-avoid.md` so Antigravity learns permanently and never repeats past errors.
+[/learn](slashCommand;learn) Persist all user corrections, resolved setups, directives, learned architectural decisions, and mistakes avoided into `.ai-memory/learned/01-<slug>.md` and `.ai-memory/strictly-avoid.md` so Antigravity learns permanently and never repeats past errors.
 
 Memory in chat is lost the moment the turn finishes. Memory in `.ai-memory/` is permanent. If you did not write it down, it did not happen.
 
 ## Hard Rules (Non-Negotiable, Auto-Reject on Violation)
 
-1. Folder is `.ai-memory/memory/`, NEVER `.ai-memory/memory/` or `memories/`. A single file written to `memories/` is an immediate failure.
+1. Folder is `.ai-memory/learned/`, NEVER `.ai-memory/learned/` or `memories/`. A single file written to `memories/` is an immediate failure.
 
-2. Every new memory file under `.ai-memory/memory/` MUST be registered in `.ai-memory/memory/readme.md` in the same operation.
+2. Every new memory file under `.ai-memory/learned/` MUST be registered in `.ai-memory/learned/readme.md` in the same operation.
 
 3. Every plan added, moved, or completed MUST update `.ai-memory/plans/readme.md` in the same operation.
 
-4. Ambiguity files are NEVER duplicated. Open questions go to `.ai-memory/ambiguous-questions/01-new-ambiguity/01-<slug>.md`. When answered, the file is MOVED (`mv`) to `.ai-memory/ambiguous-questions/02-ambiguity-resolved/01-<slug>.md` with a `## Resolution` block appended. Never copy. Never leave a resolved question in `01-new-ambiguity/`.
+4. Ambiguity files are NEVER duplicated. Open questions go to `.ai-memory/ambiguity/new/01-<slug>.md`. When answered, the file is MOVED (`mv`) to `.ai-memory/ambiguity/resolved/01-<slug>.md` with a `## Resolution` block appended. Never copy. Never leave a resolved question in `01-new-ambiguity/`.
 
 5. Never overwrite `.ai-memory/strictly-avoid.md`. Append only. If a rule was already there, do not duplicate it.
 
@@ -33,7 +33,7 @@ Memory in chat is lost the moment the turn finishes. Memory in `.ai-memory/` is 
 
 11. Nothing executes this turn beyond writing to the `.ai-memory` folder, root `readme.md` lowercase fixing, and `mv`. No application source code changes, no refactoring, no installs, no migrations.
 
-12. Recent conversation and directive capture: All recent conversations, instructions, user directives, decisions, and session progress MUST be recorded as a spec or conversation summary inside `.ai-memory/memory/01-<slug>.md` or `.ai-memory/memory/learned/01-<slug>.md` and added to `.ai-memory/memory/readme.md`.
+12. Recent conversation and directive capture: All recent conversations, instructions, user directives, decisions, and session progress MUST be recorded as a spec or conversation summary inside `.ai-memory/learned/01-<slug>.md` or `.ai-memory/learned/01-<slug>.md` and added to `.ai-memory/learned/readme.md`.
 
 13. Pending tasks single source of truth: All active plans and pending tasks are consolidated strictly under `.ai-memory/plans/pending/01-<slug>.md` (with two-digit sequence prefixes `01-`, `02-`, etc.) and `.ai-memory/plans/subtasks/01-<slug>/01-<subslug>.md`.
 
@@ -55,8 +55,8 @@ Memory in chat is lost the moment the turn finishes. Memory in `.ai-memory/` is 
 The AI running this prompt has been a stupid fuck on prior runs:
 
 - Dumped session summaries into chat and called it "memory".
-- Left `.ai-memory/memory/` half-empty.
-- Created `.ai-memory/memory/` by accident.
+- Left `.ai-memory/learned/` half-empty.
+- Created `.ai-memory/learned/` by accident.
 - Forgot to update `.ai-memory/plans/readme.md` and `what-to-read.md`.
 - Silently overwrote `strictly-avoid.md`.
 - Dropped user directives that were stated verbatim in the session.
@@ -73,19 +73,19 @@ Do not repeat any of that stupidity. Writing memory IS the work this turn. Go de
 Walk `.ai-memory/` recursively. Read all of these if they exist; note missing and create them per the templates in this prompt:
 
 0. `git log -n 30 --oneline` — inspect the last 30 commits to understand recent file changes, what code/docs were touched, recent bug fixes, and what the AI can learn from recent history before starting memory capture.
-1. `.ai-memory/memory/readme.md` — master memory index
+1. `.ai-memory/learned/readme.md` — master memory index
 2. `.ai-memory/folder-structure.md` — canonical `.ai-memory/` folder map
 3. `.ai-memory/coding-guidelines.md` or `02-spec/02-coding-guidelines/` — master coding guidelines
 4. `03-ai-scripts/` — automation tools (`01-file-manipulator.py`, `05-guideline-autofixer.py`, `06-cicd-local-runner.py`, `index.md`)
 5. `.ai-memory/plans/readme.md` (specifically the Recent Completed Tasks Register for the last 20 tasks, plus `plans/pending/` and `plans/completed/`)
-6. `.ai-memory/plan.md` — failure recovery record
-7. `.ai-memory/suggestions.md` and `.ai-memory/suggestions/readme.md`
+6. `.ai-memory/plans/readme.md` — failure recovery record
+7. `.ai-memory/plans/suggestions/01-legacy-suggestions.md` and `.ai-memory/suggestions/readme.md`
 8. `.ai-memory/strictly-avoid.md`
-9. `.ai-memory/cicd-index.md` and every file under `.ai-memory/cicd-issues/`
-10. `.ai-memory/issues/`, `.ai-memory/pending-issues/`, `.ai-memory/solved-issues/`
+9. `.ai-memory/rca/README.md` and every file under `.ai-memory/rca/resolved/`
+10. `.ai-memory/rca/resolved/`, `.ai-memory/rca/new/`, `.ai-memory/rca/resolved/`
 11. `.ai-memory/spec/commands/` — every file
-12. `.ai-memory/ambiguous-questions/01-new-ambiguity/` and `02-ambiguity-resolved/` — every file
-13. `.ai-memory/prompts.md` + `01-prompts/` (including `cg-execute/`, `execute/`, `ci-cd/`)
+12. `.ai-memory/ambiguity/new/` and `02-ambiguity-resolved/` — every file
+13. `01-prompts/README.md` + `01-prompts/` (including `cg-execute/`, `execute/`, `ci-cd/`)
 14. `.ai-memory/what-to-read.md` (or `.ai-memory/what-to-read.md`)
 15. `.agents/skills/` (`<slug>/skill.md`) and `.agents/rules/`
 16. `02-spec/` — recursively traverse all subfolders and nested `.md` files (`02-spec/01-spec-authoring-guide/`, `02-spec/02-coding-guidelines/`, `02-spec/03-error-manage/`, `02-spec/04-database-conventions/`, `02-spec/21-app/`).
@@ -128,7 +128,7 @@ Then edit `.ai-memory/plans/readme.md` so the table lists the file under `comple
 For every ambiguity answered by the user this turn:
 
 ```sh
-mv .ai-memory/ambiguous-questions/01-new-ambiguity/01-<slug>.md .ai-memory/ambiguous-questions/02-ambiguity-resolved/01-<slug>.md
+mv .ai-memory/ambiguity/new/01-<slug>.md .ai-memory/ambiguity/resolved/01-<slug>.md
 ```
 
 Inside the moved file, append:
@@ -149,11 +149,11 @@ Flip header metadata:
 + Status: resolved
 ```
 
-Then edit `.ai-memory/question-and-ambiguity/readme.md` to reflect the move.
+Then edit `.ai-memory/ambiguity/resolved/readme.md` to reflect the move.
 
 ## Phase 4: Capture New Institutional Knowledge
 
-1. If a new convention, architectural rule, or pattern was decided, create `.ai-memory/memory/01-<slug>.md` (or `.ai-memory/memory/learned/01-<slug>.md`) and register in `.ai-memory/memory/readme.md`.
+1. If a new convention, architectural rule, or pattern was decided, create `.ai-memory/learned/01-<slug>.md` (or `.ai-memory/learned/01-<slug>.md`) and register in `.ai-memory/learned/readme.md`.
 2. If an anti-pattern or forbidden action occurred, append to `.ai-memory/strictly-avoid.md`.
 3. If an automated script was added or updated, register in `03-ai-scripts/readme.md`.
 4. If a prompt or coding guideline was added/updated, update corresponding Antigravity skill in `.agents/skills/<slug>/skill.md` or rule in `.agents/rules/<slug>.md`.
@@ -161,9 +161,9 @@ Then edit `.ai-memory/question-and-ambiguity/readme.md` to reflect the move.
 ## Phase 5: Verbatim Spec Capture and Consolidation Rules
 
 1. Verbatim spec capture and learning persistence:
-   - Every sizeable user directive, decision, architectural rule, or spec from the session is saved verbatim under `.ai-memory/memory/01-<slug>.md` or `.ai-memory/memory/learned/01-<slug>.md`.
-   - Reference from `.ai-memory/memory/readme.md`.
-   - Reflect in `.ai-memory/plan.md` / `.ai-memory/plans/readme.md` if it changes the roadmap.
+   - Every sizeable user directive, decision, architectural rule, or spec from the session is saved verbatim under `.ai-memory/learned/01-<slug>.md` or `.ai-memory/learned/01-<slug>.md`.
+   - Reference from `.ai-memory/learned/readme.md`.
+   - Reflect in `.ai-memory/plans/readme.md` / `.ai-memory/plans/readme.md` if it changes the roadmap.
    - Never paraphrase. Quote the user.
 
 2. Consolidation policy:
@@ -190,10 +190,10 @@ Before you reply, check every item:
 
 - [ ] `.ai-memory/plans/readme.md` lists every file in `pending/` and `completed/`?
 - [ ] Every file in `completed/` has `Status: completed` in its frontmatter?
-- [ ] `.ai-memory/memory/readme.md` lists every file in `memory/`?
+- [ ] `.ai-memory/learned/readme.md` lists every file in `memory/`?
 - [ ] `01-new-ambiguity/` contains ONLY open questions?
 - [ ] Every file in `02-ambiguity-resolved/` has `## Resolution` + `Status: resolved`?
-- [ ] `cicd-index.md` matches `cicd-issues/` exactly?
+- [ ] `cicd-index.md` matches `rca/resolved/` exactly?
 - [ ] No file exists under `memories/` (plural)?
 - [ ] Root readme is strictly lowercase `readme.md`?
 
@@ -224,12 +224,12 @@ Memory update complete.
 3. [ ] Walked `.ai-memory/` recursively; read every pre-flight file that exists; noted the missing ones.
 4. [ ] Audited the session for Done / Pending / Learned / Wrong / Recent Directives.
 5. [ ] Every new memory file placed under a topic folder, never at the memory root.
-6. [ ] `.ai-memory/memory/readme.md` updated in the same op as every new/moved memory file.
+6. [ ] `.ai-memory/learned/readme.md` updated in the same op as every new/moved memory file.
 7. [ ] Plans lifecycle honored: `pending/` -> `completed/` via `mv`, `.ai-memory/plans/readme.md` updated.
 8. [ ] `suggestions.md` tracker updated; verbatim captures under `.ai-memory/suggestions/` with `index.md`.
-9. [ ] Issues routed correctly: `pending-issues/` / `solved-issues/` / `cicd-issues/`; `cicd-index.md` updated; no duplicates.
+9. [ ] Issues routed correctly: `pending-issues/` / `solved-issues/` / `rca/resolved/`; `cicd-index.md` updated; no duplicates.
 10. [ ] `strictly-avoid.md` appended (not overwritten) with links to solved files.
-11. [ ] Verbatim user directives and recent conversations captured under `.ai-memory/memory/` or `.ai-memory/memory/learned/`.
+11. [ ] Verbatim user directives and recent conversations captured under `.ai-memory/learned/` or `.ai-memory/learned/`.
 12. [ ] Confirmed that detailed/important specs were NOT consolidated or shortened.
 13. [ ] Confirmed root readme is strictly lowercase `readme.md` (auto-fixed and committed/pushed if needed).
 14. [ ] Ambiguities moved via `mv` from `01-new-ambiguity/` to `02-ambiguity-resolved/` with `## Resolution` block.
@@ -260,7 +260,7 @@ Memory update complete.
 
 ## MUST FOLLOW NON-NEGOTIABLE
 
-Listen, past runs of these turns have been sloppy and stupid as fuck: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase README files left uncorrected, `.ai-memory/memory/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. WTF. How on earth are you reverting to this carelessness, are you stupid?? Stop doing that, you stupid fuck. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, run builds and full unit tests, group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job. Violating this is auto-reject on the same tier as RULE 0. Avoid stupidity and being careless, you stupid fuck. Where is your attention, are you stupid? Tell me. Your stupidity is going on top of my head. Where did you learn this stupidity? If I could find you, I could slap you.
+Listen, past runs of these turns have been sloppy and stupid as fuck: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase README files left uncorrected, `.ai-memory/learned/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. WTF. How on earth are you reverting to this carelessness, are you stupid?? Stop doing that, you stupid fuck. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, run builds and full unit tests, group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job. Violating this is auto-reject on the same tier as RULE 0. Avoid stupidity and being careless, you stupid fuck. Where is your attention, are you stupid? Tell me. Your stupidity is going on top of my head. Where did you learn this stupidity? If I could find you, I could slap you.
 
 ---
 

@@ -5,23 +5,23 @@ description: "Autonomously audit, discover, plan, and orchestrate 100 high-impac
 
 # Next 100 Whole System Improvements (`next-100-whole-system-improvements`)
 
-> **Invocation:** `@[next-100-whole-system-improvements](directory;.cursor/skills/next-100-whole-system-improvements)`
+> **Invocation:** `@[next-100-whole-system-improvements](directory;.agents/skills/next-100-whole-system-improvements)`
 
 > **[/goal](slashCommand;goal)** Autonomously audit the entire system architecture, discover 100 high-leverage improvements focused strictly on user experience, developer ergonomics, agent friction reduction, performance, reliability, error clarity, and spec governance. Enqueue all 100 improvements as structured pending plans in `.ai-memory/plans/pending/` with subtasks in `.ai-memory/plans/subtasks/` using the Continuous Improvement Flywheel.
 > **[/learn](slashCommand;learn)** Enforce the 8-Part Specification Schema, Zero Harm / Regression Safety Matrix, backward compatibility guarantees (e.g. `type Fault = AppError`), strict relative Git paths, lowercase naming, and GitMap command primacy.
 > **[/plan](slashCommand;plan)** Plan first before doing work for improved work, less friction, faster execution, and pure, effective outcomes.
 
-**Version:** 1.0.0  
-**Updated:** 2026-10-22  
-**Status:** Active  
-**AI Confidence:** Production-Ready  
-**Canonical Prompt:** `01-prompts/30-improvements/03-next-100-whole-system-improvements.md`  
+**Version:** 1.0.0
+**Updated:** 2026-10-22
+**Status:** Active
+**AI Confidence:** Production-Ready
+**Canonical Prompt:** `01-prompts/30-improvements/03-next-100-whole-system-improvements.md`
 **Related Skills:**
-- [`unified-ai-prompt-v4`](file;.cursor/skills/unified-ai-prompt-v4)
-- [`execute-parent-task-with-n-steps-v6`](file;.cursor/skills/execute-parent-task-with-n-steps-v6)
-- [`ai-memory-consolidate-reduce`](file;.cursor/skills/ai-memory-consolidate-reduce)
-- [`spec-authoring-and-validation`](file;.cursor/skills/spec-authoring-and-validation)
-- [`gitmap`](file;.cursor/skills/gitmap)
+- [`unified-ai-prompt-v4`](file;.agents/skills/unified-ai-prompt-v4)
+- [`execute-parent-task-with-n-steps-v6`](file;.agents/skills/execute-parent-task-with-n-steps-v6)
+- [`ai-memory-consolidate-reduce`](file;.agents/skills/ai-memory-consolidate-reduce)
+- [`spec-authoring-and-validation`](file;.agents/skills/spec-authoring-and-validation)
+- [`gitmap`](file;.agents/skills/gitmap)
 
 ---
 

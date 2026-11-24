@@ -65,7 +65,7 @@ Execute this task via a strict 4-Phase pipeline. Do not skip steps.
 Before executing any file searches, scans, spec writing, or code changes, you must execute Phase 1A:
 
 1. **Top-Instruction Priority Verification:** Whatever instructions, constraints, or checklists are given before this section or in the incoming user prompt must be ingested first as highest priority and non-negotiable.
-2. **Verbatim Prompt & Stack Trace Capture:** Capture the incoming user request and failure logs verbatim into `.ai-memory/cicd-issues/xx-<slug>.md` under a dedicated `## User Request & Error Log (Verbatim)` section.
+2. **Verbatim Prompt & Stack Trace Capture:** Capture the incoming user request and failure logs verbatim into `.ai-memory/rca/resolved/xx-<slug>.md` under a dedicated `## User Request & Error Log (Verbatim)` section.
 3. **Screenshot & Base64 Failure Logs Ingestion Protocol:** If the user request contains a screenshot URL, terminal snapshot, or base64 data URI (e.g. `data:image/png;base64,...`):
    - Convert that base64 encoding or downloaded image to the file system immediately, saving it as a persistent file under `assets/screenshots/<slug>-<NN>.png` or `assets/ui/<slug>-<NN>.png`.
    - Never leave raw, massive base64 strings or external ephemeral URLs in the prompt text, RCA logs, or subtasks.
@@ -105,8 +105,8 @@ MANDATORY SAME-TURN TOOL CHAIN: The breakdown text above and your first tool cal
 #### Step 1: Grounded 4-Part Root Cause Analysis (RCA) & Issue Routing
 
 Author the structured RCA post-mortem following the mandatory issue destination routing:
-- **CI/CD Issues & Pipeline Failures:** Record the RCA in `.ai-memory/cicd-issues/xx-<slug>.md` and index it in `.ai-memory/cicd-index.md`.
-- **Non-CI/CD Issues (Application Bugs, Feature Defects, Logic/Runtime Errors):** If during the diagnosis the failure is identified as an application bug or domain defect rather than a pipeline script/workflow issue, document it in `02-spec/22-app-issues/xx-<slug>.md` (indexed in `02-spec/22-app-issues/readme.md`, cross-referencing in `.ai-memory/memory/issues/`).
+- **CI/CD Issues & Pipeline Failures:** Record the RCA in `.ai-memory/rca/resolved/xx-<slug>.md` and index it in `.ai-memory/rca/README.md`.
+- **Non-CI/CD Issues (Application Bugs, Feature Defects, Logic/Runtime Errors):** If during the diagnosis the failure is identified as an application bug or domain defect rather than a pipeline script/workflow issue, document it in `02-spec/22-app-issues/xx-<slug>.md` (indexed in `02-spec/22-app-issues/readme.md`, cross-referencing in `.ai-memory/learned/issues/`).
 
 Follow the mandatory 4-part schema:
 - **Part 1: The Failing Symptom & Exact Error Signature:** Verbatim stack trace snippet (strictly bounded: 5 preceding + 20 trailing lines).
@@ -209,7 +209,7 @@ At the completion of all tasks and before concluding the turn, you must emit thi
 ## Banned Operations Checklist (TOTAL BAN — Auto-Reject on Violation)
 
 - [ ] TOP-INSTRUCTION PRIORITY MANDATE: Whatever is given before this section or in the user prompt is verified as highest priority and non-negotiable.
-- [ ] ISSUE & RCA DESTINATION ROUTING: Whenever resolving an issue or performing a fix with RCA, verified that CI/CD failures are documented in .ai-memory/cicd-issues/NN-<slug>.md (indexed in .ai-memory/cicd-index.md), while non-CI/CD issues (application bugs, logic/runtime defects) are documented in 02-spec/22-app-issues/NN-<slug>.md (indexed in 02-spec/22-app-issues/readme.md).
+- [ ] ISSUE & RCA DESTINATION ROUTING: Whenever resolving an issue or performing a fix with RCA, verified that CI/CD failures are documented in .ai-memory/rca/resolved/NN-<slug>.md (indexed in .ai-memory/rca/README.md), while non-CI/CD issues (application bugs, logic/runtime defects) are documented in 02-spec/22-app-issues/NN-<slug>.md (indexed in 02-spec/22-app-issues/readme.md).
 - [ ] NO INTERIM PER-FILE COMMITTING (TOTAL BAN): Never commit each file individually during the fix loop. All fixes must be accumulated and committed atomically by the release orchestrator.
 - [ ] NO RAPID CI/CD POLLING (TOTAL BAN): Never query or loop rapidly (`gh run view` in tight loops). Use GitMap Pipeline-AI (`gitmap pl-ai status -t <sec>`) and sleep based on `etaSeconds`.
 - [ ] NO FULL TEST SUITE RUNS (TOTAL BAN IN ROUTINE FIXES): Never run entire heavy test suites. Run tests strictly on affected packages cited in stack traces or changed from git hash (`HEAD~1`).

@@ -5,7 +5,7 @@ description: "Executes the [V2] CI/CD Fix N-Step Continuous Loop & 4-Part RCA Or
 
 # [V2] CI/CD Fix N-Step Continuous Loop & 4-Part RCA Orchestration
 
-> **Invocation:** `@[ci-cd-fix-with-n-steps](directory;.cursor/skills/ci-cd-fix-with-n-steps)`
+> **Invocation:** `@[ci-cd-fix-with-n-steps](directory;.agents/skills/ci-cd-fix-with-n-steps)`
 
 Source prompt: `01-prompts/16-ci-cd/08-ci-cd-fix-with-n-steps.md`
 

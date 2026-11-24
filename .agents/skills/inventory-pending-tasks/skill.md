@@ -7,7 +7,7 @@ description: "Discover, catalog, and sequence all pending plans, subtasks, and u
 
 > **Invocation:** `@[inventory-pending-tasks](directory;.agents/skills/inventory-pending-tasks)`
 
-Audits and catalogs pending work across `.ai-memory/plans/pending/`, `.ai-memory/plans/subtasks/`, `.ai-memory/issues/`, and `.ai-memory/cicd-issues/`.
+Audits and catalogs pending work across `.ai-memory/plans/pending/`, `.ai-memory/plans/subtasks/`, `.ai-memory/rca/resolved/`, and `.ai-memory/rca/resolved/`.
 
 ## Workflow
 
@@ -19,5 +19,5 @@ Audits and catalogs pending work across `.ai-memory/plans/pending/`, `.ai-memory
    - `python 03-ai-scripts/11-fast-file-scanner.py --search "pending" --limit 20`
    - `python 03-ai-scripts/17-fast-file-reader.py --read-file .ai-memory/plans/readme.md`
 3. **Verify Subtask Batch Linkages:** Check `.ai-memory/plans/subtasks/` against canonical spec in `02-spec/21-app/`.
-4. **Check Unresolved Issues:** Inspect `.ai-memory/issues/` and `.ai-memory/cicd-issues/`.
+4. **Check Unresolved Issues:** Inspect `.ai-memory/rca/resolved/` and `.ai-memory/rca/resolved/`.
 5. **Present Aligned Sequence:** Output execution readiness and priority execution roadmap.

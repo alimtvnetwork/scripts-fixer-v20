@@ -1,7 +1,7 @@
 # Specification: GitMap Autonomous CLI Engine, Pipeline-AI Dynamic Waiting, and Resilient Distribution
 
-> **Version:** 1.0.0 · **Updated:** 2026-09-23 · **Status:** Active  
-> **Lead Architect:** Md. Alim Ul Karim · **Sponsor:** RISE UP ASIA LLC  
+> **Version:** 1.0.0 · **Updated:** 2026-09-23 · **Status:** Active
+> **Lead Architect:** Md. Alim Ul Karim · **Sponsor:** RISE UP ASIA LLC
 > **Related Specs:**
 > - [01-index.md](01-index.md) — Generic CLI Overview & Standards
 > - [22-self-update-gold-standard.md](22-self-update-gold-standard.md) — Self-Update Gold Standard

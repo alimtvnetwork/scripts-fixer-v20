@@ -8,11 +8,11 @@ description: "Autonomously implement the next 10 pending improvements from the p
 Source Prompt: `01-prompts/30-improvements/07-implement-next-10-improvements.md`
 
 > [!IMPORTANT]
-> **Skill Name:** `implement-next-10-improvements`  
-> **Environment:** Google Antigravity 2.0 (IDE & CLI)  
-> **Canonical Prompt:** `01-prompts/30-improvements/07-implement-next-10-improvements.md`  
-> **IDE Link Syntax:** [`implement-next-10-improvements`](file;.agents/skills/implement-next-10-improvements)  
-> **Invocation:** `@[implement-next-10-improvements](directory;.agents/skills/implement-next-10-improvements)`  
+> **Skill Name:** `implement-next-10-improvements`
+> **Environment:** Google Antigravity 2.0 (IDE & CLI)
+> **Canonical Prompt:** `01-prompts/30-improvements/07-implement-next-10-improvements.md`
+> **IDE Link Syntax:** [`implement-next-10-improvements`](file;.agents/skills/implement-next-10-improvements)
+> **Invocation:** `@[implement-next-10-improvements](directory;.agents/skills/implement-next-10-improvements)`
 
 This skill governs the autonomous, high-velocity implementation of exactly 10 pending improvements from `.ai-memory/plans/subtasks/`. It operates under the **Fast-Forwarding Protocol**, which enforces a strict ban on intermediate compilations and test suite runs during editing turns, while mandating 100% adherence to the **8-Pillar Strict Coding Guideline Enforcement Matrix**. Execution is repeatable via the command `"next"` and concludes with a handoff to the decoupled terminal End-to-End Verification Gate.
 
@@ -43,19 +43,19 @@ Execution is organized around the canonical multi-agent tree swarm architecture 
 flowchart TD
     subgraph MicroBatch["Prompt 07 Micro-Batch (10 Items)"]
         T1["Triage Phase (Steps 1-30)<br/>Scan .ai-memory/plans/subtasks/<br/>Select Next 10 Unexecuted Items"]
-        
+
         subgraph WorkerSwarm["Tree Swarm Parallel Dispatch (A=3, H=2)"]
             W1["Worker 01 (Items 1-3)<br/>Disjoint File Box A"]
             W2["Worker 02 (Items 4-7)<br/>Disjoint File Box B"]
             W3["Worker 03 (Items 8-10)<br/>Disjoint File Box C"]
         end
-        
+
         subgraph FastForwardingEdits["Fast-Forwarding Implementation (Steps 31-170)"]
             E1["NO-BUILD & NO-TEST Invariant"]
             E2["8-Pillar Strict Coding Guidelines"]
             E3["Update Subtask Ledger to DONE"]
         end
-        
+
         C1["State Closure & Handshake (Steps 171-200)<br/>Emit Batch Summary & 'next' Prompt"]
     end
 
@@ -208,7 +208,7 @@ sequenceDiagram
     FF->>FF: Fast-Forward Modifications (Zero Builds/Tests, Strict 8 Pillars)
     FF->>Memory: Update Items 01-10 Status to DONE
     FF-->>User: "Batch complete (10/10). Type 'next' to continue or /execute-with-e2e to verify."
-    
+
     User->>FF: next
     FF->>Memory: Discover Next 10 PENDING Subtasks (Items 11-20)
     FF->>FF: Fast-Forward Modifications (Zero Builds/Tests, Strict 8 Pillars)

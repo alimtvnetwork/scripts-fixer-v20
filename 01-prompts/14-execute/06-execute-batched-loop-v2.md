@@ -88,7 +88,7 @@ Violation of any rule below is auto-reject on the same tier as RULE 0.
 > [!CAUTION]
 > STRICT RELATIVE GIT PATHS ONLY — NO ABSOLUTE PATHS / NO `file:///` URIs:
 >
-> When generating plans, subtasks (`.ai-memory/plans/subtasks/`), memory issue logs (`.ai-memory/memory/issues/`), specs, code comments, or citations:
+> When generating plans, subtasks (`.ai-memory/plans/subtasks/`), memory issue logs (`.ai-memory/learned/issues/`), specs, code comments, or citations:
 >
 > 1. Strictly Relative to Git Root: All file paths, markdown links, citations, and task targets MUST be relative paths starting from the repository root (e.g. `02-spec/03-error-manage/readme.md`, `[SSH Commands](02-spec/13-generic-cli/readme.md)`, `cmd/main.go`). Only add the relative paths, never add the absolute path during your work, and ensure this is respected on the release page and in release notes as well.
 > 2. Total Ban on Absolute Paths: NEVER write drive letters or absolute OS paths (`/absolute/path/to/...`, `/absolute/path/to/...`, `/home/...`) or absolute file URIs (`file:///absolute/path/to/...`, `file:///absolute/path/to/...`) into ANY file.
@@ -101,7 +101,7 @@ Violation of any rule below is auto-reject on the same tier as RULE 0.
 > - ✅ GOOD: `Target File: cmd/login.go`
 
 - If a spec file, folder, or task is missing or ambiguous, do NOT guess or invent a rule.
-- Ask a clarifying question or log an open ambiguity in `.ai-memory/ambiguous-questions/01-new-ambiguity/01-<slug>.md` before proceeding.
+- Ask a clarifying question or log an open ambiguity in `.ai-memory/ambiguity/new/01-<slug>.md` before proceeding.
 - Never invent step counts. Read the actual files and count from them.
 
 ## Phase 1: Pre-Flight & Gitignore Enforcement (Non-Negotiable)
@@ -134,7 +134,7 @@ Violation of any rule below is auto-reject on the same tier as RULE 0.
 5. Crash identification and 3-strike rollback:
    - If an agent fails or crashes, inspect its state in `.ai-memory/temp/`.
    - If an agent fails 3 times, automatically revert dirty changes (`git checkout -- <files>`).
-   - Log root cause to `.ai-memory/plan.md` and `.ai-memory/issues/`.
+   - Log root cause to `.ai-memory/plans/readme.md` and `.ai-memory/rca/resolved/`.
    - Restart a new agent for the next disjoint chunk.
 
 ## Phase 3: Code Quality (Non-Negotiable)
@@ -395,7 +395,7 @@ PHASE_2_STEPS = N / 2   (Parallel Execution & QA)
 
 1. Parallel Dispatch: Use the `invoke_subagent` tool to spawn exactly 2 execution subagents (max 2 threads each) assigned to disjoint subtasks from `.ai-memory/plans/subtasks/xx-<slug>/`. Provide subagents with minimal instructions (e.g., "Read `.ai-memory/plans/subtasks/xx-slug/01-task.md` and execute it").
 2. Execution & Coding Guidelines: Subagents refactor code following all coding guidelines (<= 8–15 line functions, single return types, Unix LF line endings).
-3. Failure Memory & Error Recovery: If a subagent fails, record the failure log in `.ai-memory/plan.md` and `.ai-memory/memory/issues/xx-failure.md`; subsequent agents MUST read the failure log first to remediate root causes.
+3. Failure Memory & Error Recovery: If a subagent fails, record the failure log in `.ai-memory/plans/readme.md` and `.ai-memory/learned/issues/xx-failure.md`; subsequent agents MUST read the failure log first to remediate root causes.
 4. Local Verification: Run targeted linters on modified files ensuring `exit 0`.
 5. TOTAL BAN on Routine Test Running & Build Checking: DO NOT run tests (`go test`, `pytest`, python runners) or check builds (`go build`, compiler checks) during routine execution. All test execution and build checks are deferred to CI/CD pipelines.
 6. Atomic Change Tracking: Append all modified files to `.ai-memory/temp/recent-file-changes.json` under lock (`python 03-ai-scripts/33-test-inventory-generator.py --record <files...>`), mapping to associated tests in `.ai-memory/test-inventory.json` for subsequent CI/CD verification.
@@ -416,7 +416,7 @@ PHASE_2_STEPS = N / 2   (Parallel Execution & QA)
 
 ## MUST FOLLOW NON-NEGOTIABLE
 
-Listen, past runs of these turns have been sloppy and careless: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase README files left uncorrected, `.ai-memory/memory/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, do NOT run builds or tests during routine turns (build and test verification deferred to CI/CD), group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job. Violating this is auto-reject on the same tier as RULE 0.
+Listen, past runs of these turns have been sloppy and careless: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase README files left uncorrected, `.ai-memory/learned/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, do NOT run builds or tests during routine turns (build and test verification deferred to CI/CD), group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job. Violating this is auto-reject on the same tier as RULE 0.
 
 ---
 

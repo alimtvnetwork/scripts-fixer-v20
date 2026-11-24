@@ -18,17 +18,17 @@ WAVES = ceil(subtasks / (A x H))
 ```
 
 > [!IMPORTANT]
-> **Prompt Version:** 1.0.0  
-> **Runtime:** Google Antigravity 2.0 (IDE and CLI) & Cursor IDE  
-> **Invoke:** `/next-100-ideas-for-improvements <project-or-module>`  
+> **Prompt Version:** 1.0.0
+> **Runtime:** Google Antigravity 2.0 (IDE and CLI) & Cursor IDE
+> **Invoke:** `/next-100-ideas-for-improvements <project-or-module>`
 >
-> **Trigger Keywords & Aliases:**  
-> `next-100-ideas-for-improvements`, `next-100-ideas`, `ideas-for-improvements`, `next-ideas`, `100-ideas`, `ideation-flywheel`, `innovate-100`  
+> **Trigger Keywords & Aliases:**
+> `next-100-ideas-for-improvements`, `next-100-ideas`, `ideas-for-improvements`, `next-ideas`, `100-ideas`, `ideation-flywheel`, `innovate-100`
 >
-> **Companion Antigravity Skill:** [`next-100-ideas-for-improvements`](directory;.agents/skills/next-100-ideas-for-improvements)  
-> **Companion Cursor Skill:** [`next-100-ideas-for-improvements`](file;.cursor/skills/next-100-ideas-for-improvements)  
+> **Companion Antigravity Skill:** [`next-100-ideas-for-improvements`](directory;.agents/skills/next-100-ideas-for-improvements)
+> **Companion Cursor Skill:** [`next-100-ideas-for-improvements`](file;.cursor/skills/next-100-ideas-for-improvements)
 >
-> **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**  
+> **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**
 > Whatever directives, constraints, checklists, or user instructions are given ABOVE this prompt (including in the user preamble, header blocks, or incoming user request above) are HIGHEST PRIORITY and MUST BE FOLLOWED as strictly NON-NEGOTIABLE. They supersede and strictly override any conflicting general advice, default conventions, or lower-level guidelines below. The agent MUST inspect and follow the instructions above with absolute precedence.
 
 [/goal](slashCommand;goal) Autonomously conduct a deep, 5-layer diagnostic inspection of the target project or codebase, explore unbuilt capabilities, developer velocity bottlenecks, architectural leverage points, and ecosystem integrations, and synthesize exactly 100 concrete, high-leverage improvement and innovation ideas structured into 10 thematic clusters. Enforce the 8-Field Idea Specification Schema with mathematical precision, prove backward compatibility and Zero Harm for every proposal, enqueue all 100 ideas into `.ai-memory/plans/pending/XX-next-100-ideas-for-improvements.md` with modular subtasks in `.ai-memory/plans/subtasks/XX-next-100-ideas-for-improvements/`, and present an executive review docket to the architect with strict no-build and no-test rules.

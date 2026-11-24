@@ -5,28 +5,28 @@ description: "Autonomously survey, discover, architect, and catalog the next 100
 
 # Next 100 Ideas for Improvements
 
-> **Invocation:** `@[next-100-ideas-for-improvements](directory;.cursor/skills/next-100-ideas-for-improvements)`
+> **Invocation:** `@[next-100-ideas-for-improvements](directory;.agents/skills/next-100-ideas-for-improvements)`
 
 > **[/goal](slashCommand;goal)** Autonomously survey the target codebase, discover 100 high-leverage innovation and improvement ideas across 10 functional clusters, articulate each idea using the 8-field Idea Specification Schema, and enqueue them as pending plans in `.ai-memory/plans/pending/XX-next-100-ideas-for-improvements.md` with modular subtasks in `.ai-memory/plans/subtasks/XX-next-100-ideas-for-improvements/`.
 > **[/plan](slashCommand;plan)** Plan first before doing work for improved work or less friction, faster work and more pure and effective work.
 > **[/learn](slashCommand;learn)** Enforce the Review-First Gate (zero immediate code edits, NO-BUILD, NO-TEST during ideation discovery), GitMap search primacy, strict relative Git paths, and lowercase naming conventions.
 
-**Version:** 1.0.0  
-**Updated:** 2026-10-22  
-**Status:** Active  
-**AI Confidence:** Production-Ready  
-**Canonical Prompt:** `01-prompts/30-improvements/05-next-100-ideas-for-improvements.md`  
-**Application Specification:** `02-spec/21-app/04-next-100-ideas-for-improvements/`  
-**Execution Engine:** V6 Tree Swarm Hierarchy ($N = 400$, $A = 3$, $H = 2$, Capacity = 6)  
+**Version:** 1.0.0
+**Updated:** 2026-10-22
+**Status:** Active
+**AI Confidence:** Production-Ready
+**Canonical Prompt:** `01-prompts/30-improvements/05-next-100-ideas-for-improvements.md`
+**Application Specification:** `02-spec/21-app/04-next-100-ideas-for-improvements/`
+**Execution Engine:** V6 Tree Swarm Hierarchy ($N = 400$, $A = 3$, $H = 2$, Capacity = 6)
 **Related Skills:**
-- [`next-detail-out-100-improvements`](file;.cursor/skills/next-detail-out-100-improvements)
-- [`next-100-code-improvements`](file;.cursor/skills/next-100-code-improvements)
-- [`next-100-whole-system-improvements`](file;.cursor/skills/next-100-whole-system-improvements)
-- [`next-100-ui-improvements`](file;.cursor/skills/next-100-ui-improvements)
-- [`execute-parent-task-with-n-steps-v6`](file;.cursor/skills/execute-parent-task-with-n-steps-v6)
-- [`spec-authoring-and-validation`](file;.cursor/skills/spec-authoring-and-validation)
-- [`gitmap`](file;.cursor/skills/gitmap)
-- [`ai-verification`](file;.cursor/skills/ai-verification)
+- [`next-detail-out-100-improvements`](file;.agents/skills/next-detail-out-100-improvements)
+- [`next-100-code-improvements`](file;.agents/skills/next-100-code-improvements)
+- [`next-100-whole-system-improvements`](file;.agents/skills/next-100-whole-system-improvements)
+- [`next-100-ui-improvements`](file;.agents/skills/next-100-ui-improvements)
+- [`execute-parent-task-with-n-steps-v6`](file;.agents/skills/execute-parent-task-with-n-steps-v6)
+- [`spec-authoring-and-validation`](file;.agents/skills/spec-authoring-and-validation)
+- [`gitmap`](file;.agents/skills/gitmap)
+- [`ai-verification`](file;.agents/skills/ai-verification)
 
 ---
 
@@ -37,7 +37,7 @@ Activate this skill when:
 - **Trigger Keywords & Aliases:** Invoked via `next-100-ideas-for-improvements`, `next-100-ideas`, `ideas-for-improvements`, `next-ideas`, `100-ideas`, or queries like `"generate next 100 great ideas for improves for the project"`.
 - **Slash Command Invocation:** Triggered via `/next-100-ideas-for-improvements <project-or-module>`.
 - **Pre-Refactoring Innovation Exploration:** Surveying unbuilt capabilities, developer velocity multipliers, architectural leaps, and ecosystem bridges before major engineering initiatives.
-- **Review Docket Seeding:** Populating the repository's long-term backlog with rigorously specified idea cards ready for ingestion into [`next-detail-out-100-improvements`](file;.cursor/skills/next-detail-out-100-improvements).
+- **Review Docket Seeding:** Populating the repository's long-term backlog with rigorously specified idea cards ready for ingestion into [`next-detail-out-100-improvements`](file;.agents/skills/next-detail-out-100-improvements).
 
 ---
 
@@ -58,7 +58,7 @@ Rather than hallucinating hypothetical ideas, the engine systematically surveys 
 > **Strict Review-First & Zero Immediate Execution Mandate:**
 > Ideas discovered and formulated under this workflow MUST NEVER be implemented, edited into source files, built, or tested during the ideation turn.
 > All 100 ideas are strictly enqueued into `.ai-memory/plans/pending/XX-next-100-ideas-for-improvements.md` with modular subtasks in `.ai-memory/plans/subtasks/XX-next-100-ideas-for-improvements/` and presented to the human architect for review.
-> Implementation occurs only after human sign-off, proceeding through [`next-detail-out-100-improvements`](file;.cursor/skills/next-detail-out-100-improvements) for deep specification and then canonical execution swarms via [`execute-parent-task-with-n-steps-v6`](file;.cursor/skills/execute-parent-task-with-n-steps-v6).
+> Implementation occurs only after human sign-off, proceeding through [`next-detail-out-100-improvements`](file;.agents/skills/next-detail-out-100-improvements) for deep specification and then canonical execution swarms via [`execute-parent-task-with-n-steps-v6`](file;.agents/skills/execute-parent-task-with-n-steps-v6).
 
 ### 2.3 The Synergistic 5-Pillar Improvements Flywheel
 The improvements family forms a closed-loop engineering flywheel:
@@ -67,7 +67,7 @@ The improvements family forms a closed-loop engineering flywheel:
 - `03-next-100-whole-system-improvements.md`: System friction, developer flow, and operational cause-and-effect impact audits.
 - `05-next-100-ideas-for-improvements.md`: Generative innovation discovering "What Could Be" (this skill).
 - `04-next-detail-out-100-improvements.md`: Deep specification of "How It Must Be Built" producing Go/No-Go Review Dockets.
-- [`execute-parent-task-with-n-steps-v6`](file;.cursor/skills/execute-parent-task-with-n-steps-v6): Post-approval autonomous execution.
+- [`execute-parent-task-with-n-steps-v6`](file;.agents/skills/execute-parent-task-with-n-steps-v6): Post-approval autonomous execution.
 
 ### 2.4 Multi-Agent Concurrency & Budget Parameters
 - **Step Budget ($N$):** `400` steps (100 Analyze, 150 Plan, 150 Execute/Enqueue).
@@ -189,11 +189,11 @@ An ideation run is complete and verified only when all criteria pass:
 
 ## 7. Related Skills
 
-- [`next-detail-out-100-improvements`](file;.cursor/skills/next-detail-out-100-improvements)
-- [`next-100-code-improvements`](file;.cursor/skills/next-100-code-improvements)
-- [`next-100-whole-system-improvements`](file;.cursor/skills/next-100-whole-system-improvements)
-- [`next-100-ui-improvements`](file;.cursor/skills/next-100-ui-improvements)
-- [`execute-parent-task-with-n-steps-v6`](file;.cursor/skills/execute-parent-task-with-n-steps-v6)
-- [`spec-authoring-and-validation`](file;.cursor/skills/spec-authoring-and-validation)
-- [`gitmap`](file;.cursor/skills/gitmap)
-- [`ai-verification`](file;.cursor/skills/ai-verification)
+- [`next-detail-out-100-improvements`](file;.agents/skills/next-detail-out-100-improvements)
+- [`next-100-code-improvements`](file;.agents/skills/next-100-code-improvements)
+- [`next-100-whole-system-improvements`](file;.agents/skills/next-100-whole-system-improvements)
+- [`next-100-ui-improvements`](file;.agents/skills/next-100-ui-improvements)
+- [`execute-parent-task-with-n-steps-v6`](file;.agents/skills/execute-parent-task-with-n-steps-v6)
+- [`spec-authoring-and-validation`](file;.agents/skills/spec-authoring-and-validation)
+- [`gitmap`](file;.agents/skills/gitmap)
+- [`ai-verification`](file;.agents/skills/ai-verification)

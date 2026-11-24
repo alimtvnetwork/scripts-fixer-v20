@@ -12,7 +12,7 @@ Trigger Keywords & Aliases: `purge actions storage`, `zero storage mandate`, `pu
 - [A] Purge Automation Script: `03-ai-scripts/34-purge-github-actions-artifacts.py`
 - [B] Purge Workflow: `.github/workflows/purge-actions-artifacts.yml`
 - [C] Governing Spec: `02-spec/12-cicd-pipeline-workflows/`
-- [D] Prior Issues: `.ai-memory/cicd-issues/`
+- [D] Prior Issues: `.ai-memory/rca/resolved/`
 
 ---
 

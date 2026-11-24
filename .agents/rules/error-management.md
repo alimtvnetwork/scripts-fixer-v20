@@ -12,4 +12,3 @@
 A bug event that has a screenshot shows Previous image and Next image on that image.
 Previous is disabled on the first image. Next is disabled on the last image.
 The buttons move through that session's screenshots and do not rewrite the event order.
-

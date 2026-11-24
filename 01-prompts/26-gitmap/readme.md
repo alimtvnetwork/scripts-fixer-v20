@@ -12,6 +12,7 @@ This directory contains the canonical AI training prompts and specifications for
 | # | Prompt File | Target Mode | Description | Companion Skill |
 | :---: | :--- | :--- | :--- | :--- |
 | **01** | [`01-gitmap-core-engine.md`](01-gitmap-core-engine.md) | Canonical Specification | Full 9-feature sequence, command reference matrix, and AI directives | `gitmap` |
+| **02** | [`02-gitlab-multi-provider-login.md`](02-gitlab-multi-provider-login.md) | Multi-Provider Login | GitLab and GitHub dual-platform login, SSH-first probe, and namespace routing | `gitmap` |
 
 ---
 
@@ -20,6 +21,7 @@ This directory contains the canonical AI training prompts and specifications for
 ```text
 01-prompts/26-gitmap/
 ├── 01-gitmap-core-engine.md
+├── 02-gitlab-multi-provider-login.md
 └── readme.md
 ```
 

@@ -21,7 +21,7 @@ Autonomous agents MUST maintain high cognitive awareness and learn from every ta
 
 1. **Pre-Task Learning Intake:**
    - Review active conventions in `02-spec/02-coding-guidelines/`.
-   - Check `.ai-memory/memory/` and `.ai-memory/what-to-read.md` to load project identity, architectural boundaries, and recent patterns.
+   - Check `.ai-memory/learned/` and `.ai-memory/what-to-read.md` to load project identity, architectural boundaries, and recent patterns.
    - Run `[/learn](slashCommand;learn)` to reflect on resolved ambiguities, anti-patterns, and project-specific invariants.
 
 2. **Mid-Flight Guardrail Enforcement:**
@@ -29,7 +29,7 @@ Autonomous agents MUST maintain high cognitive awareness and learn from every ta
    - Never introduce temporary workarounds or shortcut antipatterns.
 
 3. **Post-Task Retrospective Synthesis:**
-   - Record newly discovered architectural boundaries or domain lessons into `.ai-memory/memory/learned/`.
+   - Record newly discovered architectural boundaries or domain lessons into `.ai-memory/learned/`.
    - Update repository documentation and specifications to keep knowledge evergreen.
 
 ---

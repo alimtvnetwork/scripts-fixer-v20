@@ -12,15 +12,15 @@ This skill manages automated identity switching, sandboxed bot configurations, a
 > [!IMPORTANT]
 > **System-Wide Autonomous Bot Identity Standard**: Across all autonomous agent runs, AI pairs, and headless multi-agent workflows, GitMap enforces the standardized unified autonomous bot identity:
 > - **Unified Bot Identity:** `gitmap-bot <info@rgitmap.com>`
-> 
+>
 > Before applying any bot identity, GitMap automatically backs up the original human identity to `original_user.json` to enable non-destructive restoration. AI agents are **STRICTLY FORBIDDEN** from committing under human developer credentials (`MD ALIM UL KARIM`, personal emails, etc.). Commits authored under human accounts in automated sessions cause misplaced attribution, pollute repository history, and violate the autonomous audit invariant.
 >
-> **Invocation:** `@[gitmap-automation-bot](directory;.cursor/skills/gitmap-automation-bot)`  
+> **Invocation:** `@[gitmap-automation-bot](directory;.agents/skills/gitmap-automation-bot)`
 
 ### Trigger Keywords & Directives
 - `automation bot`, `autobot`, `gitmap automation`, `ai automation bot`
 - `change user to bot`, `switch to bot`, `headless commit`, `bot identity`
-- Prompt reference: `[gitmap-automation-bot](file;.cursor/skills/gitmap-automation-bot)`
+- Prompt reference: `[gitmap-automation-bot](file;.agents/skills/gitmap-automation-bot)`
 
 ---
 
@@ -67,7 +67,7 @@ gitmap login set ai-auto claude
 # Mandatory Dynamic AI Identity Rule:
 # The AI agent MUST dynamically configure its own agent name (e.g. antigravity, gemini, cursor-model, muse, claude)
 # based on the environment it is executing in. NEVER assume or hardcode 'muse' as default.
-gitmap settings set ai_auto.default_agent <agent-name>  # e.g. antigravity, gemini, cursor-model, muse
+gitmap settings set ai_auto.default_agent antigravity  # inside Antigravity; NEVER blindly default to muse!
 gitmap settings set ai_auto.default_name "gitmap-bot"
 gitmap settings set ai_auto.default_email "info@rgitmap.com"
 # Or open Web Settings UI -> "Speed & Automation" pane -> "ai-auto" settings controls
@@ -82,27 +82,108 @@ At Step 0 of every autonomous run, inspect and verify that both `Active Git` and
 gitmap user info
 
 # Fallback identity check
-git config --get-all user.name
-git config --get-all user.email
+gitmap whoami
 ```
 
-### 3.3 Reverting to Original Human Credentials
+Verify that the output displays:
+```text
+● Active Git: gitmap-bot <info@rgitmap.com> (local)
+● Global Git: gitmap-bot <info@rgitmap.com>
+```
 
-At the conclusion of a session or when restoring interactive development mode:
+### 3.3 Commit Provenance & Subagent Attribution
+
+Attach subagent attribution directly to Git author metadata, Split-DB commit history (`repodb/commit_history.db`), and cognitive heatmaps (`repodb/heatmap.db`):
 
 ```bash
-# Revert to original human credentials saved in original_user.json
-gitmap login --revert-to-original
+# Feature commit with explicit subagent attribution
+gitmap cpf "Module - implement autonomous subtask" --ai-agent "worker-01"
 
-# Alternative alias
+# Bug fix commit with explicit subagent attribution
+gitmap cbf "Scanner - resolve null pointer probe" --ai-agent "worker-02"
+
+# Chore commit with explicit subagent attribution
+gitmap cpc "Docs - align prompt checklists" --ai-agent "worker-03"
+```
+
+### 3.4 Identity Reversion & Restoration
+
+When a task requires restoring the original human developer profile after bot execution:
+
+```bash
+# Revert to previously saved human profile from original_user.json
 gitmap change-user --restore
+
+# Or set back to specific developer profile
+gitmap change-user "<Developer Name> <developer@email.com>"
+```
+
+### 3.5 Pairing Autobot with Headless Time-Restriction
+
+When autonomous agents operate under time-restricted maintenance windows, pair `gitmap login set global ai-auto` (or `gitmap login set ai-auto [agent-name]`) with headless time-restriction flags:
+
+- `--tz <timezone>`: Target timezone perspective for schedule validation.
+- `--auto-window`: Automatically normalizes commit timestamps to the next valid window (strictly before 08:00 AM on weekdays or anytime on weekends).
+- `--non-interactive`: Enforces headless execution without interactive terminal prompts.
+
+```bash
+# Step 1: Switch workstation git identity to autobot globally
+gitmap login set global ai-auto
+
+# Step 2: Execute atomic commit with headless time-restriction and subagent attribution
+gitmap cpf "Module - implement autonomous subtask" --ai-agent "worker-01" --tz "America/New_York" --auto-window --non-interactive
 ```
 
 ---
 
-## 4. Operational Invariants for AI Swarms
+## 4. Headless & Automated Commit Protocols
 
-1. **Mandatory Step 0 Identity Switch:** The very first command of an autonomous task (Phase 1 / Step 0) MUST be `gitmap login set ai-auto <agent-name>` or `gitmap login set global ai-auto`.
-2. **Zero Human Commits Invariant:** If `gitmap user info` reveals a personal name or email, DO NOT proceed with commits until bot identity is locked.
-3. **Heatmap & Split-DB Provenance:** Always pass `--ai-agent <name>` during commit operations (`gitmap cpf/cpb/cpc/cfr/cpr`) to record the subagent ID in cognitive heatmap traces.
-4. **Non-Destructive Restoration:** Never manually delete `original_user.json`; let `gitmap login --revert-to-original` clean up safely upon restoration.
+When operating under bot mode, all commits must adhere to GitMap semantic commit discipline:
+
+1. **Semantic Commit Verbs Only**:
+   - `gitmap cpr` - Releases
+   - `gitmap cpf` - Features
+   - `gitmap cbf` - Bug fixes
+   - `gitmap cfr` - Refactorings
+   - `gitmap cpc` - Chores
+   - **TOTAL BAN** on raw `git commit`, `git add -A`, or arbitrary commit message formats.
+2. **Commit Message Format**:
+   - Features, fixes, refactors, chores: `"MODULE - summary"` (hyphen-separated; no colons in argument as GitMap provides `Feature: ` or `Bug: `)
+   - Releases: `"v<version> <summary>"`
+3. **Atomic Scope**:
+   - Touch only files assigned to the active subtask.
+   - Run pre-flight pull (`gitmap pull`) before writing changes.
+4. **Time-Restriction Flag Integration**:
+   - In automated bot workflows governed by `[gitmap-time-restriction](file;.agents/skills/gitmap-time-restriction)`, always supply `--tz`, `--auto-window`, and `--non-interactive` to prevent interactive blocks and maintain schedule compliance.
+
+---
+
+## 5. Coding & Style Guidelines Compliance
+
+When authoring code, scripts, or plans supporting the automation bot:
+
+1. **Strict Relative Git Paths**:
+   - Always reference `.agents/skills/gitmap-automation-bot/skill.md`, `02-spec/...`, `.ai-memory/...`.
+   - Never use absolute paths (`C:\...`, `D:\...`).
+2. **Positive Boolean Naming**:
+   - Use `isAutobotActive`, `hasLocalScope`, `isRestored`, `isValidProfile`, `hasTimeRestriction`, `hasAutoWindow`, `isHeadless`.
+   - Ban negative booleans (`isNotHuman`, `isOutsideWindow`) and non-standard prefixes (`canSwitch`, `shouldRestore`).
+3. **Leaf Error Sovereignty**:
+   - Identity configuration helpers return `error` or `*apperror.AppError` directly.
+   - Never invoke `os.Exit` or `cliexit.HandleError` inside leaf helpers.
+4. **Function Size**:
+   - Keep profile parsing and command execution helpers under 15 lines (<= 8 lines preferred).
+
+---
+
+## 6. Verification & Health Check
+
+Validate the skill installation and compliance:
+
+```bash
+# Verify skill file presence
+gitmap find "skill.md" .agents/skills/gitmap-automation-bot
+
+# Validate YAML frontmatter
+gitmap cat .agents/skills/gitmap-automation-bot/skill.md
+```

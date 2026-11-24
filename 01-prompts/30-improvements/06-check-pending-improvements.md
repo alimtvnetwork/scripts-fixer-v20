@@ -18,17 +18,17 @@ WAVES = ceil(subtasks / (A x H))
 ```
 
 > [!IMPORTANT]
-> **Prompt Version:** 1.0.0  
-> **Runtime:** Google Antigravity 2.0 (IDE and CLI) & Cursor IDE  
-> **Invoke:** `> Invoke: /check-pending-improvements [scope-or-filter]`  
+> **Prompt Version:** 1.0.0
+> **Runtime:** Google Antigravity 2.0 (IDE and CLI) & Cursor IDE
+> **Invoke:** `> Invoke: /check-pending-improvements [scope-or-filter]`
 >
-> **Trigger Keywords & Aliases:**  
-> `check-pending-improvements`, `check-improvements`, `pending-improvements`, `improvements-status`, `how many improvements are pending`, `list-pending-improvements`, `improvements-dashboard`  
+> **Trigger Keywords & Aliases:**
+> `check-pending-improvements`, `check-improvements`, `pending-improvements`, `improvements-status`, `how many improvements are pending`, `list-pending-improvements`, `improvements-dashboard`
 >
-> **Companion Antigravity Skill:** [`check-pending-improvements`](directory;.agents/skills/check-pending-improvements)  
-> **Companion Cursor Skill:** [`check-pending-improvements`](file;.cursor/skills/check-pending-improvements)  
+> **Companion Antigravity Skill:** [`check-pending-improvements`](directory;.agents/skills/check-pending-improvements)
+> **Companion Cursor Skill:** [`check-pending-improvements`](file;.cursor/skills/check-pending-improvements)
 >
-> **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**  
+> **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**
 > Whatever directives, constraints, checklists, or user instructions are given ABOVE this prompt (including in the user preamble, header blocks, or incoming user request above) are HIGHEST PRIORITY and MUST BE FOLLOWED as strictly NON-NEGOTIABLE. They supersede and strictly override any conflicting general advice, default conventions, or lower-level guidelines below. The agent MUST inspect and follow the instructions above with absolute precedence.
 
 [/goal](slashCommand;goal) Autonomously scan all pending improvement plans in `.ai-memory/plans/pending/` and modular subtasks in `.ai-memory/plans/subtasks/` using GitMap high-speed commands, extract complete metadata (status, category, priority, blast radius, target files), calculate total completion percentages and category distributions across all 5 improvement pillars, and render an authoritative Executive Continuous Improvement Dashboard in visible chat featuring the deterministic Next 10 Queue for immediate execution handoff to Prompt 07 (`/implement-next-10-improvements`).
@@ -166,11 +166,11 @@ The visible chat output of this prompt MUST strictly adhere to the following sch
 ```markdown
 # 📊 Continuous Improvement Status Dashboard
 
-**Generated At:** [ISO-8601 Timestamp]  
-**Scan Scope:** `.ai-memory/plans/pending/` and `.ai-memory/plans/subtasks/`  
-**Total Identified Improvements:** `NNN`  
-**Pending Execution Backlog:** `NNN` (`XX.X%` of total)  
-**Completed & Verified:** `NNN` (`XX.X%` of total)  
+**Generated At:** [ISO-8601 Timestamp]
+**Scan Scope:** `.ai-memory/plans/pending/` and `.ai-memory/plans/subtasks/`
+**Total Identified Improvements:** `NNN`
+**Pending Execution Backlog:** `NNN` (`XX.X%` of total)
+**Completed & Verified:** `NNN` (`XX.X%` of total)
 
 ---
 
@@ -228,7 +228,7 @@ The following 10 items are prioritized for immediate fast-forward implementation
 | 10 | `[ID-010]` | `[Category]` | `P2` | `[file/path]` | [Concise description] |
 
 > [!TIP]
-> **To execute this exact batch immediately, invoke:**  
+> **To execute this exact batch immediately, invoke:**
 > `> /implement-next-10-improvements`
 ```
 
@@ -241,11 +241,11 @@ Below is an authentic execution example demonstrating the exact dashboard render
 ```markdown
 # 📊 Continuous Improvement Status Dashboard
 
-**Generated At:** 2026-10-22T14:30:00Z  
-**Scan Scope:** `.ai-memory/plans/pending/` and `.ai-memory/plans/subtasks/`  
-**Total Identified Improvements:** 540  
-**Pending Execution Backlog:** 380 (70.4% of total)  
-**Completed & Verified:** 160 (29.6% of total)  
+**Generated At:** 2026-10-22T14:30:00Z
+**Scan Scope:** `.ai-memory/plans/pending/` and `.ai-memory/plans/subtasks/`
+**Total Identified Improvements:** 540
+**Pending Execution Backlog:** 380 (70.4% of total)
+**Completed & Verified:** 160 (29.6% of total)
 
 ---
 
@@ -303,7 +303,7 @@ The following 10 items are prioritized for immediate fast-forward implementation
 | 10 | `SYS-IMP-029` | Whole System | `P2` | `cli/internal/help/render.go` | Extract CLI flag strings into constant registry |
 
 > [!TIP]
-> **To execute this exact batch immediately, invoke:**  
+> **To execute this exact batch immediately, invoke:**
 > `> /implement-next-10-improvements`
 ```
 

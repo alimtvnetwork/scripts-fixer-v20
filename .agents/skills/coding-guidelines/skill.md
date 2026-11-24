@@ -149,7 +149,7 @@ GitMap is designed with strict domain separation:
     release/                           # Release automation & version bumping hub
     question-and-ambiguity/            # Ambiguity resolution & iteration counters
     suggestions/                       # Detailed suggestion proposals
-    cicd-issues/                       # CI pipeline failure diagnostics and RCAs
+    rca/resolved/                       # CI pipeline failure diagnostics and RCAs
     assets/                            # Mockups, diagrams, and reference media
   docs/                                # User documentation & visual media
     assets/                            # Vector animated terminal SVGs (.svg)
@@ -188,12 +188,12 @@ The `.ai-memory/` directory functions as the cognitive workspace for autonomous 
   - Terminal Help: `cli/helptext/<command>.md`
   - User Documentation: `docs/commands/<category>/<subcommand>.md`
   - Animated SVG Visuals: `docs/assets/<category>.svg`
-  - AI Agent Tracking: `.ai-memory/memory/features/cli-commands.md`
+  - AI Agent Tracking: `.ai-memory/learned/features/cli-commands.md`
 - **Architectural Decisions & Database:**
   - Master & Split DB Engine: `cli/db/` & `cli/cmd/cmddb_*.go`
   - Formal Spec: `02-spec/21-app/120-database-suite-and-start-fresh.md`
   - User Guide: `docs/commands/db/readme.md` & `docs/commands/db/start-fresh.md`
-  - Agent Guidelines: `.ai-memory/coding-guidelines.md` & `.ai-memory/memory/constraints/`
+  - Agent Guidelines: `.ai-memory/coding-guidelines.md` & `.ai-memory/learned/constraints/`
 - **Antigravity (AGY) Integration:**
   - Implementation: `cli/cmd/agy_*.go`
   - Formal Spec: `02-spec/21-app/122-antigravity-empty-conversations-pruner.md`
@@ -226,7 +226,7 @@ Every workspace operates alongside two fixed special repositories in the work di
 ### 6. Hard Rules & Prohibitions
 
 - **Single Authority:** [`.ai-memory/folder-structure.md`](.ai-memory/folder-structure.md) is the absolute single source of truth.
-- **Strict Plurality:** Always `.ai-memory/memory/` (singular), `.ai-memory/plans/` (plural), `01-prompts/` (plural), `.ai-memory/suggestions/` (plural).
+- **Strict Plurality:** Always `.ai-memory/learned/` (singular), `.ai-memory/plans/` (plural), `01-prompts/` (plural), `.ai-memory/suggestions/` (plural).
 - **No Orphaned Folders:** Never invent unapproved folders (e.g., `memories/`, `tasks/`, `todos/`).
 - **Relative Paths Only:** All file paths must be relative from the git root. Absolute paths (`C:\...`, `file:///...`) are banned.
 - **Maintenance Invariants for `.ai-memory/`:**

@@ -5,7 +5,7 @@ description: "Autonomously scan, audit, discover, and document 100 grounded code
 
 # Next 100 Code Improvements
 
-> **Invocation:** `@[next-100-code-improvements](directory;.cursor/skills/next-100-code-improvements)`
+> **Invocation:** `@[next-100-code-improvements](directory;.agents/skills/next-100-code-improvements)`
 
 Source Prompt: `01-prompts/30-improvements/02-next-100-code-improvements.md`
 
@@ -15,7 +15,7 @@ This skill governs the systematic, autonomous discovery, technical specification
 
 - When tasked with running a deep, grounded code audit across a codebase or module.
 - When generating a structured backlog of 100 refactoring opportunities grounded in repository standards.
-- When invoked via slash command `[/next-100-code-improvements](file;.cursor/skills/next-100-code-improvements)` or direct user request.
+- When invoked via slash command `[/next-100-code-improvements](file;.agents/skills/next-100-code-improvements)` or direct user request.
 - When preparing an architectural roadmap before major refactoring sprints.
 - When auditing codebases against `02-spec/02-coding-guidelines/` and `02-spec/03-error-manage/`.
 
@@ -122,9 +122,9 @@ All 100 improvements must be enqueued as pending plans in the repository:
 
 ## Related Skills
 
-- [execute-parent-task-with-n-steps-v6](file;.cursor/skills/execute-parent-task-with-n-steps-v6)
-- [coding-guidelines](file;.cursor/skills/coding-guidelines)
-- [cg-error-management](file;.cursor/skills/cg-error-management)
-- [cg-boolean-and-naming](file;.cursor/skills/cg-boolean-and-naming)
-- [gitmap](file;.cursor/skills/gitmap)
-- [ai-verification](file;.cursor/skills/ai-verification)
+- [execute-parent-task-with-n-steps-v6](file;.agents/skills/execute-parent-task-with-n-steps-v6)
+- [coding-guidelines](file;.agents/skills/coding-guidelines)
+- [cg-error-management](file;.agents/skills/cg-error-management)
+- [cg-boolean-and-naming](file;.agents/skills/cg-boolean-and-naming)
+- [gitmap](file;.agents/skills/gitmap)
+- [ai-verification](file;.agents/skills/ai-verification)

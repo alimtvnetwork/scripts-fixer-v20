@@ -6,8 +6,8 @@ description: >-
 
 # GitMap Binary Swap Skill
 
-> **Invocation:** `@[gitmap-binary-swap](directory;.agents/skills/gitmap-binary-swap)`  
-> **Command:** `gitmap swap-binary` (aliases: `swap-bin`, `bin-swap`, `replace-bin`, `replace-binary`, `swap`)  
+> **Invocation:** `@[gitmap-binary-swap](directory;.agents/skills/gitmap-binary-swap)`
+> **Command:** `gitmap swap-binary` (aliases: `swap-bin`, `bin-swap`, `replace-bin`, `replace-binary`, `swap`)
 > **Target Subsystem:** `cli/cmdswap/`, `cli/cmdupdate/`
 
 ---

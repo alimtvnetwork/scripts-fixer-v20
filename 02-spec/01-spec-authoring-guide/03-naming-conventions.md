@@ -7,7 +7,7 @@
 
 ## Overview
 
-All files and folders in the `02-spec/` and `.ai-memory/memories/` trees follow strict naming conventions. These rules are non-negotiable and enforced by the health dashboard scanner.
+All files and folders in the `02-spec/` and `.ai-memory/learned/` trees follow strict naming conventions. These rules are non-negotiable and enforced by the health dashboard scanner.
 
 ---
 

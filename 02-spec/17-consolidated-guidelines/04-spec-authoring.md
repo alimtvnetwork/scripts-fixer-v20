@@ -212,43 +212,31 @@ The `.ai-memory/` directory holds all AI-readable project knowledge.
 
 ```
 .ai-memory/
-├── overview.md                     # AI onboarding — read FIRST
-├── user-preferences                # Communication preferences
-├── 29-plan.md                         # Current roadmap
-├── suggestions.md                  # Pending improvement ideas
-├── strictly-avoid.md               # ⛔ Quick-read hard prohibitions
-├── prompt.md                       # AI prompt index
-├── prompts/                        # Reusable AI prompts
-├── memory/                         # Institutional knowledge
-│   ├── index.md                    # Canonical index of all memory files
-│   ├── architecture/               # System design decisions
-│   ├── constraints/                # Hard constraints
-│   ├── features/                   # Feature-specific knowledge
-│   ├── issues/                     # Issue-specific knowledge
-│   ├── processes/                  # Workflow processes
-│   ├── project/                    # Project-level decisions
-│   ├── standards/                  # Technical standards
-│   └── style/                      # Code style rules
-├── suggestions/                    # Suggestion details (one .md per suggestion)
-│   └── completed/                  # Archived suggestions
-├── pending-tasks/                  # Active work-in-progress
-├── completed-tasks/                # Finished tasks
-├── pending-issues/                 # Open issues
-├── solved-issues/                  # Resolved issues
-└── strictly-avoid/                 # ⛔ Detailed prohibition files
+├── README.md               # 🏠 Root Gateway & Router
+├── what-to-read.md         # 📖 Mandatory Reading Order, Rules 1-12 & Overview (Read Memory)
+├── strictly-avoid.md       # ⛔ Gateway linking to avoid/
+├── folder-structure.md     # 🗺️ Repository & 7-domain architecture map
+├── coding-guidelines.md    # 📜 Standalone guidelines with AI Compliance Checklist
+│
+├── ambiguity/              # 1. Ambiguity lifecycle (new/ -> resolved/)
+├── rca/                    # 2. 4-part Root Cause Analysis (new/ -> resolved/)
+├── avoid/                  # 3. Grounded Non-Negotiable Bans (00-default.md, 01-04)
+├── learned/                # 4. Learn Memory: flat sequential knowledge (default-memory.md, readme.md, 01-*)
+├── plans/                  # 5. Task backlog & roadmaps (pending/, active/, completed/, subtasks/, suggestions/)
+├── research/               # 6. Technical Exploration & Spike Guidelines
+└── screenshots/            # 7. UI/UX Verification & Ground Truth Imagery (*.png)
 ```
 
 ### Critical Rules
 
-- **Memory folder is `.ai-memory/memory/`** — never `.ai-memory/memories/` (no trailing `s`)
-- Memory subfolders use **kebab-case WITHOUT numeric prefixes**
-- When adding a memory file, **always** update `memory/readme.md`
-- AI reading order: `overview.md` → `strictly-avoid.md` → `user-preferences` → `memory/readme.md` → `29-plan.md`
+- **Learn Memory is `.ai-memory/learned/`** — flat sequential files (`01-*`, `02-*`, etc.) anchored by `default-memory.md` and `readme.md`. Never use `memory/` or `memories/`.
+- **Read Memory is `what-to-read.md`** — mandatory entry point; internalize before touching code.
+- **AI reading order:** `what-to-read.md` → `strictly-avoid.md` → `folder-structure.md` → `coding-guidelines.md` → `learned/readme.md` → `plans/pending/`
 
 ### Task & Suggestion Lifecycle
 
-- **Tasks:** `29-plan.md` → `pending-tasks/` → `completed-tasks/`
-- **Suggestions:** `suggestions.md` → `suggestions/` → `suggestions/completed/`
+- **Tasks:** `plans/pending/` → `plans/active/` → `plans/completed/`
+- **Suggestions:** `plans/suggestions/XX-<slug>.md` (staged for review; never merged unapproved)
 
 ---
 
@@ -358,7 +346,7 @@ These exceptions are permanent and tracked in `02-spec/01-spec-authoring-guide/1
 | 3 | Non-markdown data files (`.json`) | `02-spec/` modules |
 | 4 | Legacy `C-XXX` suggestion file names | `suggestions/completed/` |
 | 5 | Dual-purpose prefix `02` | `02-spec/` root |
-| 6 | Memory folders without numeric prefixes | `.ai-memory/memory/` |
+| 6 | Memory folders without numeric prefixes | `.ai-memory/learned/` |
 | 7 | CLI module without `02-frontend/` folder | Headless CLIs |
 | 8 | Extra CLI subfolders beyond core 3 | Complex CLIs |
 | 9 | Legacy `suggestions.md` without prefix | Memory root |

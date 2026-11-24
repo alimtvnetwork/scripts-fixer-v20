@@ -799,8 +799,8 @@ Every single improvement across the 10 System Clusters MUST strictly adhere to t
 7. **Concrete Implementation Blueprint:**
    ```go
    func isBlockedSyncPath(relPath string) bool {
-       return strings.HasPrefix(relPath, "02-spec/21-") || 
-              strings.HasPrefix(relPath, ".ai-memory/plans/") || 
+       return strings.HasPrefix(relPath, "02-spec/21-") ||
+              strings.HasPrefix(relPath, ".ai-memory/plans/") ||
               isBumpScript(relPath)
    }
    ```
@@ -1069,7 +1069,7 @@ Every single improvement across the 10 System Clusters MUST strictly adhere to t
 6. **Backward Compatibility Guarantee:** Components consuming data receive strongly-typed props.
 7. **Concrete Implementation Blueprint:**
    ```typescript
-   export type Result<T, E = AppError> = 
+   export type Result<T, E = AppError> =
      | { isOk: true; value: T; error?: never }
      | { isOk: false; value?: never; error: E };
    ```
@@ -1266,7 +1266,7 @@ Every single improvement across the 10 System Clusters MUST strictly adhere to t
 ### Cluster 08: Diagnostics, Observability & Error Management (SYS-IMP-071 – SYS-IMP-080)
 
 #### SYS-IMP-071: Structured 4-Part Root Cause Analysis (RCA) Engine
-1. **Identifier & Subsystem:** `SYS-IMP-071` | Defect Triage | `02-spec/22-app-issues/` & `.ai-memory/cicd-issues/`
+1. **Identifier & Subsystem:** `SYS-IMP-071` | Defect Triage | `02-spec/22-app-issues/` & `.ai-memory/rca/resolved/`
 2. **System-Level UX Impact:** Eliminates developer guesswork and repetitive regressions by documenting precise root causes and verified fixes.
 3. **Cause:** Vague bug fix commits ("fixed issue") provide zero documentation on why a defect happened or how it was verified.
 4. **Effect:** Every resolved issue documents: (1) Observed Symptom, (2) Grounded Root Cause, (3) Surgical Remediation, (4) Verification Evidence.
@@ -1341,15 +1341,15 @@ Every single improvement across the 10 System Clusters MUST strictly adhere to t
 8. **Binary Verification & Acceptance Criteria:** Workflow execution leaves GitHub Actions artifact storage at exactly 0.0 MB.
 
 #### SYS-IMP-076: Segregated Issue Archival Routing
-1. **Identifier & Subsystem:** `SYS-IMP-076` | Defect Archival | `02-spec/22-app-issues/` & `.ai-memory/cicd-issues/`
+1. **Identifier & Subsystem:** `SYS-IMP-076` | Defect Archival | `02-spec/22-app-issues/` & `.ai-memory/rca/resolved/`
 2. **System-Level UX Impact:** Keeps CI/CD pipeline infrastructure defects completely segregated from application logic defects.
 3. **Cause:** Mixing CI/CD failures with application runtime bugs creates confusion when prioritizing product backlog items.
-4. **Effect:** CI/CD pipeline issues archived in `.ai-memory/cicd-issues/`; application bugs archived in `02-spec/22-app-issues/`.
+4. **Effect:** CI/CD pipeline issues archived in `.ai-memory/rca/resolved/`; application bugs archived in `02-spec/22-app-issues/`.
 5. **Zero Harm / Regression Safety:** Enforces clean separation of concerns across documentation trees.
 6. **Backward Compatibility Guarantee:** Master indices (`cicd-index.md` and `22-app-issues/readme.md`) link all items.
 7. **Concrete Implementation Blueprint:**
    ```text
-   CI/CD Issues  -> .ai-memory/cicd-issues/XX-<slug>.md (Index: .ai-memory/cicd-index.md)
+   CI/CD Issues  -> .ai-memory/rca/resolved/XX-<slug>.md (Index: .ai-memory/rca/README.md)
    App Issues    -> 02-spec/22-app-issues/XX-<slug>.md (Index: 02-spec/22-app-issues/readme.md)
    ```
 8. **Binary Verification & Acceptance Criteria:** Audit confirms zero CI/CD issues in `22-app-issues` and zero app bugs in `cicd-issues`.

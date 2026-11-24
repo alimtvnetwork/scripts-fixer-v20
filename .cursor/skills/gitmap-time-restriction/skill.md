@@ -11,13 +11,13 @@ This skill provides operational procedures, automated command sequences, and ver
 
 > [!IMPORTANT]
 > **On-Call Invariant**: This skill is strictly **on-call**. It remains dormant during normal engineering turns. It activates **only** when explicitly commanded by user prompts, plan directives, or when tasks specify time-window boundaries, commit date overrides, or recommits.
-> **Invocation:** `@[gitmap-time-restriction](directory;.cursor/skills/gitmap-time-restriction)`  
+> **Invocation:** `@[gitmap-time-restriction](directory;.agents/skills/gitmap-time-restriction)`
 
 ### Trigger Keywords & Directives
 - `time restriction`, `time-restriction`, `restrict hours`, `work window`, `cutoff hour`
 - `recommit`, `re-commit`, `commitin`, `backdate commit`
 - `date format`, `date-only branch`, `DD-MMM-YY`, `--tz`, `--auto-window`
-- Prompt reference: `[gitmap-time-restriction](file;.cursor/skills/gitmap-time-restriction)`
+- Prompt reference: `[gitmap-time-restriction](file;.agents/skills/gitmap-time-restriction)`
 
 ---
 
@@ -117,6 +117,30 @@ Before executing any commit verb when `isTimeRestricted` is active:
      - If `--auto-window` is set: automatically shift commit timestamp to valid window before 08:00 AM.
      - If `isStrictBlock` is active without auto-window: halt execution and report schedule block.
 
+### 3.6 Lifting & Enabling Time Restrictions (Persistent Configuration)
+
+GitMap allows lifting (disabling) or enabling time restrictions globally or per commit. The machine-wide setting is persistently remembered in `~/.gitmap/restrictions.json`:
+
+```bash
+# Lift (disable) time restriction across all repositories
+gitmap restrict lift
+# or
+gitmap restrict disable
+
+# Re-enable automatic time restriction
+gitmap restrict enable
+
+# Check current restriction status and enforcement mode
+gitmap restrict status
+# or
+gitmap restrict
+
+# Per-commit one-time lift flag (even when auto-enforced)
+gitmap cpf "Module - feature update" --lift
+# or
+gitmap cbf "Module - bugfix" --no-restrict
+```
+
 ---
 
 ## 4. Recommit & History Adjustment Workflow
@@ -163,7 +187,7 @@ gitmap st
 When authoring code, scripts, or plans supporting time restriction:
 
 1. **Strict Relative Git Paths**:
-   - Always reference `.cursor/skills/gitmap-time-restriction/skill.md`, `02-spec/...`, `.ai-memory/...`.
+   - Always reference `.agents/skills/gitmap-time-restriction/skill.md`, `02-spec/...`, `.ai-memory/...`.
    - Never use absolute paths (`C:\...`, `D:\...`).
 2. **Positive Boolean Naming**:
    - Use `isTimeRestricted`, `hasTargetTimezone`, `hasWeekendExemption`, `hasAutoWindow`, `isHeadless`, `isPermitted`, `isWeekday`, `isWeekend`.
@@ -182,8 +206,8 @@ Validate the skill installation and compliance:
 
 ```bash
 # Verify skill file presence
-gitmap find --pattern "skill.md" --path ".cursor/skills/gitmap-time-restriction"
+gitmap find --pattern "skill.md" --path ".agents/skills/gitmap-time-restriction"
 
 # Validate YAML frontmatter
-gitmap cat .cursor/skills/gitmap-time-restriction/skill.md
+gitmap cat .agents/skills/gitmap-time-restriction/skill.md
 ```

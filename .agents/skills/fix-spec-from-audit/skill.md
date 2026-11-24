@@ -19,7 +19,7 @@ WAVES = ceil(subtasks / (A x H))
 > Prompt Version: 6.0.0
 > Runtime: Google Antigravity 2.0 (IDE and CLI)
 > Invoke: /fix-spec-from-audit <task>
-> **Invocation:** `@[fix-spec-from-audit](directory;.agents/skills/fix-spec-from-audit)`  
+> **Invocation:** `@[fix-spec-from-audit](directory;.agents/skills/fix-spec-from-audit)`
 >
 > **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**
 > Whatever directives, constraints, checklists, or user instructions are given ABOVE this prompt (in the user preamble, header blocks, or incoming user request above) are HIGHEST PRIORITY and MUST BE FOLLOWED as strictly NON-NEGOTIABLE.
@@ -83,7 +83,7 @@ You MUST execute this task via a strict 4-Phase continuous loop. Do not skip ste
 1. **Parallel Dispatch:** Use the `invoke_subagent` tool to spawn up to 2 execution subagents concurrently (max 2 threads each), assigning disjoint subtasks from `.ai-memory/plans/subtasks/xx-spec-fix/`.
 2. **Minimal Context Diet:** Provide subagents with minimal instructions (e.g., "Read `.ai-memory/plans/subtasks/xx-spec-fix/01-<slug>.md` and execute the fixes on the specified spec file").
 3. **Isolated Agent State & Communication:** Each subagent MUST create `.agents/xx-<task-name>/` and track its progress in `state.md`.
-4. **Failure Protocol:** If a subagent fails, record the error in `.ai-memory/memory/issues/xx-spec-fix-failure.md`. The next subagent must read the failure log first to remediate.
+4. **Failure Protocol:** If a subagent fails, record the error in `.ai-memory/learned/issues/xx-spec-fix-failure.md`. The next subagent must read the failure log first to remediate.
 5. **Mark Reconciliation Ledger:** As subtasks finish, mark the corresponding findings in `.ai-memory/plans/pending/xx-spec-remediation.md` as `[x]`.
 
 ### Phase 3: Quality Gate & Cross-Link Verification (Validation Gate)

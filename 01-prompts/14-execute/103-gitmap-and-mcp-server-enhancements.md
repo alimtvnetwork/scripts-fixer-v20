@@ -1,9 +1,9 @@
 # AI Execution Instruction — Plan 103: GitMap and MCP Server Enhancements
 
-> **Status:** ACTIVE  
-> **Target Slug:** gitmap-and-mcp-server-enhancements  
-> **Spec File:** `02-spec/21-app/103-gitmap-and-mcp-server-enhancements/01-architecture-spec.md`  
-> **Master Plan:** `.ai-memory/plans/pending/103-gitmap-and-mcp-server-enhancements.md`  
+> **Status:** ACTIVE
+> **Target Slug:** gitmap-and-mcp-server-enhancements
+> **Spec File:** `02-spec/21-app/103-gitmap-and-mcp-server-enhancements/01-architecture-spec.md`
+> **Master Plan:** `.ai-memory/plans/pending/103-gitmap-and-mcp-server-enhancements.md`
 
 ---
 

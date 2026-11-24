@@ -5,7 +5,7 @@ description: "Executes the Booleans And Complex Conditions prompt. Autonomously 
 
 # Booleans And Complex Conditions
 
-> **Invocation:** `@[booleans-and-complex-conditions](directory;.cursor/skills/booleans-and-complex-conditions)`
+> **Invocation:** `@[booleans-and-complex-conditions](directory;.agents/skills/booleans-and-complex-conditions)`
 
 Source prompt: `01-prompts/15-cg-execute/04-booleans-and-complex-conditions.md`
 

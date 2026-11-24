@@ -6,7 +6,7 @@ description: >-
 
 # GitMap MCP Skill
 
-> **Invocation:** `@[gitmap-mcp](directory;.cursor/skills/gitmap-mcp)`
+> **Invocation:** `@[gitmap-mcp](directory;.agents/skills/gitmap-mcp)`
 
 The GitMap native MCP server (`cli/cmdmcp/`) exposes the GitMap CLI to AI
 agents over JSON-RPC 2.0. This skill is the single place that describes how

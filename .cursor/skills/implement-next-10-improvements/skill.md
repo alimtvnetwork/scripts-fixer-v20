@@ -3,16 +3,16 @@ name: implement-next-10-improvements
 description: "Autonomously implement the next 10 pending improvements from the plan backlog in fast-forwarding mode (zero builds, zero tests) with strict coding guideline enforcement (*appfault.AppError, Result[T], parameter structs, string constants/enums, 8-15 line functions, 150-300 line files), repeatable via 'next', with decoupled terminal E2E verification."
 ---
 
-# Implement Next 10 Improvements (Cursor IDE)
+# Implement Next 10 Improvements
 
 Source Prompt: `01-prompts/30-improvements/07-implement-next-10-improvements.md`
 
 > [!IMPORTANT]
-> **Skill Name:** `implement-next-10-improvements`  
-> **Environment:** Cursor IDE  
-> **Canonical Prompt:** `01-prompts/30-improvements/07-implement-next-10-improvements.md`  
-> **IDE Link Syntax:** [`implement-next-10-improvements`](file;.cursor/skills/implement-next-10-improvements)  
-> **Invocation:** `@[implement-next-10-improvements](directory;.cursor/skills/implement-next-10-improvements)`  
+> **Skill Name:** `implement-next-10-improvements`
+> **Environment:** Google Antigravity 2.0 (IDE & CLI)
+> **Canonical Prompt:** `01-prompts/30-improvements/07-implement-next-10-improvements.md`
+> **IDE Link Syntax:** [`implement-next-10-improvements`](file;.agents/skills/implement-next-10-improvements)
+> **Invocation:** `@[implement-next-10-improvements](directory;.agents/skills/implement-next-10-improvements)`
 
 This skill governs the autonomous, high-velocity implementation of exactly 10 pending improvements from `.ai-memory/plans/subtasks/`. It operates under the **Fast-Forwarding Protocol**, which enforces a strict ban on intermediate compilations and test suite runs during editing turns, while mandating 100% adherence to the **8-Pillar Strict Coding Guideline Enforcement Matrix**. Execution is repeatable via the command `"next"` and concludes with a handoff to the decoupled terminal End-to-End Verification Gate.
 
@@ -29,7 +29,7 @@ This skill governs the autonomous, high-velocity implementation of exactly 10 pe
   - `next`
   - `run-next-10`
   - `fast-forward-improvements`
-- Immediately following [`check-pending-improvements`](file;.cursor/skills/check-pending-improvements) to execute the prioritized Next 10 Queue.
+- Immediately following [`check-pending-improvements`](file;.agents/skills/check-pending-improvements) to execute the prioritized Next 10 Queue.
 - When systematically chewing through extensive backlogs in rapid, bounded 10-item micro-batches without getting blocked by compile/test latency.
 - When iteratively refactoring legacy codebases to comply with repository coding guidelines (`*appfault.AppError`, `Result[T]`, parameter structs, enums, function sizing).
 
@@ -43,19 +43,19 @@ Execution is organized around the canonical multi-agent tree swarm architecture 
 flowchart TD
     subgraph MicroBatch["Prompt 07 Micro-Batch (10 Items)"]
         T1["Triage Phase (Steps 1-30)<br/>Scan .ai-memory/plans/subtasks/<br/>Select Next 10 Unexecuted Items"]
-        
+
         subgraph WorkerSwarm["Tree Swarm Parallel Dispatch (A=3, H=2)"]
             W1["Worker 01 (Items 1-3)<br/>Disjoint File Box A"]
             W2["Worker 02 (Items 4-7)<br/>Disjoint File Box B"]
             W3["Worker 03 (Items 8-10)<br/>Disjoint File Box C"]
         end
-        
+
         subgraph FastForwardingEdits["Fast-Forwarding Implementation (Steps 31-170)"]
             E1["NO-BUILD & NO-TEST Invariant"]
             E2["8-Pillar Strict Coding Guidelines"]
             E3["Update Subtask Ledger to DONE"]
         end
-        
+
         C1["State Closure & Handshake (Steps 171-200)<br/>Emit Batch Summary & 'next' Prompt"]
     end
 
@@ -208,7 +208,7 @@ sequenceDiagram
     FF->>FF: Fast-Forward Modifications (Zero Builds/Tests, Strict 8 Pillars)
     FF->>Memory: Update Items 01-10 Status to DONE
     FF-->>User: "Batch complete (10/10). Type 'next' to continue or /execute-with-e2e to verify."
-    
+
     User->>FF: next
     FF->>Memory: Discover Next 10 PENDING Subtasks (Items 11-20)
     FF->>FF: Fast-Forward Modifications (Zero Builds/Tests, Strict 8 Pillars)
@@ -216,7 +216,7 @@ sequenceDiagram
     FF-->>User: "Batch complete (20/20). Type 'next' to continue or /execute-with-e2e to verify."
 ```
 
-At any point, the user can inspect progress via [`check-pending-improvements`](file;.cursor/skills/check-pending-improvements) or advance with `"next"`.
+At any point, the user can inspect progress via [`check-pending-improvements`](file;.agents/skills/check-pending-improvements) or advance with `"next"`.
 
 ---
 
@@ -226,7 +226,7 @@ Testing is decoupled from editing waves and runs as an independent verification 
 
 1. **Triggering the Gate:** The user or orchestrator invokes:
    `> /execute-with-e2e`
-   or runs Phase 3 of [`execute-parent-task-with-n-steps-v6`](file;.cursor/skills/execute-parent-task-with-n-steps-v6).
+   or runs Phase 3 of [`execute-parent-task-with-n-steps-v6`](file;.agents/skills/execute-parent-task-with-n-steps-v6).
 
 2. **Sequential Verification Protocol:**
    - **Step 1 (Build Verification):** Run compiler checks in quiet mode (`go build ./...`, `pnpm build`).
@@ -272,11 +272,11 @@ During implementation turns, code search and inspection MUST use GitMap commands
 
 ## Related Skills
 
-- [check-pending-improvements](file;.cursor/skills/check-pending-improvements)
-- [execute-parent-task-with-n-steps-v6](file;.cursor/skills/execute-parent-task-with-n-steps-v6)
-- [execute-with-e2e](file;.cursor/skills/execute-with-e2e)
-- [coding-guidelines](file;.cursor/skills/coding-guidelines)
-- [cg-error-management](file;.cursor/skills/cg-error-management)
-- [cg-boolean-and-naming](file;.cursor/skills/cg-boolean-and-naming)
-- [gitmap](file;.cursor/skills/gitmap)
-- [ai-verification](file;.cursor/skills/ai-verification)
+- [check-pending-improvements](file;.agents/skills/check-pending-improvements)
+- [execute-parent-task-with-n-steps-v6](file;.agents/skills/execute-parent-task-with-n-steps-v6)
+- [execute-with-e2e](file;.agents/skills/execute-with-e2e)
+- [coding-guidelines](file;.agents/skills/coding-guidelines)
+- [cg-error-management](file;.agents/skills/cg-error-management)
+- [cg-boolean-and-naming](file;.agents/skills/cg-boolean-and-naming)
+- [gitmap](file;.agents/skills/gitmap)
+- [ai-verification](file;.agents/skills/ai-verification)

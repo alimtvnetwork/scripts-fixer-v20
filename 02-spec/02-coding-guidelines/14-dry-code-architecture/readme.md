@@ -13,11 +13,11 @@
 
 . **CRITICAL AI INSTRUCTION:** This specification is an active AI execution directive. All code generated or modified must strictly follow the rules below. This `readme.md` file is the primary entry point for this directory. AI agents MUST read this file first before exploring other files in this folder.
 
-**Version:** 1.0.0  
-**Updated:** 2026-10-19  
-**Status:** Active  
-**AI Confidence:** Production-Ready  
-**Ambiguity:** None  
+**Version:** 1.0.0
+**Updated:** 2026-10-19
+**Status:** Active
+**AI Confidence:** Production-Ready
+**Ambiguity:** None
 
 ---
 
@@ -187,16 +187,16 @@ fmt.Println(termgeneric.RenderBox("Sync Complete", 50))
 ## 7. Verification & Acceptance Criteria
 
 ### AC-CG-DRY-001: Unit Test Verification
-**Given** The `cli/termgeneric` package implementation.  
-**When** Running targeted package tests via `go test ./termgeneric -v` inside `cli/`.  
+**Given** The `cli/termgeneric` package implementation.
+**When** Running targeted package tests via `go test ./termgeneric -v` inside `cli/`.
 **Then** All test cases pass with exit code 0 and zero race conditions.
 
 ### AC-CG-DRY-002: Zero External Dependencies
-**Given** The `cli/termgeneric/color.go` implementation.  
-**When** Inspected for imports.  
+**Given** The `cli/termgeneric/color.go` implementation.
+**When** Inspected for imports.
 **Then** Zero third-party dependencies are imported outside standard library and `go-runewidth`.
 
 ### AC-CG-DRY-003: Generic Concurrency Type Safety
-**Given** `WorkerPool[T, R]` and `RunBatch[T, R]`.  
-**When** Parameterized with domain types (e.g., `[string, Result]`).  
+**Given** `WorkerPool[T, R]` and `RunBatch[T, R]`.
+**When** Parameterized with domain types (e.g., `[string, Result]`).
 **Then** Handlers, inputs, and outputs are strictly typed without raw interface assertions.

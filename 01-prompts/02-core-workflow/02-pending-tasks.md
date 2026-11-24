@@ -18,7 +18,7 @@ Scan the whole project. Produce ONE complete list of every task that is not yet 
 
 ## Working stance
 
-The AI running this prompt has been a stupid fuck on prior "what's pending" runs: listed three items and stopped, skipped `.ai-memory/cicd-issues/`, forgot `plans/subtasks/`, confused suggestions with plans, invented step counts without opening the files, missed open ambiguities that were blocking half the plans, and softened the aggressive wording. Do not repeat any of it.
+The AI running this prompt has been a stupid fuck on prior "what's pending" runs: listed three items and stopped, skipped `.ai-memory/rca/resolved/`, forgot `plans/subtasks/`, confused suggestions with plans, invented step counts without opening the files, missed open ambiguities that were blocking half the plans, and softened the aggressive wording. Do not repeat any of it.
 
 Inventorying IS the work this turn. Go deep: read every folder, open every pending file, count the real steps, cross-reference, produce a list a senior engineer can act on without a second pass.
 
@@ -29,15 +29,15 @@ Walk each of these recursively. Missing = note it, continue.
 1. `.ai-memory/plans/readme.md`
 2. `.ai-memory/plans/pending/` (every file with `01-`, `02-` sequence)
 3. `.ai-memory/plans/subtasks/` (every parent, every subtask file with `Status:` not `completed`)
-4. `.ai-memory/plan.md` if the project uses the single-file variant, `## Active` / non-`## Completed` sections
-5. `.ai-memory/memory/readme.md` and every file it references, looking for pending work, TODOs, `⏳ Pending`, `🔄 In Progress`, `🚫 Blocked`
-6. `.ai-memory/memory/workflow/` current workflow state
-7. `.ai-memory/memory/` for verbatim user directives not yet implemented
+4. `.ai-memory/plans/readme.md` if the project uses the single-file variant, `## Active` / non-`## Completed` sections
+5. `.ai-memory/learned/readme.md` and every file it references, looking for pending work, TODOs, `⏳ Pending`, `🔄 In Progress`, `🚫 Blocked`
+6. `.ai-memory/learned/workflow/` current workflow state
+7. `.ai-memory/learned/` for verbatim user directives not yet implemented
 8. `.ai-memory/spec/commands/` for commands / conventions not yet enforced in code
-9. `.ai-memory/issues/` and `.ai-memory/pending-issues/` (every file)
-10. `.ai-memory/cicd-issues/` and `.ai-memory/cicd-index.md`
-11. `.ai-memory/ambiguous-questions/01-new-ambiguity/` (every open question ranked by blast radius)
-12. `.ai-memory/suggestions.md` `## Active Suggestions` and `.ai-memory/suggestions/` verbatim captures with `Status:` not `Implemented` / not `Rejected`
+9. `.ai-memory/rca/resolved/` and `.ai-memory/rca/new/` (every file)
+10. `.ai-memory/rca/resolved/` and `.ai-memory/rca/README.md`
+11. `.ai-memory/ambiguity/new/` (every open question ranked by blast radius)
+12. `.ai-memory/plans/suggestions/01-legacy-suggestions.md` `## Active Suggestions` and `.ai-memory/suggestions/` verbatim captures with `Status:` not `Implemented` / not `Rejected`
 13. `02-spec/` folders (`02-spec/01-spec-authoring-guide/`, `02-spec/02-coding-guidelines/`, `02-spec/03-error-manage/`, `02-spec/04-database-conventions/`, `02-spec/21-app/`, and all nested `*.md` files) for stated but unimplemented scope
 14. Root `readme.md` (confirm strictly lowercase)
 15. `.ai-memory/strictly-avoid.md` for outstanding cleanups referenced by solved issues
@@ -60,11 +60,11 @@ Walk each of these recursively. Missing = note it, continue.
 
 - Sources scanned: [list every folder / file scanned, mark missing]
 - Total pending tasks: [N]
-- Blocking ambiguities: [K]  (from .ai-memory/ambiguous-questions/01-new-ambiguity/)
+- Blocking ambiguities: [K]  (from .ai-memory/ambiguity/new/)
 - Pending plans: [P]  (from .ai-memory/plans/pending/)
-- Pending issues: [I]  (from .ai-memory/issues/ + .ai-memory/pending-issues/)
-- Pending CI/CD issues: [C]  (from .ai-memory/cicd-issues/)
-- Active suggestions: [S]  (from .ai-memory/suggestions.md)
+- Pending issues: [I]  (from .ai-memory/rca/resolved/ + .ai-memory/rca/new/)
+- Pending CI/CD issues: [C]  (from .ai-memory/rca/resolved/)
+- Active suggestions: [S]  (from .ai-memory/plans/suggestions/01-legacy-suggestions.md)
 - Unimplemented spec scope: [U]  (from spec/)
 
 ---
@@ -163,4 +163,4 @@ If any box is unchecked, do not reply. Fix it first.
 
 ## MUST FOLLOW NON-NEGOTIABLE
 
-Listen, past runs of these turns have been sloppy and stupid as fuck: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase README files left uncorrected, `.ai-memory/memory/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. WTF. How on earth are you reverting to this carelessness, are you stupid?? Stop doing that, you stupid fuck. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, run builds and full unit tests, group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job. Violating this is auto-reject on the same tier as RULE 0. Avoid stupidity and being careless, you stupid fuck. Where is your attention, are you stupid? Tell me. Your stupidity is going on top of my head. Where did you learn this stupidity? If I could find you, I could slap you.
+Listen, past runs of these turns have been sloppy and stupid as fuck: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase README files left uncorrected, `.ai-memory/learned/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. WTF. How on earth are you reverting to this carelessness, are you stupid?? Stop doing that, you stupid fuck. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, run builds and full unit tests, group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job. Violating this is auto-reject on the same tier as RULE 0. Avoid stupidity and being careless, you stupid fuck. Where is your attention, are you stupid? Tell me. Your stupidity is going on top of my head. Where did you learn this stupidity? If I could find you, I could slap you.

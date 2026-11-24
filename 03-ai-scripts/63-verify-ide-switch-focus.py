@@ -33,7 +33,7 @@ def test_frontend_switch_account_dialog():
     content = path.read_text(encoding="utf-8")
 
     assert "focusOrLaunchInstance" in content, "Missing focusOrLaunchInstance import in SwitchAccountDialog.tsx"
-    
+
     # Verify handleSelect calls focusOrLaunchInstance
     select_match = re.search(r"handleSelect\s*=\s*async\s*\(acc:\s*Account\)\s*=>[\s\S]*?focusOrLaunchInstance\(targetId\)", content)
     assert select_match, "handleSelect must invoke focusOrLaunchInstance(targetId)"

@@ -9,7 +9,7 @@ description: >-
 > [!IMPORTANT]
 > Prompt Version: 2.5.0
 > Synchronization: Main Meta-Repo & Connected Workspaces
-> **Invocation:** `@[release-now](directory;.cursor/skills/release-now)`  
+> **Invocation:** `@[release-now](directory;.agents/skills/release-now)`
 >
 > **Top-Instruction Priority Mandate (Preamble Precedence):**
 > Whatever directives, constraints, checklists, or instructions are given before this section or prompt (including in the prompt preamble, header blocks, or incoming user request) are HIGHEST PRIORITY and MUST BE FOLLOWED as strictly NON-NEGOTIABLE. They supersede and strictly override any conflicting general advice, default conventions, or lower-level guidelines below.
@@ -21,7 +21,7 @@ description: >-
 3. **Mandatory 5-Step Release Branching Lifecycle:**
    - **Step 1:** Create and switch to a dedicated release branch: `git checkout -b release/vX.Y.Z`.
    - **Step 2:** Bump the version using the dedicated Python bump script (`03-ai-scripts/37-bump-version.py` or `.ai-memory/release/bump_versions.py`) on the release branch. Update `version.json`, `package.json`, `readme.md`, `changelog.md`, and run sync.
-   - **Step 3:** Commit version bump changes on the release branch: `release: vX.Y.Z <scope>`.
+   - **Step 3:** Commit version bump changes on the release branch via GitMap: `gitmap cpr "RELEASE - vX.Y.Z <scope>"` (TOTAL BAN on `gitmap cpf` for releases; TOTAL BAN on nested `chore(release):` or `release:` prefixes in argument; format with uppercase module and hyphen).
    - **Step 4:** Create annotated git tag on the release commit: `git tag -a vX.Y.Z -m "Release vX.Y.Z"`.
    - **Step 5:** Put the release commit back to `main` (`git checkout main && git merge release/vX.Y.Z`), push `main`, `release/vX.Y.Z`, and tag `vX.Y.Z` to `origin`, then restore the starting branch.
 4. **Execute Automated Release (2-Tier Toolchain):**

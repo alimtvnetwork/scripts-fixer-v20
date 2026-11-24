@@ -6,12 +6,12 @@ description: "Autonomously audits, plans, and refactors Golang codebases to elim
 # Skill: Golang Pointers Reduction & Mutation Reduction (cg-golang-pointers-and-mutation-reduction)
 
 > [!IMPORTANT]
-> **Skill Identifier:** `.cursor/skills/cg-golang-pointers-and-mutation-reduction/skill.md`  
-> **Master Prompt:** `01-prompts/15-cg-execute/39-golang-pointers-and-mutation-reduction.md`  
-> **Specification Reference:** `02-spec/21-app/06-cg-execute-golang-pointers-and-mutation-reduce/02-component-spec.md`  
-> **Invoke Command:** `> Invoke: /golang-pointers-and-mutation-reduction <task>`  
-> **IDE Link Syntax:** [`cg-golang-pointers-and-mutation-reduction`](file;.cursor/skills/cg-golang-pointers-and-mutation-reduction)  
-> **Invocation:** `@[cg-golang-pointers-and-mutation-reduction](directory;.cursor/skills/cg-golang-pointers-and-mutation-reduction)`  
+> **Skill Identifier:** `.agents/skills/cg-golang-pointers-and-mutation-reduction/skill.md`
+> **Master Prompt:** `01-prompts/15-cg-execute/39-golang-pointers-and-mutation-reduction.md`
+> **Specification Reference:** `02-spec/21-app/06-cg-execute-golang-pointers-and-mutation-reduce/02-component-spec.md`
+> **Invoke Command:** `> Invoke: /golang-pointers-and-mutation-reduction <task>`
+> **IDE Link Syntax:** [`cg-golang-pointers-and-mutation-reduction`](file;.agents/skills/cg-golang-pointers-and-mutation-reduction)
+> **Invocation:** `@[cg-golang-pointers-and-mutation-reduction](directory;.agents/skills/cg-golang-pointers-and-mutation-reduction)`
 
 This skill governs autonomous execution for eliminating excessive pointer indirection (`*T`), heap escapes, CPU cache line thrashing, nil-dereference panics, and in-place variable mutations across Golang repositories and connected fleet tools.
 
@@ -417,16 +417,16 @@ gitmap heatmap status -t cg-golang-pointers-and-mutation-reduction
 
 ---
 
-## 8. Related Skills Link Syntax for Cursor IDE
+## 8. Related Skills Link Syntax for Antigravity
 
-- [`cg-golang-pointer-reduction-and-value-semantics`](file;.cursor/skills/cg-golang-pointer-reduction-and-value-semantics) — Dedicated pointer reduction and struct sizing engine.
-- [`cg-branch-immutability-and-clean-construction`](file;.cursor/skills/cg-branch-immutability-and-clean-construction) — Branch mutation elimination and pure constructor helper patterns.
-- [`execute-parent-task-with-n-steps-v6`](file;.cursor/skills/execute-parent-task-with-n-steps-v6) — Tree Swarm V6 orchestration architecture.
-- [`go-appwriter-and-result`](file;.cursor/skills/go-appwriter-and-result) — Enterprise Go packages using Result wrappers and AppError.
-- [`result-wrapper-and-apperror-returns`](file;.cursor/skills/result-wrapper-and-apperror-returns) — Structured error return type migration standards.
-- [`function-signatures-and-return-types`](file;.cursor/skills/function-signatures-and-return-types) — Function signature optimization and parameter structs.
-- [`coding-guidelines`](file;.cursor/skills/coding-guidelines) — Master coding guideline auditing and enforcement.
-- [`style-guidelines`](file;.cursor/skills/style-guidelines) — Spacing, blank lines, and formatting invariants.
+- [`cg-golang-pointer-reduction-and-value-semantics`](file;.agents/skills/cg-golang-pointer-reduction-and-value-semantics) — Dedicated pointer reduction and struct sizing engine.
+- [`cg-branch-immutability-and-clean-construction`](file;.agents/skills/cg-branch-immutability-and-clean-construction) — Branch mutation elimination and pure constructor helper patterns.
+- [`execute-parent-task-with-n-steps-v6`](file;.agents/skills/execute-parent-task-with-n-steps-v6) — Tree Swarm V6 orchestration architecture.
+- [`go-appwriter-and-result`](file;.agents/skills/go-appwriter-and-result) — Enterprise Go packages using Result wrappers and AppError.
+- [`result-wrapper-and-apperror-returns`](file;.agents/skills/result-wrapper-and-apperror-returns) — Structured error return type migration standards.
+- [`function-signatures-and-return-types`](file;.agents/skills/function-signatures-and-return-types) — Function signature optimization and parameter structs.
+- [`coding-guidelines`](file;.agents/skills/coding-guidelines) — Master coding guideline auditing and enforcement.
+- [`style-guidelines`](file;.agents/skills/style-guidelines) — Spacing, blank lines, and formatting invariants.
 
 ---
 

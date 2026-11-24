@@ -9,7 +9,7 @@ description: >-
 > [!IMPORTANT]
 > Prompt Version: 2.5.0
 > Synchronization: Main Meta-Repo & Connected Workspaces
-> **Invocation:** `@[ci-cd-fix-with-release](directory;.agents/skills/ci-cd-fix-with-release)`  
+> **Invocation:** `@[ci-cd-fix-with-release](directory;.agents/skills/ci-cd-fix-with-release)`
 >
 > **Top-Instruction Priority Mandate (Preamble Precedence):**
 > Whatever directives, constraints, checklists, or instructions are given before this section or prompt (including in the prompt preamble, header blocks, or incoming user request) are HIGHEST PRIORITY and MUST BE FOLLOWED as strictly NON-NEGOTIABLE. They supersede and strictly override any conflicting general advice, default conventions, or lower-level guidelines below.
@@ -18,7 +18,7 @@ Trigger Keywords & Aliases: `fix and release`, `ci release`, `fix CI/CD and rele
 
 [/goal](slashCommand:goal) Autonomously diagnose and repair CI/CD pipeline issues, execute full unit test suites and quality gates to verify green status, and perform complete automated release publication with version bump and changelog sync.
 
-[/learn](slashCommand:learn) Ingest recent RCAs from `.ai-memory/cicd-issues/`, `.ai-memory/issues/`, `02-spec/02-coding-guidelines/02-canonical-size-tier.md`, `02-spec/02-coding-guidelines/01-cross-language/readme.md`, `02-spec/02-coding-guidelines/01-cross-language/readme.md`, and `02-spec/03-error-manage/` before touching any code so past mistakes are never repeated.
+[/learn](slashCommand:learn) Ingest recent RCAs from `.ai-memory/rca/resolved/`, `.ai-memory/rca/resolved/`, `02-spec/02-coding-guidelines/02-canonical-size-tier.md`, `02-spec/02-coding-guidelines/01-cross-language/readme.md`, `02-spec/02-coding-guidelines/01-cross-language/readme.md`, and `02-spec/03-error-manage/` before touching any code so past mistakes are never repeated.
 
 ---
 
@@ -55,10 +55,10 @@ Both N, PHASE_1_STEPS, and PHASE_2_STEPS are read-only after the user sets them.
 > 1. **In-Codebase Execution Only:** Whenever a Python script (runner, autofixer, linter, test aggregator) is executed or created, it MUST be executed **strictly within the repository root** (current working directory), NEVER outside the codebase or against external arbitrary directories.
 > 2. **Strict Folder Bounding (`.ai-memory/`):** All AI scripts, local runners, autofixers, helper utilities, memory issue logs, and planning files MUST be created inside the `.ai-memory/` folder:
 >    - Python AI Scripts: `03-ai-scripts/` (e.g. `01-file-manipulator.py`, `05-guideline-autofixer.py`, `06-cicd-local-runner.py`).
->    - RCA & Issue Logs: `.ai-memory/memory/issues/` and `.ai-memory/cicd-issues/`.
+>    - RCA & Issue Logs: `.ai-memory/learned/issues/` and `.ai-memory/rca/resolved/`.
 >    - Execution Plans & Subtasks: `.ai-memory/plans/pending/`, `.ai-memory/plans/subtasks/`.
 >    - Coding Guidelines Mirror: `.ai-memory/coding-guidelines.md`.
-> 3. **Strict Relative Git Paths (TOTAL BAN on Absolute Paths / `file:///` URIs):** All file paths, markdown links, citations, and subtask paths inside plans, RCA logs (`.ai-memory/memory/issues/`), scripts, and code comments MUST be strictly relative paths from the git root (e.g., `02-spec/03-error-manage/readme.md`, `.ai-memory/plans/readme.md`, `cmd/main.go`). NEVER write absolute OS paths (`/absolute/path/to/...`, `/absolute/path/to/...`, `/home/...`) or absolute file URIs (`file:///...`).
+> 3. **Strict Relative Git Paths (TOTAL BAN on Absolute Paths / `file:///` URIs):** All file paths, markdown links, citations, and subtask paths inside plans, RCA logs (`.ai-memory/learned/issues/`), scripts, and code comments MUST be strictly relative paths from the git root (e.g., `02-spec/03-error-manage/readme.md`, `.ai-memory/plans/readme.md`, `cmd/main.go`). NEVER write absolute OS paths (`/absolute/path/to/...`, `/absolute/path/to/...`, `/home/...`) or absolute file URIs (`file:///...`).
 >    - ❌ **BAD:** `[SSH Commands](file:///absolute/path/to/...)`
 >    - ✅ **GOOD:** `[SSH Commands]`02-spec/13-generic-cli/readme.md)`
 > 4. **No External or Random File Creation:** NEVER write scripts, temporary test scripts, or scratch files to root, `/tmp`, global system paths, or outside the repository boundary.
@@ -126,7 +126,7 @@ Every step must be **singly done** using bounded self-looping turns:
   4. If exit code != 0: Zero in on the first specific failing job and its error output.
 
 - **Self-Loop Step 4 (RCA & Zero In on Error):**
-  1. Write 4-part RCA in `.ai-memory/memory/issues/xx-<slug>.md`.
+  1. Write 4-part RCA in `.ai-memory/learned/issues/xx-<slug>.md`.
   2. Register in `.ai-memory/readme.md` and `.ai-memory/strictly-avoid.md`.
 
 - **Self-Loop Step 5 (Surgical Code Fix):**
@@ -337,7 +337,7 @@ WHILE (STEP < PHASE_2_STEPS):
 
     ELSE:
         3. Parse failure: identify exact failing job, error message, file, and line.
-        4. Document 4-part RCA in .ai-memory/memory/issues/xx-<slug>.md
+        4. Document 4-part RCA in .ai-memory/learned/issues/xx-<slug>.md
         5. Apply the minimal surgical code fix.
         6. Run: python 03-ai-scripts/05-guideline-autofixer.py <modified-files>
         7. Loop immediately to step 1. DO NOT stop.
@@ -376,7 +376,7 @@ If any job shows ⏱ TIMEOUT:
    - Job hangs with no output for >30s → fix the subprocess call, not the timer.
    - Open `06-cicd-local-runner.py`, update `JOB_TIMEOUT_SEC`, save, re-run.
 4. Re-run the runner. The timeout adjustment counts as one Phase 2 loop step.
-5. Document the timeout change in `.ai-memory/cicd-issues/`.
+5. Document the timeout change in `.ai-memory/rca/resolved/`.
 
 ---
 
@@ -413,7 +413,7 @@ On every ❌ FAIL or ⏱ TIMEOUT, BEFORE applying any code fix, do both:
 
 Update `.ai-memory/plans/readme.md` immediately.
 
-### B. Record in CI/CD Issues (`.ai-memory/cicd-issues/xx-<slug>.md`)
+### B. Record in CI/CD Issues (`.ai-memory/rca/resolved/xx-<slug>.md`)
 
 ```markdown
 # CI/CD Issue: <short failure description>
@@ -436,7 +436,7 @@ Update `.ai-memory/plans/readme.md` immediately.
 Enqueued at `.ai-memory/plans/pending/XX-cicd-<slug>.md`
 ```
 
-Update `.ai-memory/cicd-index.md` in the same operation. Never delete existing entries.
+Update `.ai-memory/rca/README.md` in the same operation. Never delete existing entries.
 
 ---
 
@@ -449,7 +449,7 @@ Update `.ai-memory/cicd-index.md` in the same operation. Never delete existing e
 - [ ] **Smart Targeted Test & CI/CD Verification (Before Release):** Run targeted verification via priority shortcuts (`python 03-ai-scripts/06-cicd-local-runner.py run-smart`, `--changed-only`, or `--pkg <affected_pkg>` with optional `--fast` heatmap filtering) covering all failing stack trace targets and packages changed since the last git hash. All modified/failing package quality gates MUST pass 100% green (`exit 0`). The release MUST NOT start if any targeted test fails.
 - [ ] **Test Inventory Validation:** Check `.ai-memory/temp/recent-file-changes.json` against `.ai-memory/test-inventory.json` and verify all tests associated with modified files pass.
 - [ ] **No open plan tasks from this run:** All `.ai-memory/plans/pending/XX-cicd-*.md` files created in this run are marked `resolved` or closed.
-- [ ] **All RCA files written:** Every failure encountered has a `.ai-memory/memory/issues/xx-<slug>.md` with all 4 sections.
+- [ ] **All RCA files written:** Every failure encountered has a `.ai-memory/learned/issues/xx-<slug>.md` with all 4 sections.
 - [ ] **Coding standards pass:** Run `python 03-ai-scripts/05-guideline-autofixer.py` on all modified files. Zero violations remain.
 - [ ] **Git working tree is clean:** Run `git status`. No untracked or unstaged files. Commit any remaining changes with `fix(ci): final pre-release fixes`.
 
@@ -661,7 +661,7 @@ Include: previous version, new version, step number and name, command run, full 
 ## Non-Negotiable Coding Standards
 
 - [ ] **Top-Instruction Priority Mandate:** Whatever directives, constraints, checklists, or instructions are given before this section or prompt (user preamble, header constraints, prior instructions) are verified as highest priority and non-negotiable, overriding all lower-level guidelines below.
-- [ ] **Issue & RCA Destination Routing:** Whenever resolving an issue or performing a fix with RCA, verified that CI/CD failures are documented in .ai-memory/cicd-issues/NN-<slug>.md (indexed in .ai-memory/cicd-index.md), while non-CI/CD issues (application bugs, logic/runtime defects) are documented in 02-spec/22-app-issues/NN-<slug>.md (indexed in 02-spec/22-app-issues/readme.md).
+- [ ] **Issue & RCA Destination Routing:** Whenever resolving an issue or performing a fix with RCA, verified that CI/CD failures are documented in .ai-memory/rca/resolved/NN-<slug>.md (indexed in .ai-memory/rca/README.md), while non-CI/CD issues (application bugs, logic/runtime defects) are documented in 02-spec/22-app-issues/NN-<slug>.md (indexed in 02-spec/22-app-issues/readme.md).
 - [ ] **No Stopping After RCA:** Never halt execution or ask user permission after writing the RCA. Proceed unconditionally to code execution.
 - [ ] **GitMap Pipeline-AI & Dynamic Waiting:** If inspecting remote pipeline status, used `gitmap pipeline-ai status --json` / `gitmap pl-ai status -t <sec>` with adaptive sleep to prevent credit waste, and extracted targeted diagnostics (`##[error]`, `FAIL:`, compile errors).
 - [ ] **Atomic Change Tracking:** All modified files were recorded safely under lock via `python 03-ai-scripts/33-test-inventory-generator.py --record <files...>`.

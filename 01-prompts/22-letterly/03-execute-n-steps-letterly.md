@@ -26,11 +26,11 @@ ${Input Text Verbatim}
 
 1. Git pull BEFORE starting any work — try `gitmap pull <repo path>` first (or `gitmap pull` in repo folder); fallback to `git pull` and resolve merge conflicts so repository is clean and current.
 2. Write spec under `02-spec/21-app/XX-<slug>/01-architecture-spec.md` and enqueue plan task in `.ai-memory/plans/pending/XX-<slug>.md` (subtasks in `.ai-memory/plans/subtasks/XX-<slug>/`) first (XX is zero-padded sequence).
-3. Formulate master plan in 100 granular self-looping steps detailing an actionable AI roadmap. Record any ambiguities to `.ai-memory/ambiguous-questions/01-new-ambiguity/XX-<slug>-ambiguity.md` and proceed autonomously without asking user.
+3. Formulate master plan in 100 granular self-looping steps detailing an actionable AI roadmap. Record any ambiguities to `.ai-memory/ambiguity/new/XX-<slug>-ambiguity.md` and proceed autonomously without asking user.
 4. At the end of planning, generate complete AI instructions using @[execute-ai-instruction-writer](directory;.agents/skills/execute-ai-instruction-writer).
 5. Search codebase exclusively via GitMap (`gitmap aum search`, `gitmap find`, `gitmap cat`, `gitmap ps`, `gitmap py`, `gitmap llm train`); TOTAL BAN on rg, ripgrep, grep, Select-String.
 6. Strictly use relative Git paths (`02-spec/...`, `.ai-memory/...`, `cmd/...`); never add absolute filesystem paths.
-7. Enforce Coding Guidelines & Error Management invariants per @[coding-guidelines](directory;.agents/skills/coding-guidelines) and @[error-management](directory;.agents/skills/error-management) (functions <= 15 lines, no magic strings, zero nested ifs, positive booleans `is*`/`has*` only).
+7. Enforce Coding Guidelines checklist per [.ai-memory/coding-guidelines.md](file;.ai-memory/coding-guidelines.md) and @[error-management](directory;.agents/skills/error-management) (functions <= 15 lines, no magic strings, zero nested ifs, positive booleans `is*`/`has*` only).
 8. Enforce SQL repository pattern and enum-driven actions per @[sql-repository-pattern-and-enum-actions](directory;.agents/skills/sql-repository-pattern-and-enum-actions): all SQL isolated behind repository interfaces, operations dispatched by exhaustive enum switch, and strongly-typed AppError envelopes.
 9. ....other steps and more steps sequentially from the input direction. Create more steps in between.
 
@@ -49,7 +49,7 @@ ${Input Text Verbatim}
 - [/plan](slashCommand;plan) first before doing work for improved execution without errors following Coding Guidelines.
 - Formulate master plan in 100 granular self-looping steps detailing an actionable AI roadmap.
 - At end of planning, generate complete AI instructions using @[execute-ai-instruction-writer](directory;.agents/skills/execute-ai-instruction-writer) so AI execution follows through accurately.
-- Ambiguity Protocol: Record any ambiguity to `.ai-memory/ambiguous-questions/01-new-ambiguity/XX-<slug>-ambiguity.md`; proceed autonomously without asking user.
+- Ambiguity Protocol: Record any ambiguity to `.ai-memory/ambiguity/new/XX-<slug>-ambiguity.md`; proceed autonomously without asking user.
 - All execution mechanics, tree swarm hierarchy, dynamic agent join, and SQLite task management are offboarded to @[execute-parent-task-with-n-steps-v6](directory;.agents/skills/execute-parent-task-with-n-steps-v6).
 - After learning and planning, immediately begin executing the plan without asking for confirmation.
 - Track in-flight touches and prevent write collisions using GitMap RC Heatmap (`gitmap rc heatmap status` / `tree` / `live` / `sync`).

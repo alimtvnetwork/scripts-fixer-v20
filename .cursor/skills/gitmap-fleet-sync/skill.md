@@ -8,7 +8,7 @@ description: >-
 
 # Native GitMap Fleet Synchronization Skill
 
-> **Invocation:** `@[gitmap-fleet-sync](directory;.cursor/skills/gitmap-fleet-sync)`
+> **Invocation:** `@[gitmap-fleet-sync](directory;.agents/skills/gitmap-fleet-sync)`
 
 Execute comprehensive multi-repository synchronization across the fleet using native `gitmap` CLI commands (`gitmap pull`, `gitmap cg sync --all`, `gitmap cg status --all`, `gitmap cg conflicts`, `gitmap cg resolve`, `gitmap cpc`, `gitmap cpr`, `gitmap push`). This eliminates all reliance on external Python automation scripts.
 

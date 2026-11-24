@@ -5,7 +5,7 @@ description: "Executes the Data And Schema prompt. Autonomously scan, plan, refa
 
 # Data And Schema
 
-> **Invocation:** `@[data-and-schema](directory;.cursor/skills/data-and-schema)`
+> **Invocation:** `@[data-and-schema](directory;.agents/skills/data-and-schema)`
 
 Source prompt: `01-prompts/15-cg-execute/07-data-and-schema.md`
 

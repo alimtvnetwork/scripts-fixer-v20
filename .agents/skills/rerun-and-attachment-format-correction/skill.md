@@ -12,7 +12,7 @@ Autonomously ensure all prompt rerun operations across UI and Telegram inbound h
 ## Instructions
 
 1. **Rerun Enqueue Invariant**: Never send or inject reruns directly (`sendPromptNow`, `execute_prompt_injection`, or immediate spawn). All reruns must enqueue into the FIFO database queue.
-2. **Canonical Attachment Syntax**: 
+2. **Canonical Attachment Syntax**:
    - Never write `@[file;<path>]` inside `@[]` brackets.
    - Attachments and task references must follow this exact 3-tier format with normalized forward slashes:
      ```markdown

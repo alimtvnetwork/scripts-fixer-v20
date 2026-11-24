@@ -1,192 +1,110 @@
 # `.ai-memory/` Folder Structure Guide
 
-**Version:** 3.2.0
-**Updated:** 2026-04-16
+**Version:** 5.0.0 (7-Domain Lean Architecture)
+**Updated:** 2026-11-25
+**Source of Truth Anchor:** GitHub (`alimtvnetwork/coding-guidelines-v24`)
 
 ---
 
 ## Overview
 
-The `.ai-memory/` directory is the **canonical location** for all AI-readable project knowledge — memory, tasks, suggestions, constraints, and onboarding context. Any AI model reading this folder should be able to fully understand the project's conventions, active work, and hard constraints.
+The `.ai-memory/` directory is the **canonical persistent memory cortex** for all AI-readable project knowledge — memory, tasks, suggestions, constraints, and onboarding context. Any AI model reading this folder should be able to fully understand the project's conventions, active work, and hard constraints.
 
-> **CRITICAL:** There is exactly ONE memory folder: `.ai-memory/memory/`. The variant `.ai-memory/memories/` is **prohibited** and must be deleted if found. Never maintain two memory folders.
+> **CRITICAL MEMORY DIRECTIVE:** For institutional knowledge, there is exactly ONE memory folder: `.ai-memory/learned/` (Learn Memory). All historical variants (`memory/`, `memories/`, `learn-memory/`) are strictly prohibited and consolidated into `.ai-memory/learned/`.
 
 ---
 
 ## Canonical Folder Structure
 
-```
+```text
 .ai-memory/
-├── overview.md                     # AI onboarding — read this FIRST
-├── user-preferences                # User communication preferences
+├── README.md               # 🏠 Root Gateway & Directory Router
+├── what-to-read.md         # 📖 Mandatory Reading Order, Rules 1-12 & Overview (Read Memory)
+├── strictly-avoid.md       # ⛔ Gateway linking to avoid/
+├── folder-structure.md     # 🗺️ Repository & 7-domain architecture map
+├── coding-guidelines.md    # 📜 Standalone guidelines with AI Compliance Checklist
 │
-├── memory/                         # Institutional knowledge (patterns, decisions, rules)
-│   ├── index.md                    # Canonical index of all memory files
-│   ├── architecture/               # System architecture decisions
-│   ├── constraints/                # Hard constraints and rules
-│   ├── features/                   # Feature-specific knowledge
-│   ├── issues/                     # Issue-specific knowledge
-│   ├── patterns/                   # Reusable patterns/templates
-│   ├── processes/                  # Workflow processes
-│   ├── project/                    # Project-level status/decisions
-│   ├── standards/                  # Technical standards
-│   └── style/                      # Code style rules
-│
-├── suggestions/                    # Suggestion details (one .md per suggestion)
-│   └── completed/                  # Completed suggestions archive
-│
-├── pending-tasks/                  # Active work-in-progress tasks (one .md per task)
-├── completed-tasks/                # Finished tasks archive
-│
-├── pending-issues/                 # Open issues awaiting resolution
-├── solved-issues/                  # Resolved issues with root cause analysis
-│
-├── strictly-avoid/                 # ⛔ Things the AI must NEVER do (one .md per rule)
-│
-├── 29-plan.md                         # Current roadmap / active plan
-├── suggestions.md                  # Pending suggestions summary (bullet points)
-└── strictly-avoid.md               # ⛔ Quick-read summary of all strict avoidance rules
+├── ambiguity/              # 1. Ambiguity lifecycle (new/ -> resolved/)
+│   ├── new/                #    Active or pending questions requiring resolution
+│   ├── resolved/           #    Settled decisions and historical clarifications
+│   └── README.md           #    Ambiguity index & lifecycle protocol
+├── rca/                    # 2. 4-part Root Cause Analysis & Issue Registry
+│   ├── new/                #    Active bugs & in-flight investigations
+│   ├── resolved/           #    Remediated root cause analyses
+│   └── README.md           #    RCA index & 4-part RCA engineering standard
+├── avoid/                  # 3. Grounded Non-Negotiable Bans (00-default.md, 01-04)
+│   ├── 00-default.md       #    Root baseline invariants (LF, IDE settings, push mandate)
+│   ├── 01-code-and-style.md#    Code style, boolean prefixes, function sizing, zero nesting
+│   ├── 02-git-and-commits.md#   Git protocols, semantic verbs, URL rewriting, release rules
+│   ├── 03-shell-and-execution.md# Native GitMap vs ps/pwsh, temp isolation, test bounds
+│   ├── 04-privacy-and-credentials.md# 3-slot email security, credential isolation
+│   └── README.md           #    Avoid domain catalog & index
+├── learned/                # 4. Learn Memory: flat sequential knowledge
+│   ├── default-memory.md   #    Baseline project governance & core invariants
+│   ├── readme.md           #    Sequential index of all knowledge records
+│   └── *.md                #    Flat sequential domain models & lessons (01-*, 02-*, etc.)
+├── plans/                  # 5. Task Execution & Planning Backlog
+│   ├── pending/            #    Queued implementation roadmaps (XX-<slug>.md)
+│   ├── active/             #    In-flight execution plans
+│   ├── completed/          #    Archived completed milestones
+│   ├── subtasks/           #    Decomposed step manifests (XX-<slug>/subtask-*.md)
+│   ├── suggestions/        #    Autonomous AI proposals staged for review
+│   │   ├── 01-legacy-suggestions.md
+│   │   └── README.md
+│   └── readme.md           #    Plan index & progress tracker
+├── research/               # 6. Technical Exploration & Spike Guidelines
+│   └── README.md           #    Research rules, spike lifecycle & graduation protocol
+└── screenshots/            # 7. UI/UX Verification & Ground Truth Imagery
+    └── *.png               #    Visual ground truth telemetry for specifications and RCAs
 ```
 
 ---
 
 ## File Descriptions
 
-### Root Files
+### Essential Root Files (5 Invariant Files)
 
 | File | Purpose | Read Priority |
-|------|---------|---------------|
-| `overview.md` | AI onboarding document — project summary, conventions, how to navigate | **READ FIRST** |
-| `user-preferences` | User's communication style, timezone, response format preferences | High |
-| `29-plan.md` | Current active plan — what's being worked on now, next steps | High |
-| `suggestions.md` | Bullet-point summary of all pending suggestions (details in `suggestions/`) | Medium |
-| `strictly-avoid.md` | Quick-reference list of all strict avoidance rules (details in `strictly-avoid/`) | **READ FIRST** |
+| :--- | :--- | :--- |
+| `what-to-read.md` | Mandatory onboarding sequence, Rules 1-12, Contrast Gameplay, and Subsystems Overview (Read Memory) | **READ FIRST** |
+| `strictly-avoid.md` | Direct gateway to all modular avoid rules in `avoid/` | **READ FIRST** |
+| `README.md` | Root directory router and domain navigation map | High |
+| `folder-structure.md` | Repository-wide folder architecture and `.ai-memory/` taxonomy | High |
+| `coding-guidelines.md`| Standalone coding guidelines enriched with the 10-point AI Compliance Checklist | High |
 
-### `memory/` — Institutional Knowledge
+### `learned/` — Learn Memory (Flat Sequential Knowledge)
 
-Stores patterns, architectural decisions, naming conventions, and workflow rules that persist across AI sessions.
+Stores domain models, architectural patterns, lessons learned, and session summaries in a clean, flat sequential series.
+- **`default-memory.md`** — Baseline project invariants and core governance.
+- **`readme.md`** — Canonical sequential index of all learned records (`01-*` through `30-*`).
+- Files are strictly flat `.md` documents with numeric sequence prefixes. Subdirectories inside `learned/` are prohibited.
 
-- **`index.md`** — Canonical index listing all memory files with paths and one-line descriptions
-- Subfolders use **kebab-case WITHOUT numeric prefixes**
-- Files use **kebab-case** and MAY have numeric prefixes for ordering
+### `plans/` & `plans/suggestions/` — Task & Suggestion Lifecycle
 
-| Subfolder | Purpose | Examples |
-|-----------|---------|----------|
-| `architecture/` | System design decisions, data pipelines | `database-schema.md`, `split-database.md` |
-| `constraints/` | Non-negotiable rules and boundaries | `axios-version-pinning.md` |
-| `features/` | Feature-specific implementation knowledge | `self-update-architecture.md` |
-| `issues/` | Issue-specific knowledge | `nested-code-fence-data-corruption.md` |
-| `patterns/` | Reusable templates and patterns | `spec-template.md` |
-| `processes/` | How work gets done — workflows, conventions | `development-workflow.md` |
-| `project/` | Project-level status and decisions | `documentation-standards.md` |
-| `standards/` | Technical standards and enforcement rules | `code-red-guidelines.md`, `enum-standards.md` |
-| `style/` | Code style and naming rules | `naming-conventions.md`, `powershell-naming.md` |
+- **Roadmaps:** 100-step master plans reside in `plans/pending/` (`XX-<slug>.md`) with decomposed subtasks in `plans/subtasks/XX-<slug>/`.
+- **Archiving:** Fully verified plans move to `plans/completed/`.
+- **Suggestions:** Unsolicited AI improvement proposals are staged in `plans/suggestions/XX-<slug>.md` for human review; they never enter active code without approval.
 
-### `suggestions/` — Suggestion Tracking
+### `ambiguity/` — Decision & Ambiguity Lifecycle
 
-- Each suggestion gets its own `.md` file with full detail
-- `completed/` subfolder archives implemented suggestions
-- `suggestions.md` (root) provides a bullet-point summary of **pending** suggestions only
+- **`new/`**: Open inquiries, ambiguous requirements, or missing details filed as `XX-<slug>-ambiguity.md`.
+- **`resolved/`**: When clarified, moved here with a binding `## Resolution` block appended.
 
-### `pending-tasks/` and `completed-tasks/` — Task Lifecycle
+### `rca/` — 4-Part Root Cause Analysis & Issue Registry
 
-- Each task is a single `.md` file with description, status, and notes
-- When a task is finished, move it from `pending-tasks/` to `completed-tasks/`
-- `29-plan.md` (root) provides the high-level roadmap linking to active tasks
+- **`new/`**: Active defects and in-flight investigations.
+- **`resolved/`**: Remediated post-mortems following the strict 4-part RCA contract:
+  1. Root Cause Summary (1 sentence)
+  2. Investigation Trace
+  3. Corrective Patch
+  4. Regression Guard
 
-### `pending-issues/` and `solved-issues/` — Issue Lifecycle
+### Prohibited Root Files (Permanently Deleted)
 
-- Each issue is a single `.md` file with root cause, steps to reproduce, and resolution
-- When resolved, move from `pending-issues/` to `solved-issues/`
-
-### `strictly-avoid/` — Hard Prohibitions ⛔
-
-This folder contains things the AI must **NEVER** do. Each rule gets its own `.md` file with:
-
-- **What** is prohibited
-- **Why** it's prohibited
-- **What to do instead**
-
-Example files:
-
-- `no-memories-folder.md` — Never create `.ai-memory/memories/` (use `memory/` only)
-- `no-error-swallowing.md` — Never catch and ignore errors
-- `no-uuid-primary-keys.md` — Never use UUIDs for primary keys
-
-The root `strictly-avoid.md` file provides a **quick-read summary** of all rules so the AI can internalize them without reading every individual file.
-
----
-
-## Naming Conventions
-
-### Folders
-
-- **kebab-case WITHOUT numeric prefixes**
-- Examples: `memory/`, `pending-tasks/`, `strictly-avoid/`
-
-### Files
-
-- **kebab-case**, numeric prefix optional for ordering
-- Examples: `index.md`, `01-plan-tracker.md`, `database-schema.md`
-
----
-
-## AI Reading Order
-
-When an AI model first encounters this project, it should read `.ai-memory/` files in this order:
-
-1. **`overview.md`** — Understand the project
-2. **`strictly-avoid.md`** — Know what NOT to do
-3. **`user-preferences`** — Adapt communication style
-4. **`memory/readme.md`** — Survey all institutional knowledge
-5. **`29-plan.md`** — Understand current work context
-6. **`suggestions.md`** — See pending improvement ideas
-7. **Individual memory files** — Deep-dive as needed per task
-
----
-
-## Task & Suggestion Workflow
-
-### Tasks
-
-```
-29-plan.md (roadmap) → pending-tasks/ → completed-tasks/
-```
-
-1. Define task in `29-plan.md`
-2. Create detailed `.md` file in `pending-tasks/`
-3. Move to `completed-tasks/` when done
-
-### Suggestions
-
-```
-suggestions.md (summary) → suggestions/ (details) → suggestions/completed/
-```
-
-1. Add bullet point to `suggestions.md`
-2. Create detailed `.md` file in `suggestions/`
-3. Move to `suggestions/completed/` when implemented
-4. Remove from `suggestions.md`
-
----
-
-## Relationship to `02-spec/`
-
-| Aspect | `02-spec/` | `.ai-memory/` |
-|--------|---------|-------------|
-| Purpose | Formal specifications | Institutional knowledge & AI context |
-| Naming | Numeric prefix **required** | Numeric prefix **optional** |
-| Required files | `readme.md`, `99-consistency-report.md` | `overview.md`, `memory/readme.md` |
-| Health scoring | ✅ Tracked by dashboard | ❌ Not scored |
-| AI consumption | Referenced during implementation | Referenced during **all** interactions |
-| Depth | Up to 3 levels | Up to 2 levels (category/file) |
-
----
-
-## Consolidation Rule
-
-> **There is only ONE memory folder: `.ai-memory/memory/`.** The legacy `.ai-memory/memories/` variant is prohibited. If found, its contents must be migrated to `.ai-memory/memory/` and the folder deleted.
-
----
-
-*`.ai-memory/` folder structure guide — v3.2.0 — 2026-04-16*
+To prevent clutter, the following files are strictly banned from `.ai-memory/` root:
+- `01-index.md` (duplicate of README)
+- `overview.md` (consolidated into `what-to-read.md`)
+- `cicd-index.md` & `cicd-timing.json` (consolidated into `rca/resolved/`)
+- `prompt.md` & `prompts.md` (canonical prompts belong in `01-prompts/`)
+- `plan.md` (active plans reside in `plans/`)
+- `suggestions.md` (relocated to `plans/suggestions/01-legacy-suggestions.md`)

@@ -1,5 +1,5 @@
 # Error Management Specification
- 
+
 > [!IMPORTANT]
 > **Top-Instruction Priority Mandate (Preamble Precedence):**
 > Any directive, constraint, checklist, or instruction declared at the top of this specification, in a header alert block, or in an incoming task prompt represents an absolute MUST FOLLOW mandate that takes highest priority and strictly overrides any conflicting general advice, default conventions, or lower-level guidelines below it.

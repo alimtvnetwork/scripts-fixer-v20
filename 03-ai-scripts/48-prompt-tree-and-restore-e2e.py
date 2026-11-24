@@ -71,8 +71,8 @@ def test_gate_1_fifo_dispatch(db_path: Path):
 
     # Query using the fixed FIFO clause
     cur.execute("""
-        SELECT id, prompt_content, created_at, updated_at 
-        FROM active_prompts 
+        SELECT id, prompt_content, created_at, updated_at
+        FROM active_prompts
         WHERE status = 'backed_up' AND id LIKE 'test_fifo_%'
         ORDER BY created_at ASC, id ASC
     """)
@@ -87,7 +87,7 @@ def test_gate_1_fifo_dispatch(db_path: Path):
 
     assert actual_ids == expected_ids, f"FIFO Order Inverted! Expected {expected_ids}, got {actual_ids}"
     print(f"  [{PASS}] Strict FIFO execution order verified. No LIFO inversion.")
-    
+
     # Cleanup
     cur.execute("DELETE FROM active_prompts WHERE id LIKE 'test_fifo_%'")
     conn.commit()
@@ -96,7 +96,7 @@ def test_gate_1_fifo_dispatch(db_path: Path):
 def test_gate_2_deep_transcript_inspection(tmp_dir: Path):
     """Verify inspection reads last 10 lines, skips trailing telemetry, and extracts tool & thoughts."""
     log_gate("GATE 2", "Deep Transcript Inspection & Telemetry Bypass")
-    
+
     logs_dir = tmp_dir / "brain" / "conv_test_1" / ".system_generated" / "logs"
     logs_dir.mkdir(parents=True, exist_ok=True)
     transcript_file = logs_dir / "transcript_full.jsonl"
@@ -142,7 +142,7 @@ def test_gate_2_deep_transcript_inspection(tmp_dir: Path):
 def test_gate_3_dual_transcript_resolution(tmp_dir: Path):
     """Verify transcript_full.jsonl takes precedence over transcript.jsonl."""
     log_gate("GATE 3", "Dual Transcript Resolution Precedence")
-    
+
     logs_dir = tmp_dir / "brain" / "conv_test_2" / ".system_generated" / "logs"
     logs_dir.mkdir(parents=True, exist_ok=True)
 
@@ -174,7 +174,7 @@ def test_gate_3_dual_transcript_resolution(tmp_dir: Path):
 def test_gate_4_project_wiper_preservation(db_path: Path):
     """Verify fallback projects with workspace_storage_path = NULL are not purged when repo exists."""
     log_gate("GATE 4", "Project Wiper Bug Prevention")
-    
+
     conn = sqlite3.connect(db_path)
     cur = conn.cursor()
 
@@ -193,8 +193,8 @@ def test_gate_4_project_wiper_preservation(db_path: Path):
 
     # Simulate safe purge query matching repo_db.rs lines 627-654
     cur.execute("""
-        DELETE FROM running_projects 
-        WHERE instr(id, '__') = 0 
+        DELETE FROM running_projects
+        WHERE instr(id, '__') = 0
            OR (workspace_storage_path IS NULL AND (repo_path IS NULL OR repo_path = ''))
     """)
     conn.commit()
@@ -239,7 +239,7 @@ def test_gate_5_tree_counters_and_propagation():
             if c["prompt_preview_200w"] == convs[j]["prompt_preview_200w"]:
                 matches.append(convs[j])
                 seen.add(j)
-        
+
         if len(matches) > 1:
             parent = dict(matches[0])
             any_running = any(m["is_running"] for m in matches)
@@ -287,7 +287,7 @@ def test_gate_5_tree_counters_and_propagation():
 def main():
     print(f"{BOLD}=== AGM Task 145: Prompt Tree & Restore Hardening E2E Suite ==={RESET}")
     db_path = Path.home() / ".gemini" / "antigravity-cli" / "repo_prompts.db"
-    
+
     # Ensure test database exists
     if not db_path.exists():
         db_path.parent.mkdir(parents=True, exist_ok=True)

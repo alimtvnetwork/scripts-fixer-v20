@@ -60,7 +60,7 @@ When multiple autonomous agents are present (A >= 2, H >= 2):
 6. [ ] [/goal](slashCommand;goal) Phase 2 (Step B - Size Tier & Formatting): Enforce <= 8–15 line function decomposition, single return types, and clean formatting.
 7. [ ] [/goal](slashCommand;goal) Phase 2 (Step C - Linter Verification): Execute targeted file-level linters to verify 0 remaining violations across all modified files (`exit 0`).
 8. [ ] [/goal](slashCommand;goal) Phase 2 (Heatmap Telemetry & File Recording): Record file read/edit decisions with reasoning via `gitmap heatmap log`, inspect contention leases via `gitmap agent heatmap`, and Atomically record modified files into `.ai-memory/temp/recent-file-changes.json` under lock (`python 03-ai-scripts/33-test-inventory-generator.py --record <files...>`). DO NOT run full CI/CD runners (`06-cicd-local-runner.py`), build checks, or test suites during routine turns.
-9. [ ] [/learn](slashCommand;learn) Ingest `.ai-memory/memory/readme.md` for project memory index and past learnings.
+9. [ ] [/learn](slashCommand;learn) Ingest `.ai-memory/learned/readme.md` for project memory index and past learnings.
 10. [ ] [/learn](slashCommand;learn) Ingest `.ai-memory/strictly-avoid.md` for banned anti-patterns and strict constraints.
 11. [ ] [/learn](slashCommand;learn) Ingest `02-spec/02-coding-guidelines/02-canonical-size-tier.md` for canonical file and function size tiers.
 12. [ ] [/learn](slashCommand;learn) Ingest `02-spec/02-coding-guidelines/01-cross-language/readme.md` for hallucination prevention and micro-tasking.
@@ -223,7 +223,7 @@ Every prompt in this suite operates using a strict two-phase loop budget:
 
 ### Phase 1: Scan, Spec & Subtasks (Steps 1 to N/2)
 
-1. **Memory Ingestion:** Ingest `.ai-memory/coding-guidelines.md`, `.ai-memory/strictly-avoid.md`, and recent issues in `.ai-memory/memory/issues/`.
+1. **Memory Ingestion:** Ingest `.ai-memory/coding-guidelines.md`, `.ai-memory/strictly-avoid.md`, and recent issues in `.ai-memory/learned/issues/`.
 2. **High-Speed Violation Scan:** Run `python 03-ai-scripts/11-fast-file-scanner.py --lang <lang> --limit 100 --stats`, `python 03-ai-scripts/12-fast-cached-grep.py --pattern "<pattern>" --limit 50`, `python 03-ai-scripts/17-fast-file-reader.py --list-folder <dir> --limit 50`, and `python 03-ai-scripts/18-codebase-topology-discoverer.py --summary` to detect AST violations and explore directory topologies in milliseconds without tool truncation.
 3. **Master Spec Creation:** Write `.ai-memory/plans/pending/xx-<slug>-audit.md` capturing the full violation ledger, affected files, line numbers, and acceptance criteria.
 4. **Subtask Decomposition:** Break down the master plan into granular subtasks in `.ai-memory/plans/subtasks/xx-<slug>/01-<subtask-title>.md`, `02-<subtask-title>.md`, etc.
@@ -303,7 +303,7 @@ To guarantee full execution without stopping after planning mode, the master orc
 ### 1. 2-Agent Concurrency & Strict `.ai-memory/` Bounding
 
 - **2-Agent Limit (Max 2 Threads Each):** When dispatching work, spawn **at most 2 sub-agents concurrently**, with **no more than 2 threads per agent**.
-- **Strict Folder Bounding (`.ai-memory/`):** Subagents can ONLY write planning files, subtasks, status reports, and logs inside `.ai-memory/` (`.ai-memory/plans/`, `.ai-memory/readme.md`, `.ai-memory/memory/issues/`).
+- **Strict Folder Bounding (`.ai-memory/`):** Subagents can ONLY write planning files, subtasks, status reports, and logs inside `.ai-memory/` (`.ai-memory/plans/`, `.ai-memory/readme.md`, `.ai-memory/learned/issues/`).
 - **Context Diet:** Provide subagents with minimal instructions (e.g. "Read subtask file `.ai-memory/plans/subtasks/xx-<parent-slug>/01-<subtask-title>.md` and execute it"). Do not paste huge files into agent prompts.
 - **Strict Relative Git Paths Only:** Only add the relative paths, never add the absolute path during your work, and ensure this is respected on the release page and in release notes as well (TOTAL BAN on `file:///` URIs and absolute paths).
 
@@ -320,6 +320,6 @@ To guarantee full execution without stopping after planning mode, the master orc
 - Subagents refactor code following all coding guidelines (<= 8–15 line functions, single return types, universal `*AppError` wrapping, Unix LF line endings).
 - Move completed subtasks from `.ai-memory/plans/subtasks/` to `.ai-memory/plans/completed/` and update `.ai-memory/plans/readme.md`.
 - **Failure Memory & Feedback Loop:** If a subagent fails:
-  - Rollback dirty working tree and log error details to `.ai-memory/plan.md` and `.ai-memory/memory/issues/xx-failure.md`.
+  - Rollback dirty working tree and log error details to `.ai-memory/plans/readme.md` and `.ai-memory/learned/issues/xx-failure.md`.
   - The next subagent spawned MUST read the previous failure log first, record it as a pending memory task, and implement the necessary fix.
 - Execute targeted local linters on modified files ensuring `exit 0` before concluding. DO NOT run the full CI/CD pipeline runner (`06-cicd-local-runner.py`) during routine loops.

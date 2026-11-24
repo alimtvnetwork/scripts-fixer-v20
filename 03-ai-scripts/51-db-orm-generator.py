@@ -380,7 +380,7 @@ SCHEMA_VIEWS: list[ViewDef] = [
             ("TriggerAction", "Option<String>"),
             ("CreatedAt", "i64"),
         ],
-        sql_query="""SELECT 
+        sql_query="""SELECT
     ErrorLogId,
     ErrorCode,
     Severity,
@@ -402,7 +402,7 @@ LIMIT 100""",
             ("FirstSeenAt", "i64"),
             ("LastSeenAt", "i64"),
         ],
-        sql_query="""SELECT 
+        sql_query="""SELECT
     ErrorCode,
     Severity,
     COUNT(*) AS OccurrencesCount,
@@ -434,7 +434,7 @@ ORDER BY OccurrencesCount DESC""",
             ("ImagePayload", "Option<String>"),
             ("IsProjectRunning", "Option<bool>"),
         ],
-        sql_query="""SELECT 
+        sql_query="""SELECT
     p.ActivePromptId,
     p.RunningProjectId,
     p.InstanceId,
@@ -466,7 +466,7 @@ LEFT JOIN RunningProject r ON p.RunningProjectId = r.RunningProjectId""",
             ("Status", "String"),
             ("CreatedAt", "i64"),
         ],
-        sql_query="""SELECT 
+        sql_query="""SELECT
     p.ActivePromptId,
     p.RunningProjectId,
     p.InstanceId,
@@ -504,7 +504,7 @@ ORDER BY p.CreatedAt ASC, p.ActivePromptId ASC""",
             ("InstanceId", "String"),
             ("BatchFilePath", "String"),
         ],
-        sql_query="""SELECT 
+        sql_query="""SELECT
     pb.PromptBackupId,
     pb.BackupBatchId,
     pb.OriginalPromptId,
@@ -536,7 +536,7 @@ ORDER BY pb.CreatedAt ASC, pb.PromptBackupId ASC""",
             ("TotalBackupsCount", "i64"),
             ("RestoredCount", "i64"),
         ],
-        sql_query="""SELECT 
+        sql_query="""SELECT
     bb.BackupBatchId,
     bb.CreatedAt,
     bb.PromptsCount,
@@ -570,7 +570,7 @@ ORDER BY bb.CreatedAt DESC""",
             ("CreatedAt", "i64"),
             ("FinishedAt", "Option<i64>"),
         ],
-        sql_query="""SELECT 
+        sql_query="""SELECT
     TaskHistoryId,
     Action,
     ActionCode,

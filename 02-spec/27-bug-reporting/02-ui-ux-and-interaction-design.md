@@ -4,88 +4,87 @@
 
 The Bug Reporting UI adheres to the **Tokyo Night Dark Glassmorphic Theme** (`#0c101a` deep navy canvas, `#151c2e` elevated card containers, `rgba(255,255,255,0.08)` borders, and cyan/emerald status accents).
 
-### Component 1: Floating Recorder HUD Pill
-A compact, 32px height floating status pill docked at the top center of the viewport:
+### Component 1: Floating Recorder HUD (5–6px Radius, Draggable, Collapsible)
+A compact, 32px height floating status bar with 5–6px corner radius (`rounded-md` / `rounded-[6px]`):
 
 ```
-+-----------------------------------------------------------------------------------------+
-| [🔴 REC 00:44] | [Step #7] | [Snap #6] | [📸 Note] | [💬 Chat] | [⏸ Pause] | [⏹ Stop] | [⚙] |
-+-----------------------------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------+
+| [06-bug] 02:02 | [Step #1 · 1 snaps] | [📸 Snap | 💬 Note | ⏸ Pause | ⏹ Stop | 🚀 IDE v] | [^] [X] |
++--------------------------------------------------------------------------------------------------+
 ```
-- **State Indicators**:
-  - Recording Active: Glowing red pulsating badge (`#f43f5e`, `animate-pulse`).
-  - Paused: Warm amber badge (`#f59e0b`).
-  - Loading / Hydrating: Compact spinning `Loader2` skeleton (`data-testid="recorder-launcher-skeleton"`, `aria-busy="true"`).
-- **Controls**:
-  - `Snap Note`: Takes an instant high-resolution screenshot and prompts for a human annotation.
-  - `Step Counter`: Interactive button displaying current step count; clicking opens the **Event Explorer Modal**.
-  - `Stop Button`: Finalizes session and immediately launches the **Bug Summary & Export Modal**.
+- **Corner Radius Invariant**: Strictly 5px to 6px (`rounded-md` / `rounded-[6px]`); large `rounded-full` pill shapes are prohibited.
+- **Free-Form Viewport Dragging**: Supports pointer dragging with viewport boundary clamping so the HUD can be positioned anywhere across screen coordinates without escaping bounds.
+- **Collapsible Minimization**:
+  - Clicking the `^` chevron collapses the HUD into a compact 28px height badge:
+    `[06-bug] 02:02 [Expand ^]` with `rounded-[6px]`.
+  - Clicking `Expand` or dragging restores the full action toolbar.
+- **Unclipped Dropdown Capsule**:
+  - Segmented button capsules MUST NOT use `overflow-hidden` on the container div, as this clips child absolute dropdown menus (`z-[10100]`).
+  - Border rounding is applied strictly to outer button edges (`rounded-l-md` / `rounded-r-md`).
+- **Self-Trace Exclusion Invariant**:
+  - Every HUD element and modal is marked with `data-recorder-hud="true"` and `data-recorder-ui="true"` to prevent self-recursive recording.
 
 ---
 
-## 2. Bug Summary & Export Modal (Responsive Layout)
+## 2. Event Explorer Modal: 4-Tier Hierarchy & Fixed Column Resizing
+
+The Event Explorer provides detailed forensic inspection of recorded user interactions, DOM telemetry, and backend code execution.
 
 ```
-+---------------------------------------------------------------------------------------+
-|  REPORT DEFECT / RECORDED BUG                                                [X Close]|
-+---------------------------------------------------------------------------------------+
-|  Title:           [ IC Pin 1 False Defect on Pockets 2 and 4                        ]  |
-|  Category:        [ (v) Inspection Defect | Crash/Error | Performance | Other        ]  |
-|                                                                                       |
-|  Expected Behavior:                                                                   |
-|  [ Pin 1 detector should recognize 24px circular fiducial with >85% confidence.     ]  |
-|                                                                                       |
-|  Actual Behavior:                                                                     |
-|  [ Returns 0.00 score and flags FALSE_DEFECT due to contrast thresholding at 170.    ]  |
-|                                                                                       |
-|  MACHINE ENVIRONMENT (Auto-Captured):                                                 |
-|  +---------------------------------------------------------------------------------+  |
-|  | Host: LAB-INSPECT-04 | OS: Windows 11 (10.0.26100) | Reporter: eng-operator-01  |  |
-|  | Arch: x86_64 | Python: 3.13.0 | Screen: 1920x1080 (DPR: 1.25) [Edit Info]       |  |
-|  +---------------------------------------------------------------------------------+  |
-|                                                                                       |
-|  PROJECT BUNDLE ATTACHMENT:                                                           |
-|  [x] Include full project configuration, rulesets, tolerances & reference images       |
-|                                                                                       |
-|  [📥 Export ZIP]  [📋 Copy V6 Prompt]  [📋 Copy V7 Prompt]  [✉ Email]  [☁ Cloud Sync] |
-+---------------------------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------+
+|  Recorded Telemetry Stream              [ Active Session #1 (3 steps) v ]       [Replay] [IDE v] [X]  |
++--------------------------------------------------------------------------------------------------+
+|  [All | Interaction | Snap | Note | Error]                                                       |
+|-------------------------------------+ |----------------------------------------------------------|
+| Step #1: Clicked "Focus IDE"        | | TIER 1: BACKEND EXECUTION CONTEXT                        |
+| 10:08:30 PM · Route: /instances     | | Backend Fn: focus_resolved_conversation                  |
+| Target: button#btn-focus-ide        | | Source File: src-tauri/src/modules/instance/focus.rs:71  |
+| [📋 Copy Step Prompt & CLI]         | | Invocation:  invoke.focus_or_launch_instance             |
+|                                     | | Status:      E7001 (Failed to activate conversation)     |
+| Step #2: Input in Prompt Box        | |----------------------------------------------------------|
+| 10:08:45 PM · Route: /instances     | | TIER 2: FULL-PAGE SNAPSHOT PREVIEW                       |
+| Target: textarea#prompt-input       | | [ Viewport Image with Animated Red Locator Ring ]        |
+| [📋 Copy Step Prompt & CLI]         | | [< Prev Image]                         [Next Image >]    |
+|                                     | |----------------------------------------------------------|
+| Step #3: Clicked "Send Prompt"      | | TIER 3: TARGET ELEMENT & DOM CONTEXT                     |
+| 10:09:02 PM · Route: /instances     | | Label: Focus IDE (Default) · Tag: button                 |
+| Target: button#btn-send-now         | | XPath: /div[1]/nav[1]/div[1]/button#btn-focus-ide        |
+| [📋 Copy Step Prompt & CLI]         | |----------------------------------------------------------|
+|                                     | | TIER 4: RAW FORMATTED JSON SEGMENT                       |
+|                                     | | { "id": "evt-01", "type": "click", "stepNumber": 1 ... } |
+|                                     | | [📋 Copy Formatted JSON]                                 |
++-------------------------------------+------------------------------------------------------------+
 ```
+
+### Key Interaction Rules:
+1. **Constant-Width Resize Handle**: The vertical resize divider between the event list and details inspector maintains a strictly constant width (`w-1.5`). Dynamic width expansions (`hover:w-2 -ml-0.5`) are strictly prohibited to prevent layout jitter.
+2. **Zero-Padded Human Bug IDs**: Bug session identifiers are presented as zero-padded numbers (`#01`, `#02`, `#06`), and event step IDs follow the composite format `01|05` or `06|02` for immediate human recognizability in SQLite and CLI workflows.
+3. **Dual-Mode Visual Snapshot Preview (Tier 2)**: Full-page screen snapshots support dual before/after verification via a segmented `[Before | After]` toggle capsule. `Before` shows the instantaneous cursor interaction with an animated red locator ring; `After` captures the settled post-action DOM transition (180ms delay).
+4. **Z-Index Layer Coordination**: Event Explorer and Previous Bugs modals operate at elevated `z-[100100]` / `z-[100200]`. Underlying modals (such as `PromptTreeViewModal` at `z-[99999]`) dynamically drop to `z-[99980]` with `pointer-events-none opacity-40` when recorder modals are active to eliminate visual occlusion.
+5. **Fast Deployment Tooltips**: Native HTML `title` attributes with browser latency are replaced by instant `<Tooltip delayMs={0}>` dark-glass wrappers across action buttons.
+6. **Clean Header Title**: Prohibits redundant count capsules (`3 Steps · 3 Snaps`) in the title; displays friendly session sequence names (`Active Session #1`) instead of raw UUID strings (`rec-...`).
+7. **Lightbox Return Invariant**: Dismissing the full-screen screenshot preview returns the user directly to the snapshot event table with the active step preserved.
+8. **Per-Step Copy Action**:
+   - Each event card features a 1-click copy action generating:
+     1. A targeted prompt to diagnose and fix that specific step failure.
+     2. The exact CLI inspection command: `agm bug event <session-id> <step-no>`.
+     3. 2–3 step blast radius context (previous step, current step, next step).
 
 ---
 
-## 3. Bug Tracker: Previous Bugs Modal with Import / Export Section
+## 3. Bug Tracker: Previous Bugs Modal with Unclipped Dropdowns
 
 ```
-+---------------------------------------------------------------------------------------+
-|  HISTORICAL BUG SESSIONS & TELEMETRY ARCHIVE                                  [X Close]|
-+---------------------------------------------------------------------------------------+
-|  IMPORT / EXPORT BUNDLE DOCK:                                                         |
-|  +---------------------------------------------------------------------------------+  |
-|  |  📥 DRAG & DROP .BUG.ZIP HERE  OR  [ Browse Files ]                             |  |
-|  |  Directly import and restore recorded sessions, steps, screenshots & full project|  |
-|  +---------------------------------------------------------------------------------+  |
-|                                                                                       |
-|  Search: [ Filter by title, route, machine... ]    Category: [ All Categories (v) ]   |
-|  Showing 24 Recorded Sessions                                            [🔄 Refresh]  |
-|                                                                                       |
-|  +---------------------------------------------------------------------------------+  |
-|  | 🔴 T102 Laser Marking Misalignment (Step #14 · 42s)       03-Nov-26 13:42:10   |  |
-|  | Host: LAB-WORKSTATION-02 · User: alim · OS: Windows 11 · Category: Inspection   |  |
-|  | Steps: 14 | Snaps: 12 | Errors: 1 | Project: SMT Demo Carrier Strip (3 Rules)    |  |
-|  | [📦 Export Full Bundle] [🔍 View Steps] [📋 Copy V7 Prompt] [✉ Resend Email]   |  |
-|  +---------------------------------------------------------------------------------+  |
-|  | 🟡 Runner Script Port Conflict on Restart (Step #4 · 12s)   03-Nov-26 12:15:02   |  |
-|  | Host: CI-RUNNER-NODE-01 · User: runner · OS: Ubuntu 24.04 · Category: Crash    |  |
-|  | Steps: 4 | Snaps: 2 | Errors: 2 | Project: N/A (CLI Run Engine)                 |  |
-|  | [📦 Export Full Bundle] [🔍 View Steps] [📋 Copy V7 Prompt] [✉ Resend Email]   |  |
-|  +---------------------------------------------------------------------------------+  |
-+---------------------------------------------------------------------------------------+
++--------------------------------------------------------------------------------------------------+
+|  HISTORICAL BUG SESSIONS & TELEMETRY ARCHIVE                                             [X Close]|
++--------------------------------------------------------------------------------------------------+
+|  Search: [ Filter by title, route, machine... ]              Showing 24 Sessions      [🔄 Refresh]|
+|                                                                                                  |
+|  +--------------------------------------------------------------------------------------------+  |
+|  | 06-bug: Focus Conversation Timeout (3 steps · 1 snaps)                15-Nov-26 10:08:30    |  |
+|  | Route: /instances → /instances · Duration: 00:32 · Backend Error: E7001                     |  |
+|  | [▶ Replay] [Activity Events] [🚀 IDE v] [📄 MD]                                             |  |
+|  +--------------------------------------------------------------------------------------------+  |
++--------------------------------------------------------------------------------------------------+
 ```
-
----
-
-## 4. Responsive Breakpoint Standards
-
-- **Desktop ($\ge 1280px$)**: Dual-column modal showing session metadata list on left and instant event timeline / screenshot preview on right.
-- **Laptop / Tablet ($768px - 1279px$)**: Stacked layout with collapsible import dropzone and full-width session cards.
-- **Mobile / Compact ($\le 767px$)**: Single-column vertical scroll, sticky top search/filter header, compact button icons.
+- **Unclipped Dropdowns**: The right-hand actions segmented capsule (`[▶ Replay] [Activity Events] [🚀 IDE v] [📄 MD]`) uses `overflow-visible` so the export dropdown renders cleanly above or below without container clipping.

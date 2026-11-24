@@ -27,12 +27,12 @@ ${Input Text Verbatim}
 1. Git pull BEFORE starting any work — try `gitmap pull <repo path>` first (or `gitmap pull` in repo folder); fallback to `git pull` and resolve merge conflicts so repository is clean and current.
 2. Write architectural spec under `02-spec/21-app/XX-<slug>/01-architecture-spec.md` adhering to `02-spec/01-spec-authoring-guide/` (XX is zero-padded sequence).
 3. Enqueue master plan in `.ai-memory/plans/pending/XX-<slug>.md` and subtasks under `.ai-memory/plans/subtasks/XX-<slug>/` with exactly 400 granular self-looping steps (Phase 1: 1–200 Planning & Spec, Phase 2: 201–400 Subtasks & Acceptance Criteria).
-4. Record any ambiguity to `.ai-memory/ambiguous-questions/01-new-ambiguity/XX-<slug>-ambiguity.md` and proceed autonomously without asking user.
+4. Record any ambiguity to `.ai-memory/ambiguity/new/XX-<slug>-ambiguity.md` and proceed autonomously without asking user.
 5. At the end of planning, generate complete AI instructions using @[execute-ai-instruction-writer](directory;.agents/skills/execute-ai-instruction-writer).
 6. Search codebase exclusively via GitMap (`gitmap aum search`, `gitmap find`, `gitmap cat`, `gitmap ps`, `gitmap py`); TOTAL BAN on rg, ripgrep, grep, Select-String.
 7. Strictly use relative Git paths (`02-spec/...`, `.ai-memory/...`, `cmd/...`); never add absolute filesystem paths.
 8. STRICTLY PLANNING ONLY: Total ban on code modification, compilation, local builds, or test suite execution (NO-BUILD, NO-TEST, NO-CODE-CHANGES).
-9. Enforce Coding Guidelines & Error Management invariants per @[coding-guidelines](directory;.agents/skills/coding-guidelines) and @[error-management](directory;.agents/skills/error-management).
+9. Enforce Coding Guidelines checklist per [.ai-memory/coding-guidelines.md](file;.ai-memory/coding-guidelines.md) and @[error-management](directory;.agents/skills/error-management).
 10. Define binary acceptance criteria and verification requirements for every subtask before closing the turn.
 11. ....other steps and more steps sequentially from the input direction. Create more steps in between.
 
@@ -51,7 +51,7 @@ ${Input Text Verbatim}
 - [/plan](slashCommand;plan) first before doing work for improved execution without errors following Coding Guidelines.
 - Formulate master plan in exactly 400 granular self-looping steps (Phase 1: 1–200, Phase 2: 201–400) detailing an actionable AI roadmap.
 - At end of planning, generate complete AI instructions using @[execute-ai-instruction-writer](directory;.agents/skills/execute-ai-instruction-writer) so AI execution follows through accurately.
-- Ambiguity Protocol: Record any ambiguity to `.ai-memory/ambiguous-questions/01-new-ambiguity/XX-<slug>-ambiguity.md`; proceed autonomously without asking user.
+- Ambiguity Protocol: Record any ambiguity to `.ai-memory/ambiguity/new/XX-<slug>-ambiguity.md`; proceed autonomously without asking user.
 - All planning protocols, concurrency rules (A=2, H=2), and no-build/no-test constraints are offboarded to @[plan-spec-steps-v2](directory;.agents/skills/plan-spec-steps-v2).
 - Keep created specifications in `02-spec/21-app/XX-<slug>/` and plans in `.ai-memory/plans/pending/XX-<slug>.md` without starting code execution.
 - Track in-flight touches and prevent write collisions using GitMap RC Heatmap (`gitmap rc heatmap status` / `tree` / `live` / `sync`).

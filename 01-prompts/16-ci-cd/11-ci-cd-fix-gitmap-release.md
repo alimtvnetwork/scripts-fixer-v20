@@ -24,7 +24,7 @@ WAVES = ceil(subtasks / (A x H))
 
 [/learn](slashCommand;learn) Master the GitMap pipeline self-healing protocol: run `gitmap pe -t` to watch workflow runs with dynamic ETA timeline. Extract exact failing lines from `gitmap pe`. NEVER disable CI/CD checks, never comment out validation steps (R1), and always enforce zero-storage Actions rules. Each rule is stated once (R1 to R16) and cited by ID. If needed, request assistance or follow companion release skills: [ci-cd-fix-with-release](directory;.agents/skills/ci-cd-fix-with-release) or [minor-bump](directory;.agents/skills/minor-bump).
 
-[/plan](slashCommand;plan) Execute thorough step-by-step root cause analysis in the repository before touching code. Formulate a 4-part RCA document in `.ai-memory/cicd-issues/` before dispatching worker waves to apply code repairs.
+[/plan](slashCommand;plan) Execute thorough step-by-step root cause analysis in the repository before touching code. Formulate a 4-part RCA document in `.ai-memory/rca/resolved/` before dispatching worker waves to apply code repairs.
 
 ### 🚨 MANDATORY SUBAGENT SPAWNING GATE (A = 2, H = 2 — ZERO SOLO EXECUTION ALLOWED)
 
@@ -57,7 +57,7 @@ Execute this workflow in a continuous self-loop until all CI/CD checks pass:
 3. If all workflows are green (`✔ clean` / pass), exit loop with success.
 
 ### Step 2: Grounded 4-Part Root Cause Analysis (RCA)
-For every detected failure, document a 4-part RCA under `.ai-memory/cicd-issues/`:
+For every detected failure, document a 4-part RCA under `.ai-memory/rca/resolved/`:
 - **Part 1 (Symptom):** Exact workflow, job, step name, and error message.
 - **Part 2 (Root Cause):** Underlying code defect, missing argument, drift, or syntax violation.
 - **Part 3 (Surgical Fix):** Minimal file-scoped change resolving the cause without modifying CI triggers.

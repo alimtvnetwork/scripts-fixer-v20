@@ -164,7 +164,7 @@ internal/enums/
 
 - Error Code Registry <!-- external: 02-spec/03-error-manage/03-error-code-registry/01-registry.md -->
 - Split DB Architecture <!-- external: 02-spec/05-split-db-architecture/readme.md -->
-- Coding Guidelines Memory <!-- external: .ai-memory/memories/constraints/coding-guidelines.md -->
+- Coding Guidelines Memory <!-- external: .ai-memory/learned/constraints/coding-guidelines.md -->
 
 ---
 

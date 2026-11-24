@@ -27,21 +27,22 @@ Error codes are defined as string constants in `codes.go`. **No magic strings.**
 | E13xxx | Session errors |
 | E14xxx | Crypto errors |
 
-### 6.1 Error Type Enum Pattern (Best Practice)
+### 6.1 Error Type Enum Pattern (Strict Anti-Magic-String Mandate)
 
-Instead of passing raw string codes and duplicate messages, define error types as **byte enums** in the `apperrtype` package. Each enum maps to both a code and a default message via a detail map.
+> [!CAUTION]
+> **TOTAL BAN ON RAW MAGIC STRINGS:** Passing raw string error codes (e.g., `"E2010"`) or string-literal error categories is strictly prohibited. Error types MUST be declared as strongly-typed enum variants from `errtype.Variation`.
+> Canonical source: [`04-code/golang/pkg/appfault/`](../../../../../04-code/golang/pkg/appfault/) and [`04-code/golang/examples/`](../../../../../04-code/golang/examples/).
 
-**Three maturity levels:**
+**Enforced Construction Pattern:**
 
 ```go
-// Level 1 — raw strings (acceptable for prototyping, not for production)
-apperror.New("E2010", "site not found")
+// ❌ BANNED: Raw strings (Causes AI hallucinations and magic string violations)
+// apperror.New("E2010", "site not found")
 
-// Level 2 — enum code, manual message (better — no magic code strings)
-apperror.New(apperrtype.SiteNotFound, "site not found")
-
-// Level 3 — enum with built-in message (best — zero duplication)
-apperror.NewType(apperrtype.SiteNotFound)
+// ✅ MANDATORY: Enum variant from errtype package with strongly typed codes
+fault := appfault.New(errtype.SiteNotFound, "site record could not be found").
+    WithOp("SiteService.FindById").
+    WithVar("siteId", id)
 ```
 
 **Structure (v2.0 — single `Variation uint16` enum):**

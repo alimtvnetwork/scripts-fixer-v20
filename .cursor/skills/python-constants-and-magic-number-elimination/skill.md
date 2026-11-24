@@ -5,7 +5,7 @@ description: "Executes the \u274c ANTI-PATTERN: Repeated magic tuples, magic cal
 
 # ❌ ANTI-PATTERN: Repeated magic tuples, magic calculations ( 4 + 2, 7), cryptic coordinates (x2, y2)
 
-> **Invocation:** `@[python-constants-and-magic-number-elimination](directory;.cursor/skills/python-constants-and-magic-number-elimination)`
+> **Invocation:** `@[python-constants-and-magic-number-elimination](directory;.agents/skills/python-constants-and-magic-number-elimination)`
 
 Source prompt: `01-prompts/15-cg-execute/27-python-constants-and-magic-number-elimination.md`
 

@@ -368,7 +368,7 @@ Execute this prompt via a strict 3-Phase pipeline with mandatory subagents and G
 - **R11 Strict Relative Git Paths & Lowercase Hygiene.** Strict ban on absolute paths (`C:\...`, `/home/...`) and `file:///` URIs. Only add relative paths starting from git root. All filenames, documentation, and specs strictly lowercase.
 - **R12 No Polling / Immediate Turn Yielding.** When calling `invoke_subagent`, make it the sole tool action at turn end, print progress line, and **STOP CALLING TOOLS**. Never poll in a loop.
 - **R13 Two-Strike Retry Cap & Anti-Looping.** A tool failing twice: worker replies `STATUS: BLOCKED` with exact error and stops. Lead takes over. Subtask failing two remediation rounds is marked `FAILED` with RCA.
-- **R14 100% Ambiguity & Decision Boundaries.** Non-blocking: choose conservative option, log in ledger `Assumptions:`, proceed. Blocking: `ask_question` once, log in `.ai-memory/ambiguous-questions/01-new-ambiguity/`, continue unblocked tasks.
+- **R14 100% Ambiguity & Decision Boundaries.** Non-blocking: choose conservative option, log in ledger `Assumptions:`, proceed. Blocking: `ask_question` once, log in `.ai-memory/ambiguity/new/`, continue unblocked tasks.
 - **R15 Zero Generated Artifacts Committed.** Never commit build caches, logs, temp scripts, or newly generated binaries unless repository already tracked them.
 - **R16 Zero Secrets in Standard Repos.** Never write credentials, tokens, passwords, or `.env` contents into tracked files. Offload secrets to `repo-secrets` in work directory via `gitmap rs`.
 

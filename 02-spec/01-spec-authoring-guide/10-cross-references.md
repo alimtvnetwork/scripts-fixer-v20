@@ -54,7 +54,7 @@ See: [GSearch Backend](../../09-gsearch-cli/01-backend/readme.md)
 ### From spec to memories
 
 ```markdown
-See: [Database Standards](../../.ai-memory/memories/architecture/database-standards.md)
+See: [Database Standards](../../.ai-memory/learned/architecture/database-standards.md)
 ```
 
 ---
@@ -71,7 +71,7 @@ Every `readme.md` file should end with a cross-reference table:
 |-----------|----------|
 | Module A | `../XX-module-a/readme.md` |
 | Module B | `../YY-module-b/readme.md` |
-| Memory X | `../../.ai-memory/memories/category/file.md` |
+| Memory X | `../../.ai-memory/learned/category/file.md` |
 ```
 
 ---
@@ -130,7 +130,7 @@ To write the correct relative path, count directory levels:
 
 The health dashboard scanner (`linter-scripts/generate-dashboard-data.cjs`) validates all markdown links:
 
-1. **Scans** every `.md` file in `02-spec/` and `.ai-memory/memories/`
+1. **Scans** every `.md` file in `02-spec/` and `.ai-memory/learned/`
 2. **Extracts** all markdown link patterns (`[text]\(path)` syntax)
 3. **Resolves** relative paths from the source file's location
 4. **Checks** that the target file exists on disk

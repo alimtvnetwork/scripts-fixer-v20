@@ -32,7 +32,7 @@ flowchart TD
 3. If all workflows are green (`✔ clean` / pass), exit loop with success.
 
 ### Step 2: Grounded 4-Part Root Cause Analysis (RCA)
-For every detected failure, document a 4-part RCA under `.ai-memory/cicd-issues/`:
+For every detected failure, document a 4-part RCA under `.ai-memory/rca/resolved/`:
 - **Part 1 (Symptom):** Exact workflow, job, step name, and error message.
 - **Part 2 (Root Cause):** Underlying code defect, missing argument, drift, or syntax violation.
 - **Part 3 (Surgical Fix):** Minimal file-scoped change resolving the cause without modifying CI triggers.

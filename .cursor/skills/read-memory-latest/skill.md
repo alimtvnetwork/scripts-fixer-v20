@@ -5,7 +5,7 @@ description: "Executes the Memory Retrieval, Git Commit History & Project Contex
 
 # Memory Retrieval, Git Commit History & Project Context Ingestion
 
-> **Invocation:** `@[read-memory-latest](directory;.cursor/skills/read-memory-latest)`
+> **Invocation:** `@[read-memory-latest](directory;.agents/skills/read-memory-latest)`
 
 Source prompt: `01-prompts/03-read-write/03-read-memory-latest.md`
 

@@ -16,72 +16,51 @@ This is the **standalone consolidated reference** for the `.ai-memory/` folder s
 
 ```
 .ai-memory/
-├── 01-overview.md                   # AI onboarding — read FIRST
-├── 02-user-preferences              # User communication preferences
-├── 03-strictly-avoid.md             # ⛔ Quick-read prohibition summary
-├── 04-suggestions.md                # Pending suggestions (bullet points)
-├── 05-plan.md                       # Current roadmap / active plan
-├── 06-what-to-read.md               # Router and reading sequence
+├── README.md                        # 🏠 Root Gateway & Router
+├── what-to-read.md                  # 📖 Mandatory Reading Order, Rules 1-12 & Overview (Read Memory)
+├── strictly-avoid.md                # ⛔ Gateway linking to avoid/
+├── folder-structure.md              # 🗺️ Repository & 7-domain architecture map
+├── coding-guidelines.md             # 📜 Standalone guidelines with AI Compliance Checklist
 │
-├── ai-fix-scripts/                  # Persistent AI automation toolchain
-│   ├── readme.md                  # Master catalog & search tag registry
-│   ├── 02-shared-engine.py          # Shared engine: constants, lazy regex, cache
-│   └── 03..20-*.py                  # Specialized linters and runners
-│
-├── plans/                           # Execution hub
-│   ├── readme.md                  # Master plan index
-│   ├── pending/                     # Active parent task specs
-│   ├── subtasks/                    # Bounded micro-tasks (XX-<slug>/)
-│   └── completed/                   # Archived completed plans
-│
-├── memory/                          # Institutional knowledge (SINGULAR)
-│   ├── readme.md                  # Canonical index of all memory files
-│   ├── architecture/                # System architecture decisions
-│   ├── constraints/                 # Hard constraints and rules
-│   ├── done/                        # Completed tasks archive
-│   ├── features/                    # Feature-specific knowledge
-│   ├── issues/                      # Issue-specific knowledge
-│   ├── patterns/                    # Reusable patterns/templates
-│   ├── processes/                   # Workflow processes
-│   ├── project/                     # Project-level status/decisions
-│   ├── standards/                   # Technical standards
-│   ├── style/                       # Code style rules
-│   ├── suggestions/                 # Suggestion tracker
-│   └── workflow/                    # Workflow trackers
-│
-├── prompts/                         # AI Prompt Repository
-│   ├── 01-prompts-category/         # Categorized source prompt modules (01-22)
-│   └── *.md                         # Flat synced prompts
-│
-├── release/                         # Release automation & version bumping
-│   ├── release-method.md            # Version bump specification
-│   ├── bump_versions.py             # Version bumper
-│   └── issues/                      # Release diagnostics
-│
-├── question-and-ambiguity/          # Ambiguity logs & iteration counters
-├── suggestions/                     # Granular suggestion proposals
-├── cicd-issues/                     # CI pipeline diagnostics & RCAs
-└── assets/                          # Mockups, diagrams, media
+├── ambiguity/                       # 1. Ambiguity lifecycle (new/ -> resolved/)
+│   ├── new/                         #    Active questions requiring clarification
+│   ├── resolved/                    #    Settled decisions & historical clarifications
+│   └── README.md                    #    Ambiguity lifecycle protocol
+├── rca/                             # 2. 4-part Root Cause Analysis & Issue Registry
+│   ├── new/                         #    Active defects & open investigations
+│   ├── resolved/                    #    Remediated post-mortems
+│   └── README.md                    #    RCA index & 4-part contract
+├── avoid/                           # 3. Modular negative constraints (00-default.md, 01-04)
+├── learned/                         # 4. Learn Memory: flat sequential knowledge (default-memory.md, readme.md, 01-*)
+├── plans/                           # 5. Execution hub & roadmap backlog
+│   ├── pending/                     #    Queued implementation roadmaps (XX-<slug>.md)
+│   ├── active/                      #    In-flight execution plans
+│   ├── completed/                   #    Archived completed plans
+│   ├── subtasks/                    #    Bounded micro-tasks (XX-<slug>/subtask-*.md)
+│   ├── suggestions/                 #    Autonomous AI proposals staged for review
+│   └── readme.md                    #    Master plan index
+├── research/                        # 6. Technical exploration & spike guidelines
+└── screenshots/                     # 7. UI/UX verification & ground truth imagery (*.png)
 ```
 
 ---
 
 ## Critical Rules
 
-> **There is exactly ONE memory folder: `.ai-memory/memory/` (singular).** The variant `.ai-memory/memories/` (plural) is **prohibited**. If found, migrate contents and delete it.
+> **There is exactly ONE memory folder: `.ai-memory/learned/` (Learn Memory).** The variants `memory/`, `memories/`, and `learn-memory/` are **prohibited**. If found, migrate contents and delete them.
 
-> **`memory/readme.md` is the single source of truth** for all memory files. Every memory file must be listed there. Orphaned files (in `memory/` but not in `index.md`) must be indexed or removed.
+> **`learned/readme.md` is the single source of truth** for all learned knowledge records. Every memory file must be listed there sequentially.
 
 ---
 
 ## AI Reading Order
 
-1. `01-overview.md` → understand the project
-2. `03-strictly-avoid.md` → know what NOT to do
-3. `02-user-preferences` → adapt communication style
-4. `memory/readme.md` → survey all institutional knowledge
-5. `05-plan.md` → understand current work context
-6. `04-suggestions.md` → see pending ideas
+1. `what-to-read.md` → Read Memory: understand the project & mindset rules 1-12
+2. `strictly-avoid.md` → know what NOT to do (links to `avoid/`)
+3. `folder-structure.md` → understand directory architecture
+4. `coding-guidelines.md` → review 10-point AI Compliance Checklist
+5. `learned/readme.md` → survey all flat sequential knowledge
+6. `plans/pending/` → understand current work context
 
 ---
 
@@ -109,7 +88,7 @@ This is the **standalone consolidated reference** for the `.ai-memory/` folder s
 
 ## §X Project Memory — Active Core Rules (Mirror)
 
-This section **mirrors** the operational rules stored in `.ai-memory/memory/readme.md` Core section. A blind AI receiving only the consolidated folder would otherwise miss these — and violate at least three on its first PR. This mirror is **read-only documentation** of the rules; the canonical source remains `mem://index.md`.
+This section **mirrors** the operational rules stored in `.ai-memory/learned/readme.md` Core section. A blind AI receiving only the consolidated folder would otherwise miss these — and violate at least three on its first PR. This mirror is **read-only documentation** of the rules; the canonical source remains `mem://index.md`.
 
 ### X.1 Code-Red Quality Rules
 
@@ -171,4 +150,3 @@ Enforced by `linter-scripts/check-axios-version.sh`.
 The canonical memory lives at `mem://index.md` and is automatically loaded into every Lovable AI session. External AIs have no access to that memory — this section is the only way they will learn these rules.
 
 When updating: edit `mem://index.md` first, then sync this section. The mirror is allowed to lag by at most one minor version.
-

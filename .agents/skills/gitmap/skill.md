@@ -1,6 +1,8 @@
 ---
 name: gitmap
-description: "Autonomous developer companion and CLI for ultra-fast repository scanning, polyglot automation (AUM), pipeline self-healing, process management, and coding guideline enforcement."
+description: >-
+  Autonomous developer companion and CLI for ultra-fast repository scanning, polyglot automation (AUM),
+  pipeline self-healing, process management, coding guideline enforcement, and OS workstation hygiene and optimization.
 ---
 
 # GitMap Autonomous Engineering Skill
@@ -56,6 +58,14 @@ All AI agents operating within GitMap-managed repositories MUST strictly adhere 
 | ❌ `taskkill /F /PID <pid>`, `tasklist`, `kill -9`, raw `Stop-Process` | ✅ `gitmap kill <pid|name|:port> [--force] [--tree]` (alias: `gitmap terminate`), `gitmap ports [port]` | Safe cross-platform process termination with PID/port/name validation, caller self-protection guards, and graceful or forced two-stage shutdown. |
 | ❌ Manual pwsh "Move-Item ...; Copy-Item ...", taskkill + copy on locked running binaries | ✅ `gitmap swap-binary [--from <path>] [--to <path>] [--kill] [--reopen]` | Safely generates an OS script (.ps1 or .sh), closes locking PIDs, rotates active binary to .old, copies new binary, and reopens/verifies version without locked file crashes. |
 | ❌ Raw directory inspection of Tauri apps (`dir src-tauri`, `Get-ChildItem src-tauri`) | ✅ `gitmap lf src-tauri`, `gitmap aum search "<pattern>" src-tauri`, `gitmap pe -f tauri` | High-speed directory inventory and pipeline error filtering optimized for Tauri/Rust desktop projects. |
+| ❌ Ad-hoc manual OS temp file deletion (`Remove-Item $env:TEMP\*`, `rm -rf /tmp/*`), terminal history clearing, or unmanaged temp sweeps | ✅ `gitmap os clean [temp\|dev\|sys\|terminal] [-n] [-v]` (alias `gitmap os clear`) | Multi-platform OS cache and temp cleaner purging temp files, crash dumps, system thumbnail caches, and shell history with dry-run support. |
+| ❌ Manual developer cache purging (`npm cache clean --force`, `cargo clean` across directories, deleting `~/.pnpm-store` or Go build caches manually) | ✅ `gitmap os dev-clean [flags]` (aliases: `gitmap clean-dev`, `gitmap devtools clear`, `gitmap os dev clean`) | Discovers and purges developer tool caches across npm, pnpm, yarn, cargo, go, pip, and nuget, with `--root` scanning for stale `target/` and `dist/` build artifacts, `--older-than <dur>`, and tree visualization. |
+| ❌ Manually deleting AI agent scratch spaces, `.ai-memory/temp-agents`, or dumping Antigravity brain caches by hand | ✅ `gitmap os ai-clean [flags]` (alias: `gitmap ai-clean`) | Safely scans and purges Antigravity brain caches, system generated tasks, OS temp AI dumps, and GitMap installer temp caches with interactive confirmation or `--yes`. |
+| ❌ Running multiple uncoordinated cleanup scripts or manual PowerShell disk defragmentation / cleanup loops | ✅ `gitmap os optimization [-y]` (aliases: `gitmap os optimize-update`, `gitmap os optimize`, `gitmap os opt-update`) | Unified workstation optimization suite: interactive or unattended (`--yes`) execution performing Antigravity chat retention pruning (`--max-age-days N`), temp clearance, editor/tool cache purging, browser profile caches, squirrel app cleanup, DNS flush, recycle bin clearance, and disk space reclamation on C:. |
+| ❌ Deleting Antigravity conversation databases or editing `conversation_summaries.db` by hand (causing database corruption or orphaned brain directories) | ✅ `gitmap os agy clear [flags]` (alias: `gitmap os agy-clear`) | Deep purge of Antigravity conversation databases and brain folders, safely preserving running/locked sessions and `--protected-ids` without corrupting SQLite summaries or FTS indexes. |
+| ❌ Ad-hoc Python repo cloner/synchronizer (`sync_repos.py`) or PowerShell scripts for cloning repo lists | ✅ `gitmap repo-clone-sync [file] [-d <dir>] [-w <N>] [--dry-run]` (alias: `gitmap rcs`) | High-performance Go parallel SSH cloner supporting `.json`, `.md`, `.txt` with auto-detection, URL conversion, target persistence, and terminal reporting. |
+| ❌ Manual editing of Notepad++ `stylers.xml` or copying theme files by hand / Python scripts | ✅ `gitmap notepad theme-add [size]` or `gitmap notepad font <size>` | Automated native Go installation of Photon High Contrast theme, `stylers.xml` synchronization, and flexible font size adjustment (`16pt`, `18pt`). |
+| ❌ Querying disk usage and partition mounts via PowerShell `Get-PSDrive` or raw `df -h` | ✅ `gitmap os storage` or `gitmap os disk` (alias: `gitmap storage`) | Instant drive space, partition status, and mount point telemetry with formatted ANSI cards and storage utilization metrics. |
 
 ---
 
@@ -145,12 +155,14 @@ All styles automatically print Tokyo Night formatted lines with gutter line numb
 - `gitmap rc file <filepath> [--repo <name>]` — Copies reusable script into `repo-cache` (`repo-storage`) and auto-pushes.
 - `gitmap rc folder <folderpath> [--repo <name>]` — Copies reusable fixture directory into `repo-cache`.
 - `gitmap rc text "<content>" --slug <slug> --ext <.ps1|.py>` — Writes test harnesses into `repo-cache` for permanent cross-repo reuse.
+- `gitmap rc heatmap [status|tree|live|sync]` / `gitmap rc agent [status|tree|live|sync]` — Multi-agent execution tree tracking, conflict-free SQLite sync, in-flight action logging, and live visualization inside `repo-cache` (or local fallback).
 - `gitmap cd rs` / `gitmap cd rc` — Navigates directly to `repo-secrets` or `repo-cache`.
 
 ### 5. High-Performance Automation (AUM) & File Discovery
-- `gitmap aum search "<pattern>" [dir] [--ext <ext>] [-r] [-i]` (alias: `gitmap aum grep`) — Multi-core streaming live search with lazy regex and binary filtering. ALWAYS scope with target `[dir]` and `--ext`. Replaces slow PowerShell `Select-String`, `Get-ChildItem -Recurse`, and `git grep`. TOTAL BAN on PowerShell `Select-String`, `rg`, `ripgrep`, and `git grep`.
+- `gitmap aum search "<pattern>" [dir] [--ext <ext>] [-r] [-i] [-l <limit>]` (alias: `gitmap aum grep`) — Multi-core streaming live search with lazy regex and binary filtering. ALWAYS scope with target `[dir]` and `--ext`. Replaces slow PowerShell `Select-String`, `Get-ChildItem -Recurse`, and `git grep`. TOTAL BAN on PowerShell `Select-String`, `rg`, `ripgrep`, and `git grep`.
   * **Named-Flag Support:** Fully supports `--query <pattern>` (or `-q <pattern>`, `--pattern <pattern>`) and `--root <dir>` (or `--dir <dir>`, `-d <dir>`, `--path <dir>`, `-p <dir>`) in any argument position (e.g. `gitmap aum search --root "cli" --query "cmdpipeline"`, `gitmap aum search --query "func Run" --dir cli -e .go`). Positional and named flags can be freely interchanged.
-  * **Flexible Extension Syntax:** Supports `-e <ext>`, `--ext <ext>`, `--extension <ext>` (e.g. `-e .go`, `--ext go`, `-e .go,.ts`, `-e go,ts`). Leading dot is optional, multiple comma-separated extensions are normalized automatically, and matching is case-insensitive.
+  * **Flexible Extension Syntax & Wildcards:** Supports `-e <ext>`, `--ext <ext>`, `--extension <ext>` (e.g. `-e .go`, `--ext go`, `-ext *.go`, `-ext *.go,.md`, `-e .go,.ts`, `-e go,ts`). Leading dot or wildcard asterisk `*` is stripped and normalized automatically; multiple comma-separated extensions are split cleanly, and matching is case-insensitive.
+  * **Match Truncation Limit:** Supports `-l <N>`, `--limit <N>` to display only the top $N$ matching lines with a clear truncation notice (e.g. `gitmap aum search "txt" -p cli -ext *.go,.md -limit 5`).
   * **PowerShell Profile Safety:** Shell wrapper passes all flags and parameters directly via `@args` without Advanced Function parameter binding, completely preventing `-e` collisions with PowerShell's `-ErrorAction` / `-ErrorVariable`.
   * **MCP Tool Integration:** Native MCP tool `gitmap_aum_search` directly supports optional `"ext"` filter (e.g. `{"query": "cursor", "path": "cli", "ext": ".go"}`).
 - `gitmap aum search-commits "<pattern>" [path] [-S] [--grep] [-n limit] [--oneline]` (aliases: `gitmap aum commits`, `gitmap aum search-history`) — High-speed native Go git commit search engine. Supports pickaxe code changes (`-S`), commit message grep (`--grep`), path filtering, and compact oneline display without invoking Python interpreters or slow shell loops.
@@ -456,6 +468,14 @@ GitMap provides a native pure Go RFC 6455 WebSocket client and JavaScript evalua
 - `gitmap cpu` / `gitmap processor` — Live & 5s cached CPU utilization, architecture, and core counts.
 - `gitmap ram` — Live & 5s cached memory capacity, free/used MB, and visual utilization meter.
 - `gitmap network [--json]` — Network adapter configuration, IPs, MAC addresses, link speeds, and throughput metrics.
+
+### 12. OS Maintenance, Workstation Hygiene & Workstation Optimization
+- `gitmap os clean [temp|dev|sys|terminal] [flags]` (alias: `gitmap os clear`) — OS cache cleaner purging temp directories, crash reports, logs, thumbnail caches, and shell history. Supports `-n, --dry-run` and `-v, --verbose`.
+- `gitmap os dev-clean [flags]` (aliases: `gitmap os dev clean`, `gitmap clean-dev`, `gitmap devtools clear`, `gitmap devclean`) — Discovers and purges developer tool caches across npm, pnpm, yarn, cargo, go, pip, and nuget. Supports `--root <dir>` for stale `target/` and `dist/` scanning, `--older-than <dur>`, `-f, --force`, `-t, --tree`, `-n, --dry-run`, `-y, --yes`, `--json`, and `--only <cats>`.
+- `gitmap os ai-clean [flags]` (aliases: `gitmap ai-clean`, `gitmap aiclean`, `gitmap clean-ai`) — Scans and purges Antigravity brain caches, system-generated tasks, OS temp AI dumps, and GitMap installer temp caches. Supports `-n, --dry-run`, `-y, --yes`, and `--json`.
+- `gitmap os optimize-update [flags]` (aliases: `gitmap os optimize`, `gitmap os opt-update`) — Full workstation optimization suite. Retires chats older than `--max-age-days N` (default 5; open and locked chats stay), cleans temp directories, purges editor/tool caches, deletes stale build targets under `--root`, cleans dev package caches, runs optional repo scan, and reclaims drive space on C:. Supports `-y, --yes`, `-n, --dry-run`, `--json`, `--read-all <project>`, and `--protected-ids <id>`.
+- `gitmap os agy clear [flags]` (alias: `gitmap os agy-clear`) — Deep purge of Antigravity conversations and brain directories while preserving locked/active chats and `--protected-ids`. Age does not matter; fresh chats are removed too. Supports `-y, --yes`, `-n, --dry-run`, and `--json`.
+- `gitmap os storage` / `gitmap os disk` (aliases: `gitmap os space`, `gitmap storage`) — Drive storage usage, partition capacities, mount point telemetry, and Split-DB database file listings.
 
 ---
 
@@ -1177,6 +1197,148 @@ gitmap swap-binary ./bin/gitmap --kill
 gitmap swap-binary --from ./dist/gitmap.exe --script-only
 ```
 
+### 18. OS Maintenance, Workstation Hygiene & Workstation Optimization
+Autonomous developer companion and workstation maintenance suite providing safe, cross-platform cache purging, developer tool cache cleanup, AI scratch space hygiene, unified optimization, Antigravity conversation management, and storage telemetry.
+
+```bash
+# 1. System Temp & OS Cache Cleaner (gitmap os clean)
+# Clean system temp directories, logs, crash dumps, and system thumbnail caches
+gitmap os clean
+
+# Preview temp files and space to be freed without deleting (dry-run)
+gitmap os clean --dry-run
+gitmap os clean -n
+
+# Detailed cleanup output with individual file reports
+gitmap os clean --verbose
+gitmap os clean -v
+
+# Target specific cleanup domains
+gitmap os clean temp                 # OS and user temporary directories
+gitmap os clean dev                  # Hand off directly to developer tools cache cleaner
+gitmap os clean sys                  # Linux package manager & system journal cleanup
+gitmap os clean terminal             # Shell history, console logs, and terminal caches
+
+# 2. Developer Tools & Package Manager Cache Cleaner (gitmap os dev-clean)
+# Discover and purge caches across npm, pnpm, yarn, cargo, go, pip, and nuget
+gitmap os dev-clean
+
+# Non-interactive developer cache clean bypassing confirmation prompt
+gitmap os dev-clean --yes
+gitmap os dev-clean -y
+
+# Preview space reclaimed without deleting
+gitmap os dev-clean --dry-run
+gitmap os dev-clean -n
+
+# Invalidate Split-DB cache and force fresh dynamic filesystem discovery
+gitmap os dev-clean --force
+gitmap os dev-clean -f
+
+# Render hierarchical directory tree view with file counts and sizes
+gitmap os dev-clean --tree
+gitmap os dev-clean -t
+
+# Output structured JSON summary for automated agent pipelines
+gitmap os dev-clean --json
+
+# Restrict cleanup to specific ecosystem categories
+gitmap os dev-clean --only go,cargo,npm,pnpm
+
+# Scan project trees for stale build targets (cargo target/, dist/, artifacts/)
+gitmap os dev-clean --root d:\work --older-than 30d
+gitmap os dev-clean --root /home/user/work --older-than 72h -y
+
+# Shorthand aliases for agent ergonomics
+gitmap clean-dev -y
+gitmap devtools clear -y
+gitmap os dev clean -n
+
+# 3. AI Temp & Agent Scratch Cleaner (gitmap os ai-clean)
+# Scan and purge Antigravity brain caches, system generated tasks, OS temp AI dumps, and GitMap installer temp caches
+gitmap os ai-clean
+
+# Preview AI cache files to be deleted without deleting
+gitmap os ai-clean --dry-run
+gitmap os ai-clean -n
+
+# Non-interactive AI cache cleanup bypassing prompt
+gitmap os ai-clean --yes
+gitmap os ai-clean -y
+
+# Output structured JSON summary of discovered AI cache categories
+gitmap os ai-clean --json
+
+# Shorthand alias
+gitmap ai-clean -y
+
+# 4. Workstation Optimization Suite (gitmap os optimize-update)
+# Full interactive optimization: age-window chat pruning, temp clearance, tool cache purging, stale target deletion, package manager cache cleanup, optional repo scan, and disk space reclamation
+gitmap os optimize-update
+
+# Unattended / non-interactive optimization suite (answers yes to prompts, uses default 5-day chat retention)
+gitmap os optimize-update --yes
+gitmap os optimize-update -y
+
+# Preview optimization plan and disk space calculations without modifying files
+gitmap os optimize-update --dry-run
+gitmap os optimize-update -n
+
+# Customize Antigravity chat retention age window (e.g. 7 days or 3 days; open and locked chats stay)
+gitmap os optimize-update --max-age-days 7 -y
+gitmap os optimize-update --max-age-days 3 --dry-run
+
+# Explicitly protect sensitive conversation IDs from retirement
+gitmap os optimize-update --protected-ids conv-id-1,conv-id-2 -y
+
+# Send automated read-all prompts to specific projects post-optimization
+gitmap os optimize-update --read-all gitmap,coding-guidelines -y
+
+# Specify project root for stale build targets and optional quiet repo scan
+gitmap os optimize-update --root d:\work -y
+
+# Output chat counts and run log as machine-readable JSON
+gitmap os optimize-update --json --dry-run
+
+# Shorthand aliases for fast CLI invocation
+gitmap os optimize -y
+gitmap os opt-update -y
+
+# 5. Antigravity Conversation Purge (gitmap os agy clear)
+# Deep purge of Antigravity conversations and brain directories while strictly preserving locked/active chats
+# (Distinct from optimize-update: age does not matter, fresh unopenable chats are removed too)
+gitmap os agy clear
+
+# Unattended / non-interactive purge bypassing confirmation prompt
+gitmap os agy clear --yes
+gitmap os agy clear -y
+
+# Preview chat counts to be removed and kept without deleting
+gitmap os agy clear --dry-run
+gitmap os agy clear -n
+
+# Protect specific conversation IDs during purge
+gitmap os agy clear --protected-ids conv-id-1,conv-id-2 -y
+
+# Output chat classification counts as JSON
+gitmap os agy clear --json --dry-run
+
+# Shorthand alias
+gitmap os agy-clear -y
+
+# 6. Drive Storage Usage & Disk Telemetry (gitmap os storage / gitmap os disk)
+# Inspect drive space, workspace path, system temp, and partition status
+gitmap os storage
+gitmap os disk
+
+# Inspect registered Split-DB database storage sizes and query metrics
+gitmap os storage list
+gitmap storage ls
+
+# Inspect disk space telemetry and utilization metrics
+gitmap os storage space
+```
+
 ---
 
 ## Skill Activation Bands & Guardrails (When to Use GitMap)
@@ -1191,6 +1353,7 @@ gitmap swap-binary --from ./dist/gitmap.exe --script-only
 - Querying, mutating, or serving SQLite Split-DB architectures (`gitmap db-read`, `gitmap db-find`, `gitmap db-view`).
 - Downloading screenshot assets (`gitmap prnt`) or fetching remote URLs with caching (`gitmap url read`).
 - Safe process termination (`gitmap kill`) and binary rotation (`gitmap swap-binary`).
+- Performing OS maintenance, developer cache cleaning, AI scratch purging, and workstation optimization (`gitmap os clean`, `gitmap os dev-clean`, `gitmap os ai-clean`, `gitmap os optimize-update`, `gitmap os agy clear`, `gitmap os storage`).
 
 ### ⛔ When NOT to Use / Out of Bounds (Red Band)
 - Subagents must NEVER execute raw `git` commands (`git commit`, `git add`, `git push`, `git checkout`); only the lead orchestrator invokes GitMap semantic commit verbs.
@@ -1284,7 +1447,7 @@ AI agents are STRICTLY PROHIBITED from running ad-hoc Python subprocess snippets
   👉 **MANDATORY REPLACEMENT:** `gitmap aum search "<pattern>" [path] [--ext <ext>]` or native MCP tool `gitmap_aum_search`.
 - ✅ **MANDATORY MCP SERVE FIRST:** When operating inside an MCP-enabled IDE (Google Antigravity, Cursor, Claude Desktop), start and interact with `gitmap mcp serve` first. It serves on HTTP port 8765 (with automatic failover to 8766, 8767), displays active running info, and subsequent calls exit immediately without pausing. Utilize the native 17 MCP tools (`gitmap_aum_search`, `gitmap_find`, `gitmap_cat`, `gitmap_log`, etc.) for zero-disk, sub-millisecond workspace exploration.
 
-22. **Total Ban on Ad-Hoc Python Database Scripts Querying SQLite / Antigravity Databases:**
+23. **Total Ban on Ad-Hoc Python Database Scripts Querying SQLite / Antigravity Databases:**
 - **❌ BANNED:** Creating scratch Python scripts (e.g. `check_summaries.py`, `query.py`, `brain/.../scratch/*.py`) or executing inline Python one-liners (`python -c "import sqlite3..."`, `gitmap py -c "import sqlite3..."`) to query `conversation_summaries.db`, `gitmap.db`, or any Split-DB SQLite database.
 - 👉 **MANDATORY REPLACEMENTS:**
   - `gitmap dbsql "<SQL>" --path <alias|path> [--json]` (direct SQL execution; flags: `--path` / `-p`, `--db` / `-d`, `--json` / `-j`; aliases: `dbsql`, `db-sql`, `dbs`)
@@ -1294,7 +1457,7 @@ AI agents are STRICTLY PROHIBITED from running ad-hoc Python subprocess snippets
   - **Supported System Aliases:** `--path remediation` (`repodb/remediation.db`), `--path agy` (`conversation_summaries.db`), `--path master` (`gitmap.db`), `--path heatmap` (`heatmap.db`), `--path pipeline` (`pipeline/sql.db`), `--path tasks` (`tasks/sql.db`).
   - See `@[ai_code_execution_restrictions](file;.agents/rules/ai_code_execution_restrictions.md)` for full specifications.
 
-23. **Mandatory Heatmap Inspection & Auto-Touch on File Read (Zero UDFs):**
+24. **Mandatory Heatmap Inspection & Auto-Touch on File Read (Zero UDFs):**
 - Whenever an AI agent begins reading, inspecting, or analyzing a source code file or specification during troubleshooting, research, or planning, the agent SHOULD use:
   ```bash
   # Inspect and automatically touch heatmap (Zero UDF flags needed):
@@ -1307,7 +1470,7 @@ AI agents are STRICTLY PROHIBITED from running ad-hoc Python subprocess snippets
 - The file content is printed directly to the terminal, and the heatmap record is stored atomically in SQLite.
 - **TOTAL BAN on ad-hoc Python reading:** `gitmap py -c "lines = open('...').readlines()"` is strictly prohibited. Use `gitmap heatmap <filepath>` or `gitmap cat <filepath>`.
 
-24. **Total Ban on Ad-Hoc Python Shutil Scripts, PIL/Pillow Invocations, and PowerShell Image Copying:**
+25. **Total Ban on Ad-Hoc Python Shutil Scripts, PIL/Pillow Invocations, and PowerShell Image Copying:**
 AI agents are STRICTLY PROHIBITED from running ad-hoc Python one-liners, PowerShell pipeline scripts, or Bash utilities to copy, move, inspect, or stage image files and screenshots into documentation.
 - ❌ **BANNED:** `python -c "import os, shutil; os.makedirs('assets/screenshots', exist_ok=True); shutil.copyfile('...', 'assets/screenshots/shot.png')"`
   👉 **MANDATORY REPLACEMENT:** `gitmap image transfer "<src>" assets/screenshots/shot.png --markdown`
@@ -1317,4 +1480,7 @@ AI agents are STRICTLY PROHIBITED from running ad-hoc Python one-liners, PowerSh
   👉 **MANDATORY REPLACEMENT:** `gitmap image transfer "<file>" --inspect` (or `gitmap cat "<file>" --info`)
 - ❌ **BANNED:** Markdown image embeds with absolute paths: `![Shot](D:\work\gitmap\assets\screenshots\shot.png)` or `![Shot](file:///C:/Users/...)`
   👉 **MANDATORY REPLACEMENT:** Strict relative repository paths only: `![Shot](assets/screenshots/shot.png)` or `![Shot](assets/<name>.png)`. Absolute Windows drive letters (`C:\`, `D:\`), Unix absolute roots (`/home/...`), and `file:///` URIs are AGGRESSIVELY FORBIDDEN.
+
+26. **Total Ban on Manual OS Temp / Cache Deletion & Raw Manipulation of Antigravity Databases:**
+AI agents MUST NOT execute raw shell deletion commands (`rm -rf ~/.npm`, `rmdir /s /q $env:TEMP`, `Remove-Item`, etc.) or manually delete Antigravity conversation databases (`~/.gemini/antigravity/conversations/*.db`) and brain folders. Such ad-hoc deletions cause orphaned FTS rows, corrupted summaries, and locked file sharing violations. Agents MUST use native compiled GitMap OS maintenance commands: `gitmap os clean` for OS temp files; `gitmap os dev-clean` for developer package caches and stale targets; `gitmap os ai-clean` for ephemeral agent caches; `gitmap os optimize-update` (aliases: `gitmap os optimize`, `gitmap os opt-update`) for comprehensive workstation optimization; `gitmap os agy clear` (alias: `gitmap os agy-clear`) for purging old Antigravity conversations while preserving locked/active chats; and `gitmap os storage` / `gitmap os disk` for drive telemetry.
 

@@ -10,16 +10,16 @@ def main():
     start_str = "function Index() {"
     end_str = "export default Index;\n" # Or something like it. Wait, the end of file might not be export default.
     # Actually, Index is exported in the Route definition: component: Index
-    
+
     # We can just run a python script that completely replaces everything below `function Index() {`
     # Let's find `function Index() {`
     idx = content.find("function Index() {")
     if idx == -1:
         print("Could not find function Index() {")
         sys.exit(1)
-        
+
     prefix = content[:idx]
-    
+
     new_index = """function Index() {
   return (
     <div className="flex h-full w-full flex-col bg-[#0b0c10] text-ca-ink font-mono antialiased overflow-hidden">
@@ -43,7 +43,7 @@ def main():
       {/* Main Grid */}
       <div className="flex-1 overflow-auto p-6">
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 lg:grid-cols-2">
-          
+
           {/* Workflows */}
           {WORKFLOWS.map((wf) => (
             <div key={wf.id} className="flex flex-col border border-[#22252a] bg-[#111318] transition-colors hover:border-[#444]">

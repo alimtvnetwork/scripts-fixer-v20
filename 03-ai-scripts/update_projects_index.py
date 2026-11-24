@@ -5,17 +5,17 @@ def main():
     file_path = "src/routes/projects.index.tsx"
     with open(file_path, "r", encoding="utf-8") as f:
         content = f.read()
-    
+
     # We will replace `const mainContent = (` ... to the end of the file.
-    
+
     start_str = "const mainContent = ("
     start_idx = content.find(start_str)
     if start_idx == -1:
         print("Could not find mainContent")
         sys.exit(1)
-    
+
     prefix = content[:start_idx]
-    
+
     new_main_content = """const mainContent = (
     <div className="flex min-w-0 flex-1 flex-col overflow-auto bg-[#0b0c10] text-ca-ink font-mono antialiased p-6">
       <div className="mx-auto w-full max-w-7xl">
@@ -143,7 +143,7 @@ def main():
                     className="group relative flex flex-col border border-[#333] bg-[#1a1c23] transition-colors hover:border-ca-primary"
                   >
                     <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-[#333] transition-colors group-hover:bg-ca-primary" />
-                    
+
                     <div className="p-4 flex-1">
                       <div className="flex items-start justify-between mb-2">
                         <Link
@@ -310,9 +310,9 @@ def main():
   );
 }
 """
-    
+
     # We replace from start_str to the very end of the file.
-    
+
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(prefix + new_main_content)
 

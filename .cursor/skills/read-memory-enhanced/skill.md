@@ -9,12 +9,12 @@ description: >-
 
 # Read Memory (Enhanced)
 
-> **Invocation:** `@[read-memory-enhanced](directory;.cursor/skills/read-memory-enhanced)`
+> **Invocation:** `@[read-memory-enhanced](directory;.agents/skills/read-memory-enhanced)`
 
 ## Ambiguity folder path (non-negotiable)
 
-- Open questions: `.ai-memory/ambiguous-questions/01-new-ambiguity/xx-<slug>.md`
-- Answered questions: `.ai-memory/ambiguous-questions/02-ambiguity-resolved/xx-<slug>.md`
+- Open questions: `.ai-memory/ambiguity/new/xx-<slug>.md`
+- Answered questions: `.ai-memory/ambiguity/resolved/xx-<slug>.md`
 Read both folders in full during Phase 1. Surface open-ambiguity counts and slugs in the Completion Confirmation block. Treat resolved-ambiguity files as binding project decisions, do not re-litigate them. If an open ambiguity is relevant to the incoming task, stop and surface it before doing work; never guess past it.
 
 ## Goal
@@ -88,24 +88,24 @@ Walk `.ai-memory/` recursively. Every file matters. Missing files are noted, not
 | 2 | `.ai-memory/strictly-avoid.md` | Hard prohibitions (CODE RED) |
 | 3 | `.ai-memory/user-preferences` | How the human wants you to behave |
 | 4 | `.ai-memory/what-to-read.md` | Authoritative reading order for this project. If it exists, it overrides the generic order in this prompt. Read it first and follow it. |
-| 5 | `.ai-memory/prompt.md` + `01-prompts/` | Canonical prompts (Read, Plan, etc.). "Read memory" = run this prompt. |
-| 6 | `.ai-memory/memory/readme.md` | Index of institutional knowledge. Then read every file it references, recursively. |
+| 5 | `01-prompts/README.md` + `01-prompts/` | Canonical prompts (Read, Plan, etc.). "Read memory" = run this prompt. |
+| 6 | `.ai-memory/learned/readme.md` | Index of institutional knowledge. Then read every file it references, recursively. |
 | 7 | `.ai-memory/plans/readme.md` | Roll-up of all plans (pending + completed + subtasks). Read this before touching individual plan files. |
 | 8 | `.ai-memory/plans/pending/` | Active plans, `xx-<slug>.md` |
 | 9 | `.ai-memory/plans/completed/` | Recent history, skim only |
 | 10 | `.ai-memory/plans/subtasks/xx-<slug>/` | Depth files linked from a parent plan |
-| 11 | `.ai-memory/suggestions.md` | Ideas not yet approved |
+| 11 | `.ai-memory/plans/suggestions/01-legacy-suggestions.md` | Ideas not yet approved |
 | 12 | `.ai-memory/spec/commands/` | User commands and conventions, `xx-<slug>.md` |
-| 13 | `.ai-memory/issues/` | General bugs and regressions |
-| 14 | `.ai-memory/cicd-issues/` | CI/CD-specific failures. Read ALL of these before any code change so you do not repeat the same mistakes. |
-| 15 | `.ai-memory/ambiguous-questions/01-new-ambiguity/` | Open questions currently blocking work. If any exist, surface them in the completion block, do NOT guess past them. |
-| 16 | `.ai-memory/ambiguous-questions/02-ambiguity-resolved/` | Answered questions with their applied solution. Treat these as binding decisions, do not re-litigate. |
+| 13 | `.ai-memory/rca/resolved/` | General bugs and regressions |
+| 14 | `.ai-memory/rca/resolved/` | CI/CD-specific failures. Read ALL of these before any code change so you do not repeat the same mistakes. |
+| 15 | `.ai-memory/ambiguity/new/` | Open questions currently blocking work. If any exist, surface them in the completion block, do NOT guess past them. |
+| 16 | `.ai-memory/ambiguity/resolved/` | Answered questions with their applied solution. Treat these as binding decisions, do not re-litigate. |
 | 17 | Anything else under `.ai-memory/` | Read it. If the folder exists, it exists for a reason. |
 
 ### 1.2 The two index files
 
 Two indexes decide what you read next. Treat them as required entry points, not as summaries:
-- `.ai-memory/memory/readme.md` lists every institutional-knowledge file. If it points at 12 files, you read 12 files.
+- `.ai-memory/learned/readme.md` lists every institutional-knowledge file. If it points at 12 files, you read 12 files.
 - `.ai-memory/plans/readme.md` lists every plan (pending, completed, subtasks) with its slug, status, and one-line intent. Use it to pick which plan files to open in full. If it is missing, create it as part of the next code change (see Memory Update Protocol).
 
 ### 1.3 Self-check (internal, before Phase 2)
@@ -172,27 +172,27 @@ Fallbacks when the canonical numbered folder is absent: `.ai-memory/coding-guide
 ```
 New info discovered
 ├─ Institutional knowledge (pattern / convention / decision)?
-│ YES → .ai-memory/memory/<slug>.md + update .ai-memory/memory/readme.md
+│ YES → .ai-memory/learned/<slug>.md + update .ai-memory/learned/readme.md
 ├─ Must never happen again?
 │ YES → .ai-memory/strictly-avoid.md
 ├─ Idea, not yet approved?
-│ YES → .ai-memory/suggestions.md
+│ YES → .ai-memory/plans/suggestions/01-legacy-suggestions.md
 ├─ New user command / convention?
 │ YES → .ai-memory/02-spec/commands/xx-<slug>.md
 ├─ Bug / regression?
-│ YES → .ai-memory/issues/xx-<slug>.md (or .ai-memory/cicd-issues/ if CI/CD)
+│ YES → .ai-memory/rca/resolved/xx-<slug>.md (or .ai-memory/rca/resolved/ if CI/CD)
 ├─ New or changed plan?
 │ YES → .ai-memory/plans/pending/xx-<slug>.md + update .ai-memory/plans/readme.md
 ├─ Ambiguity / unclear requirement blocking progress?
-│ YES → .ai-memory/ambiguous-questions/01-new-ambiguity/xx-<slug>.md
+│ YES → .ai-memory/ambiguity/new/xx-<slug>.md
 ├─ User just answered a previously-open ambiguity?
-│ YES → mv the file to .ai-memory/ambiguous-questions/02-ambiguity-resolved/xx-<slug>.md,
+│ YES → mv the file to .ai-memory/ambiguity/resolved/xx-<slug>.md,
 │ append `## Resolution` (answer + applied solution), flip Status: resolved
 └─ None of the above → do not persist.
 ```
 Hard rules:
-- Folder is `.ai-memory/memory/`, never `memories/`.
-- Adding a memory file always updates `.ai-memory/memory/readme.md`.
+- Folder is `.ai-memory/learned/`, never `memories/`.
+- Adding a memory file always updates `.ai-memory/learned/readme.md`.
 - Adding, moving, or completing a plan always updates `.ai-memory/plans/readme.md`.
 - Ambiguity folders: `01-new-ambiguity/` for open, `02-ambiguity-resolved/` for answered. On answer, MOVE the file (never copy) so it exists in exactly one place. Every resolved file carries a `## Resolution` section.
 - Never guess past an open ambiguity. If one exists and is relevant to the current task, stop and surface it before doing work.
@@ -211,9 +211,9 @@ After Phases 1-3, reply exactly:
 - Consolidated guidelines read: [Y]
 - Spec authoring files read: [Z]
 - Pending plans: [N] (from .ai-memory/plans/readme.md)
-- CI/CD issues absorbed: [M] (from .ai-memory/cicd-issues/)
-- Open ambiguities: [K] (from .ai-memory/ambiguous-questions/01-new-ambiguity/)
-- Resolved ambiguities on file: [R] (from .ai-memory/ambiguous-questions/02-ambiguity-resolved/)
+- CI/CD issues absorbed: [M] (from .ai-memory/rca/resolved/)
+- Open ambiguities: [K] (from .ai-memory/ambiguity/new/)
+- Resolved ambiguities on file: [R] (from .ai-memory/ambiguity/resolved/)
 I understand:
 - Latest commit changes: [brief summary of recent file changes and architectural intent from the last 10 commits]
 - CODE RED rules: [top 3-5]
@@ -232,12 +232,12 @@ Then stop. No next-step suggestions, no exploratory questions.
 - [ ] Inspected the last 10 git commits via `git log -n 10 --stat` to understand recent file changes
 - [ ] Read `.ai-memory/what-to-read.md` first if it exists, followed its order
 - [ ] Walked `.ai-memory/` recursively, no folder skipped silently
-- [ ] Read `.ai-memory/memory/readme.md` and every file it points at
+- [ ] Read `.ai-memory/learned/readme.md` and every file it points at
 - [ ] Read `.ai-memory/plans/readme.md` and every file in `pending/`
 - [ ] Skimmed `.ai-memory/plans/completed/` for recent history
 - [ ] Read every file in `.ai-memory/spec/commands/`
-- [ ] Read every file in `.ai-memory/issues/` and `.ai-memory/cicd-issues/`
-- [ ] Read every file in `.ai-memory/ambiguous-questions/01-new-ambiguity/` and `02-ambiguity-resolved/`
+- [ ] Read every file in `.ai-memory/rca/resolved/` and `.ai-memory/rca/resolved/`
+- [ ] Read every file in `.ai-memory/ambiguity/new/` and `02-ambiguity-resolved/`
 - [ ] Read `02-spec/17-consolidated-guidelines/` in numeric order (or noted missing)
 - [ ] Read `02-spec/01-spec-authoring-guide/` in numeric order (or noted missing)
 - [ ] Can name CODE RED rules, naming conventions, error-handling philosophy without guessing

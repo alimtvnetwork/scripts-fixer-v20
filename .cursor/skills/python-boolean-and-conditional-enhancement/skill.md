@@ -5,7 +5,7 @@ description: "Executes the ANTI-PATTERN: Magic numbers, per-pixel branching in h
 
 # ANTI-PATTERN: Magic numbers, per-pixel branching in hot loop, weak type hints
 
-> **Invocation:** `@[python-boolean-and-conditional-enhancement](directory;.cursor/skills/python-boolean-and-conditional-enhancement)`
+> **Invocation:** `@[python-boolean-and-conditional-enhancement](directory;.agents/skills/python-boolean-and-conditional-enhancement)`
 
 Source prompt: `01-prompts/15-cg-execute/26-python-boolean-and-conditional-enhancement.md`
 

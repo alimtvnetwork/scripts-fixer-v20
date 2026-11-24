@@ -281,4 +281,3 @@ anything else does not exist.
 2. **Predictable Ratios:** Card padding should scale proportionally (`1.5rem` on mobile, `2rem` to `2.5rem` on desktop).
 3. **Darkish Shade Preservation:** Never use light gray `#fafafa` alone for light surface hover states; combine with low-alpha slate `rgba(15, 23, 42, 0.05)` to maintain visible dark contrast.
 4. **Standalone SVGs:** Reference local SVGs (`01-svg/*.svg`) for visual documentation rather than external image URLs.
-

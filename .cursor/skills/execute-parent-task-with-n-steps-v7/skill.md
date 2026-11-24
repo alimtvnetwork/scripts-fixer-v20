@@ -20,11 +20,11 @@ WAVES = ceil(subtasks / (A x H))
 ```
 
 > [!IMPORTANT]
-> **Prompt Version:** 7.0.0  
-> **Runtime:** Google Antigravity 2.0 (IDE and CLI)  
-> **Canonical Prompt Specification:** [`01-prompts/14-execute/02-execute-parent-task-with-n-steps-v7.md`](file;01-prompts/14-execute/02-execute-parent-task-with-n-steps-v7.md)  
-> **Toolchain Discovery & Primacy:** [/learn](slashCommand;learn) from [gitmap](file;.cursor/skills/gitmap)  
-> **Invocation:** `@[execute-parent-task-with-n-steps-v7](directory;.cursor/skills/execute-parent-task-with-n-steps-v7)`  
+> **Prompt Version:** 7.0.0
+> **Runtime:** Google Antigravity 2.0 (IDE and CLI)
+> **Canonical Prompt Specification:** [`01-prompts/14-execute/02-execute-parent-task-with-n-steps-v7.md`](file;01-prompts/14-execute/02-execute-parent-task-with-n-steps-v7.md)
+> **Toolchain Discovery & Primacy:** [/learn](slashCommand;learn) from [gitmap](file;.agents/skills/gitmap)
+> **Invocation:** `@[execute-parent-task-with-n-steps-v7](directory;.agents/skills/execute-parent-task-with-n-steps-v7)`
 >
 > **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**
 > Whatever directives, constraints, checklists, or user instructions are given ABOVE this prompt (including in the user preamble, header blocks, or incoming user request above) are HIGHEST PRIORITY and MUST BE FOLLOWED as strictly NON-NEGOTIABLE. They supersede and strictly override any conflicting general advice, default conventions, or lower-level guidelines below. The agent MUST inspect and follow the instructions above with absolute precedence.
@@ -56,7 +56,7 @@ WAVES = ceil(subtasks / (A x H))
 
 Before executing the tasks below, check if this prompt is already installed as a native Antigravity Skill.
 
-1. If `.cursor/skills/<slug>/skill.md` does not exist in the workspace, create it now.
+1. If `.agents/skills/<slug>/skill.md` does not exist in the workspace, create it now.
 2. Extract the core instructions of this prompt and save it into that `skill.md` using the standard YAML frontmatter (with `name` and `description`).
 3. Once installed, rely on progressive disclosure for future runs. Do not keep the entire prompt in active memory if not needed.
 
@@ -86,7 +86,7 @@ Active when the user prompt specifies time windows, schedule bounds, restricted 
    - `--auto-window`: Automatically calculates the next valid morning window slot (07:30 AM) and sets compliant `GIT_AUTHOR_DATE` / `GIT_COMMITTER_DATE` timestamps.
 4. **Recommit & History Normalization:**
    - When amending or recommitting prior work: verify clean working tree (`gitmap st`), soft reset (`gitmap git-reset HEAD~1 --no-push`), and recommit using semantic verbs with target timezone stamps.
-   - Operational reference: @[.cursor/skills/gitmap-time-restriction].
+   - Operational reference: @[.agents/skills/gitmap-time-restriction].
 
 ---
 
@@ -206,7 +206,7 @@ If sources conflict, follow stricter one and record under `Conflicts:` in ledger
 
 ### 1.1.E Strict Coding Guideline Enforcement Matrix
 Every code modification executed across any subtask or wave must pass the 12-Pillar Quality Gate:
-1. **Error Management & Leaf Sovereignty:** 
+1. **Error Management & Leaf Sovereignty:**
    - Zero orphaned or swallowed errors (`_ = err` is strictly banned).
    - Leaf functions returning `error` or `result.Wrap[T]` MUST return the error directly upward (`return appfault.Wrap(...)`). Leaf methods MUST NEVER invoke `cliexit.HandleError` or `os.Exit` and return `nil`.
    - All errors bubble up to top-level command dispatchers so they are recorded by `finishCommandAudit` and `persistLastError` in `gitmap.db`.
@@ -260,6 +260,13 @@ Every code modification executed across any subtask or wave must pass the 12-Pil
    - Encapsulate all database operations within dedicated repository types (`RepoRepository`, `HeatmapRepository`) with named SQL constants.
    - Database close operations must NEVER swallow errors: `if err := db.Close(); err != nil { log.Warn(err) }` (eliminate `_ = db.Close()`).
    - Leaf repository methods must return `*apperror.AppError` directly, bubbling up to the top-level command dispatcher for database audit capture.
+13. **Architectural Ceilings & Coding Standard Invariants:**
+   - **300-Line File Cap:** NO file (including `.ts`, `.tsx`, `.go`, `.rs`, `.py`, `.js`, `.jsx`), EXCEPT for Markdown (`*.md`) files and test inventory JSON files (`*inventory*.json`, `*catalog*.json`), should have more than 300 lines of code. Files exceeding 300 lines require decomposition into smaller modules. Run `gitmap lines --max 300` to verify compliance.
+   - **15-Line Function Limit:** Every function must be 15 lines at maximum (strictly <= 8 lines preferred, up to 25 lines maximum under exceptional complexity, but never bloated). Flatten all conditional branching with guard clauses and early returns.
+   - **Zero Mutation / Copy-on-Write:** No in-place mutation of objects or structs across conditional branches. Enforce pure constructor helper returns and copy-on-write immutability.
+   - **Full-Thread Error Sovereignty & DB Audit Capture:** Leaf error sovereignty is strictly enforced across the entire call thread. Errors must never be swallowed or silently dropped; leaf functions that declare an error return type MUST return the error directly (`return err` or `return apperror.Wrap(...)`). Leaf functions must never call `os.Exit()` or exit handlers. Exits belong exclusively to the top-level command dispatch orchestrator in `cli/cmd/root.go` to guarantee that SQLite command audit records are committed to `gitmap.db`.
+   - **Boolean Naming & Conditionals:** Positive booleans only (`is*`, `has*` prefixes; ban `can`, `should`, `was`, `will`). NO negative booleans. Zero nested ifs; flatten all branching with guard clauses and early returns.
+   - **Return & Vertical Spacing:** Blank line after `}` and blank line before `return`.
 
 ### Scope Control Rules
 - **Turn 1 Task Showcase:** In your very first response turn, you MUST showcase and list out the given task in visible chat. Running tools silently without presenting the task breakdown is strictly banned.
@@ -267,7 +274,7 @@ Every code modification executed across any subtask or wave must pass the 12-Pil
 - **History read-only:** Never edit past events, changelogs, completed plans, release notes, or `06-old-prompts/` and `19-old-execute-prompts/`.
 - **Out-of-scope:** Log under `Follow-ups:` in plan; never fix in this run.
 - **Minimal diff:** Change only lines required; never reflow unaffected lines.
-- **Indexes:** Update `01-prompts/readme.md` and `.ai-memory/prompts.md` only when adding/modifying prompts. Update `.ai-memory/plans/readme.md` and `02-spec/21-app/readme.md` every run. Register recent completed tasks before push.
+- **Indexes:** Update `01-prompts/readme.md` and `01-prompts/README.md` only when adding/modifying prompts. Update `.ai-memory/plans/readme.md` and `02-spec/21-app/readme.md` every run. Register recent completed tasks before push.
 - **Mandatory Multi-Agent Partitioning:** Even for tasks touching few files, work MUST be partitioned across A workers (e.g. Worker 01 implements changes, Worker 02 implements verification/linters/memory docs). Solo execution is strictly banned.
 - **Finish early:** When all Task-IDs are `DONE`, proceed directly to consolidation.
 - **Zero releases:** Never bump versions or edit changelogs unless requested (R10).
@@ -282,7 +289,7 @@ Every code modification executed across any subtask or wave must pass the 12-Pil
 - **R3 Evidence or It Did Not Happen.** Every `DONE`, `PASS`, or "verified" claim MUST cite a concrete file path, git diffstat, or command exit code (`exit 0`). Vague assurances are auto-rejected.
 - **R4 Never Invent Commands, Flags, or Paths.** Verify commands with a harmless call (`gitmap lf readme.md`), not `--help`. Use documented fallbacks and log in ledger.
 - **R5 Mandatory Subagents (`invoke_subagent`), Concurrency Scaling & Immediate Dynamic Respawn.** Spawning subagents via `invoke_subagent` (`A = 3`, `H = 2`, System Concurrency Capacity = 6 concurrent operations) is an **ABSOLUTE MUST** (`research` for discovery in Phase 1, `self` for spec authoring and code edits in Phase 2/3). The lead agent is STRICTLY FORBIDDEN from executing all reads or edits solo. Organize execution as a Tree Swarm Hierarchy (Root Orchestrator -> Branch Coordinators -> Leaf Workers & Dynamic Assistants). Under the Immediate Dynamic Respawn & Join Protocol, the lead orchestrator MUST NOT wait for an entire 3-agent wave to finish. As soon as ANY single worker completes, the lead immediately spawns a replacement worker for the next pending subtask, or commands the worker to dynamically join an active subtask in collaborative assistance mode (parallel reading, companion linters, memory logging) to keep concurrency at exactly 3 active subagents (100% duty cycle) without file write collisions (respecting R6). Solo execution without calling `invoke_subagent` is an auto-reject failure on the same tier as Rule 0.
-- **R6 One Owner Per File (Disjoint Bounding Boxes).** Within every worker wave, each file has exactly one owner. Shared indexes (`.ai-memory/plans/readme.md`, `.ai-memory/prompts.md`, `.ai-memory/what-to-read.md`, `02-spec/21-app/readme.md`, directory `readme.md`) belong exclusively to lead.
+- **R6 One Owner Per File (Disjoint Bounding Boxes).** Within every worker wave, each file has exactly one owner. Shared indexes (`.ai-memory/plans/readme.md`, `01-prompts/README.md`, `.ai-memory/what-to-read.md`, `02-spec/21-app/readme.md`, directory `readme.md`) belong exclusively to lead.
 - **R7 Git Safety & Isolation (Worker Git Ban).** Subagents NEVER run git commands (`git add`, `git commit`, `git push`, `git status`, `git diff`, `git checkout`). In shared workspaces (`Workspace: "inherit"`), worker git calls create `.git/index.lock` collisions that immediately crash parallel agents. Nobody runs `git reset --hard`, `git checkout --`, `git clean`, `git stash`, or force pushes.
 - **R8 Mandatory Git Identity & Credential Governance (Machine Global & GitMap Invariant).**
   - Git Author Name: `gitmap-bot`
@@ -324,7 +331,23 @@ Every code modification executed across any subtask or wave must pass the 12-Pil
   - Option 2 (isTimeRestricted: false; default): no window checks; commit immediately; persisted git timestamps and database entries remain normalized to UTC.
 - **R13 No Polling / Immediate Turn Yielding.** When calling `invoke_subagent`, make it the sole tool action at turn end, print progress line (`Dispatched Worker 01 .. Worker <A> (wave k / WAVES); waiting for their results.`) and **STOP CALLING TOOLS**. Never poll in loop. Check `manage_subagents` once if wave runs long.
 - **R14 Two-Strike Retry Cap & Anti-Looping.** Tool failing twice: worker replies `STATUS: BLOCKED` with exact error and stops. Lead takes over and logs `LEAD_FALLBACK: <reason>`. Subtask failing two remediation rounds is marked `FAILED` with RCA (Section 12).
-- **R15 100% Ambiguity & Decision Boundaries.** Non-blocking: choose conservative option, log in ledger `Assumptions:`, proceed. Blocking: `ask_question` once, log in `.ai-memory/ambiguous-questions/01-new-ambiguity/`, continue unblocked tasks.
+- **R15 100% Ambiguity ("mbud") Protocol & Missing Asset Interrogation:**
+  - **Deduction vs. Question Boundary:** Easily deduced or related codebase context must be resolved autonomously by the AI via GitMap search. Do NOT ask trivial questions about things readily found in the repository. A question is strictly reserved for when the AI truly could NOT find something after comprehensive search (e.g. a screenshot was referenced but not found, an event or hook was mentioned but not defined, external credentials or endpoints are unconfigured).
+  - **Prominent Red Markdown Warning Alert:** When an essential asset or event cannot be found, NEVER guess or hallucinate an answer. Immediately output a prominent, high-visibility red markdown callout in visible chat:
+    ```markdown
+    > [!CAUTION]
+    > <span style="color:red; font-size:1.15em; font-weight:bold;">🚨 UNRESOLVED AMBIGUITY / MISSING ASSET (mbud)</span>
+    >
+    > **Could Not Find:** [Exact asset name, screenshot, or event identifier]
+    > **Searched Locations:** [Paths and GitMap search queries attempted]
+    > **Question to Owner:** "Where did you put it? How did you put it?"
+    > **Possible Solutions / Suggestions:**
+    > 1. [Suggestion A — e.g. path in assets/screenshots/ or specific folder]
+    > 2. [Suggestion B — e.g. fallback identifier or alternate event name]
+    > 3. [Suggestion C — e.g. generate synthetic mock fixture for development]
+    ```
+  - **Persistence to `.ai-memory/ambiguity/new/` (Autonomous Continuation Mandate):** Every question, ambiguity, or missing detail MUST be written directly to `.ai-memory/ambiguity/new/<sequence>-<slug>-ambiguity.md` following the canonical folder structure. Carry the question along across steps in the task ledger under `Assumptions:` and `Open Ambiguities:`. TOTAL BAN on pausing or asking the user questions in chat unless the user explicitly instructed "Ask me the question". Proceed autonomously without waiting for user confirmation.
+  - **Issue & RCA Routing:** If any bug, unexpected failure, CI/CD break, or Root Cause Analysis (RCA) problem arises, document it immediately in the dedicated issues folder: `.ai-memory/rca/resolved/<issue-slug>.md` (or `.ai-memory/rca/resolved/<issue-slug>.md` for CI/CD failures) with grounded 4-part RCA (1. Symptom & Context, 2. Root Cause Analysis, 3. Surgical Fix, 4. Verification Evidence). Never leave unresolved bugs or error traces floating in chat alone.
 - **R16 Zero Generated Artifacts Committed.** Never commit build caches, logs, temp scripts, or newly generated code (Hard Rule 1) unless repository already tracked them.
 - **R17 Zero Secrets in Standard Repos.** Never write credentials, tokens, passwords, or `.env` contents into tracked files, commits, ledger, plans, specs, or prompts (`agents.md` section 9).
   - *Secrets Gate (lead, before GitMap call):*
@@ -360,6 +383,10 @@ GitMap is your **PRIMARY** acceleration engine. Banned ALL variants of `Get-Chil
 | **RC Heatmap Suite** | `gitmap rc heatmap <status|tables|query|view|tree|live|sync>` | `gitmap rc heatmap` | Unified RC heatmap commands with automatic vault auto-provisioning & roadmap linkage |
 | **Heatmap Diagnostics** | `gitmap heatmap query|tables|view` / `gitmap heatmap rc ...` | `gitmap heatmap` | Non-blocking read-only SQL queries, tree view, and live activity stream |
 | **Fleet Synchronization** | `gitmap sync [--workers 8] [--projects <json>]` | `gitmap sync` | Parallel Go sync engine across 43 repositories in <5s with 6-stage ceremony |
+| **Native MCP Server** | `gitmap mcp serve` / `gitmap mcp status` | `gitmap mcp` | Serves 16 high-performance GitMap tools over stdio JSON-RPC 2.0 |
+| **Rights & Security** | `gitmap rights status` / `gitmap rights confirm admin` | `gitmap rights` | SQLite Split-DB administrative permissions matrix for fleet tools |
+| **Screen Capture** | `gitmap screenshot [node] [--output <path>]` | `gitmap screen` | Cross-machine screenshot capture over SSH/SCP with Tokyo Night feedback |
+| **Line-Cap Linter** | `gitmap lines --max 300 -r <path>` | `gitmap lines` | Streaming line counter enforcing 300-line cap (exempts *.md & inventory JSON) |
 
 ### 🔍 Code & Symbol Search Protocol (TOTAL BAN ON `rg`, `ripgrep`, `Select-String`, `git grep`, `Get-ChildItem`, `dir`, `ls`)
 - **Anti-Pattern vs. Mandatory Replacement:**
@@ -520,7 +547,7 @@ You must use `invoke_subagent` to delegate both planning discovery and spec auth
       "Role": "Research 03: Repository Dependencies & Fleet Sync Targets",
       "Model": "inherit",
       "Workspace": "inherit",
-      "Prompt": "You are Research 03 for task <nn>-<slug>. You have no prior chat context; this brief is your complete specification.\n\n### Core Objective:\nExplore external dependencies, script pipelines (`03-ai-scripts/`), skills (`.cursor/skills/` and `.cursor/skills/`), and fleet synchronization manifests for: <task title and objectives>.\n\n### Tool Capabilities & Strict Read-Only Boundary:\n- You are a READ-ONLY subagent (`TypeName: 'research'`).\n- You DO NOT have file authoring tools. NEVER attempt to create or edit files.\n\n### Mandatory GitMap Search Primacy & Total Ban on Raw Grep/Shell:\n- Execute ALL searches exclusively via GitMap:\n  * Directory file inventory: `gitmap lf <dir>` or `gitmap find \"*.*\" <dir>`\n  * Live search: `gitmap aum search \"<term>\" [dir] [-e <.ext>]`\n  * Finding files: `gitmap find \"<pattern>\" [dir]`\n  * Stream file: `gitmap cat <filepath>`\n- TOTAL BAN: Banned ALL variants of `Get-ChildItem` (with or without flags/parameters), `dir`, `ls` in shell, `rg`, `ripgrep`, `grep`, `git grep`, `Select-String`, and `findstr`.\n- TOTAL BAN ON GIT COMMANDS: NEVER run `git` commands.\n\n### Required Findings Report (Send via send_message to Parent):\nSend a message to the caller detailing script dependencies, skill catalogs, and cross-repo synchronization targets."
+      "Prompt": "You are Research 03 for task <nn>-<slug>. You have no prior chat context; this brief is your complete specification.\n\n### Core Objective:\nExplore external dependencies, script pipelines (`03-ai-scripts/`), skills (`.agents/skills/` and `.cursor/skills/`), and fleet synchronization manifests for: <task title and objectives>.\n\n### Tool Capabilities & Strict Read-Only Boundary:\n- You are a READ-ONLY subagent (`TypeName: 'research'`).\n- You DO NOT have file authoring tools. NEVER attempt to create or edit files.\n\n### Mandatory GitMap Search Primacy & Total Ban on Raw Grep/Shell:\n- Execute ALL searches exclusively via GitMap:\n  * Directory file inventory: `gitmap lf <dir>` or `gitmap find \"*.*\" <dir>`\n  * Live search: `gitmap aum search \"<term>\" [dir] [-e <.ext>]`\n  * Finding files: `gitmap find \"<pattern>\" [dir]`\n  * Stream file: `gitmap cat <filepath>`\n- TOTAL BAN: Banned ALL variants of `Get-ChildItem` (with or without flags/parameters), `dir`, `ls` in shell, `rg`, `ripgrep`, `grep`, `git grep`, `Select-String`, and `findstr`.\n- TOTAL BAN ON GIT COMMANDS: NEVER run `git` commands.\n\n### Required Findings Report (Send via send_message to Parent):\nSend a message to the caller detailing script dependencies, skill catalogs, and cross-repo synchronization targets."
     }
   ]
 }
@@ -809,7 +836,7 @@ To maximize execution velocity and prevent idle worker slots during Phase 2 and 
 - **Zero Storage Rule:** Output test results directly to console or `$GITHUB_STEP_SUMMARY`. Total ban on `actions/upload-artifact`.
 
 1. **Consolidate Subtasks:** Merge completed subtasks into `.ai-memory/plans/completed/nn-<slug>.md`, logging real steps from ledger; link to canonical spec. Delete `.ai-memory/plans/subtasks/nn-<slug>/` and pending plan. Canonical spec in `02-spec/21-app/` stays permanently.
-2. **Update Registers:** Update `.ai-memory/plans/readme.md` and `02-spec/21-app/readme.md`. Update `01-prompts/readme.md` and `.ai-memory/prompts.md` only when adding/modifying prompts. Register recent completed tasks before push gate.
+2. **Update Registers:** Update `.ai-memory/plans/readme.md` and `02-spec/21-app/readme.md`. Update `01-prompts/readme.md` and `01-prompts/README.md` only when adding/modifying prompts. Register recent completed tasks before push gate.
 3. **Push Gate Verification:** Before GitMap call, verify: (a) targeted checks exit 0 (>0 files; every time you write code, do not build the code; never run all tests locally or full build unless explicitly asked; only do end-to-end testing based on mentioned test cases if explicitly asked), (b) secrets gate clean, (c) `.gitignore` covers caches, build outputs, logs, reports, `.env*` (untrack any tracked ignored files via `git rm --cached <file>` or `git rm -r --cached <dir>`), (d) Phase 3 cognitive heatmap verification: run `gitmap heatmap tree --task <task>` and `gitmap heatmap status --task <task>` to verify all actions and expected outcomes are 100% met before committing. (e) Doubt marking: every code spot with a doubt carries a strict DOUBT comment (what is doubtful, what must be verified) plus a `gitmap heatmap log` entry with file + line number + what needs verification, so tools or any AI can re-check it later. On failure: abort GitMap call; mark task `FAILED` with RCA.
 4. **Atomic Commit & Push:** Call `gitmap cpf "MODULE - summary"` (features, e.g. `gitmap cpf "CBF - implement user profile dashboard"`) or `gitmap cpb "MODULE - summary"` (fixes, e.g. `gitmap cpb "AUM - validate regex without nil fallback"`). Enforce uppercase module hyphen standard without third brackets. Mention as a hyphen `-` because the colon is already going to be provided by GitMap (which automatically prepends `Feature: ` or `Bug: `). So, there is no need to provide the colon or brackets in GitMap `cpf`/`cpb`/CVF message arguments (TOTAL BAN on colons `:` and third brackets `[MODULE]` inside the message argument); always use an uppercase module and hyphen `-` to separate module from summary (e.g. `"MODULE - summary"`). NEVER include redundant conventional prefixes (`feat(...)`, `fix(...)`, `docs(...)`) in the commit string. Push rejected: `gitmap pull` (fallback `git pull --rebase`) and re-run. Miss after push: allow one follow-up `gitmap cpb "<module> - <fix summary>"`, logged as `FOLLOW_UP_PUSH: <sha>`. Never amend pushed commits. **CI/CD Verification Mandate:** Do CI/CD verification (e.g. `gitmap pe`, `gitmap pe -t`, `gitmap pipeline-ai`, GitHub Actions) ONLY if asked; if not asked explicitly, don't do it. Conclude immediately upon successful GitMap push without waiting for remote CI/CD runs.
 
@@ -878,7 +905,7 @@ Confirm scripts exist via harmless workspace call before invoking (R4). Run on c
 - [ ] NO READ-ONLY SUBAGENT FILE WRITES (TOTAL BAN): Subagents of `TypeName: "research"` have read-only tools and cannot write files. Never command a research subagent to write files; research subagents discover and report back, and the lead writes the unified plan.
 - [ ] NO INVALID SUBAGENT TYPENAMES (TOTAL BAN): Never pass custom strings like "Research 01" or "Worker 01" in the `TypeName` field of `invoke_subagent`. `TypeName` MUST be strictly `"research"` (read-only discovery) or `"self"` (read/write execution). Put descriptive names in `Role` only.
 - [ ] NO SUBAGENT GIT EXECUTION (TOTAL BAN): Subagents must NEVER run any git commands (`git add`, `git commit`, `git push`, `git status`, `git diff`, `git checkout`) in shared workspaces. Worker git execution creates `.git/index.lock` collisions that immediately crash parallel workers with exit code 128.
-- [ ] ISSUE & RCA DESTINATION ROUTING: Whenever resolving an issue or performing a fix with RCA, verified that CI/CD failures are documented in `.ai-memory/cicd-issues/nn-<slug>.md` (indexed in `.ai-memory/cicd-index.md`), while non-CI/CD issues (application bugs, logic/runtime defects) are documented in `02-spec/22-app-issues/nn-<slug>.md` (indexed in `02-spec/22-app-issues/readme.md`).
+- [ ] ISSUE & RCA DESTINATION ROUTING: Whenever resolving an issue or performing a fix with RCA, verified that CI/CD failures are documented in `.ai-memory/rca/resolved/nn-<slug>.md` (indexed in `.ai-memory/rca/README.md`), while non-CI/CD issues (application bugs, logic/runtime defects) are documented in `02-spec/22-app-issues/nn-<slug>.md` (indexed in `02-spec/22-app-issues/readme.md`).
 - [ ] NO LOCAL TESTS (TOTAL BAN): Never run all tests locally or full test suites (`06-cicd-local-runner.py`, `pytest`, `npm test`, `go test ./...`) unless explicitly asked. Only do end-to-end (E2E) testing based on mentioned test cases if explicitly asked by the user.
 - [ ] NO BUILD CHECKING (TOTAL BAN): Every time you write code, you do not build the code. Never run build commands (`go build`, `npm run build`, `vite build`, `cargo build`, compiler checks) after writing code or to verify compilation. Never run a full build unless explicitly asked.
 - [ ] NO RUNNER SCRIPTS (TOTAL BAN): Never launch background test runners, worker pools, or test inventory loops during routine execution.
@@ -1026,4 +1053,4 @@ This script must be masked (zero plaintext API keys, passwords, or personal acce
 
 ## MUST FOLLOW NON-NEGOTIABLE
 
-Listen, past runs of these turns have been sloppy and stupid as fuck: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase readme.md files left uncorrected, `.ai-memory/memory/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. WTF. How on earth are you reverting to this carelessness, are you stupid?? Stop doing that, you stupid fuck. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job. Violating this is auto-reject on the same tier as RULE 0. Avoid stupidity and being careless, you stupid fuck. Where is your attention, are you stupid? Tell me. Your stupidity is going on top of my head. Where did you learn this stupidity? If I could find you, I could slap you.
+Listen, past runs of these turns have been sloppy and stupid as fuck: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase readme.md files left uncorrected, `.ai-memory/learned/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. WTF. How on earth are you reverting to this carelessness, are you stupid?? Stop doing that, you stupid fuck. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job. Violating this is auto-reject on the same tier as RULE 0. Avoid stupidity and being careless, you stupid fuck. Where is your attention, are you stupid? Tell me. Your stupidity is going on top of my head. Where did you learn this stupidity? If I could find you, I could slap you.

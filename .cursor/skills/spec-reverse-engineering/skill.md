@@ -11,7 +11,7 @@ Trigger Keywords & Aliases: `reverse-engineer`, `spec-write`, `reverse-engineeri
 > [!IMPORTANT]
 > Prompt Version: 2.4.0
 > Synchronization: Main Meta-Repo & Connected Workspaces
-> **Invocation:** `@[spec-reverse-engineering](directory;.cursor/skills/spec-reverse-engineering)`  
+> **Invocation:** `@[spec-reverse-engineering](directory;.agents/skills/spec-reverse-engineering)`
 
 ```text
 N = 80
@@ -98,7 +98,7 @@ Subtasks must focus purely on unique task deliverables without repeating common 
 11. [ ] [/goal](slashCommand:goal) Phase 3 (Master Index Synthesis): Author `02-spec/21-app/readme.md` summarizing the overall application architecture, behavior, technology stack, architectural health score, and component topology.
 12. [ ] [/goal](slashCommand:goal) Phase 3 (Security Audit & Risk Assessment): Identify hardcoded credentials, unauthenticated endpoints, input sanitization flaws, and dependency vulnerabilities, publishing an exhaustive risk evaluation in `02-spec/21-app/xx-security-and-risks.md`.
 13. [ ] [/goal](slashCommand:goal) Phase 3 (Final Structure Communication): Output a clean, viewable markdown/ASCII folder tree in the final chat response illustrating the complete generated specification layout.
-14. [ ] [/learn](slashCommand:learn) Ingest `.ai-memory/memory/readme.md` for project memory index and past learnings.
+14. [ ] [/learn](slashCommand:learn) Ingest `.ai-memory/learned/readme.md` for project memory index and past learnings.
 15. [ ] [/learn](slashCommand:learn) Ingest `.ai-memory/strictly-avoid.md` for banned anti-patterns and strict constraints.
 16. [ ] [/learn](slashCommand:learn) Ingest `02-spec/02-coding-guidelines/08-file-folder-naming/` for lowercase naming and continuous file sequencing.
 17. [ ] [/learn](slashCommand:learn) Ingest `02-spec/02-coding-guidelines/01-cross-language/readme.md` for strict relative path citation requirements.

@@ -1,11 +1,11 @@
 # AI Execution Instruction — Plan 104: Repository Management and Multi-IDE Integration Instructions
 
-> **Status:** ACTIVE  
-> **Target Slug:** repository-management-and-integration-instructions  
-> **Spec File:** `02-spec/21-app/104-repository-management-and-integration-instructions/01-architecture-spec.md`  
-> **Master Plan:** `.ai-memory/plans/pending/104-repository-management-and-integration-instructions.md`  
-> **Subtasks Directory:** `.ai-memory/plans/subtasks/104-repository-management-and-integration-instructions/`  
-> **Target Version:** v6.681.0  
+> **Status:** ACTIVE
+> **Target Slug:** repository-management-and-integration-instructions
+> **Spec File:** `02-spec/21-app/104-repository-management-and-integration-instructions/01-architecture-spec.md`
+> **Master Plan:** `.ai-memory/plans/pending/104-repository-management-and-integration-instructions.md`
+> **Subtasks Directory:** `.ai-memory/plans/subtasks/104-repository-management-and-integration-instructions/`
+> **Target Version:** v6.681.0
 
 ---
 

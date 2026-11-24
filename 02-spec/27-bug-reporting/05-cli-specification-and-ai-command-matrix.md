@@ -4,62 +4,66 @@
 
 When an AI coding assistant is tasked with diagnosing and fixing a bug, it cannot look at a browser screen interactively unless the CLI gives it structured, granular commands.
 
-This specification defines the universal CLI tool contract (`errors-cli` / `bug-cli`):
-1. **Recent Bugs Discovery**: `errors-cli --recent-bugs` shows the newest bug reports, their session IDs, reporter, machine name, and step counts.
-2. **Step Inspection**: `errors-cli --step <N>` (or `--inspect-event <N>`) outputs the exact frontend code location (`data-tsd-source`), backend route (`BE/routes/...`), screenshot file link, and human action phrase for Step N.
-3. **Drill-Down Stack Trace**: `errors-cli --drill-down <SESSION_ID> --step <N> [--depth full|code|stack]` fetches the stack trace or snippet.
+This specification defines the universal CLI tool contract implemented across `agm bug` (Rust/Tauri) and `errors-cli` (Python/Node):
+1. **Recent Bugs Discovery**: `agm bug list` (or `errors-cli --recent-bugs`) shows newest bug reports, session IDs, bug sequence (`06-bug`), duration, and step counts.
+2. **Session Inspection**: `agm bug show <id|latest>` shows complete session metadata, initial/final routes, duration, step counts, and backend trace summary.
+3. **Step Inspection with Blast Radius**: `agm bug event <id> <step> [--blast-radius 2]` outputs the exact frontend code location (`data-tsd-source`), backend route/handler, screenshot file link, human action phrase, and adjacent 2–3 step blast radius for Step N.
 4. **Suggested Follow-up Commands**: Every CLI output appends a `Suggested AI Commands` block giving the AI the exact next shell commands to execute.
-5. **Portable Import / Export**: `errors-cli --import-zip <FILE>` and `errors-cli --export-bundle <SESSION_ID>`.
+5. **Portable Import / Export**: `agm bug export <id>` and `errors-cli --import-zip <PATH>`.
 
 ---
 
-## 2. Universal Command Syntax & Options
+## 2. Universal Command Syntax & Options (`agm bug`)
 
 | Command / Flag | Purpose | Example Usage |
 | :--- | :--- | :--- |
-| `--recent-bugs [--limit N]` | Lists newest bug sessions with machine, user, and step counts | `python bin/errors-cli.py --recent-bugs` |
-| `--step <N>` / `-s <N>` | Inspects Step N of the most recent (or targeted) bug session | `python bin/errors-cli.py --step 7` |
-| `--session <ID>` | Targets a specific bug session ID | `python bin/errors-cli.py --session rec-1234 --step 8` |
-| `--drill-down <ID> --step <N>` | Retrieves deep stack trace and code snippets | `python bin/errors-cli.py --drill-down rec-1234 --step 7` |
-| `--import-zip <PATH>` | Imports a `.bug.zip` archive into SQLite and local directories | `python bin/errors-cli.py --import-zip ./defect.bug.zip` |
-| `--export-bundle <ID> [--out F]` | Exports full session and project into a portable ZIP | `python bin/errors-cli.py --export-bundle rec-1234` |
-| `--json` | Emits output formatted in Universal Response Envelope JSON | `python bin/errors-cli.py --step 7 --json` |
+| `agm bug list [--limit N] [--json]` | Lists newest bug sessions with sequence, duration, and step counts | `agm bug list --limit 10` |
+| `agm bug show <id\|latest> [--json]` | Displays high-level summary and step list for a session | `agm bug show latest` |
+| `agm bug event <id> <step> [--blast-radius N]` | Inspects specific event with 2–3 step blast radius & backend code (supports `agm bug event 07 2`, `07\|02`, and `07:02`) | `agm bug event 06-bug 1 --blast-radius 2` |
+| `agm bug latest` | Quick shortcut for `agm bug show latest` | `agm bug latest` |
+| `--json` | Emits output formatted in Universal Response Envelope JSON | `agm bug event latest 1 --json` |
 
 ---
 
-## 3. Sample CLI Terminal Output: `errors-cli --step 7`
+## 3. Sample CLI Terminal Output: `agm bug event 06-bug 1`
 
 ```
 ================================================================================
-INSPECTING STEP #07 (Session: rec-20261103-134210-9281)
+INSPECTING STEP #01 (Session: 06-bug · rec-mwhwqqp7-w8yv7)
 ================================================================================
-Timestamp:    +41200ms (13:42:51 UTC)
-Screen:       Workpiece Analysis (Route: /projects/demo)
-Action:       Clicked 'Analyze Inspection' on canvas control bar
-XPath:        //*[@data-ui-id='ui-workspace-run']
+Timestamp:    +2100ms (10:08:30 UTC)
+Route:        /instances
+Action:       Clicked 'Focus IDE (Default)' on InstanceCardProjects
+XPath:        //*[@id='btn-focus-ide']
 
-CODE LEVEL TRACEABILITY:
-  Frontend Source:   src/components/vision/workpiece/WorkpieceAnalyzeWorkspace.tsx:1865:12
-  React Component:   WorkpieceAnalyzeWorkspace
-  Backend Endpoint:  POST /score
-  Backend Handler:   BE/routes/score.py::evaluate_score
+BACKEND CODE TRACEABILITY (TOP TIER):
+  Backend Function:  focus_resolved_conversation
+  Source File:       src-tauri/src/modules/instance/focus_activation.rs:71
+  IPC Command:       invoke.focus_or_launch_instance
+  Execution Status:  E7001 (Failed to activate conversation: CDP session returned false)
+  Stack Trace:       src-tauri/src/modules/instance/focus_activation.rs:94
+
+FRONTEND DOM & SOURCE CONTEXT:
+  Frontend Source:   src/pages/instances/InstanceCardProjects.tsx:294:15
+  Target Element:    button#btn-focus-ide.rounded-md
+  Target Label:      Focus IDE (Default) on d:\work\Antigravity-Manager
 
 VISUAL EVIDENCE:
-  Full Viewport:     .logs/recorded-bugs/rec-20261103-134210-9281/screenshots/snap-07-full.png
-  Workpiece Canvas:  .logs/recorded-bugs/rec-20261103-134210-9281/screenshots/snap-07-canvas.png
+  Step Snapshot:     .logs/recorded-bugs/06-bug/screenshots/step-01.png
+  Locator Ring:      Red animated ring at coordinates (x: 412, y: 185)
 
-HOST & REPORTER:
-  Machine Host:      LAB-WORKSTATION-02
-  Operating System:  Windows 11 Pro (10.0.26100)
-  Reported By:       alim
+--------------------------------------------------------------------------------
+BLAST RADIUS CONTEXT (Adjacent Steps):
+  [Step #0] (Initial State) Navigation to /instances
+  [Step #1] (Current Step) Clicked 'Focus IDE (Default)' -> Backend Error E7001
+  [Step #2] Clicked 'Prompt Input Box' -> Focused textarea#prompt-input
 
 --------------------------------------------------------------------------------
 💡 SUGGESTED AI COMMANDS FOR NEXT INVESTIGATION STEPS:
-  1. Inspect Previous Step:   python bin/errors-cli.py --step 6
-  2. Inspect Following Step:  python bin/errors-cli.py --step 8
-  3. View Full Stack Trace:   python bin/errors-cli.py --drill-down rec-20261103-134210-9281 --step 7
-  4. Inspect Source File:     gitmap cat src/components/vision/workpiece/WorkpieceAnalyzeWorkspace.tsx -L 1850:1880
-  5. Inspect Backend Route:   gitmap cat BE/routes/score.py -L 80:120
+  1. Inspect Previous Step:   agm bug event 06-bug 0
+  2. Inspect Following Step:  agm bug event 06-bug 2
+  3. Inspect Backend Source:  gitmap cat src-tauri/src/modules/instance/focus_activation.rs -L 70:110
+  4. Inspect SafeIo Wrapper:  gitmap cat src/utils/safeIo.ts -L 30:70
 ================================================================================
 ```
 
@@ -71,40 +75,34 @@ HOST & REPORTER:
 {
   "Status": "success",
   "Code": "OK_STEP_INSPECTED",
-  "SessionId": "rec-20261103-134210-9281",
+  "SessionId": "rec-mwhwqqp7-w8yv7",
+  "BugSeq": "06-bug",
   "Step": {
-    "sequenceNumber": 7,
-    "elapsedMs": 41200,
-    "screenName": "Workpiece Analysis",
-    "route": "/projects/demo",
-    "actionPhrase": "Clicked 'Analyze Inspection'",
-    "xpath": "//*[@data-ui-id='ui-workspace-run']",
-    "source": {
-      "filePath": "src/components/vision/workpiece/WorkpieceAnalyzeWorkspace.tsx",
-      "line": 1865,
-      "column": 12,
-      "component": "WorkpieceAnalyzeWorkspace"
-    },
+    "stepNumber": 1,
+    "timestamp": 1794751710000,
+    "route": "/instances",
+    "action": "Clicked 'Focus IDE (Default)'",
     "backend": {
-      "endpoint": "/score",
-      "method": "POST",
-      "file": "BE/routes/score.py",
-      "fn": "evaluate_score"
+      "functionName": "focus_resolved_conversation",
+      "fileName": "src-tauri/src/modules/instance/focus_activation.rs",
+      "lineNumber": 71,
+      "commandName": "invoke.focus_or_launch_instance",
+      "status": "E7001",
+      "stackTrace": "src-tauri/src/modules/instance/focus_activation.rs:94"
     },
-    "evidence": {
-      "viewportScreenshot": ".logs/recorded-bugs/rec-20261103-134210-9281/screenshots/snap-07-full.png",
-      "canvasScreenshot": ".logs/recorded-bugs/rec-20261103-134210-9281/screenshots/snap-07-canvas.png"
-    }
-  },
-  "Machine": {
-    "hostname": "LAB-WORKSTATION-02",
-    "os": "Windows 11 Pro",
-    "username": "alim"
-  },
-  "SuggestedAiCommands": [
-    "python bin/errors-cli.py --step 6",
-    "python bin/errors-cli.py --step 8",
-    "python bin/errors-cli.py --drill-down rec-20261103-134210-9281 --step 7"
-  ]
+    "frontend": {
+      "file": "src/pages/instances/InstanceCardProjects.tsx",
+      "line": 294,
+      "targetTag": "button",
+      "targetId": "btn-focus-ide",
+      "xpath": "//*[@id='btn-focus-ide']"
+    },
+    "screenshotPath": ".logs/recorded-bugs/06-bug/screenshots/step-01.png",
+    "blastRadius": [
+      { "stepNumber": 0, "action": "Navigation to /instances" },
+      { "stepNumber": 1, "action": "Clicked 'Focus IDE (Default)'", "error": "E7001" },
+      { "stepNumber": 2, "action": "Clicked 'Prompt Input Box'" }
+    ]
+  }
 }
 ```

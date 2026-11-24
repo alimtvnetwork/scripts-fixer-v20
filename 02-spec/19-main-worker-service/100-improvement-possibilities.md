@@ -1,9 +1,9 @@
 # 100 Improvement Possibilities for Main Worker Service Specification
 
-> **Spec:** `02-spec/19-main-worker-service/100-improvement-possibilities.md`  
-> **Status:** Normative Architecture & Enhancement Catalog  
-> **Target Topology:** Two-Tier Main Server (Control Plane) & Split-DB Worker Nodes  
-> **Classification:** Engineering Specification & Architectural Evolution Backlog  
+> **Spec:** `02-spec/19-main-worker-service/100-improvement-possibilities.md`
+> **Status:** Normative Architecture & Enhancement Catalog
+> **Target Topology:** Two-Tier Main Server (Control Plane) & Split-DB Worker Nodes
+> **Classification:** Engineering Specification & Architectural Evolution Backlog
 
 ---
 

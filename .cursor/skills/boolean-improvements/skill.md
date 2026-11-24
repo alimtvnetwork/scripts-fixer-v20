@@ -5,7 +5,7 @@ description: "Executes the Boolean Logic Modernization & Guard Inversion - Codin
 
 # Boolean Logic Modernization & Guard Inversion - Coding Guideline
 
-> **Invocation:** `@[boolean-improvements](directory;.cursor/skills/boolean-improvements)`
+> **Invocation:** `@[boolean-improvements](directory;.agents/skills/boolean-improvements)`
 
 Source prompt: `01-prompts/09-commit-and-multi-agent-code-fix/01-boolean-improvements.md`
 

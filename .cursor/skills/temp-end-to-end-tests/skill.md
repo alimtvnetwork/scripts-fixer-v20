@@ -9,7 +9,7 @@ description: >-
 > [!IMPORTANT]
 > Prompt Version: 2.5.0
 > Synchronization: Main Meta-Repo & Connected Workspaces
-> **Invocation:** `@[temp-end-to-end-tests](directory;.cursor/skills/temp-end-to-end-tests)`  
+> **Invocation:** `@[temp-end-to-end-tests](directory;.agents/skills/temp-end-to-end-tests)`
 >
 > **Top-Instruction Priority Mandate (Preamble Precedence):**
 > Whatever directives, constraints, checklists, or instructions are given before this section or prompt (including in the prompt preamble, header blocks, or incoming user request) are HIGHEST PRIORITY and MUST BE FOLLOWED as strictly NON-NEGOTIABLE. They supersede and strictly override any conflicting general advice, default conventions, or lower-level guidelines below.
@@ -41,7 +41,7 @@ Unlike multi-agent parallel workflows, temporary end-to-end test development enf
 10. [ ] [/goal](slashCommand:goal) Phase 2 (Targeted On-Demand Verification ONLY): Run ONLY the specific isolated temporary E2E test using the explicit on-demand command (e.g. `RUN_TEMP_E2E=1 go test -tags=tempe2e -v ...`). Do not run `06-cicd-local-runner.py` or standard unflagged test commands.
 11. [ ] [/goal](slashCommand:goal) Phase 3 (Consolidation & Atomic Push): Consolidate completed subtasks into `.ai-memory/plans/completed/xx-<slug>.md` preserving the canonical spec reference (canonical spec in `02-spec/21-app/` remains permanently intact), delete granular subtasks and pending plan, stage all changes, and push in a single grouped commit.
 12. [ ] [/goal](slashCommand:goal) Phase 3 (Completion & Confidence Reporting): Emit the final Task Completion Summary with strict line-by-line bullet format (- ✅), isolation verification summary, modified files summary, and implementation confidence score.
-13. [ ] [/learn](slashCommand:learn) Ingest `.ai-memory/memory/readme.md` for project memory index and past learnings.
+13. [ ] [/learn](slashCommand:learn) Ingest `.ai-memory/learned/readme.md` for project memory index and past learnings.
 14. [ ] [/learn](slashCommand:learn) Ingest `.ai-memory/strictly-avoid.md` for banned anti-patterns and strict constraints.
 15. [ ] [/learn](slashCommand:learn) Ingest `02-spec/02-coding-guidelines/` for domain-specific architectural specifications.
 16. [ ] [/learn](slashCommand:learn) Ingest `02-spec/03-error-manage/` for error handling architectures and *appfault.AppError.
@@ -256,14 +256,14 @@ Your task is to independently audit, verify, and remediate the implementation ag
 Whenever the task involves fixing an issue, bug, pipeline failure, or performing a fix with RCA:
 
 1. **CI/CD Issues & Pipeline Failures:**
-   - **Target Folder:** `.ai-memory/cicd-issues/`
-   - **File Pattern:** `.ai-memory/cicd-issues/NN-<issue-slug>.md`
-   - **Registry:** Index the issue in `.ai-memory/cicd-index.md`.
+   - **Target Folder:** `.ai-memory/rca/resolved/`
+   - **File Pattern:** `.ai-memory/rca/resolved/NN-<issue-slug>.md`
+   - **Registry:** Index the issue in `.ai-memory/rca/README.md`.
    - **Scope:** CI/CD workflows, GitHub Actions, local runner failures (`06-cicd-local-runner.py`), test runner errors, lint gate failures, or build pipeline failures.
 2. **Non-CI/CD Issues (Application Bugs, Feature Defects, Logic/Runtime Errors):**
    - **Target Folder:** `02-spec/22-app-issues/` (canonical spec hierarchy Tier 22)
    - **File Pattern:** `02-spec/22-app-issues/NN-<issue-slug>.md`
-   - **Structure & Registry:** Follow the 4-part structure (Reproduction / Cause / Fix / Prevention per AC-AI-001 or Why / How / Root Cause / Code Fix) and index in `02-spec/22-app-issues/readme.md` (cross-referencing in `.ai-memory/memory/issues/` for institutional memory).
+   - **Structure & Registry:** Follow the 4-part structure (Reproduction / Cause / Fix / Prevention per AC-AI-001 or Why / How / Root Cause / Code Fix) and index in `02-spec/22-app-issues/readme.md` (cross-referencing in `.ai-memory/learned/issues/` for institutional memory).
    - **Scope:** Application business logic, UI bugs, CLI command errors, API crashes, and domain defects.
 
 ---
@@ -281,7 +281,7 @@ Whenever the task involves fixing an issue, bug, pipeline failure, or performing
 ## 2. Banned Operations Checklist (TOTAL BAN — Auto-Reject on Violation)
 
 - [ ] TOP-INSTRUCTION PRIORITY MANDATE: Whatever directives, constraints, checklists, or instructions are given before this section or prompt (user preamble, header constraints, prior instructions) are verified as highest priority and non-negotiable, overriding all lower-level guidelines below.
-- [ ] ISSUE & RCA DESTINATION ROUTING: Whenever resolving an issue or performing a fix with RCA, verified that CI/CD failures are documented in .ai-memory/cicd-issues/NN-<slug>.md (indexed in .ai-memory/cicd-index.md), while non-CI/CD issues (application bugs, logic/runtime defects) are documented in 02-spec/22-app-issues/NN-<slug>.md (indexed in 02-spec/22-app-issues/readme.md).
+- [ ] ISSUE & RCA DESTINATION ROUTING: Whenever resolving an issue or performing a fix with RCA, verified that CI/CD failures are documented in .ai-memory/rca/resolved/NN-<slug>.md (indexed in .ai-memory/rca/README.md), while non-CI/CD issues (application bugs, logic/runtime defects) are documented in 02-spec/22-app-issues/NN-<slug>.md (indexed in 02-spec/22-app-issues/readme.md).
 - [ ] NO UNISOLATED TEMP E2E TESTS (TOTAL BAN): Never create or commit temporary E2E tests without mandatory build tags (`//go:build tempe2e`), markers (`@pytest.mark.temp_e2e`), or runtime skip guards (`RUN_TEMP_E2E`). Every temporary E2E test must skip by default.
 - [ ] NO ENABLING IN CI/CD WORKFLOWS (TOTAL BAN): Never modify GitHub Actions workflows (`.github/workflows/*.yml`) or pipeline definitions to execute temporary E2E tests.
 - [ ] NO ROUTINE LOCAL TEST EXECUTION (TOTAL BAN): Never run `06-cicd-local-runner.py` or standard unflagged test commands (`go test ./...` without tags). Only run the targeted on-demand command with explicit isolation flags.

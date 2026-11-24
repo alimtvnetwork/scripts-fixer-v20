@@ -20,7 +20,7 @@ N = 300
 N = total self-loop steps budget that the agents will perform.
 
 ```text
-PHASE_1_STEPS = N / 2   (Steps 1 .. N/2: Task Verification, Canonical Spec in 02-spec/21-app/, Issue Authoring in 02-spec/22-app-issues/ or .ai-memory/cicd-issues/, Enqueuing to .ai-memory/plans/, Writing Isolated E2E Tests)
+PHASE_1_STEPS = N / 2   (Steps 1 .. N/2: Task Verification, Canonical Spec in 02-spec/21-app/, Issue Authoring in 02-spec/22-app-issues/ or .ai-memory/rca/resolved/, Enqueuing to .ai-memory/plans/, Writing Isolated E2E Tests)
 PHASE_2_STEPS = N / 2   (Steps N/2+1 .. N: Running Isolated Tests Locally, 4-Part RCA & Defect Fixing, Test Verification, Consolidation, and Release Ceremony)
 ```
 
@@ -361,14 +361,14 @@ Your task is to independently audit, verify, and remediate the implementation ag
 Whenever the task involves fixing an issue, bug, pipeline failure, or performing a fix with RCA:
 
 1. **CI/CD Issues & Pipeline Failures:**
-   - **Target Folder:** `.ai-memory/cicd-issues/`
-   - **File Pattern:** `.ai-memory/cicd-issues/NN-<issue-slug>.md`
-   - **Registry:** Index the issue in `.ai-memory/cicd-index.md`.
+   - **Target Folder:** `.ai-memory/rca/resolved/`
+   - **File Pattern:** `.ai-memory/rca/resolved/NN-<issue-slug>.md`
+   - **Registry:** Index the issue in `.ai-memory/rca/README.md`.
    - **Scope:** CI/CD workflows, GitHub Actions, local runner failures (`06-cicd-local-runner.py`), test runner errors, lint gate failures, or build pipeline failures.
 2. **Non-CI/CD Issues (Application Bugs, Feature Defects, Logic/Runtime Errors):**
    - **Target Folder:** `02-spec/22-app-issues/` (canonical spec hierarchy Tier 22)
    - **File Pattern:** `02-spec/22-app-issues/NN-<issue-slug>.md`
-   - **Structure & Registry:** Follow the 4-part structure (Reproduction / Cause / Fix / Prevention per AC-AI-001 or Why / How / Root Cause / Code Fix) and index in `02-spec/22-app-issues/readme.md` (cross-referencing in `.ai-memory/memory/issues/` for institutional memory).
+   - **Structure & Registry:** Follow the 4-part structure (Reproduction / Cause / Fix / Prevention per AC-AI-001 or Why / How / Root Cause / Code Fix) and index in `02-spec/22-app-issues/readme.md` (cross-referencing in `.ai-memory/learned/issues/` for institutional memory).
    - **Scope:** Application business logic, UI bugs, CLI command errors, API crashes, and domain defects.
 
 ---
@@ -386,7 +386,7 @@ Whenever the task involves fixing an issue, bug, pipeline failure, or performing
 ## 2. Banned Operations Checklist (TOTAL BAN — Auto-Reject on Violation)
 
 - [ ] TOP-INSTRUCTION PRIORITY MANDATE: Whatever directives, constraints, checklists, or instructions are given before this section or prompt (user preamble, header constraints, prior instructions) are verified as highest priority and non-negotiable, overriding all lower-level guidelines below.
-- [ ] ISSUE & RCA DESTINATION ROUTING: Whenever resolving an issue or performing a fix with RCA, verified that CI/CD failures are documented in .ai-memory/cicd-issues/NN-<slug>.md (indexed in .ai-memory/cicd-index.md), while non-CI/CD issues (application bugs, logic/runtime defects) are documented in 02-spec/22-app-issues/NN-<slug>.md (indexed in 02-spec/22-app-issues/readme.md).
+- [ ] ISSUE & RCA DESTINATION ROUTING: Whenever resolving an issue or performing a fix with RCA, verified that CI/CD failures are documented in .ai-memory/rca/resolved/NN-<slug>.md (indexed in .ai-memory/rca/README.md), while non-CI/CD issues (application bugs, logic/runtime defects) are documented in 02-spec/22-app-issues/NN-<slug>.md (indexed in 02-spec/22-app-issues/readme.md).
 - [ ] NO UNISOLATED TEMP E2E TESTS (TOTAL BAN): Never create or commit temporary E2E tests without mandatory build tags (`//go:build tempe2e`), markers (`@pytest.mark.temp_e2e`), or runtime skip guards (`RUN_TEMP_E2E`). Every temporary E2E test must skip by default.
 - [ ] NO ENABLING IN CI/CD WORKFLOWS (TOTAL BAN): Never modify GitHub Actions workflows (`.github/workflows/*.yml`) or pipeline definitions to execute temporary E2E tests.
 - [ ] NO ROUTINE LOCAL TEST EXECUTION (TOTAL BAN): Never run `06-cicd-local-runner.py` or standard unflagged test commands (`go test ./...` without tags). Only run the targeted on-demand command with explicit isolation flags.

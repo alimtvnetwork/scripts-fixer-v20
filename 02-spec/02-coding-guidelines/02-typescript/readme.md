@@ -74,7 +74,7 @@ TypeScript-specific coding standards, enum definitions, and type safety enforcem
 |-----------|----------|
 | Parent Overview | `../readme.md` |
 | Cross-Language Rules | `../01-cross-language/readme.md` |
-| Coding Guidelines Memory | `../../../.ai-memory/memories/constraints/coding-guidelines.md` |
+| Coding Guidelines Memory | `../../../.ai-memory/learned/constraints/coding-guidelines.md` |
 
 ---
 

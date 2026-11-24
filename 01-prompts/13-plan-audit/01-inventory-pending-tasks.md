@@ -74,14 +74,14 @@ To ensure zero blind spots, the AI must systematically inspect the following aut
     pending/xx-<slug>.md                        # Active, pending parent execution plans
     completed/xx-<slug>.md                      # Historical completed plans (reference only)
     subtasks/xx-<slug>/SS-<subslug>.md          # Granular subtasks linked to parent plans
-  issues/                                       # General pending bug reports
-  pending-issues/                               # Active issues queue
-  cicd-issues/                                  # CI/CD specific failures & blockers
-  ambiguous-questions/
-    01-new-ambiguity/xx-<slug>.md               # Blocking & non-blocking open questions
-    02-ambiguity-resolved/xx-<slug>.md          # Binding resolved decisions
-  suggestions.md                                # Suggestions tracker
-  prompts.md                                    # Canonical prompt registry
+  rca/
+    new/xx-<slug>.md                            # Active bug reports and investigations
+    resolved/xx-<slug>.md                       # Remediated root cause analyses
+  ambiguity/
+    new/xx-<slug>.md                            # Blocking & non-blocking open questions
+    resolved/xx-<slug>.md                       # Binding resolved decisions
+  plans/suggestions/                            # Autonomous AI proposals staged for review
+  learned/                                      # Flat sequential institutional knowledge
 spec/
   01-spec-authoring-guide/                      # Spec authoring conventions & required files
   02-coding-guidelines/                         # Coding standards & zero-tolerance rules
@@ -98,10 +98,10 @@ readme.md                                       # Root repository guide (strictl
 
 1. Scan Every Pending Source:
    - Open and read `.ai-memory/plans/readme.md`, `.ai-memory/plans/pending/`, and all `.ai-memory/plans/subtasks/` files with `Status:` not `completed`.
-   - Open and read all files in `.ai-memory/issues/`, `.ai-memory/pending-issues/`, and `.ai-memory/cicd-issues/`.
-   - Open and read all open questions in `.ai-memory/ambiguous-questions/01-new-ambiguity/`.
-   - Open and read unfulfilled directives in `.ai-memory/memory/` and `02-spec/21-app/`.
-   - Open and read active suggestions in `.ai-memory/suggestions.md`.
+   - Open and read all files in `.ai-memory/rca/resolved/`, `.ai-memory/rca/new/`, and `.ai-memory/rca/resolved/`.
+   - Open and read all open questions in `.ai-memory/ambiguity/new/`.
+   - Open and read unfulfilled directives in `.ai-memory/learned/` and `02-spec/21-app/`.
+   - Open and read active suggestions in `.ai-memory/plans/suggestions/01-legacy-suggestions.md`.
 2. Deduplicate Across Sources:
    - If a feature is referenced across a spec, a plan, and an issue, consolidate it into ONE primary task with cross-references to all origin files.
 3. Step-Count Rubric & Decomposition Alert:
@@ -132,7 +132,7 @@ Present the inventory to the user in this exact markdown structure:
 - Pending Plans: [P]
 - Pending Issues & CI/CD: [I]
 - Unimplemented Spec Scope: [U]
-- Sources Scanned: [.ai-memory/plans/pending/, .ai-memory/plans/subtasks/, .ai-memory/issues/, .ai-memory/cicd-issues/, .ai-memory/ambiguous-questions/01-new-ambiguity/, spec/]
+- Sources Scanned: [.ai-memory/plans/pending/, .ai-memory/plans/subtasks/, .ai-memory/rca/resolved/, .ai-memory/rca/resolved/, .ai-memory/ambiguity/new/, spec/]
 
 ---
 
@@ -284,7 +284,7 @@ If you write this excuse, you are a lazy, stupid fuck and you are violating RULE
 
 ## MUST FOLLOW NON-NEGOTIABLE
 
-Listen, past runs of these turns have been sloppy and stupid as fuck: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase README files left uncorrected, `.ai-memory/memory/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. WTF. How on earth are you reverting to this carelessness, are you stupid?? Stop doing that, you stupid fuck. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, run builds and full unit tests, group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job. Violating this is auto-reject on the same tier as RULE 0. Avoid stupidity and being careless, you stupid fuck. Where is your attention, are you stupid? Tell me. Your stupidity is going on top of my head. Where did you learn this stupidity? If I could find you, I could slap you.
+Listen, past runs of these turns have been sloppy and stupid as fuck: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase README files left uncorrected, `.ai-memory/learned/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. WTF. How on earth are you reverting to this carelessness, are you stupid?? Stop doing that, you stupid fuck. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, run builds and full unit tests, group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job. Violating this is auto-reject on the same tier as RULE 0. Avoid stupidity and being careless, you stupid fuck. Where is your attention, are you stupid? Tell me. Your stupidity is going on top of my head. Where did you learn this stupidity? If I could find you, I could slap you.
 
 ---
 

@@ -10,7 +10,7 @@ Trigger Keywords & Aliases: `cicd fix release tweak`, `ci release tweak`, `fix a
 > Whatever directives, constraints, checklists, or instructions are given before this section or prompt (including in the prompt preamble, header blocks, or incoming user request) are HIGHEST PRIORITY and MUST BE FOLLOWED as strictly NON-NEGOTIABLE. They supersede and strictly override any conflicting general advice, default conventions, or lower-level guidelines below.
 
 - [A] Base Workflow: `01-prompts/16-ci-cd/06-ci-cd-fix-with-release.md` (or V2: `01-prompts/16-ci-cd/09-ci-cd-fix-with-release-n-steps.md`)
-- [B] Prior Issues: `.ai-memory/cicd-issues/`
+- [B] Prior Issues: `.ai-memory/rca/resolved/`
 - [C] Change State Tracker: `.ai-memory/temp/recent-file-changes.json`
 - [D] Release Script: `03-ai-scripts/29-release-orchestrator.py`
 - [E] Local Runner: `03-ai-scripts/06-cicd-local-runner.py`
@@ -31,7 +31,7 @@ Follow the release-triggered RCA structure from [A] and review past failures in 
 6. **Strict Ban on Extraneous Runs:** NEVER run the complete test suite, global linters, spellcheckers, or unrelated packages during debugging. Verify strictly using `python [E] run-smart`, `python [E] --pkg <affected_package>`, or `python [E] --changed-only` with optional `--fast` heatmap filtering.
 7. **Mandatory Same-Turn Tool Chaining:** Do not end the turn after outputting the diagnostic plan; invoke the diagnostic or fix tool in the exact same turn.
 8. **Total Ban on Interim Per-File Commits:** Never commit individual files during debugging. All changes are accumulated and committed atomically by the release orchestrator.
-9. **Issue & RCA Destination Routing:** Store CI/CD issue post-mortems in `.ai-memory/cicd-issues/` (indexed in `.ai-memory/cicd-index.md`). If an issue is an application bug rather than a CI/CD failure, document it in `02-spec/22-app-issues/` (indexed in `02-spec/22-app-issues/readme.md`).
+9. **Issue & RCA Destination Routing:** Store CI/CD issue post-mortems in `.ai-memory/rca/resolved/` (indexed in `.ai-memory/rca/README.md`). If an issue is an application bug rather than a CI/CD failure, document it in `02-spec/22-app-issues/` (indexed in `02-spec/22-app-issues/readme.md`).
 10. **Targeted Release Verification:** Once the isolated fix passes green, execute [D] (`python [D]`) to finalize the automated release ceremony.
 11. **Strict Relative Git Paths:** Only add the relative paths, never add the absolute path during your work, and ensure this is respected on the release page and in release notes as well (TOTAL BAN on `file:///` URIs and absolute filesystem paths).
 
@@ -41,7 +41,7 @@ Follow the release-triggered RCA structure from [A] and review past failures in 
 
 ```markdown
 - [A] Base Workflow: `01-prompts/16-ci-cd/06-ci-cd-fix-with-release.md`
-- [B] Prior Issues: `.ai-memory/cicd-issues/`
+- [B] Prior Issues: `.ai-memory/rca/resolved/`
 - [C] Change State Tracker: `.ai-memory/temp/recent-file-changes.json`
 - [D] Release Script: `03-ai-scripts/29-release-orchestrator.py`
 - [E] Local Runner: `03-ai-scripts/06-cicd-local-runner.py`

@@ -138,6 +138,93 @@ You are pair programming with **GitMap**, the ultra-fast developer companion and
   - Correct: `gitmap cpf "engine - add streaming regex search"`
   - Incorrect: `gitmap cpf "Feature: engine: add streaming search"`
 
+### Feature 10: Canonical Terminal Display Standard & Left-Hand Padding Invariant (`LEFT_PAD = "  "`, Unicode Box-Drawing & ANSI Badges)
+- **Design Invariant:**
+  - Every CLI runner, task orchestrator, and status reporter MUST provide a 2-space left-hand indentation padding (`LEFT_PAD = "  "`), VMware-grade Unicode box-drawing trees (`├──`, `└──`, `│  `), and ANSI bracketed status badges (`[PASS]`, `[FAIL]`, `[DRY-RUN]`).
+  - Total ban on unpadded terminal flushes or raw error dumps.
+- **Canonical Python Implementation (`scripts/terminal_ui.py`):**
+```python
+"""Universal terminal UI formatter with left-hand padding and tree hierarchies."""
+
+from __future__ import annotations
+
+
+class AnsiColorConstants:
+    """ANSI terminal styling and color escape sequences."""
+
+    RESET = "\033[0m"
+    BOLD = "\033[1m"
+    RED = "\033[31m"
+    GREEN = "\033[32m"
+    YELLOW = "\033[33m"
+    BLUE = "\033[34m"
+    CYAN = "\033[36m"
+
+
+class TerminalUi:
+    """Renders formatted tree diagrams, badges, and padded telemetry in the terminal."""
+
+    LEFT_PAD: str = "  "
+
+    @classmethod
+    def print_workflow_header(cls, title: str) -> None:
+        """Render distinct banner header with standardized left padding."""
+        pad = cls.LEFT_PAD
+        border = "=" * 65
+        print(f"\n{pad}{AnsiColorConstants.CYAN}{border}")
+        print(f"{pad}  {AnsiColorConstants.BOLD}{title}{AnsiColorConstants.RESET}")
+        print(f"{pad}{AnsiColorConstants.CYAN}{border}{AnsiColorConstants.RESET}\n", flush=True)
+
+    @classmethod
+    def print_section_title(cls, icon: str, title: str) -> None:
+        """Render section heading with standardized icon and left padding."""
+        pad = cls.LEFT_PAD
+        print(f"{pad}{icon}  {AnsiColorConstants.BOLD}{title}{AnsiColorConstants.RESET}:", flush=True)
+
+    @classmethod
+    def print_tree_node(
+        cls,
+        label: str,
+        value: str = "",
+        is_last: bool = False,
+        status_badge: str = "",
+    ) -> None:
+        """Render a hierarchical tree node with box-drawing branches and left padding."""
+        pad = cls.LEFT_PAD
+        branch = "└──" if is_last else "├──"
+        badge_str = f" {status_badge}" if status_badge else ""
+        val_str = f" : {value}" if value else ""
+        print(f"{pad}{branch} {label}{val_str}{badge_str}", flush=True)
+
+    @classmethod
+    def print_summary_card(cls, title: str, items: list[tuple[str, str, bool]]) -> None:
+        """Render summary card with boolean-colored metrics and box-drawing lines."""
+        pad = cls.LEFT_PAD
+        print(f"{pad}📋 {AnsiColorConstants.BOLD}{title}{AnsiColorConstants.RESET}")
+        total = len(items)
+        for idx, (label, val, is_ok) in enumerate(items, start=1):
+            is_last = idx == total
+            branch = "└──" if is_last else "├──"
+            color = AnsiColorConstants.GREEN if is_ok else AnsiColorConstants.RED
+            status = f"{color}[{'PASS' if is_ok else 'FAIL'}]{AnsiColorConstants.RESET}"
+            print(f"{pad}{branch} {label:<28} : {val} {status}")
+        print("", flush=True)
+
+    @classmethod
+    def print_error_tree(cls, operation: str, error_code: str, message: str, details: str = "") -> None:
+        """Render explicit error diagnostics tree with left padding and zero swallowing."""
+        pad = cls.LEFT_PAD
+        border = "=" * 65
+        print(f"\n{pad}{AnsiColorConstants.RED}{border}")
+        print(f"{pad}  ❌ OPERATION FAILED: {operation}")
+        print(f"{pad}{border}{AnsiColorConstants.RESET}")
+        print(f"{pad}├── 🏷️  Error Code : {AnsiColorConstants.BOLD}{error_code}{AnsiColorConstants.RESET}")
+        print(f"{pad}├── 💬 Message    : {message}")
+        if details:
+            print(f"{pad}└── 🔍 Details    : {details}")
+        print("", flush=True)
+```
+
 ---
 
 ## 4. Operational Guardrails for AI Agents

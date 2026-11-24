@@ -1,4 +1,5 @@
 # Muse Prompts (`24-muse-prompts`) — Index & Catalog
+> 2026-11-14 update: read the "2026-11-14 update" section at the end of this file BEFORE using these prompts. It points to the verified-lessons sections added on 2026-11-14. Do not skip it.
 
 > [!IMPORTANT]
 > Category: `24-muse-prompts`
@@ -42,3 +43,7 @@ Its installable skill is `muse-master-prompt`
 ├── 01-muse-master-prompt.md   # the master prompt (paste into a fresh Muse session)
 └── readme.md                   # this index
 ```
+
+## 2026-11-14 update — verified lessons (read before using these prompts)
+
+> Added 2026-11-14 after a verified live session (GitMap binary v6.681.2). The prompt files in this folder now carry a `2026-11-14 Verified Lessons` section: a root-cause analysis of verified failures (SSH mistaken for API auth, HTTP 401 on repo creation, pushes to nonexistent remotes, ignored clone flag, destructive defaults), mandatory pre-start learning (MCP server, `gitmap` skill, LLM training, `gitmap` skills — via binary `--help` and status output before acting), and how repo creation actually works (auth-state check first, verify-before-push, exact failure modes). Read that section in `01-muse-master-prompt.md` in this folder before acting. The installed binary's `--help` output is authoritative; never claim a URL without verification output.

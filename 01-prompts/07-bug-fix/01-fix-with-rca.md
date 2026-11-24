@@ -19,14 +19,14 @@ You MUST NOT bump versions, update changelogs, or cut a release at the end of th
 
 ## MUST FOLLOW NON-NEGOTIABLE
 
-Listen, past runs of these turns have been sloppy and stupid as fuck: wrong step counts, partial task lists dumped into chat instead of files, folders skimmed, open ambiguities ignored, CI/CD issues forgotten, coding guidelines bypassed, detailed specs chopped into useless junk, uppercase README files left uncorrected, .ai-memory/memory/ created by accident, strictly-avoid.md overwritten, and explicit user instructions softened. WTF. How on earth are you reverting to this carelessness, are you stupid?? Stop doing that, you stupid fuck. Read the whole codebase, confirm root
+Listen, past runs of these turns have been sloppy and stupid as fuck: wrong step counts, partial task lists dumped into chat instead of files, folders skimmed, open ambiguities ignored, CI/CD issues forgotten, coding guidelines bypassed, detailed specs chopped into useless junk, uppercase README files left uncorrected, .ai-memory/learned/ created by accident, strictly-avoid.md overwritten, and explicit user instructions softened. WTF. How on earth are you reverting to this carelessness, are you stupid?? Stop doing that, you stupid fuck. Read the whole codebase, confirm root
 eadme.md is strictly lowercase, find the root cause in one sentence, write the memory files in the right paths, preserve detailed specs verbatim, run builds and full unit tests, group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job. Violating this is auto-reject on the same tier as RULE 0. Avoid stupidity and being careless. Where is your attention, are you stupid? Your stupidity is going on top of my head. If I could find you, I could slap you.
 
 ## The 4-Part RCA Requirement & Issue Destination Routing
 
 Before you write any code to fix the problem, you MUST document the issue following the mandatory issue destination routing:
-- **CI/CD Issues & Pipeline Failures:** Record the RCA in `.ai-memory/cicd-issues/xx-<slug>.md` and index it in `.ai-memory/cicd-index.md`.
-- **Non-CI/CD Issues (Application Bugs, Feature Defects, Logic/Runtime Errors):** Document in `02-spec/22-app-issues/xx-<slug>.md` (indexed in `02-spec/22-app-issues/readme.md`, cross-referencing in `.ai-memory/memory/issues/` for institutional memory).
+- **CI/CD Issues & Pipeline Failures:** Record the RCA in `.ai-memory/rca/resolved/xx-<slug>.md` and index it in `.ai-memory/rca/README.md`.
+- **Non-CI/CD Issues (Application Bugs, Feature Defects, Logic/Runtime Errors):** Document in `02-spec/22-app-issues/xx-<slug>.md` (indexed in `02-spec/22-app-issues/readme.md`, cross-referencing in `.ai-memory/learned/issues/` for institutional memory).
 
 The RCA file MUST contain these exact four sections:
 
@@ -74,8 +74,8 @@ To survive massive checklists and complex codebases, you MUST operate using thes
 ## Execution Checklist & Strict Guidelines
 
 - [ ] **Top-Instruction Priority Mandate:** Whatever directives, constraints, checklists, or instructions are given before this section or prompt (user preamble, header constraints, prior instructions) are verified as highest priority and non-negotiable, overriding all lower-level guidelines below.
-- [ ] **Issue & RCA Destination Routing:** Whenever resolving an issue or performing a fix with RCA, verified that CI/CD failures are documented in .ai-memory/cicd-issues/NN-<slug>.md (indexed in .ai-memory/cicd-index.md), while non-CI/CD issues (application bugs, logic/runtime defects) are documented in 02-spec/22-app-issues/NN-<slug>.md (indexed in 02-spec/22-app-issues/readme.md).
-- [ ] **RCA Document Generation:** I have created the 4-part RCA document in the designated location (.ai-memory/cicd-issues/ for CI/CD, or 02-spec/22-app-issues/ for non-CI/CD) with the strict 4-part schema (Why, How, Root Cause, Code Fix).
+- [ ] **Issue & RCA Destination Routing:** Whenever resolving an issue or performing a fix with RCA, verified that CI/CD failures are documented in .ai-memory/rca/resolved/NN-<slug>.md (indexed in .ai-memory/rca/README.md), while non-CI/CD issues (application bugs, logic/runtime defects) are documented in 02-spec/22-app-issues/NN-<slug>.md (indexed in 02-spec/22-app-issues/readme.md).
+- [ ] **RCA Document Generation:** I have created the 4-part RCA document in the designated location (.ai-memory/rca/resolved/ for CI/CD, or 02-spec/22-app-issues/ for non-CI/CD) with the strict 4-part schema (Why, How, Root Cause, Code Fix).
 - [ ] **GitMap Pipeline-AI Inspection:** If this bug is triggered by or related to a CI/CD pipeline, I used `gitmap pipeline-ai status --json` with dynamic waiting (`-t <seconds>`) and extracted targeted failure lines (`##[error]`, `FAIL:`, compile errors) for the 4-part RCA without tight-loop polling.
 - [ ] **Atomic Change Tracking:** I recorded all modified files under lock via `python 03-ai-scripts/33-test-inventory-generator.py --record <files...>` before final verification and commit.
 - [ ] **Coding Guidelines & Master Consolidated File:** I have fully read and strictly enforced every file in 02-spec/02-coding-guidelines/, as well as the master consolidated coding guideline file at .ai-memory/coding-guidelines.md.

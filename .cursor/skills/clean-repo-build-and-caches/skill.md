@@ -5,7 +5,7 @@ description: "Executes the Clean Repo Build And Caches prompt. Autonomously diag
 
 # Clean Repo Build And Caches
 
-> **Invocation:** `@[clean-repo-build-and-caches](directory;.cursor/skills/clean-repo-build-and-caches)`
+> **Invocation:** `@[clean-repo-build-and-caches](directory;.agents/skills/clean-repo-build-and-caches)`
 
 Source prompt: `01-prompts/15-cg-execute/30-clean-repo-build-and-caches.md`
 

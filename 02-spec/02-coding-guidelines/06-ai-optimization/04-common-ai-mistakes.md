@@ -446,8 +446,8 @@ const { data } = useQuery({
 
 ### Mistake #21: Ad-Hoc Python Web Scrapers for Screenshots
 
-**Frequency:** High  
-**Rule:** AH-GM1  
+**Frequency:** High
+**Rule:** AH-GM1
 
 ```python
 # ❌ AI GENERATES THIS — brittle ad-hoc python urllib scraping script

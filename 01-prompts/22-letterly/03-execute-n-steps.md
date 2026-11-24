@@ -26,7 +26,7 @@ ${Input Text Verbatim}
 
 1. Git pull BEFORE starting any work — try `gitmap pull <repo path>` first (or `gitmap pull` in repo folder); fallback to `git pull` and resolve merge conflicts so repository is clean and current.
 2. Write spec under `02-spec/21-app/XX-<slug>/` and enqueue plan task in `.ai-memory/plans/pending/XX-<slug>.md` (subtasks in `.ai-memory/plans/subtasks/XX-<slug>/`) first.
-3. Formulate master plan in 100 granular self-looping steps detailing an actionable AI roadmap. Record any ambiguities to `.ai-memory/ambiguous-questions/01-new-ambiguity/XX-<slug>-ambiguity.md` and proceed autonomously without asking user.
+3. Formulate master plan in 100 granular self-looping steps detailing an actionable AI roadmap. Record any ambiguities to `.ai-memory/ambiguity/new/XX-<slug>-ambiguity.md` and proceed autonomously without asking user.
 4. Search codebase exclusively via GitMap (`gitmap aum search`, `gitmap find`, `gitmap cat`, `gitmap ps`, `gitmap py`, `gitmap llm train`); TOTAL BAN on rg, ripgrep, grep, git grep, Select-String.
 5. Strictly use relative Git paths (`02-spec/...`, `.ai-memory/...`, `cmd/...`); never add absolute filesystem paths.
 6. Enforce Coding Guidelines & Error Management invariants per @[coding-guidelines](directory;.agents/skills/coding-guidelines) and @[error-management](directory;.agents/skills/error-management) (functions <= 15 lines, no magic strings, zero nested ifs, positive booleans `is*`/`has*` only).

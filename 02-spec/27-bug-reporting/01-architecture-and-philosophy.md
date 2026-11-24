@@ -69,3 +69,13 @@ A bug report is **NOT** a vague text ticket. It is an **executable, deterministi
 4. **AI Consumption & Diagnostics**:
    - AI agent queries CLI: `errors-cli --recent-bugs` or `errors-cli --step 7`.
    - CLI outputs code locations, screenshots, and suggested follow-up commands (`--drill-down`, `--inspect-event`).
+
+---
+
+## 4. Target Runtime Variables & Diagnostics Sovereignty
+
+Whenever an interaction or error is captured during prompt dispatch, rerun execution, or CDP instance activation, the telemetry bundle MUST capture and document the target runtime variables:
+- `conversation_id`: Canonical UUID of the active conversation, strictly preventing placeholder string degradation (`current`, `untitled`, `new`).
+- `target_instance_id`: Selected instance target identifier (e.g. `default`, `lara-pub-6067`) to verify instance alignment and eliminate false cross-instance dispatch.
+- `workspace_path`: Repository workspace directory path associated with the target conversation.
+- `prompt_preview`: Clean snapshot (up to 200 characters) of the dispatched prompt payload for instant audit validation.

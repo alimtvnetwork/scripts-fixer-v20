@@ -6,12 +6,12 @@ description: "Autonomously audits, plans, and refactors Golang codebases to elim
 # Skill: Golang Pointers Reduction & Mutation Reduction (cg-golang-pointers-and-mutation-reduction)
 
 > [!IMPORTANT]
-> **Skill Identifier:** `.agents/skills/cg-golang-pointers-and-mutation-reduction/skill.md`  
-> **Master Prompt:** `01-prompts/15-cg-execute/39-golang-pointers-and-mutation-reduction.md`  
-> **Specification Reference:** `02-spec/21-app/06-cg-execute-golang-pointers-and-mutation-reduce/02-component-spec.md`  
-> **Invoke Command:** `> Invoke: /golang-pointers-and-mutation-reduction <task>`  
-> **IDE Link Syntax:** [`cg-golang-pointers-and-mutation-reduction`](file;.agents/skills/cg-golang-pointers-and-mutation-reduction)  
-> **Invocation:** `@[cg-golang-pointers-and-mutation-reduction](directory;.agents/skills/cg-golang-pointers-and-mutation-reduction)`  
+> **Skill Identifier:** `.agents/skills/cg-golang-pointers-and-mutation-reduction/skill.md`
+> **Master Prompt:** `01-prompts/15-cg-execute/39-golang-pointers-and-mutation-reduction.md`
+> **Specification Reference:** `02-spec/21-app/06-cg-execute-golang-pointers-and-mutation-reduce/02-component-spec.md`
+> **Invoke Command:** `> Invoke: /golang-pointers-and-mutation-reduction <task>`
+> **IDE Link Syntax:** [`cg-golang-pointers-and-mutation-reduction`](file;.agents/skills/cg-golang-pointers-and-mutation-reduction)
+> **Invocation:** `@[cg-golang-pointers-and-mutation-reduction](directory;.agents/skills/cg-golang-pointers-and-mutation-reduction)`
 
 This skill governs autonomous execution for eliminating excessive pointer indirection (`*T`), heap escapes, CPU cache line thrashing, nil-dereference panics, and in-place variable mutations across Golang repositories and connected fleet tools.
 

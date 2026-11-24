@@ -1,48 +1,51 @@
-# React Code Examples
+# React Code Examples (Anti-Magic-String & Grounded Models)
 
 > **Parent:** [Error Modal Reference](./readme.md)
-> **Version:** 2.2.0
-> **Updated:** 2026-03-31
+> **Version:** 3.0.0
+> **Updated:** 2026-11-15
+> **Canonical Go Implementations:** [`04-code/golang/examples/database_query.go`](../../../../../04-code/golang/examples/database_query.go) and [`04-code/golang/examples/workflow_service.go`](../../../../../04-code/golang/examples/workflow_service.go)
+> **Bug Recording Reference:** [`02-spec/03-error-manage/04-bug-recording/01-bug-record-schema-spec.md`](../../../../03-error-manage/04-bug-recording/01-bug-record-schema-spec.md)
 
 ---
 
-## Example: Capturing an API Error with Full Context
+## Example: Capturing an API Error with Full Context (Zero Magic Strings)
 
 ```typescript
 import { useErrorStore } from '@/stores/errorStore';
 import { api } from '@/lib/api';
+import { ApiEndpointType, HttpMethodType, SessionKindType, UIComponentType, UIActionType } from '@/constants/enums';
 
 async function enablePlugin(slug: string, siteId: number) {
   try {
-    const response = await api.post('/api/v1/plugins/enable', {
+    const response = await api.post(ApiEndpointType.PluginEnable, {
       slug,
       siteId,
     });
 
-    if (!response.success) {
-      useErrorStore.getState().captureError(response.error!, {
-        endpoint: '/api/v1/plugins/enable',
-        method: HttpMethod.Post,
+    // Positive boolean convention: isFailed / hasError (never !response.success)
+    if (response.isFailed) {
+      useErrorStore.getState().captureError(response.error, {
+        endpoint: ApiEndpointType.PluginEnable,
+        method: HttpMethodType.Post,
         requestBody: { slug, siteId },
-        responseStatus: response.error?.statusCode,
-        siteUrl: 'https://example.com',
-        sessionId: response.error?.sessionId,
-        sessionType: 'plugin_lifecycle',
+        responseStatus: response.error.statusCode,
+        siteUrl: response.siteUrl,
+        sessionId: response.error.sessionId,
+        sessionType: SessionKindType.PluginLifecycle,
         context: {
           source: 'PluginActions.enablePlugin',
-          triggerComponent: 'PluginCard',
-          triggerAction: 'enable_clicked',
+          triggerComponent: UIComponentType.PluginCard,
+          triggerAction: UIActionType.EnableClicked,
         },
       });
     }
-
   } catch (error) {
     useErrorStore.getState().captureException(error, {
       source: 'PluginActions.enablePlugin',
-      triggerComponent: 'PluginCard',
-      triggerAction: 'enable_clicked',
-      endpoint: '/api/v1/plugins/enable',
-      method: HttpMethod.Post,
+      triggerComponent: UIComponentType.PluginCard,
+      triggerAction: UIActionType.EnableClicked,
+      endpoint: ApiEndpointType.PluginEnable,
+      method: HttpMethodType.Post,
       requestBody: { slug, siteId },
     });
   }
@@ -55,6 +58,7 @@ async function enablePlugin(slug: string, siteId: number) {
 
 ```typescript
 import { useErrorStore } from '@/stores/errorStore';
+import { UIComponentType, UIActionType } from '@/constants/enums';
 
 function MyComponent() {
   const { openErrorModal, captureException } = useErrorStore();
@@ -65,13 +69,12 @@ function MyComponent() {
     } catch (error) {
       const captured = captureException(error, {
         source: 'MyComponent.handleDangerousAction',
-        triggerComponent: 'MyComponent',
-        triggerAction: 'dangerous_action_clicked',
+        triggerComponent: UIComponentType.MyComponent,
+        triggerAction: UIActionType.DangerousActionClicked,
       });
       // Automatically opens the modal:
       openErrorModal(captured);
     }
-
   };
 
   return <Button onClick={handleDangerousAction}>Do Something</Button>;

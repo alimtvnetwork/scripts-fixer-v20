@@ -5,7 +5,7 @@ description: "Autonomously audit, extend, migrate, and modify GitMap's three-tie
 
 # GitMap Split-DB Engine Skill (`gitmap-split-db-engine`)
 
-> **Invocation:** `@[gitmap-split-db-engine](directory;.cursor/skills/gitmap-split-db-engine)`
+> **Invocation:** `@[gitmap-split-db-engine](directory;.agents/skills/gitmap-split-db-engine)`
 
 ## Mission & Purpose
 This skill provides authoritative architectural guidance, code navigation, and execution rules for designing, migrating, and maintaining GitMap's multi-database SQLite Split-DB storage tier.
@@ -19,6 +19,7 @@ This skill provides authoritative architectural guidance, code navigation, and e
 | **Master Store (`gitmap.db`)** | `cli/db/`, `cli/cmddb/` | Central entity store: `Project`, `Alias`, `ScanFolder`, `Bookmark`, `GitProfile`, `Transaction`, `Group`, `Task`, `SSHKey`, `VSCodeProject`, `Workdir`, `ZipGroup`. |
 | **Tooling Store (`installation.db`)** | `cli/db/`, `cli/installer/` | Standalone installed packages, toolchains, system binaries, installation metadata, and uninstallation recipes. |
 | **Telemetry Store (`repodb/pipeline.db`)** | `cli/repodb/`, `cli/pipelinedb/` | Repository-scoped execution logs, test execution durations, pipeline history, and compact error reports. |
+| **Remediation Store (`repodb/remediation.db`)** | `cli/store/`, `cli/cmdfix/` | Cross-platform casing normalization recipes, Git index idempotency records, and dual-track resolution logs. |
 | **Code Generators** | `03-ai-scripts/35-db-struct-enum-generator.py` | Generates Go structs, GORM mappings, and PascalCase enum constants from SQLite schemas. |
 
 ---
@@ -36,7 +37,17 @@ gitmap db sizes list
 # Purge pipeline database telemetry and GitHub Actions run artifacts (0.0 GB quota)
 gitmap pipeline purge
 
+# Direct read-only SQL queries with --path / --db (aliases: dbsql, db-sql, dbs)
+gitmap dbsql "SELECT repoPath, canonicalPath, status, isRemediated FROM RemediationRecipe" --path remediation
+gitmap dbsql "SELECT conversation_id, title, status FROM conversation_summaries LIMIT 10" --path agy
+gitmap dbsql "SELECT RepoId, AbsolutePath FROM TrackedRepository LIMIT 10" --path master --json
+
 # Read and explore database tables, views, and schemas (zero-lock WAL mode)
+gitmap db query "SELECT conversation_id, title, status FROM conversation_summaries LIMIT 10" --path agy
+gitmap db query "SELECT RepoId, AbsolutePath FROM TrackedRepository LIMIT 10" --path master
+gitmap db tables --db agy
+gitmap db schema conversation_summaries --db agy
+gitmap db columns conversation_summaries --db agy
 gitmap db-read master ls
 gitmap db-read tasks table Subtask --columns
 gitmap db-read ".ai-memory/heatmap.db" "SELECT COUNT(*) FROM HeatmapActionLog"
@@ -53,7 +64,7 @@ gitmap db-find master -table Project,Alias --find "enrichment" --json
 gitmap db-rest master,tasks 8080,8081
 ```
 
-For comprehensive CRUD mutations, join views, and REST API gateway documentation, refer to `@[gitmap](file;.cursor/skills/gitmap)` Section 11 and Section 15.
+For comprehensive CRUD mutations, join views, and REST API gateway documentation, refer to `@[gitmap](file;.agents/skills/gitmap)` Section 11 and Section 15.
 
 ---
 

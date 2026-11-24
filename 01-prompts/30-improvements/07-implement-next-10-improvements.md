@@ -18,17 +18,17 @@ WAVES = ceil(subtasks / (A x H))
 ```
 
 > [!IMPORTANT]
-> **Prompt Version:** 1.0.0  
-> **Runtime:** Google Antigravity 2.0 (IDE and CLI) & Cursor IDE  
-> **Invoke:** `> Invoke: /implement-next-10-improvements [plan-or-subtask-id]`  
+> **Prompt Version:** 1.0.0
+> **Runtime:** Google Antigravity 2.0 (IDE and CLI) & Cursor IDE
+> **Invoke:** `> Invoke: /implement-next-10-improvements [plan-or-subtask-id]`
 >
-> **Trigger Keywords & Aliases:**  
-> `implement-next-10-improvements`, `implement-improvements`, `implement-next-10`, `next-10-improvements`, `next`, `run-next-10`, `fast-forward-improvements`  
+> **Trigger Keywords & Aliases:**
+> `implement-next-10-improvements`, `implement-improvements`, `implement-next-10`, `next-10-improvements`, `next`, `run-next-10`, `fast-forward-improvements`
 >
-> **Companion Antigravity Skill:** [`implement-next-10-improvements`](directory;.agents/skills/implement-next-10-improvements)  
-> **Companion Cursor Skill:** [`implement-next-10-improvements`](file;.cursor/skills/implement-next-10-improvements)  
+> **Companion Antigravity Skill:** [`implement-next-10-improvements`](directory;.agents/skills/implement-next-10-improvements)
+> **Companion Cursor Skill:** [`implement-next-10-improvements`](file;.cursor/skills/implement-next-10-improvements)
 >
-> **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**  
+> **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**
 > Whatever directives, constraints, checklists, or user instructions are given ABOVE this prompt (including in the user preamble, header blocks, or incoming user request above) are HIGHEST PRIORITY and MUST BE FOLLOWED as strictly NON-NEGOTIABLE. They supersede and strictly override any conflicting general advice, default conventions, or lower-level guidelines below. The agent MUST inspect and follow the instructions above with absolute precedence.
 
 [/goal](slashCommand;goal) Autonomously claim and implement the next 10 unexecuted improvements from `.ai-memory/plans/subtasks/` or `.ai-memory/plans/pending/` with maximum velocity using the Fast-Forwarding Protocol (strictly NO-BUILD and NO-TEST execution during implementation turns), strictly enforce the 8-Pillar Coding Guideline Matrix (`*appfault.AppError`, monadic Result envelopes, parameter structs, string constants/enums, 8–15 line functions, 150–300 line files, vertical spacing rhythm, positive booleans), update subtask statuses to `DONE`, report the batch summary, and provide a seamless repeatable `"next"` cadence or handoff to the separated end-to-end verification gate (`/execute-with-e2e`).
@@ -374,7 +374,7 @@ In `.ai-memory/plans/subtasks/02-next-100-code-improvements/01-subtask-appwriter
 | 09 | `UI-IMP-034` | `src/styles/tokens.css` | WCAG AAA contrast token ramp alignment | `DONE` |
 | 10 | `SYS-IMP-029` | `cli/internal/help/render.go` | CLI flag constants extraction | `DONE` |
 
-**Fast-Forwarding Metric:** 10/10 items implemented | 0 build runs | 0 test runs  
+**Fast-Forwarding Metric:** 10/10 items implemented | 0 build runs | 0 test runs
 **Backlog Remaining:** 370 pending improvements
 
 > [!TIP]

@@ -24,6 +24,7 @@ Deterministic Letterly prompt transformation templates.
 | **16** | [`16-plan-steps-by-groups-letterly.md`](16-plan-steps-by-groups-letterly.md) | Plan Steps by Groups | Modular architectural blueprint with zero code execution | `plan-steps-by-groups` |
 | **17** | [`17-plan-coding-guideline-audit-letterly.md`](17-plan-coding-guideline-audit-letterly.md) | Plan Guideline Audit | Compliance audit, scorecard, and remediation micro-batches | `plan-coding-guideline-audit` |
 | **18** | [`18-sync-letterly.md`](18-sync-letterly.md) | Sync Mode (Fleet Synchronizer) | Native fleet sync across prompts, skills, coding-guideline.json | `gitmap-fleet-sync` |
+| **19** | [`19-execute-parent-task-v8-letterly.md`](19-execute-parent-task-v8-letterly.md) | Execute V8 Engine | V8 engine (N=400 budget, parallel plan, mandatory spec) | `execute-parent-task-with-n-steps-v8` |
 
 ### Cursor Prompt Suite (`23-cursor-prompts/`)
 

@@ -6,8 +6,8 @@ description: >-
 
 # AI Scripts Catalog & Automation Engine
 
-> **Invocation:** `@[ai-scripts](directory;.agents/skills/ai-scripts)`  
-> **Location:** `03-ai-scripts/` and mirrored in `.agents/scripts/`  
+> **Invocation:** `@[ai-scripts](directory;.agents/skills/ai-scripts)`
+> **Location:** `03-ai-scripts/` and mirrored in `.agents/scripts/`
 > **Discipline:** Reuse First — Never write temporary disposable code if a canonical script exists.
 
 ---

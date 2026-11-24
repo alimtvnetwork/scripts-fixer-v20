@@ -692,7 +692,8 @@ def write_file_lf(
                     pass
 
         return True
-    except Exception:
+    except Exception as exc:
+        sys.stderr.write(f"  ⚠ write_file_lf failed for {p} ({type(exc).__name__}: {exc})\n")
         if temp_path.exists():
             try:
                 temp_path.unlink()

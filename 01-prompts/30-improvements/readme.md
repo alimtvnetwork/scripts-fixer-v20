@@ -1,9 +1,9 @@
 # Improvements Prompts (`30-improvements`) — Index & Catalog
 
 > [!IMPORTANT]
-> Category: `30-improvements`  
-> Architecture: Canonical V6 Continuous Improvement Flywheel & Multi-Agent Protocol  
-> Scope: System-Wide UX Optimization, Codebase Quality, UI/UX Materiality, Multi-Step Plan Detailing, Generative Ideation, Real-Time Backlog Telemetry, Fast-Forwarding Batch Execution, and Separated E2E Verification  
+> Category: `30-improvements`
+> Architecture: Canonical V6 Continuous Improvement Flywheel & Multi-Agent Protocol
+> Scope: System-Wide UX Optimization, Codebase Quality, UI/UX Materiality, Multi-Step Plan Detailing, Generative Ideation, Real-Time Backlog Telemetry, Fast-Forwarding Batch Execution, and Separated E2E Verification
 
 ---
 
@@ -39,7 +39,7 @@ agm next10 --dry-run
 
 
 > [!NOTE]
-> **Continuous Improvement Flywheel Invariant:**  
+> **Continuous Improvement Flywheel Invariant:**
 > Running discovery prompts in this category persists the identified 100 improvement items into `.ai-memory/plans/pending/XX-<slug>.md` along with subtasks in `.ai-memory/plans/subtasks/XX-<slug>/`. Detailing prompts expand these candidates into exhaustive multi-step execution roadmaps, inspection prompts aggregate real-time triage dashboards, and batch execution prompts chew through backlogs 10 items at a time on command `"next"`.
 >
 > **Strict Relative Git Paths Only:** All file paths, markdown links, and subtask citations must strictly use relative paths from the repository root (e.g. `01-prompts/...`, `02-spec/...`, `.ai-memory/...`, `pkg/...`). Absolute filesystem paths and `file:///` URIs are totally banned.
@@ -101,19 +101,19 @@ flowchart TD
 ```
 
 ### Operational Synergy Breakdown:
-- **Diagnostic Discovery Prompts (`01`, `02`, `03`) — Broad Architectural Radar:**  
+- **Diagnostic Discovery Prompts (`01`, `02`, `03`) — Broad Architectural Radar:**
   Systematically scan the repository across UI/UX, codebase quality, or whole-system ergonomics to surface 100 grounded improvement opportunities. They capture the macro view and seed the backlog in `.ai-memory/plans/pending/`.
-- **Generative Ideation Engine (`05`) — Strategic Superpowers & Unbuilt Capabilities:**  
+- **Generative Ideation Engine (`05`) — Strategic Superpowers & Unbuilt Capabilities:**
   Conducts a 5-layer diagnostic inspection (identity, user journeys, developer ergonomics, architectural bottlenecks, ecosystem potential) to synthesize 100 innovative superpowers and unbuilt high-value capabilities that propel the repository beyond reactive maintenance into 10x leverage leaps.
-- **Detailing Prompt (`04`) — Micro Precision & Structural Contracts:**  
+- **Detailing Prompt (`04`) — Micro Precision & Structural Contracts:**
   Ingests raw discovery candidates, pending backlogs, or ideation proposals, inspects the codebase using GitMap high-speed streaming search, and expands each item into an exhaustive 8-Field Specification Card with concrete code blueprints, exact caller counts, and binary verification criteria.
-- **Backlog Inspection Dashboard (`06`) — Real-Time Visibility & Prioritization:**  
+- **Backlog Inspection Dashboard (`06`) — Real-Time Visibility & Prioritization:**
   Scans all pending plan files and subtask folders using GitMap streaming commands (`gitmap lf`, `gitmap aum search`), aggregating exact counts, category splits, completion percentages, priority tiers (P0–P3), and the deterministic Next 10 Queue for immediate execution.
-- **Fast-Forwarding Batch Execution (`07`) — High-Throughput Implementation:**  
+- **Fast-Forwarding Batch Execution (`07`) — High-Throughput Implementation:**
   Consumes exactly 10 improvements per batch in fast-forwarding mode (`NO-BUILD`, `NO-TEST`), enforcing strict coding guidelines by construction. The operator advances through successive batches simply by entering `"next"`.
-- **Decoupled Verification Gate (`execute-with-e2e`) — Enterprise Safety:**  
+- **Decoupled Verification Gate (`execute-with-e2e`) — Enterprise Safety:**
   Once desired batches are finished, comprehensive compiler checks, static linters, and isolated unit/regression tests run in a single consolidated pass before upstream atomic push.
-- **Continuous Flywheel Renewal:**  
+- **Continuous Flywheel Renewal:**
   As completed improvements are merged and pushed, running discovery prompts again surveys the elevated codebase baseline, surfacing the next wave of refinements.
 
 ---
@@ -123,8 +123,8 @@ flowchart TD
 Prompt 07 introduces the **Fast-Forwarding Protocol**:
 
 > [!IMPORTANT]
-> **Strict Fast-Forwarding Invariant (`NO-BUILD`, `NO-TEST`):**  
-> During implementation turns of Prompt 07, agents MUST NOT execute compiler commands (`go build`, `npm run build`, `vite build`), test suites (`go test`, `pytest`, `npm test`, `vitest`), or end-to-end runners.  
+> **Strict Fast-Forwarding Invariant (`NO-BUILD`, `NO-TEST`):**
+> During implementation turns of Prompt 07, agents MUST NOT execute compiler commands (`go build`, `npm run build`, `vite build`), test suites (`go test`, `pytest`, `npm test`, `vitest`), or end-to-end runners.
 > **Rationale:** Eliminates intermediate compile-test churn that stalls batch implementation. Quality and correctness are guaranteed structurally through grounded coding standards and syntax-level precision. Full end-to-end compilation and testing are decoupled into a dedicated phase at the conclusion of all batches.
 
 ### The 8-Pillar Strict Coding Guideline Matrix:
@@ -177,8 +177,8 @@ Prompt 07 introduces the **Fast-Forwarding Protocol**:
 A cornerstone invariant of the `30-improvements` category for discovery and detailing prompts is the **Review-First Gate**:
 
 > [!CAUTION]
-> **Total Ban on Immediate / Unreviewed Code Execution in Prompts 01–05:**  
-> When running improvement discovery, ideation, or detailing prompts, agents are **STRICTLY PROHIBITED** from immediately applying code changes, modifying source files, running builds, or executing automated refactoring waves.  
+> **Total Ban on Immediate / Unreviewed Code Execution in Prompts 01–05:**
+> When running improvement discovery, ideation, or detailing prompts, agents are **STRICTLY PROHIBITED** from immediately applying code changes, modifying source files, running builds, or executing automated refactoring waves.
 > All improvements, ideas, and detailed plans must be presented and enqueued for review. Code execution is strictly blocked pending explicit user review and sign-off.
 
 ### Why Review-First Gating Is Mandatory:

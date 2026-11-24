@@ -151,6 +151,12 @@ EXCLUDE_NAMES = {
     "temp-agents",
     "cicd-issues",
     "ambiguous-questions",
+    "ambiguity",
+    "rca",
+    "learned",
+    "learn-memory",
+    "memory",
+    "avoid",
 }
 
 EXCLUDE_EXTS = {
@@ -202,31 +208,41 @@ def is_protected_memory_or_plan(path: Path) -> bool:
     """Check if file or directory belongs to protected .ai-memory areas.
 
     Protects plans/, temp-agents/, cicd-issues/, memory/, ambiguous-questions/,
-    and operational memory files in target repositories.
+    ambiguity/, rca/, learn-memory/, avoid/, and operational memory files in target repositories.
     Target repositories own their operational memory logs and execution plans.
     These files must NEVER be overwritten, mirrored, or deleted during sync.
     """
     norm = str(path).replace("\\", "/").lower()
 
-    if ".ai-memory/memory" in norm:
-        return True
-
-    if ".ai-memory/plans" in norm:
-        return True
-
-    if ".ai-memory/temp-agents" in norm:
-        return True
-
-    if ".ai-memory/cicd-issues" in norm:
-        return True
-
-    if ".ai-memory/ambiguous-questions" in norm:
-        return True
+    for prot in (
+        ".ai-memory/memory",
+        ".ai-memory/learned",
+        ".ai-memory/learn-memory",
+        ".ai-memory/plans",
+        ".ai-memory/temp-agents",
+        ".ai-memory/cicd-issues",
+        ".ai-memory/rca",
+        ".ai-memory/ambiguous-questions",
+        ".ai-memory/ambiguity",
+        ".ai-memory/avoid",
+    ):
+        if prot in norm:
+            return True
 
     for part in path.parts:
         norm_part = part.lower()
 
-        if norm_part in ("memory", "plans", "temp-agents", "cicd-issues", "ambiguous-questions"):
+        if norm_part in (
+            "memory",
+            "learn-memory",
+            "plans",
+            "temp-agents",
+            "cicd-issues",
+            "rca",
+            "ambiguous-questions",
+            "ambiguity",
+            "avoid",
+        ):
             if ".ai-memory" in norm:
                 return True
 

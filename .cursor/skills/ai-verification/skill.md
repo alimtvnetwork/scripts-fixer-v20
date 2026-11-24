@@ -1,14 +1,14 @@
 ---
 name: ai-verification
 description: >-
-  Autonomously conduct retrospective code and spec quality audits across recent tasks, checking acceptance criteria, coding guidelines, relative path hygiene, and CI/CD status, formatted for Cursor.
+  Autonomously conduct retrospective code and spec quality audits across recent tasks, checking acceptance criteria, coding guidelines, relative path hygiene, and CI/CD status.
 ---
 
 # High Priority Instruction: Retrospective AI Verification Audit
 
-> **Invocation:** `@[ai-verification](directory;.cursor/skills/ai-verification)`
+> **Invocation:** `@[ai-verification](directory;.agents/skills/ai-verification)`
 
-Use this skill when tasked with performing a retrospective verification of recent tasks in Cursor environments. It audits generated specifications for acceptance criteria, inspects completed subtasks, verifies coding guideline compliance, and monitors CI/CD health via GitMap telemetry.
+Use this skill when tasked with performing a retrospective verification of recent tasks (the last 2–3 completed tasks or 30–40 minutes of work). It audits generated specifications for acceptance criteria, inspects completed subtasks, verifies coding guideline compliance, and monitors CI/CD health via GitMap telemetry.
 
 **Canonical Prompt:** `01-prompts/25-ai-verification/01-retrospective-ai-verification.md`
 **Automation Engine:** `python 03-ai-scripts/47-retrospective-ai-verification.py`

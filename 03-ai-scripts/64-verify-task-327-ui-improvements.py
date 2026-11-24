@@ -9,7 +9,7 @@ from pathlib import Path
 
 def test_compact_badges():
     print("[TEST 1] Auditing Compact 'R' and 'Q' Badges...")
-    
+
     # Check InstanceCardProjects.tsx
     card_proj = Path("src/pages/instances/InstanceCardProjects.tsx").read_text(encoding="utf-8")
     assert "animate-pulse" in card_proj, "InstanceCardProjects missing animate-pulse for R badge"
@@ -31,7 +31,7 @@ def test_compact_badges():
 
 def test_windowless_execution():
     print("[TEST 2] Auditing Windowless Process Execution (CREATE_NO_WINDOW)...")
-    
+
     version_rs = Path("src-tauri/src/modules/version.rs").read_text(encoding="utf-8")
     assert "creation_flags_windows" in version_rs or "0x08000000" in version_rs, \
         "version.rs missing creation_flags_windows / 0x08000000 for version probes"
@@ -43,7 +43,7 @@ def test_windowless_execution():
 
 def test_queued_rerun_and_navigation():
     print("[TEST 3] Auditing Queued Prompts Rerun Dropdown and Row Click Navigation...")
-    
+
     instruction_view = Path("src/components/instances/PromptTreeView/PromptInstructionView.tsx").read_text(encoding="utf-8")
     assert "executeEnqueuedTurnRerun" in instruction_view, "PromptInstructionView missing executeEnqueuedTurnRerun handler"
     assert "queuedRerunCounts" in instruction_view, "PromptInstructionView missing queuedRerunCounts state"
@@ -53,7 +53,7 @@ def test_queued_rerun_and_navigation():
 
 def test_copy_button_modes():
     print("[TEST 4] Auditing Copy Button Refinements (Copy, Copy without image, Base64)...")
-    
+
     detail_header = Path("src/components/instances/PromptTreeView/DetailHeader.tsx").read_text(encoding="utf-8")
     assert "<span>{isCopiedAllActive ? 'Copied!' : 'Copy'}</span>" in detail_header, \
         "DetailHeader missing simplified 'Copy' label"
@@ -68,7 +68,7 @@ def test_copy_button_modes():
 
 def test_quota_and_switcher_resilience():
     print("[TEST 5] Auditing Quota Interruption & Fast Switcher Triggering...")
-    
+
     requeue_rs = Path("src-tauri/src/modules/repo_db/requeue.rs").read_text(encoding="utf-8")
     assert "capacity" in requeue_rs, "requeue.rs missing capacity keyword in quota SQL"
 

@@ -125,7 +125,7 @@ grep -rn 'isNot[A-Z]\|hasNo[A-Z]' spec/ --include="*.md" | grep -v "FORBIDDEN\|W
 2. Update the canonical source if an exemption is needed
 3. Fix all non-canonical files
 4. Update the global `02-02-spec/99-consistency-report.md`
-5. Update `.ai-memory/memories/workflow/03-mistake-remediation-protocol.md`
+5. Update `.ai-memory/learned/workflow/03-mistake-remediation-protocol.md`
 
 ---
 
@@ -170,7 +170,7 @@ These areas have historically produced contradictions and need extra scrutiny:
 ## Cross-References
 
 - Global Consistency Report <!-- external: 02-02-spec/99-consistency-report.md -->
-- Mistake Remediation Protocol <!-- external: .ai-memory/memories/workflow/03-mistake-remediation-protocol.md -->
+- Mistake Remediation Protocol <!-- external: .ai-memory/learned/workflow/03-mistake-remediation-protocol.md -->
 - Issue Template <!-- external: 02-spec/23-how-app-issues-track/01-issue-template.md -->
 - [Master Coding Guidelines](./15-master-coding-guidelines/readme.md)
 - [PascalCase Key Naming](./11-key-naming-pascalcase.md)

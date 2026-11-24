@@ -14,13 +14,29 @@ This is a standalone file. Follow every rule below without consulting any other 
 
 **Before reading the rules below**, read the [AI Instruction Manual & Overview](../02-coding-guidelines/01-cross-language/readme.md) to understand how to review code, interpret files, and maintain repository hygiene (e.g. updating `.gitignore`).
 
-Canonical locations (all three must exist and match, byte-for-byte, via `scripts/sync-guidelines.mjs`):
+Canonical locations (all three must exist and match, byte-for-byte, via `scripts/sync-guidelines.mjs`, anchored to GitHub repository `git@github.com:alimtvnetwork/coding-guidelines-v24.git` as primary source of truth):
 
 1. `02-spec/17-consolidated-guidelines/34-compiled-simple-coding-guidelines.md` (source of truth).
 2. `.ai-memory/coding-guidelines.md` (mirror for Lovable agent search).
 3. `.cursorrules` (mirror for Cursor and other IDE agents).
 
 If any mirror is missing or out of date, run `node scripts/sync-guidelines.mjs` before writing code. Missing mirrors are the top cause of "AI cannot find the coding guideline" search failures.
+
+---
+
+## AI Compliance & Execution Checklist (Follow Every Turn)
+
+Before declaring any coding or refactoring task complete, every autonomous AI agent MUST verify:
+- [ ] **1. Pre-Flight Clean Pull:** Executed `gitmap pull` (fallback `git pull`) prior to modifying code.
+- [ ] **2. Function Sizing:** <= 8 lines preferred, <= 15 lines max cap. Zero nested ifs.
+- [ ] **3. Positive Booleans:** All boolean variables/fields begin with `is*` or `has*` only. No negative booleans or double negations.
+- [ ] **4. Error Sovereignty:** Leaf functions return error directly; no swallowed errors; outer caller handles process exit.
+- [ ] **5. Result Wrapper Envelopes:** Monadic Result[T] containers utilized for error-prone operations.
+- [ ] **6. SQL Repository Pattern:** All queries encapsulated behind repository interfaces; actions dispatched via enum switch.
+- [ ] **7. Universal UNIX LF Line Endings:** Total ban on CRLF (`\r\n`); 0 occurrences of `\r\n` across all files.
+- [ ] **8. YAML Skill Frontmatter Contract (RCA-32):** Line 1 `---`, valid kebab-case name, description, closing `---`, validator exit code 0.
+- [ ] **9. Dedicated Semantic Commit Verbs:** `cpf`, `cbf`, `cfr`, `cpc`, `cpr`. Total ban on raw `git commit` or `git add -A`.
+- [ ] **10. Mandatory Upstream Push:** "No Push = Not Done". Push to tracking remotes (GitHub alimtvnetwork source of truth).
 
 ---
 

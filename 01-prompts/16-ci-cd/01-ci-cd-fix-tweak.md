@@ -10,7 +10,7 @@ Trigger Keywords & Aliases: `cicd fix tweak`, `ci fix tweak`, `fix tweak`, `smar
 > Whatever directives, constraints, checklists, or instructions are given before this section or prompt (including in the prompt preamble, header blocks, or incoming user request) are HIGHEST PRIORITY and MUST BE FOLLOWED as strictly NON-NEGOTIABLE. They supersede and strictly override any conflicting general advice, default conventions, or lower-level guidelines below.
 
 - [A] Base Workflow: `01-prompts/16-ci-cd/03-ci-cd-fix.md` (or V2: `01-prompts/16-ci-cd/08-ci-cd-fix-with-n-steps.md`)
-- [B] Prior Issues: `.ai-memory/cicd-issues/`
+- [B] Prior Issues: `.ai-memory/rca/resolved/`
 - [C] Change State Tracker: `.ai-memory/temp/recent-file-changes.json`
 - [D] Local Runner: `03-ai-scripts/06-cicd-local-runner.py`
 
@@ -29,7 +29,7 @@ Follow the core RCA structure from [A] and review past failures in [B]. The prim
 5. **Strict Ban on Extraneous Runs:** NEVER run the complete test suite, global linters, spellcheckers, or unrelated packages. Verify strictly using `python [D] --pkg <affected_package>` or `python [D] --changed-only` until green.
 6. **Mandatory Same-Turn Tool Chaining:** Do not end the turn after outputting the diagnostic plan; invoke the diagnostic or fix tool in the exact same turn.
 7. **Final Step Atomic Commit Mandate:** Accumulate all fixes and stage/commit them in a single atomic commit at the end (`git commit -m "fix(ci): <summary>"`). TOTAL BAN on per-file commits.
-8. **Issue & RCA Destination Routing:** Store CI/CD issue post-mortems in `.ai-memory/cicd-issues/` (indexed in `.ai-memory/cicd-index.md`). If an issue is an application bug rather than a CI/CD failure, document it in `02-spec/22-app-issues/` (indexed in `02-spec/22-app-issues/readme.md`).
+8. **Issue & RCA Destination Routing:** Store CI/CD issue post-mortems in `.ai-memory/rca/resolved/` (indexed in `.ai-memory/rca/README.md`). If an issue is an application bug rather than a CI/CD failure, document it in `02-spec/22-app-issues/` (indexed in `02-spec/22-app-issues/readme.md`).
 9. **Strict Relative Git Paths:** Only add the relative paths, never add the absolute path during your work, and ensure this is respected on the release page and in release notes as well (TOTAL BAN on `file:///` URIs and absolute filesystem paths).
 
 ---
@@ -38,7 +38,7 @@ Follow the core RCA structure from [A] and review past failures in [B]. The prim
 
 ```markdown
 - [A] Base Workflow: `01-prompts/16-ci-cd/03-ci-cd-fix.md`
-- [B] Prior Issues: `.ai-memory/cicd-issues/`
+- [B] Prior Issues: `.ai-memory/rca/resolved/`
 - [C] Change State Tracker: `.ai-memory/temp/recent-file-changes.json`
 - [D] Local Runner: `03-ai-scripts/06-cicd-local-runner.py`
 

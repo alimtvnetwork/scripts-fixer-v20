@@ -20,13 +20,13 @@ WAVES = ceil(subtasks / (A x H))
 ```
 
 > [!IMPORTANT]
-> **Prompt Version:** 7.0.0  
-> **Runtime:** Google Antigravity 2.0 (IDE and CLI)  
-> **Canonical Prompt Specification:** [V7 Master Autonomous Execution Engine | 09-execute-parent-task-with-n-steps-v7 | 09](file;01-prompts/14-execute/09-execute-parent-task-with-n-steps-v7.md)  
-> **Toolchain Discovery & Primacy:** /learn from @[.agents/skills/gitmap]  
-> **Invocation:** @@[.agents/skills/execute-parent-task-with-n-steps-v7]  
+> **Prompt Version:** 7.0.0
+> **Runtime:** Google Antigravity 2.0 (IDE and CLI)
+> **Canonical Prompt Specification:** [V7 Master Autonomous Execution Engine | 09-execute-parent-task-with-n-steps-v7 | 09](file;01-prompts/14-execute/09-execute-parent-task-with-n-steps-v7.md)
+> **Toolchain Discovery & Primacy:** /learn from @[.agents/skills/gitmap]
+> **Invocation:** @@[.agents/skills/execute-parent-task-with-n-steps-v7]
 >
-> **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**  
+> **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**
 > Whatever directives, constraints, checklists, or user instructions are given ABOVE this prompt (including in the user preamble, header blocks, or incoming user request above) are HIGHEST PRIORITY and MUST BE FOLLOWED as strictly NON-NEGOTIABLE. They supersede and strictly override any conflicting general advice, default conventions, or lower-level guidelines below.
 
 ---
@@ -186,7 +186,7 @@ Followed by confirmed task breakdown with explicit `Understood / AI Comprehensio
 
 ## Core Invariants & Rules Reference
 
-- **R1 Zero Builds / Tests Ban:** Never run full builds or test suites. Only targeted, file-scoped checks on modified files.
+- **R1 Local Build & Test Verification:** Testing and verification: build and test LOCALLY. Do NOT rely on CI/CD checking. Check CI/CD ONLY when BOTH conditions hold: (1) CI/CD is working, AND (2) CI/CD is public. If either condition fails, verify locally and treat CI/CD as unavailable. Targeted, file-scoped checks on modified files, plus local builds and test suites.
 - **R2 Targeted Checks Only:** Check only specifically modified files.
 - **R3 Evidence or It Did Not Happen:** Every claim must cite a file path, diffstat, or exit code.
 - **R4 Never Invent Commands:** Verify commands with harmless calls.
@@ -200,18 +200,12 @@ Followed by confirmed task breakdown with explicit `Understood / AI Comprehensio
 
 ---
 
-## 🛑 Conditional E2E Testing & Build Guardrail (Strict Invariant)
+## 🛑 Local Build & Test Verification Guardrail (R1 — Strict Invariant)
 
-- **Mandatory Default (Zero Builds / Zero Tests):** If end-to-end testing, local test suite execution, or build verification was **NOT EXPLICITLY REQUESTED** in the user prompt or instruction header, you **MUST NOT** run full builds (`go build`, `npm run build`, `vite build`, `cargo build`), compiler checks, or full test suites (`go test ./...`, `npm test`, `pytest`, runner scripts).
-- **Static & Single-File Verification Only:** Code modifications must be verified through static inspection and targeted, file-scoped single-file linters ONLY. Never execute project-wide builds or test suites unless asked.
-- **Explicit Opt-In Exceptions Only:** E2E testing and full test suites run ONLY when:
-  1. The user explicitly requests E2E tests (e.g. "run e2e tests", "execute with e2e", "run full test suites").
-  2. The prompt specifically invokes `execute-with-e2e`.
-- **Pre-Execution Testing Decision Gate:**
-  * Did the user explicitly ask for E2E testing or builds?
-    - If **NO**: Skip all builds and test suite executions. Verify via targeted linters and syntax checks only.
-    - If **YES**: Run targeted test suites for the modified components and ensure 100% green pass.
-- **Completion Tables Check:** If E2E testing was not requested, Table 1 and Table 2 must explicitly document: `E2E Testing: Skipped (Not requested per Zero Build / Zero Test Invariant)`.
+- **Mandatory Default (Local Build & Test Verification — R1):** Testing and verification: build and test LOCALLY. Do NOT rely on CI/CD checking. Check CI/CD ONLY when BOTH conditions hold: (1) CI/CD is working, AND (2) CI/CD is public. If either condition fails, verify locally and treat CI/CD as unavailable.
+- **Local Verification Only:** Code modifications are verified with local builds, linters, and test suites (plus targeted, file-scoped single-file linters).
+- **Pre-Execution Testing Decision Gate:** Build and test LOCALLY by default; run targeted test suites for the modified components and ensure 100% green pass.
+- **Completion Tables Check:** Table 1 and Table 2 document local verification evidence (build/test exit codes).
 - **Zero E2E Subtasks in Plan:** Planners MUST NEVER enqueue an E2E testing subtask into `.ai-memory/plans/` or `agent-task.db` when E2E testing was not explicitly mandated.
 
 ---

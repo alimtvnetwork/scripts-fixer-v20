@@ -38,7 +38,7 @@ Every synchronization operation across connected codebases must strictly enforce
 │ 1. Spec 21 Exclusion      │ NEVER touch 02-spec/21-* (app/domain specs).    │
 │ 2. Bump Script Protection │ NEVER overwrite repo-specific bump scripts.     │
 │ 3. Additive-Only Scripts  │ Copy new AI scripts; diff/preserve modified.   │
-│ 4. Memory & Plans Safe    │ NEVER touch .ai-memory/memory/ or plans/.       │
+│ 4. Memory & Plans Safe    │ NEVER touch .ai-memory/learned/ or plans/.       │
 │ 5. Zero Secrets Leakage   │ NEVER sync .env or private credentials.         │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -56,7 +56,7 @@ Every synchronization operation across connected codebases must strictly enforce
    - Existing scripts in the target repository that share names but contain repo-specific modifications must not be overwritten blindly; agents must inspect diffs and preserve local customizations.
 
 4. **Memory & Plans Protection (TOTAL ISOLATION):**
-   - Target repositories maintain their own operational logs, active execution plans, and architectural decisions inside `.ai-memory/memory/` and `.ai-memory/plans/`.
+   - Target repositories maintain their own operational logs, active execution plans, and architectural decisions inside `.ai-memory/learned/` and `.ai-memory/plans/`.
    - These areas are completely excluded from central mirroring.
 
 5. **Zero Secrets Leakage (STRICT PURGE):**

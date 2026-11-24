@@ -1,0 +1,16 @@
+{
+  "data": {
+    "id": "exampleDotCom",
+    "type": "siteConfiguration",
+    "attributes": {
+      "domain": "example.com",
+      "theme": "hello-elementor",
+      "elementorVersion": "3.25.0",
+      "hasPro": true,
+      "breakpoints": {
+        "tablet": 1024,
+        "mobile": 768
+      }
+    }
+  }
+}

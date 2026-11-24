@@ -224,6 +224,21 @@ All AI models generating UI code against this design system are strictly forbidd
 
 ---
 
+## 14. Contrast Gameplay & Luminance Tension (Dark / Light Pairing Rule)
+
+**Core Mandate:** Every dark visual surface must be accompanied by, balanced with, or contrasted against crisp, high-contrast light presentation elements (and vice-versa). Pure monochrome flatness without luminance delta is strictly prohibited across all themes.
+
+### Invariants:
+1. **Luminance Inversion:** When a canvas, container, or card uses a deep/dark background, all text, icons, badges, borders, and interactive indicators MUST use crisp high-luminance light tokens (`--foreground`, `--card-foreground`, `--muted-foreground` with elevated lightness). Conversely, light containers must present high-contrast dark text and deep accent outlines.
+2. **WCAG 2.2 Contrast Floor:**
+   - **AAA ($\ge 7:1$):** Mandatory for all body copy, headings, data table cells, and primary action text.
+   - **AA ($\ge 4.5:1$):** Mandatory for secondary descriptions, active badge labels, and form input placeholders.
+   - **Graphic Contrast ($\ge 3:1$):** Mandatory for input borders, active toggles, icons, and focus rings.
+3. **Multi-Plane Contrast Rhythm:** In dark mode, adjacent surfaces must step lightness by $+3\%$ to $+8\%$ (Plane 0 $\to$ Plane 1 $\to$ Plane 2), paired with top-edge $1\text{px}$ hairline highlights (`border-t border-white/10`) to create tangible tactile boundaries. In light mode, deep dark shadow washes ($15\text{px}$ to $25\text{px}$ blur with $0.06$ alpha) provide crisp elevation against white/cream ground.
+4. **Interactive Focus & Hover Pop:** Hovering any dark-ground interactive element must produce an immediate high-contrast reaction (e.g. $+8\%$ lightness bump, $1.5\text{px}$ high-contrast light hairline border, or radiant accent glow).
+
+---
+
 ## Cross-References
 
 | Reference | Location |

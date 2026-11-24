@@ -63,7 +63,7 @@ def main():
             {rulesets.map((r) => (
               <li key={r.id} className="group relative flex flex-col border border-[#333] bg-[#1a1c23] transition-colors hover:border-ca-primary">
                 <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-[#333] transition-colors group-hover:bg-ca-primary" />
-                
+
                 <Link
                   to="/projects/$projectId/rulesets/$rulesetId"
                   params={{ projectId, rulesetId: toIntParam(IntAliasNamespaceType.Ruleset, r.id) }}
@@ -74,7 +74,7 @@ def main():
                       {r.name}
                     </h2>
                   </div>
-                  
+
                   <div className="mt-2 flex flex-wrap gap-2 text-[10px] uppercase font-bold tracking-wider">
                      <span className="border border-[#444] bg-[#0b0c10] px-2 py-1 text-ca-ink-muted">
                        {r.rules.length} {r.rules.length === 1 ? "RULE" : "RULES"}
@@ -91,7 +91,7 @@ def main():
                   </div>
                   <p className="mt-4 font-mono text-[10px] text-ca-ink-muted">ID: {r.id}</p>
                 </Link>
-                
+
                 <button
                   type="button"
                   onClick={(e) => {
@@ -108,7 +108,7 @@ def main():
                 >
                   <Trash2 aria-hidden size={14} />
                 </button>
-                
+
                 <div className="border-t border-[#333] bg-[#0b0c10] px-4 py-2 flex items-center justify-between">
                    <span className="text-[10px] font-bold uppercase tracking-widest text-ca-ink-muted">TRIAL RUN</span>
                    <RulesetTestRunPill ruleset={r} />

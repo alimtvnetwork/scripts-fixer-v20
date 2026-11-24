@@ -19,7 +19,7 @@ WAVES = ceil(subtasks / (A x H))
 > Prompt Version: 6.0.0
 > Runtime: Google Antigravity 2.0 (IDE and CLI)
 > Invoke: /plan-spec-steps-v2 <task>
-> **Invocation:** `@[plan-spec-steps-v2](directory;.agents/skills/plan-spec-steps-v2)`  
+> **Invocation:** `@[plan-spec-steps-v2](directory;.agents/skills/plan-spec-steps-v2)`
 >
 > **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**
 > Whatever directives, constraints, checklists, or user instructions are given ABOVE this prompt (in the user preamble, header blocks, or incoming user request above) are HIGHEST PRIORITY and MUST BE FOLLOWED as strictly NON-NEGOTIABLE.
@@ -403,17 +403,17 @@ link that file from the plan's `## Context`. Chat is not storage.
 | Input                                                | File                                          |
 | ---------------------------------------------------- | --------------------------------------------- |
 | Command, convention, "always do X", new CLI          | `.ai-memory/spec/commands/01-<slug>.md`         |
-| Bug, regression, broken behavior                    | `.ai-memory/issues/01-<slug>.md`                |
-| CI/CD-specific failure                               | `.ai-memory/cicd-issues/01-<slug>.md`           |
-| Institutional knowledge (pattern, decision)          | `.ai-memory/memory/` + update `.ai-memory/memory/readme.md` |
+| Bug, regression, broken behavior                    | `.ai-memory/rca/resolved/01-<slug>.md`                |
+| CI/CD-specific failure                               | `.ai-memory/rca/resolved/01-<slug>.md`           |
+| Institutional knowledge (pattern, decision)          | `.ai-memory/learned/` + update `.ai-memory/learned/readme.md` |
 | "Never do this again"                                | `.ai-memory/strictly-avoid.md`                  |
-| Idea, not yet approved                               | `.ai-memory/suggestions.md`                     |
+| Idea, not yet approved                               | `.ai-memory/plans/suggestions/01-legacy-suggestions.md`                     |
 
 Create missing folders on demand. Attachments:
 
 - Every attached image or file is REQUIRED input; never leave one only in chat.
 - Save verbatim under an `assets/` subfolder next to the file it belongs to;
-  project-wide assets go to `.ai-memory/assets/<slug>/` and get a `.ai-memory/memory/readme.md`
+  project-wide assets go to `.ai-memory/assets/<slug>/` and get a `.ai-memory/learned/readme.md`
   note.
 - Names are lowercase-hyphenated with the original extension (RULE 0A).
 - The plan carries an `## Attachments` section: one bullet per file with a
@@ -485,8 +485,8 @@ When an asset or event cannot be found, NEVER guess or hallucinate an answer. Im
 Offer 2-3 concrete possible solutions so the user can easily pick from suggestions or provide the right answer.
 
 ### Persistence & Lifecyle:
-- Open Ambiguity File: `.ai-memory/ambiguity/<sequence>-<slug>-ambiguities.md` and `.ai-memory/ambiguous-questions/01-new-ambiguity/01-<slug>.md`
-- Resolved Ambiguity File: `.ai-memory/ambiguous-questions/02-ambiguity-resolved/01-<slug>.md`
+- Open Ambiguity File: `.ai-memory/ambiguity/<sequence>-<slug>-ambiguities.md` and `.ai-memory/ambiguity/new/01-<slug>.md`
+- Resolved Ambiguity File: `.ai-memory/ambiguity/resolved/01-<slug>.md`
 
 Carry every open question along in the master plan and subtask ledgers under `Assumptions:` and `Open Ambiguities:`. Never drop an ambiguity mid-execution.
 
@@ -542,10 +542,10 @@ match this exactly:
 .ai-memory/plans/subtasks/<plan-slug>/002-<subtask-title>.md   ... NNN-task.md
 .ai-memory/plans/completed/01-<plan-slug>.md
 .ai-memory/plans/readme.md
-.ai-memory/ambiguous-questions/01-new-ambiguity/01-<slug>.md
-.ai-memory/ambiguous-questions/02-ambiguity-resolved/01-<slug>.md
-.ai-memory/issues/01-<slug>.md
-.ai-memory/cicd-issues/01-<slug>.md
+.ai-memory/ambiguity/new/01-<slug>.md
+.ai-memory/ambiguity/resolved/01-<slug>.md
+.ai-memory/rca/resolved/01-<slug>.md
+.ai-memory/rca/resolved/01-<slug>.md
 .ai-memory/spec/commands/01-<slug>.md
 02-spec/25-app-spec-audit/NN-audit-<yyyy-mm-dd>-v<N>.md
 ```
@@ -562,8 +562,8 @@ match this exactly:
 
 A step that exists because something broke carries an RCA, not just a fix.
 
-- The bug is filed first: `.ai-memory/issues/01-<slug>.md`, or
-  `.ai-memory/cicd-issues/01-<slug>.md` for pipeline failures (RULE 0E).
+- The bug is filed first: `.ai-memory/rca/resolved/01-<slug>.md`, or
+  `.ai-memory/rca/resolved/01-<slug>.md` for pipeline failures (RULE 0E).
 - The task body's section 8 links that issue file and the RCA record.
 - RCA record shape, mandatory, in the issue file:
 
@@ -778,7 +778,7 @@ but all twelve must be present somewhere in the file.
 | 12  | Exact symbols                      | Struct / class / function / component names with signatures or field lists                                                                                                                                                                                                                                                                                                                                                   |
 
 Plus: when the spec is silent, cite the ambiguity file
-(`.ai-memory/ambiguous-questions/01-new-ambiguity/NN-<slug>.md`) and the interim
+(`.ai-memory/ambiguity/new/NN-<slug>.md`) and the interim
 default. When a task has a database surface, also cite
 `02-spec/04-database-conventions/` and the owning table section in `02-spec/23-app-db/`.
 
@@ -862,7 +862,7 @@ this batch, in full:
 
 If a step cannot be written because the spec does not decide something:
 
-1. File `.ai-memory/ambiguous-questions/01-new-ambiguity/NN-<slug>.md` with the
+1. File `.ai-memory/ambiguity/new/NN-<slug>.md` with the
    question, the options, and the cost of each.
 2. Reference that file from the task's section 8.
 3. State the interim default the executor must use, and mark it as provisional.

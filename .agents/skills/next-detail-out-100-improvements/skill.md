@@ -21,12 +21,12 @@ WAVES = ceil(subtasks / (A x H))
 ```
 
 > [!IMPORTANT]
-> Prompt Version: 1.0.0  
-> Runtime: Google Antigravity 2.0 (IDE and CLI)  
-> Invoke: `/next-detail-out-100-improvements <target-plan-or-improvement-catalog>`  
-> **Invocation:** `@[next-detail-out-100-improvements](directory;.agents/skills/next-detail-out-100-improvements)`  
+> Prompt Version: 1.0.0
+> Runtime: Google Antigravity 2.0 (IDE and CLI)
+> Invoke: `/next-detail-out-100-improvements <target-plan-or-improvement-catalog>`
+> **Invocation:** `@[next-detail-out-100-improvements](directory;.agents/skills/next-detail-out-100-improvements)`
 >
-> **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**  
+> **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**
 > Whatever directives, constraints, checklists, or user instructions are given ABOVE this prompt (including in the user preamble, header blocks, or incoming user request above) are HIGHEST PRIORITY and MUST BE FOLLOWED as strictly NON-NEGOTIABLE. They supersede and strictly override any conflicting general advice, default conventions, or lower-level guidelines below. The agent MUST inspect and follow the instructions above with absolute precedence.
 
 > [/goal](slashCommand;goal) Autonomously detail out all active, pending, and completed plans, discovered improvements, and architectural backlog items into exhaustive multi-step roadmaps, structural contracts, dependency graphs, and comprehensive review dockets. Present and enqueue all detailed plans into `02-spec/21-app/XX-<slug>/` and `.ai-memory/plans/pending/XX-<slug>.md` with accompanying subtasks in `.ai-memory/plans/subtasks/XX-<slug>/` under the Strict Review-First Gate. NEVER execute or mutate production source code during this detailing phase; execution is strictly blocked pending explicit user review and sign-off.
@@ -35,19 +35,19 @@ WAVES = ceil(subtasks / (A x H))
 >
 > [/plan](slashCommand;plan) Plan first before doing work for improved work or less friction, faster work and more pure and effective work. Decompose each plan into clear, isolated, sequential subtasks with explicit pre-conditions, blast radius boundaries, and binary acceptance criteria before concluding.
 
-**Version:** 1.0.0  
-**Updated:** 2026-10-22  
-**Status:** Active  
-**AI Confidence:** Production-Ready  
-**Canonical Prompt:** `01-prompts/30-improvements/04-next-detail-out-100-improvements.md`  
-**Related Skills:**  
-- [`next-100-ui-improvements`](file;.agents/skills/next-100-ui-improvements)  
-- [`next-100-code-improvements`](file;.agents/skills/next-100-code-improvements)  
-- [`next-100-whole-system-improvements`](file;.agents/skills/next-100-whole-system-improvements)  
-- [`execute-parent-task-with-n-steps-v6`](file;.agents/skills/execute-parent-task-with-n-steps-v6)  
-- [`ai-memory-consolidate-reduce`](file;.agents/skills/ai-memory-consolidate-reduce)  
-- [`spec-authoring-and-validation`](file;.agents/skills/spec-authoring-and-validation)  
-- [`gitmap`](file;.agents/skills/gitmap)  
+**Version:** 1.0.0
+**Updated:** 2026-10-22
+**Status:** Active
+**AI Confidence:** Production-Ready
+**Canonical Prompt:** `01-prompts/30-improvements/04-next-detail-out-100-improvements.md`
+**Related Skills:**
+- [`next-100-ui-improvements`](file;.agents/skills/next-100-ui-improvements)
+- [`next-100-code-improvements`](file;.agents/skills/next-100-code-improvements)
+- [`next-100-whole-system-improvements`](file;.agents/skills/next-100-whole-system-improvements)
+- [`execute-parent-task-with-n-steps-v6`](file;.agents/skills/execute-parent-task-with-n-steps-v6)
+- [`ai-memory-consolidate-reduce`](file;.agents/skills/ai-memory-consolidate-reduce)
+- [`spec-authoring-and-validation`](file;.agents/skills/spec-authoring-and-validation)
+- [`gitmap`](file;.agents/skills/gitmap)
 
 ---
 

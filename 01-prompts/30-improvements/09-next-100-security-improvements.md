@@ -18,16 +18,16 @@ WAVES = ceil(subtasks / (A x H))
 ```
 
 > [!IMPORTANT]
-> **Prompt Version:** 1.0.0  
-> **Runtime:** Google Antigravity 2.0 (IDE and CLI) & Cursor IDE  
-> **Invoke:** `/next-100-security-improvements <project-or-module>`  
+> **Prompt Version:** 1.0.0
+> **Runtime:** Google Antigravity 2.0 (IDE and CLI) & Cursor IDE
+> **Invoke:** `/next-100-security-improvements <project-or-module>`
 >
-> **Trigger Keywords & Aliases:**  
-> `next-100-security-improvements`, `next-100-security`, `security-improvements`, `next-security`, `100-security`, `security-flywheel`, `audit-100-security`  
+> **Trigger Keywords & Aliases:**
+> `next-100-security-improvements`, `next-100-security`, `security-improvements`, `next-security`, `100-security`, `security-flywheel`, `audit-100-security`
 >
-> **Companion Antigravity Skill:** [`next-100-security-improvements`](directory;.agents/skills/next-100-security-improvements)  
+> **Companion Antigravity Skill:** [`next-100-security-improvements`](directory;.agents/skills/next-100-security-improvements)
 >
-> **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**  
+> **Top-Instruction Priority Mandate (Above Precedence / Preamble Precedence):**
 > Whatever directives, constraints, checklists, or user instructions are given ABOVE this prompt (including in the user preamble, header blocks, or incoming user request above) are HIGHEST PRIORITY and MUST BE FOLLOWED as strictly NON-NEGOTIABLE. They supersede and strictly override any conflicting general advice, default conventions, or lower-level guidelines below. The agent MUST inspect and follow the instructions above with absolute precedence.
 
 [/goal](slashCommand;goal) Autonomously conduct an exhaustive, 10-cluster security diagnostic audit across the target repository and ecosystem, inspect IPC boundaries, credential vaults, REST endpoints, database queries, and filesystem interactions, and synthesize exactly 100 concrete, defense-in-depth security improvements and threat mitigations structured into 10 thematic security clusters. Enforce the 8-Field Security Specification Schema with mathematical precision, prove backward compatibility and zero operational regression for every mitigation, enqueue all 100 security improvements into `.ai-memory/plans/pending/XX-next-100-security-improvements.md` with modular subtasks in `.ai-memory/plans/subtasks/XX-next-100-security-improvements/`, and present an executive security docket to the lead architect with strict no-build and no-test rules.

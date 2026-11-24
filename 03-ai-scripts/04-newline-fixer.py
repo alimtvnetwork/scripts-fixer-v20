@@ -55,8 +55,8 @@ def process_file_newlines(file_path: Path, is_fix_mode: bool = False) -> tuple[s
         if is_fix_mode:
             write_file_lf(file_path, cleaned, encoding=DEFAULT_ENCODING)
         return (norm_p, True)
-    except Exception:
-        pass
+    except Exception as exc:
+        print(f"  ::warning file={norm_p}::Failed to process newlines for {norm_p}: {exc}")
     return (norm_p, False)
 
 def run_newline_auditor(

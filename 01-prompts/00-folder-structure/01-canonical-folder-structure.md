@@ -84,7 +84,7 @@ All dates are UTC. All filenames are lowercase kebab-case with a two-digit zero-
       readme.md                      # Index of active suggestions
       completed/                       # Archived implemented proposals
 
-    cicd-issues/                       # CI pipeline failure diagnostics and RCAs
+    rca/resolved/                       # CI pipeline failure diagnostics and RCAs
     assets/                            # Mockups, diagrams, and reference media
 ```
 
@@ -118,6 +118,6 @@ Every workspace operates alongside two fixed special repositories in the work di
 ## Hard Rules & Prohibitions
 
 - **Single Authority:** [`.ai-memory/folder-structure.md`](.ai-memory/folder-structure.md) is the absolute single source of truth.
-- **Strict Plurality:** Always `.ai-memory/memory/` (singular), `.ai-memory/plans/` (plural), `01-prompts/` (plural), `.ai-memory/suggestions/` (plural).
+- **Strict Plurality:** Always `.ai-memory/learned/` (singular), `.ai-memory/plans/` (plural), `01-prompts/` (plural), `.ai-memory/suggestions/` (plural).
 - **No Orphaned Folders:** Never invent unapproved folders (e.g., `memories/`, `tasks/`, `todos/`).
 - **Relative Paths Only:** All file paths must be relative from the git root. Absolute paths (`C:\...`, `file:///...`) are banned.

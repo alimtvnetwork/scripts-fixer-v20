@@ -192,7 +192,7 @@ App and WordPress projects use `02-fundamentals.md` as the first content file, t
 | 04 | [06-cli-module-template.md](./06-cli-module-template.md) | Template | Step-by-step template for CLI tool spec modules (3-folder pattern) |
 | 05 | [07-app-project-template.md](./07-app-project-template.md) | Template | Template for app/WordPress projects (fundamentals + features + issues) |
 | 06 | [08-non-cli-module-template.md](./08-non-cli-module-template.md) | Template | Template for flat/non-CLI modules (research, utilities, standards) |
-| 07 | [09-memory-folder-guide.md](./09-memory-folder-guide.md) | Guide | Structure and conventions for the `.ai-memory/memories/` tree |
+| 07 | [09-memory-folder-guide.md](./09-memory-folder-guide.md) | Guide | Structure and conventions for the `.ai-memory/learned/` tree |
 | 08 | [10-cross-references.md](./10-cross-references.md) | Rules | How to write cross-references, relative paths, and link integrity rules |
 | 09 | [11-exceptions.md](./11-exceptions.md) | Rules | All known exception cases with folder structure examples |
 | 10 | [12-mandatory-linter-infra03-structure.md](./12-mandatory-linter-infrastructure.md) | Rules | Mandatory linter scripts — AI must verify presence before validation |
@@ -207,7 +207,7 @@ All files and folders in `02-spec/` and `.ai-memory/` MUST use **lowercase kebab
 ```
 ✅ 01-backend/                   ✅ readme.md
 ✅ 09-gsearch-cli/               ✅ 03-api-design.md
-✅ .ai-memory/memories/workflow/   ✅ file-naming-conventions.md
+✅ .ai-memory/learned/workflow/   ✅ file-naming-conventions.md
 
 ❌ 01-Backend/                   ❌ ApiDesign.md
 ❌ 09_gsearch_cli/               ❌ file_naming.md
@@ -311,7 +311,7 @@ The memory folder includes dedicated folders for tracking work items:
 
 ### Consolidation Rule
 
-> **There is only ONE memory folder: `.ai-memory/memories/`.** The legacy `.ai-memory/memory/` variant is prohibited. If found during audits, migrate all contents to `.ai-memory/memories/` and delete the legacy folder.
+> **There is only ONE memory folder: `.ai-memory/learned/`.** The legacy `.ai-memory/learned/` variant is prohibited. If found during audits, migrate all contents to `.ai-memory/learned/` and delete the legacy folder.
 
 ### Memory File Conventions
 
@@ -328,12 +328,12 @@ The memory folder includes dedicated folders for tracking work items:
 | Content | Location |
 |---------|----------|
 | Formal specifications, APIs, data models | `02-spec/` |
-| Architectural decisions, conventions, patterns | `.ai-memory/memories/` |
+| Architectural decisions, conventions, patterns | `.ai-memory/learned/` |
 | Execution plans and batch tracking | `.ai-memory/29-plan.md` |
-| Suggestion tracking | `.ai-memory/memories/suggestions/` |
-| Pending / planned / done tasks | `.ai-memory/memories/pending/`, `planned/`, `done/` |
-| Completed issues | `.ai-memory/memories/completed-issues/` |
-| Reliability assessments | `.ai-memory/memories/reports/` or `02-spec/validation-reports/` |
+| Suggestion tracking | `.ai-memory/learned/suggestions/` |
+| Pending / planned / done tasks | `.ai-memory/learned/pending/`, `planned/`, `done/` |
+| Completed issues | `.ai-memory/learned/completed-issues/` |
+| Reliability assessments | `.ai-memory/learned/reports/` or `02-spec/validation-reports/` |
 
 ### Where AI Should Write Updates
 
@@ -341,13 +341,13 @@ When an AI agent learns something new or the user provides instructions:
 
 | User Says | AI Writes To |
 |-----------|-------------|
-| "Remember this pattern" | `.ai-memory/memories/patterns/` or relevant category |
+| "Remember this pattern" | `.ai-memory/learned/patterns/` or relevant category |
 | "Add this to the plan" | `.ai-memory/29-plan.md` |
-| "Track this task" | `.ai-memory/memories/planned/` or `pending/` |
-| "This issue is resolved" | Move to `.ai-memory/memories/completed-issues/` |
-| "Update coding guidelines" | `.ai-memory/memories/constraints/` |
+| "Track this task" | `.ai-memory/learned/planned/` or `pending/` |
+| "This issue is resolved" | Move to `.ai-memory/learned/completed-issues/` |
+| "Update coding guidelines" | `.ai-memory/learned/constraints/` |
 | "Add WP plugin spec" | `02-spec/XX-wp-plugin-name/` (spec tree) |
-| "Remember WP plugin convention" | `.ai-memory/memories/wp-plugins/` |
+| "Remember WP plugin convention" | `.ai-memory/learned/wp-plugins/` |
 
 See [09-memory-folder-guide.md](./09-memory-folder-guide.md) for the complete memory folder guide.
 
@@ -377,7 +377,7 @@ See [09-memory-folder-guide.md](./09-memory-folder-guide.md) for the complete me
 8. **Verify linter infrastructure** — read [12-mandatory-linter-infra03-structure.md](./12-mandatory-linter-infrastructure.md) and confirm `linter-scripts/` exists
 9. **Score the module** — set AI Confidence and Ambiguity percentages in `readme.md`
 10. **Validate cross-references** — run the link scanner and fix any broken links
-11. **Check `.ai-memory/memories/`** — read relevant memories before writing new specs
+11. **Check `.ai-memory/learned/`** — read relevant memories before writing new specs
 
 ---
 
@@ -448,7 +448,7 @@ All specifications in this repository are authored by **Md. Alim Ul Karim** — 
 | Folder Structure (canonical) | `./02-folder-structure.md` |
 | Master Index | `../readme.md` |
 | Coding Guidelines | `../02-coding-guidelines/readme.md` |
-| Memory Index | `../../.ai-memory/memories/00-memory-index.md` |
+| Memory Index | `../../.ai-memory/learned/00-memory-index.md` |
 | Reliability Reports | `../validation-reports/` |
 | Required Files | `./04-required-files.md` |
 | Cross-Reference Rules | `./10-cross-references.md` |

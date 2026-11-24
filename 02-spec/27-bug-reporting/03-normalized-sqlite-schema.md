@@ -59,6 +59,10 @@ erDiagram
         TEXT backend_file
         TEXT backend_fn
         TEXT user_action_phrase
+        TEXT conversation_id
+        TEXT target_instance_id
+        TEXT workspace_path
+        TEXT prompt_preview
         TEXT screenshot_id FK
         INTEGER created_at
     }
@@ -158,6 +162,10 @@ CREATE TABLE IF NOT EXISTS bug_step_events (
     backend_file TEXT,
     backend_fn TEXT,
     user_action_phrase TEXT,
+    conversation_id TEXT,
+    target_instance_id TEXT,
+    workspace_path TEXT,
+    prompt_preview TEXT,
     screenshot_id TEXT,
     created_at INTEGER NOT NULL,
     FOREIGN KEY (session_id) REFERENCES bug_sessions(session_id) ON DELETE CASCADE

@@ -11,11 +11,11 @@ description: "Autonomously audit, discover, plan, and orchestrate 100 high-impac
 > **[/learn](slashCommand;learn)** Enforce the 8-Part Specification Schema, Zero Harm / Regression Safety Matrix, backward compatibility guarantees (e.g. `type Fault = AppError`), strict relative Git paths, lowercase naming, and GitMap command primacy.
 > **[/plan](slashCommand;plan)** Plan first before doing work for improved work, less friction, faster execution, and pure, effective outcomes.
 
-**Version:** 1.0.0  
-**Updated:** 2026-10-22  
-**Status:** Active  
-**AI Confidence:** Production-Ready  
-**Canonical Prompt:** `01-prompts/30-improvements/03-next-100-whole-system-improvements.md`  
+**Version:** 1.0.0
+**Updated:** 2026-10-22
+**Status:** Active
+**AI Confidence:** Production-Ready
+**Canonical Prompt:** `01-prompts/30-improvements/03-next-100-whole-system-improvements.md`
 **Related Skills:**
 - [`unified-ai-prompt-v4`](file;.agents/skills/unified-ai-prompt-v4)
 - [`execute-parent-task-with-n-steps-v6`](file;.agents/skills/execute-parent-task-with-n-steps-v6)

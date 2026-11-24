@@ -1,0 +1,27 @@
+{
+  "data": {
+    "id": "universalTaskPipeline",
+    "type": "pipelineConfiguration",
+    "attributes": {
+      "pipelineName": "Universal Task Execution Pipeline",
+      "version": "1.0.0",
+      "configDir": "config",
+      "steps": [
+        {
+          "id": "step01CacheCleanup",
+          "type": "pipelineStep",
+          "attributes": {
+            "modulePath": "scripts.steps.sample_fix_step",
+            "className": "SampleFixStep",
+            "isEnabled": true,
+            "description": "Purge system temporary files and verify memory",
+            "params": {
+              "targetPath": "${WORK}/logs",
+              "isDryRun": false
+            }
+          }
+        }
+      ]
+    }
+  }
+}

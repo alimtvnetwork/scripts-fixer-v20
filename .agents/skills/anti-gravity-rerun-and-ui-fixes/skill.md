@@ -25,4 +25,4 @@ This skill guides the investigation and resolution of rerun targeting, enqueue U
 5. **Coding Guideline & Design System Documentation**:
    - Document canonical tree view design specifications in `02-spec/02-coding-guidelines/` and `02-spec/04-ui-ux-design-system/`.
 6. **4-Part Root Cause Analysis (RCA)**:
-   - Persist findings in `.ai-memory/rca/` and `.ai-memory/issues/`.
+   - Persist findings in `.ai-memory/rca/` and `.ai-memory/rca/resolved/`.

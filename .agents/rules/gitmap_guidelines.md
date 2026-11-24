@@ -14,6 +14,7 @@ trigger: always_on
   - **Database Audit Capture**: Errors bubble up to `dispatch` handlers in `root.go` so they are captured by `finishCommandAudit`.
 
   ### 2. Coding Style & Naming Rules
+  - **Universal UNIX LF Line Endings (TOTAL BAN ON CRLF)**: NEVER use CRLF (`\r\n`) under any circumstances. ALWAYS use UNIX LF (`\n`) everywhere across all repositories, files, code, scripts, markdown, and configs. Git must maintain `core.autocrlf=false` and `core.eol=lf`.
   - **Boolean Naming**: All booleans MUST begin with `is` or `has` ONLY (`can`, `should`, `was`, `will` are banned). NO negative booleans.
   - **15-Line Function Limit**: Functions <= 8 lines preferred, <= 15 lines max.
   - **Zero Nested Ifs**: Flatten all nested conditionals with guard clauses and early returns.
@@ -48,5 +49,3 @@ trigger: always_on
   - **Universal SSH Protocol**: All repositories in developer working directories (`~/git-work/`) MUST point to the `alimtvnetwork` namespace via pure SSH (`git@github.com:alimtvnetwork/<repo>.git`). TOTAL BAN on embedding personal access tokens (`https://ghp_...@github.com/...`) in remote URLs.
   - **Git Config insteadOf Hygiene**: Always configure `url."git@github.com:".insteadOf` with exact byte prefix matching without leading or trailing whitespace (`url."git@github.com:".insteadOf = https://github.com/`).
   - **Namespace Forking First**: Never push to non-owned or legacy namespaces (`aukgit`, `garrytan`, `Evatix`). Fork to `alimtvnetwork` via `gh repo fork <upstream>/<repo> --clone=false`, update `origin`, and retain upstream as a secondary tracking remote.
-
-

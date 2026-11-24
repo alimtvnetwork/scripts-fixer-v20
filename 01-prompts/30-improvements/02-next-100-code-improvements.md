@@ -120,7 +120,7 @@ If sources conflict, follow the stricter one and record under `Conflicts:` in le
 - **History read-only:** Never edit past events, changelogs, completed plans, release notes, or archive directories.
 - **Out-of-scope:** Log under `Follow-ups:` in plan; never fix in this run.
 - **Minimal diff:** Modify only target files required for audit documentation and plan enqueueing.
-- **Indexes:** Update `01-prompts/readme.md` and `.ai-memory/prompts.md` when adding/modifying prompts. Update `.ai-memory/plans/readme.md` and `.ai-memory/what-to-read.md`.
+- **Indexes:** Update `01-prompts/readme.md` and `01-prompts/README.md` when adding/modifying prompts. Update `.ai-memory/plans/readme.md` and `.ai-memory/what-to-read.md`.
 - **Mandatory Multi-Agent Partitioning:** Work MUST be partitioned across A workers (`A = 3`). Solo execution is strictly banned.
 - **Finish early:** When all 100 improvements are documented, verified, and enqueued, proceed directly to consolidation.
 - **Zero releases:** Never bump versions or edit changelogs unless requested (R10).
@@ -134,7 +134,7 @@ If sources conflict, follow the stricter one and record under `Conflicts:` in le
 - **R3 Evidence or It Did Not Happen.** Every `DONE`, `PASS`, or "verified" claim MUST cite a concrete file path, line number, git diffstat, or command exit code (`exit 0`). Vague assurances are auto-rejected.
 - **R4 Never Invent Commands, Flags, or Paths.** Verify commands with a harmless call (`gitmap lf readme.md`), not `--help`. Use documented fallbacks and log in ledger.
 - **R5 Mandatory Subagents (`invoke_subagent`), Concurrency Scaling & Immediate Dynamic Respawn.** Spawning subagents via `invoke_subagent` (`A = 3`, `H = 2`, System Concurrency Capacity = 6 concurrent operations) is an **ABSOLUTE MUST** (`research` for discovery in Phase 1, `self` for card authoring and plan enqueueing in Phase 2/3). Solo execution without calling `invoke_subagent` is an auto-reject failure.
-- **R6 One Owner Per File (Disjoint Bounding Boxes).** Within every worker wave, each file has exactly one owner. Shared indexes (`.ai-memory/plans/readme.md`, `.ai-memory/prompts.md`, `.ai-memory/what-to-read.md`) belong exclusively to lead.
+- **R6 One Owner Per File (Disjoint Bounding Boxes).** Within every worker wave, each file has exactly one owner. Shared indexes (`.ai-memory/plans/readme.md`, `01-prompts/README.md`, `.ai-memory/what-to-read.md`) belong exclusively to lead.
 - **R7 Git Safety & Isolation (Worker Git Ban).** Subagents NEVER run git commands (`git add`, `git commit`, `git push`, `git status`, `git diff`, `git checkout`). In shared workspaces (`Workspace: "inherit"`), worker git calls create `.git/index.lock` collisions that immediately crash parallel agents.
 - **R8/R9 Atomic Commit & Push via GitMap (TOTAL BAN ON RAW GIT COMMITS).** The run ends with ONE GitMap call:
   - For features: `gitmap cpf "<module> - <feature summary>"` (e.g. `gitmap cpf "audit - catalog 100 codebase improvements wave 01"`). GitMap automatically prepends `Feature: `, so format with a hyphen `-`; there is NO need to provide a colon in the GitMap argument. DO NOT provide a colon; use a hyphen `-` to separate module/scope from summary. NEVER include `feat(...)` or `feature:` in your message.
@@ -144,7 +144,7 @@ If sources conflict, follow the stricter one and record under `Conflicts:` in le
 - **R11 Strict Relative Git Paths & Lowercase Hygiene.** Strict ban on absolute paths (`C:\...`, `/home/...`) and `file:///` URIs. Only add relative paths starting from git root. All filenames, documentation, and specs strictly lowercase (e.g. `readme.md`, `agents.md`, `skill.md`).
 - **R12 No Polling / Immediate Turn Yielding.** When calling `invoke_subagent`, make it the sole tool action at turn end, print progress line (`Dispatched Worker 01 .. Worker <A> (wave k / WAVES); waiting for their results.`) and **STOP CALLING TOOLS**. Never poll in loop. Check `manage_subagents` once if wave runs long.
 - **R13 Two-Strike Retry Cap & Anti-Looping.** Tool failing twice: worker replies `STATUS: BLOCKED` with exact error and stops. Lead takes over and logs `LEAD_FALLBACK: <reason>`.
-- **R14 100% Ambiguity & Decision Boundaries.** Non-blocking: choose conservative option, log in ledger `Assumptions:`, proceed. Blocking: `ask_question` once, log in `.ai-memory/ambiguous-questions/01-new-ambiguity/`, continue unblocked tasks.
+- **R14 100% Ambiguity & Decision Boundaries.** Non-blocking: choose conservative option, log in ledger `Assumptions:`, proceed. Blocking: `ask_question` once, log in `.ai-memory/ambiguity/new/`, continue unblocked tasks.
 - **R15 Zero Generated Artifacts Committed.** Never commit build caches, logs, temp scripts, or newly generated binaries unless repository already tracked them.
 - **R16 Zero Secrets in Standard Repos.** Never write credentials, tokens, passwords, or `.env` contents into tracked files, commits, ledger, plans, specs, or prompts (`agents.md` section 9).
 

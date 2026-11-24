@@ -5,7 +5,7 @@ description: "Autonomously reconcile diverged Git branches, mechanically resolve
 
 # Git Reconciliation & Mechanical Conflict Resolver
 
-> **Invocation:** `@[git-reconcile-and-resolve-conflict](directory;.cursor/skills/git-reconcile-and-resolve-conflict)`
+> **Invocation:** `@[git-reconcile-and-resolve-conflict](directory;.agents/skills/git-reconcile-and-resolve-conflict)`
 
 Autonomously resolves git branch divergence, applies deterministic domain-specific conflict resolution rules, and pushes to remote tracking branches without rewriting published Git history.
 
@@ -43,3 +43,13 @@ python 03-ai-scripts/47-git-reconcile-and-resolve-conflict.py resolve-conflicts 
 # 5. Programmatic JSON output for agent automation
 python 03-ai-scripts/47-git-reconcile-and-resolve-conflict.py --check --json
 ```
+
+## Merge Commit Rule
+
+After mechanical conflict resolution, the merge commit MUST use the canonical GitMap bug verb (local only — the script pushes separately afterwards):
+
+```bash
+gitmap cbf --no-push "GIT - auto-resolve merge conflicts"
+```
+
+This formats to `Bug: GIT - auto-resolve merge conflicts`. TOTAL BAN on raw `git commit` with any other message. Fallback only when `gitmap` is unavailable (bootstrap): `git commit -m "Bug: GIT - auto-resolve merge conflicts"`.

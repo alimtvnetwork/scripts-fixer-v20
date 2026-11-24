@@ -49,7 +49,7 @@ Use the next free number. Write:
 
 Leave the old plan in `pending/`. Do not move it to `completed/` while any of its required rows are MISSING.
 
-Follow `.agents/skills/ai-instruction-packet/skill.md`, `.agents/skills/execute-parent-task-with-n-steps-v6/skill.md`, `.agents/skills/gitmap/skill.md`, and `.ai-memory/memory/learned/33-false-completion-stamp-v4-331.md`.
+Follow `.agents/skills/ai-instruction-packet/skill.md`, `.agents/skills/execute-parent-task-with-n-steps-v6/skill.md`, `.agents/skills/gitmap/skill.md`, and `.ai-memory/learned/33-false-completion-stamp-v4-331.md`.
 
 ## 4. End with the copy-paste instruction
 

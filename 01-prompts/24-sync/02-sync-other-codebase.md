@@ -74,7 +74,7 @@ Every sync operation across codebases MUST strictly enforce these five boundarie
 │ 1. Spec 21 Exclusion      │ NEVER touch 02-spec/21-* (app/domain specs).    │
 │ 2. Bump Script Protection │ NEVER overwrite repo-specific bump scripts.     │
 │ 3. Additive-Only Scripts  │ Copy new AI scripts; diff/preserve modified.   │
-│ 4. Memory & Plans Safe    │ NEVER touch .ai-memory/memory/ or plans/.       │
+│ 4. Memory & Plans Safe    │ NEVER touch .ai-memory/learned/ or plans/.       │
 │ 5. Zero Secrets Leakage   │ NEVER sync .env or private credentials.         │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -92,7 +92,7 @@ Every sync operation across codebases MUST strictly enforce these five boundarie
 - **Protocol:** Before replacing an existing script, compute the diff. If the target repository has customized flags, localized paths, or repo-specific hooks, preserve those local modifications. Never clobber local script customizations.
 
 ### Boundary 4: Memory & Plans Protection (TOTAL ISOLATION)
-- **Rule:** NEVER modify, sync, mirror, or touch `.ai-memory/memory/`, `.ai-memory/plans/`, `.ai-memory/temp-agents/`, `.ai-memory/cicd-issues/`, or `.ai-memory/ambiguous-questions/` in target repositories.
+- **Rule:** NEVER modify, sync, mirror, or touch `.ai-memory/learned/`, `.ai-memory/plans/`, `.ai-memory/temp-agents/`, `.ai-memory/rca/resolved/`, or `.ai-memory/ambiguity/` in target repositories.
 - **Rationale:** Target repositories maintain their own operational logs, completed plans, active execution tasks, and debugging memories. Central synchronization must never overwrite target operational memory.
 
 ### Boundary 5: Zero Secrets Leakage (STRICT PURGE)
@@ -152,7 +152,7 @@ SYNCHRONIZATION WORKFLOW PER TARGET REPOSITORY:
 - **R3 Evidence or It Did Not Happen:** Every `DONE`, `PASS`, or "verified" claim MUST cite a concrete file path, git diffstat, or command exit code (`exit 0`). Vague verbal assurances are treated as hallucinations and auto-rejected.
 - **R4 Never Invent Commands, Flags, or Paths:** Before calling any script or command, verify it exists. If a tool is missing, use the documented fallback and log it in the ledger.
 - **R5 Mandatory Subagents (`invoke_subagent`):** Spawning subagents is an **ABSOLUTE MUST** when `invoke_subagent` exists. Use `TypeName: "research"` for discovery and `TypeName: "self"` for execution. Solo execution is an auto-reject failure.
-- **R6 One Owner Per File (Disjoint Bounding Boxes):** Within every worker wave, each file has exactly one owner. Shared indexes (`01-prompts/readme.md`, `.ai-memory/prompts.md`, `.ai-memory/plans/readme.md`) belong exclusively to the lead orchestrator.
+- **R6 One Owner Per File (Disjoint Bounding Boxes):** Within every worker wave, each file has exactly one owner. Shared indexes (`01-prompts/readme.md`, `01-prompts/README.md`, `.ai-memory/plans/readme.md`) belong exclusively to the lead orchestrator.
 - **R7 Git Safety & Isolation:** Subagents are strictly banned from running `git add`, `git commit`, `git push`, or modifying git state in shared workspaces. Only the lead orchestrator executes git commands.
 - **R8 Stage by Explicit Path (BAN on `git add -A`):** Staging MUST be performed using `git add -- <paths from ledger stage list>` or atomic GitMap commands. NEVER run `git add -A`, `git add --all`, or `git add .`.
 - **R9 One Atomic Commit at Turn End:** Accumulate all verified changes and commit once at the final step using hyphen format (`gitmap cpf "<module> - <summary>"` / `gitmap cpb "<module> - <summary>"`). TOTAL BAN on colons inside GitMap message arguments.
@@ -162,7 +162,7 @@ SYNCHRONIZATION WORKFLOW PER TARGET REPOSITORY:
 - **R13 Two-Strike Retry Cap & Anti-Looping:** Failing the same tool call or operation twice requires changing the approach. A subtask that fails two consecutive rounds is marked `FAILED` with an RCA.
 - **R14 100% Ambiguity & Decision Boundaries:**
   - *Non-Blocking Ambiguity:* Choose the most conservative option adhering to guidelines, record it in the ledger under `Assumptions:`, and proceed immediately.
-  - *Blocking Ambiguity:* Use `ask_question` once, log in `.ai-memory/ambiguous-questions/`, and continue working on unblocked tasks.
+  - *Blocking Ambiguity:* Use `ask_question` once, log in `.ai-memory/ambiguity/`, and continue working on unblocked tasks.
 - **R15 Zero Generated Artifacts Committed:** Never commit build caches, logs, temp scripts, or newly generated binaries unless the repository already tracked them.
 - **R16 Repo Secrets & Credentials Mandate:** Zero secrets in standard repositories. Offload credentials to `repo-secrets` in the default work directory via `gitmap rs`.
 
@@ -265,7 +265,7 @@ Proceeding directly to Preflight & Phase 1B Discovery (Active Tool Call Running 
 2. **Release Ceremony per Target Repository (if applicable):**
    - If full release ceremony is enabled: create post-change release branch (`release/v<next>`), create tag (`v<next>`), push to origin, merge back to base branch with `[skip ci]`, and push.
 3. **Update Central Registers:**
-   - Update `01-prompts/readme.md`, `.ai-memory/prompts.md`, and `.ai-memory/plans/readme.md`.
+   - Update `01-prompts/readme.md`, `01-prompts/README.md`, and `.ai-memory/plans/readme.md`.
 4. **Final Atomic Commit in Source Repo:**
    - Call `gitmap cpc "SYNC - synchronize prompts skills and guidelines to connected repositories"`.
    - Use hyphen `-` format (no colons in GitMap message argument).
@@ -290,7 +290,7 @@ You are Worker <NN> for task nn-<slug>. You have no prior chat context; this bri
 1. Spec 21 Exclusion: NEVER sync or touch 02-spec/21-*.
 2. Bump Script Protection: NEVER overwrite version bump scripts (bump-version.mjs, bump_versions.py, 37-bump-version.py, version.json).
 3. Additive-Only AI Scripts: Copy new scripts; diff and preserve existing modified scripts.
-4. Memory & Plans Protection: NEVER touch .ai-memory/memory/ or .ai-memory/plans/ in target repos.
+4. Memory & Plans Protection: NEVER touch .ai-memory/learned/ or .ai-memory/plans/ in target repos.
 5. Zero Secrets Leakage: NEVER sync .env or credentials.
 
 ### Assigned Subtasks:
@@ -374,7 +374,7 @@ Run on changed files/folders only:
 - [ ] BOUNDARY 1 (SPEC 21 EXCLUSION): Verified `02-spec/21-*` directories were NEVER touched, synced, or overwritten in target repositories.
 - [ ] BOUNDARY 2 (BUMP SCRIPT PROTECTION): Verified version bumping scripts (`bump-version.mjs`, `bump_versions.py`, `37-bump-version.py`, `version.json`) in target repos were NEVER overwritten.
 - [ ] BOUNDARY 3 (ADDITIVE-ONLY AI SCRIPTS): Verified new AI scripts were added cleanly, and existing customized scripts were diffed and preserved, never overwritten blindly.
-- [ ] BOUNDARY 4 (MEMORY & PLANS SAFE): Verified `.ai-memory/memory/` and `.ai-memory/plans/` in target repositories were never modified or overwritten.
+- [ ] BOUNDARY 4 (MEMORY & PLANS SAFE): Verified `.ai-memory/learned/` and `.ai-memory/plans/` in target repositories were never modified or overwritten.
 - [ ] BOUNDARY 5 (ZERO SECRETS LEAKAGE): Verified no `.env` or credential files were synchronized across repositories.
 - [ ] MANDATORY SUBAGENT SPAWNING GATE: Verified `invoke_subagent` (`A = 2, H = 2`) was explicitly called in Phase 1 and Phase 2. Zero solo execution allowed.
 - [ ] NO SUBAGENT FILE WRITE COLLISIONS: Never assign two subagents to create or modify the same file path simultaneously.
@@ -407,7 +407,7 @@ Run on changed files/folders only:
 - [ ] Echo Back the Spec: Verified Acceptance Criteria from the Spec file verbatim.
 - [ ] Pre-Commit Diff Proof: Verified `git status` shows actual modified files before committing.
 - [ ] No Placeholder Search: Confirmed zero `TODO` or `\[.*\]` placeholders remain in modified files.
-- [ ] Index Sync Deadman Switch: Registered `24-sync/` in `01-prompts/readme.md` and `.ai-memory/prompts.md`.
+- [ ] Index Sync Deadman Switch: Registered `24-sync/` in `01-prompts/readme.md` and `01-prompts/README.md`.
 - [ ] Blast Radius Acknowledgment: Global search across codebase performed via `gitmap aum search "<symbol>" [dir]`.
 - [ ] Final Step Commit & Push Verified: Staged and committed all changes atomically via GitMap using hyphen format (`gitmap cpf "<module> - <summary>"`).
 
@@ -422,4 +422,4 @@ Run on changed files/folders only:
 
 ## MUST FOLLOW NON-NEGOTIABLE
 
-Listen, past runs of these turns have been sloppy and stupid as fuck: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase readme.md files left uncorrected, `.ai-memory/memory/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. WTF. How on earth are you reverting to this carelessness, are you stupid?? Stop doing that, you stupid fuck. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job. Violating this is auto-reject on the same tier as RULE 0. Avoid stupidity and being careless, you stupid fuck. Where is your attention, are you stupid? Tell me. Your stupidity is going on top of my head. Where did you learn this stupidity? If I could find you, I could slap you.
+Listen, past runs of these turns have been sloppy and stupid as fuck: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase readme.md files left uncorrected, `.ai-memory/learned/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. WTF. How on earth are you reverting to this carelessness, are you stupid?? Stop doing that, you stupid fuck. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job. Violating this is auto-reject on the same tier as RULE 0. Avoid stupidity and being careless, you stupid fuck. Where is your attention, are you stupid? Tell me. Your stupidity is going on top of my head. Where did you learn this stupidity? If I could find you, I could slap you.

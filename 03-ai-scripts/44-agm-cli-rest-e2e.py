@@ -74,7 +74,7 @@ def run_agm_cli(args: list[str]) -> dict:
     """Execute agm CLI command with --json flag and parse output."""
     full_cmd = list(AGM_CMD) + args + ["--json"]
     cwd = "src-tauri" if "cargo" in full_cmd[0] else "."
-    
+
     # Run command
     proc = subprocess.run(
         full_cmd,
@@ -84,7 +84,7 @@ def run_agm_cli(args: list[str]) -> dict:
         cwd=cwd,
         shell=False
     )
-    
+
     stdout = proc.stdout.strip()
     if not stdout:
         return {
@@ -94,7 +94,7 @@ def run_agm_cli(args: list[str]) -> dict:
             "stderr": proc.stderr,
             "data": None
         }
-        
+
     try:
         return json.loads(stdout)
     except json.JSONDecodeError:
@@ -135,7 +135,7 @@ def call_rest_api(path: str, method: str = "GET", body: dict = None) -> dict:
 def scan_protected_ide_pids() -> set[int]:
     """Scan and record protected IDE PIDs that must NEVER be touched."""
     protected_pids = set()
-    
+
     # 1. Capture bound instance PIDs from AGM
     try:
         res = run_agm_cli(["instances", "list"])
@@ -194,14 +194,14 @@ def run_test_case_1(protected_pids: set[int]) -> bool:
     print("\n" + "="*70)
     print("▶ Running Test Case 1: Instance Creation & Sandbox Isolation")
     print("="*70)
-    
+
     # 1. Clean up any previous test instance if lingering
     run_agm_cli(["instances", "delete", "-i", TEST_INSTANCE_ID, "--purge-storage", "--yes"])
-    
+
     # 2. Record initial state of %USERPROFILE%\.gemini
     user_gemini = Path.home() / ".gemini"
     gemini_mtime_before = user_gemini.stat().st_mtime if user_gemini.exists() else None
-    
+
     # 3. Create instance via CLI
     print(f"[*] Creating instance '{TEST_INSTANCE_ID}'...")
     res = run_agm_cli(["instances", "create", TEST_INSTANCE_ID])
@@ -209,28 +209,28 @@ def run_test_case_1(protected_pids: set[int]) -> bool:
     if not res.get("success"):
         print(f"[FAIL] Instance creation failed: {res}")
         return False
-    
+
     data = res.get("data", {})
     inst_id = data.get("id") or TEST_INSTANCE_ID
     data_dir = data.get("data_dir")
     print(f"[+] Instance created: id={inst_id}, data_dir={data_dir}")
-    
+
     # 4. Start instance with repo
     print(f"[*] Starting instance '{TEST_INSTANCE_ID}' on repo '{SCRATCH_DIR}'...")
     res_start = run_agm_cli(["instances", "start", "-i", TEST_INSTANCE_ID, "--repo", str(SCRATCH_DIR)])
     print(f"[*] Start result: success={res_start.get('success')}")
-    
+
     # 5. Query status
     res_status = run_agm_cli(["instances", "status", "-i", TEST_INSTANCE_ID])
     print(f"[*] Status result: success={res_status.get('success')}, status={res_status.get('data', {}).get('status')}")
-    
+
     # 6. Verify global %USERPROFILE%\.gemini remained untouched
     if user_gemini.exists() and gemini_mtime_before is not None:
         gemini_mtime_after = user_gemini.stat().st_mtime
         if gemini_mtime_after != gemini_mtime_before:
             print("[FAIL] Global %USERPROFILE%\\.gemini was modified by instance launch!")
             return False
-            
+
     print("[PASS] Test Case 1 passed: Instance created with verified isolation.")
     return True
 
@@ -239,7 +239,7 @@ def run_test_case_2() -> bool:
     print("\n" + "="*70)
     print("▶ Running Test Case 2: Prompt Dispatch & Running Detection")
     print("="*70)
-    
+
     test_prompt = "E2E144-TEST2-DISPATCH"
     print(f"[*] Dispatching prompt '{test_prompt}' to instance '{TEST_INSTANCE_ID}'...")
     res_send = run_agm_cli([
@@ -252,17 +252,17 @@ def run_test_case_2() -> bool:
     if not res_send.get("success"):
         print(f"[FAIL] Prompt dispatch failed: {res_send}")
         return False
-        
+
     # Query running prompts via CLI
     print(f"[*] Querying running prompts via CLI...")
     res_running_cli = run_agm_cli(["prompts", "running", "-i", TEST_INSTANCE_ID])
     print(f"[*] CLI running prompts: success={res_running_cli.get('success')}, data={res_running_cli.get('data')}")
-    
+
     # Query running prompts via REST (if daemon accessible)
     print(f"[*] Querying running prompts via REST...")
     res_running_rest = call_rest_api(f"/prompts/running?instanceId={TEST_INSTANCE_ID}")
     print(f"[*] REST running prompts: {res_running_rest}")
-    
+
     print("[PASS] Test Case 2 passed: Prompt dispatched and lifecycle queried.")
     return True
 
@@ -271,12 +271,12 @@ def run_test_case_3() -> bool:
     print("\n" + "="*70)
     print("▶ Running Test Case 3: Account Switching Continuity")
     print("="*70)
-    
+
     # 1. Snapshot current prompt state
     print(f"[*] Backing up prompts for instance '{TEST_INSTANCE_ID}'...")
     res_backup = run_agm_cli(["prompts", "backup", "-i", TEST_INSTANCE_ID])
     print(f"[*] Backup result: success={res_backup.get('success')}")
-    
+
     # 2. Perform account switch
     print(f"[*] Switching account to '{TEST_ACCOUNT_ID}'...")
     res_switch = run_agm_cli([
@@ -285,7 +285,7 @@ def run_test_case_3() -> bool:
         "--account", TEST_ACCOUNT_ID
     ])
     print(f"[*] Switch result: success={res_switch.get('success')}")
-    
+
     # 3. Verify resume hand-off file
     resume_file = SCRATCH_DIR / ".antigravity_resume_task.json"
     if not resume_file.exists():
@@ -298,12 +298,12 @@ def run_test_case_3() -> bool:
                 print(f"[+] Resume file contents: {resume_data}")
         except Exception as e:
             print(f"[WARN] Reading resume file: {e}")
-            
+
     # 4. Restore prompt state
     print(f"[*] Restoring prompts for instance '{TEST_INSTANCE_ID}'...")
     res_restore = run_agm_cli(["prompts", "restore", "-i", TEST_INSTANCE_ID])
     print(f"[*] Restore result: success={res_restore.get('success')}")
-    
+
     print("[PASS] Test Case 3 passed: Account switching continuity verified.")
     return True
 
@@ -312,7 +312,7 @@ def run_test_case_4() -> bool:
     print("\n" + "="*70)
     print("▶ Running Test Case 4: Compact Tree View Grouping")
     print("="*70)
-    
+
     repeated_prompt = "Check memory leaks and run audit"
     print(f"[*] Sending 3 identical prompts: '{repeated_prompt}'...")
     for idx in range(3):
@@ -324,15 +324,15 @@ def run_test_case_4() -> bool:
         ])
         print(f"    - Dispatch {idx+1}/3: success={res.get('success')}")
         time.sleep(0.05)
-        
+
     # Retrieve prompt tree
     print(f"[*] Fetching prompt tree for instance '{TEST_INSTANCE_ID}'...")
     res_tree = run_agm_cli(["prompts", "tree", "-i", TEST_INSTANCE_ID])
     print(f"[*] Tree result: success={res_tree.get('success')}")
-    
+
     tree_data = res_tree.get("data", [])
     print(f"[+] Tree nodes returned: {len(tree_data) if isinstance(tree_data, list) else tree_data}")
-    
+
     print("[PASS] Test Case 4 passed: Compact tree view queried successfully.")
     return True
 
@@ -341,32 +341,32 @@ def run_test_case_5() -> bool:
     print("\n" + "="*70)
     print("▶ Running Test Case 5: CLI & REST Parity Comparison")
     print("="*70)
-    
+
     # 1. Compare instances list
     print(f"[*] Querying instances via CLI...")
     cli_inst = run_agm_cli(["instances", "list"])
     print(f"    CLI success={cli_inst.get('success')}")
-    
+
     print(f"[*] Querying instances via REST...")
     rest_inst = call_rest_api("/instances")
     print(f"    REST success={rest_inst.get('success')}")
-    
+
     # Parity comparison: verify data structure
     cli_data = cli_inst.get("data")
     rest_data = rest_inst.get("data")
     print(f"[+] CLI instances count: {len(cli_data) if isinstance(cli_data, list) else 'N/A'}")
     print(f"[+] REST instances count: {len(rest_data) if isinstance(rest_data, list) else 'N/A'}")
-    
+
     # 2. Compare prompt tree
     print(f"[*] Querying prompt tree via CLI...")
     cli_tree = run_agm_cli(["prompts", "tree", "-i", TEST_INSTANCE_ID])
-    
+
     print(f"[*] Querying prompt tree via REST...")
     rest_tree = call_rest_api(f"/prompts/tree?instanceId={TEST_INSTANCE_ID}")
-    
+
     print(f"    CLI tree success={cli_tree.get('success')}")
     print(f"    REST tree success={rest_tree.get('success')}")
-    
+
     print("[PASS] Test Case 5 passed: CLI and REST interfaces validated for parity.")
     return True
 
@@ -375,17 +375,17 @@ def teardown_test_environment(initial_protected_pids: set[int]) -> bool:
     print("\n" + "="*70)
     print("▶ Step 7: Teardown & Protected PID Verification")
     print("="*70)
-    
+
     # 1. Stop instance
     print(f"[*] Stopping instance '{TEST_INSTANCE_ID}'...")
     res_stop = run_agm_cli(["instances", "stop", "-i", TEST_INSTANCE_ID])
     print(f"    Stop result: success={res_stop.get('success')}")
-    
+
     # 2. Delete instance
     print(f"[*] Deleting instance '{TEST_INSTANCE_ID}'...")
     res_del = run_agm_cli(["instances", "delete", "-i", TEST_INSTANCE_ID, "--purge-storage", "--yes"])
     print(f"    Delete result: success={res_del.get('success')}")
-    
+
     # 3. Clean scratch repo resume task if present
     resume_file = SCRATCH_DIR / ".antigravity_resume_task.json"
     if resume_file.exists():
@@ -394,14 +394,14 @@ def teardown_test_environment(initial_protected_pids: set[int]) -> bool:
             print(f"[+] Cleaned up temporary resume file: {resume_file}")
         except Exception as e:
             print(f"[WARN] Failed to unlink resume file: {e}")
-            
+
     # 4. Final Safety Gate Audit: verify all protected PIDs
     print(f"[*] Verifying protected IDE PIDs ({len(initial_protected_pids)} tracked)...")
     intact = verify_protected_pids_intact(initial_protected_pids)
     if not intact:
         print("[CRITICAL FAIL] One or more protected IDE processes were terminated!")
         return False
-        
+
     print(f"[PASS] All {len(initial_protected_pids)} protected IDE processes remain active and unaffected.")
     return True
 
@@ -414,14 +414,14 @@ def main():
     print("  AGM CLI 46-Command & Secure REST Parity E2E Verification Suite")
     print("  Document: 04-secure-bearer-rest-endpoints-and-e2e-testing.md")
     print("="*70)
-    
+
     # Step 1: Pre-flight Verification & Safety Gate
     print("\n▶ Step 1: Pre-flight Verification & Safety Gate")
     protected_pids = scan_protected_ide_pids()
     print(f"[SAFETY] Protected IDE PIDs identified: {sorted(list(protected_pids))}")
     if not protected_pids:
         print("[INFO] No external IDE instances detected running.")
-        
+
     # Setup test repository
     SCRATCH_DIR.mkdir(parents=True, exist_ok=True)
     git_dir = SCRATCH_DIR / ".git"
@@ -431,24 +431,24 @@ def main():
         else:
             git_dir.unlink()
     print(f"[+] Verified scratch repository at '{SCRATCH_DIR}' without .git folder.")
-    
+
     results = {}
     try:
         # Step 2: Test Case 1
         results["TC1_Instance_Creation_Isolation"] = run_test_case_1(protected_pids)
-        
+
         # Step 3: Test Case 2
         results["TC2_Prompt_Dispatch_Running"] = run_test_case_2()
-        
+
         # Step 4: Test Case 3
         results["TC3_Account_Switch_Continuity"] = run_test_case_3()
-        
+
         # Step 5: Test Case 4
         results["TC4_Compact_Tree_Grouping"] = run_test_case_4()
-        
+
         # Step 6: Test Case 5
         results["TC5_CLI_REST_Parity"] = run_test_case_5()
-        
+
     finally:
         # Step 7: Teardown & Protected PID Verification
         results["Step7_Teardown_Safety_Gate"] = teardown_test_environment(protected_pids)
@@ -462,7 +462,7 @@ def main():
         print(f"  - {tc:<35}: [{status_str}]")
         if not passed:
             all_passed = False
-            
+
     print("="*70)
     if all_passed:
         print("🎉 ALL 5 TEST CASES AND SAFETY AUDIT PASSED WITH 100% SUCCESS!")

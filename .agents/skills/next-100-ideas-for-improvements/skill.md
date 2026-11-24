@@ -11,13 +11,13 @@ description: "Autonomously survey, discover, architect, and catalog the next 100
 > **[/plan](slashCommand;plan)** Plan first before doing work for improved work or less friction, faster work and more pure and effective work.
 > **[/learn](slashCommand;learn)** Enforce the Review-First Gate (zero immediate code edits, NO-BUILD, NO-TEST during ideation discovery), GitMap search primacy, strict relative Git paths, and lowercase naming conventions.
 
-**Version:** 1.0.0  
-**Updated:** 2026-10-22  
-**Status:** Active  
-**AI Confidence:** Production-Ready  
-**Canonical Prompt:** `01-prompts/30-improvements/05-next-100-ideas-for-improvements.md`  
-**Application Specification:** `02-spec/21-app/04-next-100-ideas-for-improvements/`  
-**Execution Engine:** V6 Tree Swarm Hierarchy ($N = 400$, $A = 3$, $H = 2$, Capacity = 6)  
+**Version:** 1.0.0
+**Updated:** 2026-10-22
+**Status:** Active
+**AI Confidence:** Production-Ready
+**Canonical Prompt:** `01-prompts/30-improvements/05-next-100-ideas-for-improvements.md`
+**Application Specification:** `02-spec/21-app/04-next-100-ideas-for-improvements/`
+**Execution Engine:** V6 Tree Swarm Hierarchy ($N = 400$, $A = 3$, $H = 2$, Capacity = 6)
 **Related Skills:**
 - [`next-detail-out-100-improvements`](file;.agents/skills/next-detail-out-100-improvements)
 - [`next-100-code-improvements`](file;.agents/skills/next-100-code-improvements)

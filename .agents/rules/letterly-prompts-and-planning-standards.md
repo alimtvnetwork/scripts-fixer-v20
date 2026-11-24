@@ -19,7 +19,7 @@
 
 ## 4. Ambiguity Protocol & Autonomous Continuation
 - When questions or missing details arise during planning, never block execution or ask the user questions in chat (unless explicitly instructed "Ask me the question").
-- Always record ambiguities to `.ai-memory/ambiguous-questions/01-new-ambiguity/XX-<slug>-ambiguity.md` and continue planning autonomously.
+- Always record ambiguities to `.ai-memory/ambiguity/new/XX-<slug>-ambiguity.md` and continue planning autonomously.
 
 ## 5. File & Path Conventions
 - Strictly relative Git paths only (`02-spec/...`, `.ai-memory/...`, `cmd/...`). TOTAL BAN on Windows drive letters or `file:///` URIs.

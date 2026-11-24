@@ -273,4 +273,3 @@ When invoked on a `nil` pointer, methods return safe, predictable defaults:
    - Core types (`Wrap[T]`, `Result[T]`, `ResultSlice[T]`, `ResultMap[K, V]`, verifier and inspector interfaces) are defined in `types.go` as single canonical types. Implementation files contain only functions, constructors, and methods.
 
 ---
-

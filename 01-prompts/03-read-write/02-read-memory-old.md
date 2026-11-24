@@ -5,7 +5,7 @@
 
 [/goal](slashCommand;goal) Load the project's identity, specifications, conventions, active plans, and recent Root Cause Analysis (RCA) records into your context before starting any task. Never repeat a logged past failure.
 
-[/learn](slashCommand;learn) Ingest and internalize all past learnings, user corrections, patterns, coding rules, error philosophies, RCA logs, and project specifications from `.ai-memory/memory/learned/`, `.ai-memory/memory/`, `.ai-memory/issues/`, `.ai-memory/cicd-issues/`, and `.ai-memory/strictly-avoid.md` so Antigravity operates with zero hallucination.
+[/learn](slashCommand;learn) Ingest and internalize all past learnings, user corrections, patterns, coding rules, error philosophies, RCA logs, and project specifications from `.ai-memory/learned/`, `.ai-memory/learned/`, `.ai-memory/rca/resolved/`, `.ai-memory/rca/resolved/`, and `.ai-memory/strictly-avoid.md` so Antigravity operates with zero hallucination.
 
 The specs, `.ai-memory/` folder, `what-to-read.md`, root `readme.md`, and the codebase as a whole are the single source of truth. Your training data is not. If the two disagree, the repo wins, every time.
 
@@ -15,9 +15,9 @@ Autonomously self-loop and read:
 - [/learn](slashCommand;learn) the root `readme.md` to create memory.
 - [/learn](slashCommand;learn) the entire `.ai-memory/` folder (especially `what-to-read.md`, `.ai-memory/coding-guidelines.md` and all files they reference) to create memory.
 - [/learn](slashCommand;learn) every single folder, subfolder, and nested markdown file in the `02-spec/` directory (specifically `02-spec/02-coding-guidelines/`, `02-02-spec/03-error-manage/`, enum fixes, database conventions) to create memory.
-- [/learn](slashCommand;learn) all recent Root Cause Analysis (RCA) records, retrospectives, and past failure post-mortems in `.ai-memory/issues/01-<slug>.md`, `.ai-memory/cicd-issues/01-<slug>.md`, and `02-spec/03-error-manage/01-error-resolution/03-retrospectives/` to ensure past mistakes are never repeated.
+- [/learn](slashCommand;learn) all recent Root Cause Analysis (RCA) records, retrospectives, and past failure post-mortems in `.ai-memory/rca/resolved/01-<slug>.md`, `.ai-memory/rca/resolved/01-<slug>.md`, and `02-spec/03-error-manage/01-error-resolution/03-retrospectives/` to ensure past mistakes are never repeated.
 - [/learn](slashCommand;learn) all hard prohibitions in `.ai-memory/strictly-avoid.md`.
-- Read every pending task across `.ai-memory/plans/pending/01-<slug>.md`, `.ai-memory/plans/subtasks/01-<slug>/01-<subslug>.md`, `.ai-memory/issues/`, and `.ai-memory/cicd-issues/`, listing them out in full.
+- Read every pending task across `.ai-memory/plans/pending/01-<slug>.md`, `.ai-memory/plans/subtasks/01-<slug>/01-<subslug>.md`, `.ai-memory/rca/resolved/`, and `.ai-memory/rca/resolved/`, listing them out in full.
 
 Note on spec folder naming: Spec folders follow the hyphenated pattern `02-spec/<NN>-<slug>/` where `<NN>` is a sequence prefix and `<slug>` is the descriptive name. These numbers and folder placements are not rigidly fixed and may switch or be reorganized between projects. This canonical layout represents the general architecture the AI must dynamically discover, inspect, and read in full.
 
@@ -41,7 +41,7 @@ If you cannot do that, keep reading. Do not start work.
 > **READ-ONLY MANDATE (TOTAL BAN ON REPOSITORY WRITES):**
 > - The reading phase is strictly, 100% read-only for the repository workspace.
 > - **NEVER** modify, create, rename, or delete any files or directories inside the repository during this workflow.
-> - **NEVER** write or update memory files (e.g. `.ai-memory/memory/`, `.ai-memory/memory/learned/`, `.ai-memory/readme.md`).
+> - **NEVER** write or update memory files (e.g. `.ai-memory/learned/`, `.ai-memory/learned/`, `.ai-memory/readme.md`).
 > - **NEVER** auto-generate or write skills/rules (`.agents/skills/`, `.agents/rules/`).
 > - **NEVER** modify `readme.md`, `version.json`, or any repository configurations.
 > - **NEVER** execute `git add`, `git commit`, `git push`, or modify git working tree state during reading.
@@ -117,7 +117,7 @@ The `.ai-memory/` folder, specs, and entire codebase can be massive. To process 
 3. Anti-hallucination and clarifying questions:
    - Scan internal markdown references across `.ai-memory/` and `02-spec/`.
    - If a referenced spec or issue file is missing on disk, or if requirements are ambiguous, the AI MUST NOT guess or assume.
-   - It must automatically log an open question in `.ai-memory/ambiguous-questions/01-new-ambiguity/01-<slug>.md` or ask the user directly to ensure alignment.
+   - It must automatically log an open question in `.ai-memory/ambiguity/new/01-<slug>.md` or ask the user directly to ensure alignment.
 
 4. Active schema and API contract mapping:
    - Ingest and maintain an in-memory map of active DB tables/schemas (`02-02-spec/04-database-conventions/`, `02-02-spec/23-app-db/`), API endpoints, and global state stores so downstream tasks have zero assumptions on field names or parameter shapes.
@@ -135,7 +135,7 @@ The `.ai-memory/` folder, specs, and entire codebase can be massive. To process 
 
 8. Memory persistence deferred (Zero repository writes during reading):
    - You are STRICTLY FORBIDDEN from writing to `.ai-memory/` or the repository during the reading workflow.
-   - Do NOT write summaries into `.ai-memory/memory/learned/` or update `.ai-memory/readme.md`.
+   - Do NOT write summaries into `.ai-memory/learned/` or update `.ai-memory/readme.md`.
    - Do NOT update `.ai-memory/what-to-read.md` or `.ai-memory/plans/`.
    - Ingest knowledge into memory context and internal state only.
    - If sub-agents need to communicate or record scratch notes during reading, write exclusively to the user temp directory: `%TEMP%/<repo-name>/` (or `$TEMP/<repo-name>/`).
@@ -156,18 +156,18 @@ The `.ai-memory/` folder, specs, and entire codebase can be massive. To process 
 To guarantee institutional memory and prevent regressions across all workflows (Plan Mode, CI/CD Fix, Coding Guidelines Audit, and Execution), all Root Cause Analyses (RCAs) follow strict canonical paths, file naming formats, and anti-hallucination guardrails:
 
 1. General Issue / Bug RCAs:
-   - Path: `.ai-memory/issues/01-<slug>.md` (sequenced as `01-`, `02-`, etc.)
+   - Path: `.ai-memory/rca/resolved/01-<slug>.md` (sequenced as `01-`, `02-`, etc.)
    - Index: Registered in `.ai-memory/readme.md` (or `.ai-memory/plans/readme.md`)
    - Mandatory Structure: Error description, exact file/line location, Root Cause Analysis (one-sentence root cause + deep analysis), fix strategy, and prevention checklist.
 
 2. CI/CD Failure RCAs:
-   - Path: `.ai-memory/cicd-issues/01-<slug>.md` (sequenced as `01-`, `02-`, etc.)
-   - Index: Registered in `.ai-memory/cicd-index.md` (or `.ai-memory/cicd-index.md`)
+   - Path: `.ai-memory/rca/resolved/01-<slug>.md` (sequenced as `01-`, `02-`, etc.)
+   - Index: Registered in `.ai-memory/rca/README.md` (or `.ai-memory/rca/README.md`)
    - Mandatory Structure: Raw pipeline error snippet, Root Cause Analysis, resolution applied, and "What NOT to Repeat" rules.
 
 3. Retrospectives & Architectural Failure Learnings:
-   - Path: `.ai-memory/memory/learned/01-<slug>.md` and `02-spec/03-error-manage/01-error-resolution/03-retrospectives/01-<slug>.md`
-   - Index: Registered in `.ai-memory/memory/readme.md`
+   - Path: `.ai-memory/learned/01-<slug>.md` and `02-spec/03-error-manage/01-error-resolution/03-retrospectives/01-<slug>.md`
+   - Index: Registered in `.ai-memory/learned/readme.md`
 
 4. Hard Avoidances / CODE RED Prohibitions:
    - Path: `.ai-memory/strictly-avoid.md`
@@ -178,7 +178,7 @@ To guarantee institutional memory and prevent regressions across all workflows (
    - Context Requirement: Must cite previous relevant RCAs and failure records so the new plan explicitly avoids repeating past errors.
 
 6. Anti-Hallucination Guard for RCAs:
-   - If an RCA file, referenced spec, or issue file is missing on disk, the AI MUST NOT guess or assume its contents. Stop and file an open ambiguity in `.ai-memory/ambiguous-questions/01-new-ambiguity/01-<slug>.md` or ask the user directly before proceeding.
+   - If an RCA file, referenced spec, or issue file is missing on disk, the AI MUST NOT guess or assume its contents. Stop and file an open ambiguity in `.ai-memory/ambiguity/new/01-<slug>.md` or ask the user directly before proceeding.
 
 ---
 
@@ -198,7 +198,7 @@ Walk `.ai-memory/` recursively. Every file matters. Missing files are noted, not
 
 > [!IMPORTANT]
 > **MANDATORY `.ai-memory/*.md` FLAGGING & AUDIT RULE:**
-> Every single `.md` file discovered directly in `.ai-memory/` (e.g. `.ai-memory/folder-structure.md`, `.ai-memory/prompts.md`, `.ai-memory/strictly-avoid.md`, `version.json`) or inside any nested subdirectory MUST be actively read, cataloged, and flagged in the memory log. If an unindexed or orphan markdown file is found, immediately raise a flag in the context log and register it into `.ai-memory/memory/readme.md` or `.ai-memory/plans/readme.md`.
+> Every single `.md` file discovered directly in `.ai-memory/` (e.g. `.ai-memory/folder-structure.md`, `01-prompts/README.md`, `.ai-memory/strictly-avoid.md`, `version.json`) or inside any nested subdirectory MUST be actively read, cataloged, and flagged in the memory log. If an unindexed or orphan markdown file is found, immediately raise a flag in the context log and register it into `.ai-memory/learned/readme.md` or `.ai-memory/plans/readme.md`.
 
 | #   | Path                                                  | What you get                                                                                                                                |
 | --- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -207,17 +207,17 @@ Walk `.ai-memory/` recursively. Every file matters. Missing files are noted, not
 | 3   | `.ai-memory/strictly-avoid.md`                          | Hard prohibitions (CODE RED) — append-only, never truncate.                                                                               |
 | 4   | `.ai-memory/coding-guidelines.md`     | Master single source of truth for cross-language coding guidelines, `Result[T]` envelopes, and `is`/`has` booleans.                       |
 | 5   | `03-ai-scripts/`                            | Automated Python scripts (`01-file-manipulator.py`, `02-guideline-autofixer.py`, `03-cicd-local-runner.py`, `index.md`).                 |
-| 6   | `.ai-memory/prompts.md` + `01-prompts/`           | Canonical prompt index and mirrored execution prompts (`cg-execute/`, `execute/`, `ci-cd/`).                                              |
-| 7   | `.ai-memory/memory/readme.md`                         | Master index of institutional knowledge. Then read every file it references recursively.                                                 |
+| 6   | `01-prompts/README.md` + `01-prompts/`           | Canonical prompt index and mirrored execution prompts (`cg-execute/`, `execute/`, `ci-cd/`).                                              |
+| 7   | `.ai-memory/learned/readme.md`                         | Master index of institutional knowledge. Then read every file it references recursively.                                                 |
 | 8   | `.ai-memory/plans/readme.md`                             | Master index of all plans (pending + completed + subtasks). Read this before touching individual plan files.                               |
 | 9   | `.ai-memory/plans/pending/`                             | Active plans, `01-<slug>.md` — read all and list out each pending item.                                                                   |
 | 10  | `.ai-memory/plans/subtasks/`                            | Granular 5–8 file batch files (`batch-01.md`, etc.) linked from parent plans.                                                              |
-| 11  | `.ai-memory/plan.md`                      | Instant recovery state from the most recent run failure.                                                                                   |
+| 11  | `.ai-memory/plans/readme.md`                      | Instant recovery state from the most recent run failure.                                                                                   |
 | 12  | `.ai-memory/plans/completed/`                           | Historical completed plans and execution logs.                                                                                              |
-| 13  | `.ai-memory/issues/`                                    | General bugs and regressions — read and list out pending bugs.                                                                             |
-| 14  | `.ai-memory/cicd-issues/`                               | CI/CD-specific failures — read and list out pending CI/CD issues.                                                                           |
-| 15  | `.ai-memory/ambiguous-questions/01-new-ambiguity/`      | Open questions currently blocking work. Surface them immediately; do NOT guess past them.                                                  |
-| 16  | `.ai-memory/ambiguous-questions/02-ambiguity-resolved/`  | Answered questions with applied solutions. Binding decisions; do not re-litigate.                                                          |
+| 13  | `.ai-memory/rca/resolved/`                                    | General bugs and regressions — read and list out pending bugs.                                                                             |
+| 14  | `.ai-memory/rca/resolved/`                               | CI/CD-specific failures — read and list out pending CI/CD issues.                                                                           |
+| 15  | `.ai-memory/ambiguity/new/`      | Open questions currently blocking work. Surface them immediately; do NOT guess past them.                                                  |
+| 16  | `.ai-memory/ambiguity/resolved/`  | Answered questions with applied solutions. Binding decisions; do not re-litigate.                                                          |
 | 17  | `.agents/skills/`                                     | Progressive disclosure runbooks for Antigravity agents (`<slug>/skill.md`).                                                                |
 | 18  | `.agents/rules/`                                      | Systemic behavioral and coding rules auto-enforced by Antigravity.                                                                         |
 | 19  | `linter-scripts/`                                     | Repository linters (`check-newline-styling.py`, `check-markdown-header-spacing.py`, `check-relative-paths.py`).                            |
@@ -271,7 +271,7 @@ Autonomously survey the codebase structure end-to-end:
 
 Two indexes decide what you read next. Treat them as required entry points, not as summaries:
 
-- `.ai-memory/memory/readme.md` lists every institutional-knowledge file. If it points at 12 files, you read 12 files.
+- `.ai-memory/learned/readme.md` lists every institutional-knowledge file. If it points at 12 files, you read 12 files.
 - `.ai-memory/plans/readme.md` lists every plan (pending, completed, subtasks) with its slug, status, and one-line intent. Use it to pick which plan files to open in full. If it is missing, create it as part of the next code change.
 
 ### 1.6 Self-Check (Internal, Before Phase 2)
@@ -358,29 +358,29 @@ Fallbacks when the canonical numbered folder is absent: `.ai-memory/coding-guide
 ```
 New info discovered
 ├─ Institutional knowledge (pattern / convention / decision)?
-│   YES → .ai-memory/memory/01-<slug>.md  +  update .ai-memory/memory/readme.md
+│   YES → .ai-memory/learned/01-<slug>.md  +  update .ai-memory/learned/readme.md
 ├─ Must never happen again?
 │   YES → .ai-memory/strictly-avoid.md
 ├─ Idea, not yet approved?
-│   YES → .ai-memory/suggestions.md
+│   YES → .ai-memory/plans/suggestions/01-legacy-suggestions.md
 ├─ New user command / convention?
 │   YES → .ai-memory/spec/commands/01-<slug>.md
 ├─ Bug / regression?
-│   YES → .ai-memory/issues/01-<slug>.md   (or .ai-memory/cicd-issues/ if CI/CD)
+│   YES → .ai-memory/rca/resolved/01-<slug>.md   (or .ai-memory/rca/resolved/ if CI/CD)
 ├─ New or changed plan?
 │   YES → .ai-memory/plans/pending/01-<slug>.md  +  update .ai-memory/plans/readme.md
 ├─ Ambiguity / unclear requirement blocking progress?
-│   YES → .ai-memory/ambiguous-questions/01-new-ambiguity/01-<slug>.md
+│   YES → .ai-memory/ambiguity/new/01-<slug>.md
 ├─ User just answered a previously-open ambiguity?
-│   YES → mv the file to .ai-memory/ambiguous-questions/02-ambiguity-resolved/01-<slug>.md,
+│   YES → mv the file to .ai-memory/ambiguity/resolved/01-<slug>.md,
 │         append `## Resolution` (answer + applied solution), flip Status: resolved
 └─ None of the above → do not persist.
 ```
 
 Hard rules:
 
-- Folder is `.ai-memory/memory/`, never `memories/`.
-- Adding a memory file always updates `.ai-memory/memory/readme.md`.
+- Folder is `.ai-memory/learned/`, never `memories/`.
+- Adding a memory file always updates `.ai-memory/learned/readme.md`.
 - Adding, moving, or completing a plan always updates `.ai-memory/plans/readme.md`.
 - Ambiguity folders: `01-new-ambiguity/` for open, `02-ambiguity-resolved/` for answered. On answer, MOVE the file (never copy) so it exists in exactly one place. Every resolved file carries a `## Resolution` section.
 - Never guess past an open ambiguity. If one exists and is relevant to the current task, stop and surface it before doing work.
@@ -400,9 +400,9 @@ Onboarding complete.
 - Consolidated guidelines read: [Y]
 - Spec authoring files read: [Z]
 - Pending plans: [N]  (from .ai-memory/plans/readme.md)
-- CI/CD issues absorbed: [M]  (from .ai-memory/cicd-issues/)
-- Open ambiguities: [K]  (from .ai-memory/ambiguous-questions/01-new-ambiguity/)
-- Resolved ambiguities on file: [R]  (from .ai-memory/ambiguous-questions/02-ambiguity-resolved/)
+- CI/CD issues absorbed: [M]  (from .ai-memory/rca/resolved/)
+- Open ambiguities: [K]  (from .ai-memory/ambiguity/new/)
+- Resolved ambiguities on file: [R]  (from .ai-memory/ambiguity/resolved/)
 
 I understand:
 - CODE RED rules: [top 3-5]
@@ -428,12 +428,12 @@ Then stop. No next-step suggestions, no exploratory questions.
 2. [ ] Confirmed root readme is strictly lowercase `readme.md` (auto-fixed, committed, and pushed if uppercase or missing).
 3. [ ] [/learn](slashCommand;learn) the root `readme.md` file (casing rules, architecture, entry points).
 4. [ ] Walked `.ai-memory/` recursively, no folder or file skipped silently, and flagged all `.ai-memory/*.md` files.
-5. [ ] [/learn](slashCommand;learn) `.ai-memory/memory/readme.md` and every file it points at.
+5. [ ] [/learn](slashCommand;learn) `.ai-memory/learned/readme.md` and every file it points at.
 6. [ ] [/learn](slashCommand;learn) `.ai-memory/plans/readme.md`, every file in `pending/` (sequenced as `01-`, `02-`), and all active subtasks.
 7. [ ] Skimmed `.ai-memory/plans/completed/` for recent history.
 8. [ ] [/learn](slashCommand;learn) every file in `.ai-memory/spec/commands/`.
-9. [ ] [/learn](slashCommand;learn) every file in `.ai-memory/issues/` and `.ai-memory/cicd-issues/`.
-10. [ ] [/learn](slashCommand;learn) every file in `.ai-memory/ambiguous-questions/01-new-ambiguity/` and `02-ambiguity-resolved/`.
+9. [ ] [/learn](slashCommand;learn) every file in `.ai-memory/rca/resolved/` and `.ai-memory/rca/resolved/`.
+10. [ ] [/learn](slashCommand;learn) every file in `.ai-memory/ambiguity/new/` and `02-ambiguity-resolved/`.
 11. [ ] Scanned for broken links or missing docs and surfaced them under open ambiguities.
 12. [ ] Ingested active schema models, DB column conventions, and API route shapes.
 13. [ ] Verified runtime dependencies and package compatibility.
@@ -459,7 +459,7 @@ Then stop. No next-step suggestions, no exploratory questions.
 5. [ ] [/learn](slashCommand;learn) the boolean guidelines in: `02-spec/02-coding-guidelines/01-cross-language/02-boolean-principles/readme.md` and create memory.
 6. [ ] [/learn](slashCommand;learn) the anti-hallucination rules in: `02-spec/02-coding-guidelines/01-cross-language/readme.md` and create memory.
 7. [ ] [/learn](slashCommand;learn) the error management architecture in: `02-spec/03-error-manage/readme.md` (and related error manage files) and create memory.
-8. [ ] [/learn](slashCommand;learn) all recent Root Cause Analysis (RCA) files in `.ai-memory/issues/`, `.ai-memory/cicd-issues/`, and `02-spec/03-error-manage/01-error-resolution/03-retrospectives/` to prevent recurring errors.
+8. [ ] [/learn](slashCommand;learn) all recent Root Cause Analysis (RCA) files in `.ai-memory/rca/resolved/`, `.ai-memory/rca/resolved/`, and `02-spec/03-error-manage/01-error-resolution/03-retrospectives/` to prevent recurring errors.
 9. [ ] [/learn](slashCommand;learn) all hard prohibitions in `.ai-memory/strictly-avoid.md` and verify zero violations.
 10. [ ] [/learn](slashCommand;learn) the enum standards and fixes in: `02-spec/17-consolidated-guidelines/07-enum-standards.md` and `02-spec/17-consolidated-guidelines/07-enum-standards.md` and create memory.
 11. [ ] [/learn](slashCommand;learn) ALL other single-file specs in `02-spec/02-coding-guidelines/` and create memory.
@@ -473,7 +473,7 @@ Then stop. No next-step suggestions, no exploratory questions.
 
 ## MUST FOLLOW NON-NEGOTIABLE
 
-Listen, past runs of these turns have been sloppy and stupid as fuck: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase README files left uncorrected, `.ai-memory/memory/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. WTF. How on earth are you reverting to this carelessness, are you stupid?? Stop doing that, you stupid fuck. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, run builds and full unit tests, group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job. Violating this is auto-reject on the same tier as RULE 0. Avoid stupidity and being careless, you stupid fuck. Where is your attention, are you stupid? Tell me. Your stupidity is going on top of my head. Where did you learn this stupidity? If I could find you, I could slap you.
+Listen, past runs of these turns have been sloppy and stupid as fuck: wrong step counts, partial task lists dumped into chat instead of files, plans and session summaries half-filled with "[N]" placeholders, folders skimmed, open ambiguities ignored, CI/CD issues and `plans/subtasks/` forgotten, user commands dropped, coding guidelines bypassed, detailed specs chopped and summarized into useless junk, uppercase README files left uncorrected, `.ai-memory/learned/` created by accident, `strictly-avoid.md` overwritten, and explicit user instructions softened after being told not to. WTF. How on earth are you reverting to this carelessness, are you stupid?? Stop doing that, you stupid fuck. Read the whole codebase, read every folder in `02-spec/` and `.ai-memory/`, confirm root `readme.md` is strictly lowercase, find the root cause in one sentence, capture commands, issues, and pending tasks without omitting a single item, write the spec files and memory files in the right paths, update every index in the same turn, sync `readme.md` with `what-to-read.md`, preserve detailed specs verbatim with zero truncation, run builds and full unit tests, group commits with clear messages, and push everything to git before ending. Going deep IS the job. If you are not going deep, you are not doing the job. Violating this is auto-reject on the same tier as RULE 0. Avoid stupidity and being careless, you stupid fuck. Where is your attention, are you stupid? Tell me. Your stupidity is going on top of my head. Where did you learn this stupidity? If I could find you, I could slap you.
 
 ---
 
