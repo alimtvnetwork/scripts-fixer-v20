@@ -14,7 +14,7 @@ Official Authoritative References & Technical Documentation:
 • Pillow (PIL Fork) Headless Image Verification: https://pillow.readthedocs.io/
 • Playwright Python Documentation: https://playwright.dev/python/docs/intro
 
-Prompt Version: 2.2.0 (Master Autonomous Standalone Edition — Unsupervised Loop, Progress Telemetry & Discrepancy Planning) Target Audience: Autonomous AI Agents (Antigravity, Cursor, Claude, ChatGPT, Muse), Full-Stack WordPress Engineers, QA Automation Leads
+Prompt Version: 2.4.0 (Master Autonomous Standalone Edition — RSA SQLite Credential Vault, Menu-First Invariant, Zero !important & Page-Class Specificity) Target Audience: Autonomous AI Agents (Antigravity, Cursor, Claude, ChatGPT, Muse), Full-Stack WordPress Engineers, QA Automation Leads
 Task Slug: run-iterations-and-compare-screens / universal-elementor-finetune-pixel-perfect-loop
 Portability Contract: Anyone can copy-paste this prompt in full into an isolated AI environment, remote IDE, GitHub Gist, or GitLab Snippet, and the agent will execute the 100–300 iteration pixel-perfect fine-tuning loop blindly and safely without requiring any prior codebase files.
 
@@ -27,7 +27,7 @@ A = 3   (MANDATORY number of spawned autonomous subagents running concurrently, 
 H = 2   (Operational hands per agent: dual-task batch capacity & parallel tool dispatch, default: 2)
 C = 30  (Tool calls per worker before it must report, default: 30)
 
-PHASE_1_BUDGET = 100     (Steps 1 .. 100: Learn Prerequisites, Viewports, 2x Base64 Credential Vault, & FS Snapshots)
+PHASE_1_BUDGET = 100     (Steps 1 .. 100: Learn Prerequisites, Viewports, RSA SQLite Credential Vault, & FS Snapshots)
 PHASE_2_BUDGET = 150     (Steps 101 .. 250: Multi-Screen Capture, Headless Visual Diffing, CSS Persistence & AST Tuning)
 PHASE_3_BUDGET = 150     (Steps 251 .. 400: Iterative 100-300 Loop, Screenshot Auto-Pruning, Git Hygiene, & Revert Verification)
 ================================================================================
@@ -49,7 +49,11 @@ The AI MUST check off every box below before the first mutation of each page/pos
 - [ ] **Homepage first:** no slug given → homepage first, then the next page. (§1.12)
 - [ ] **100%:** loop until EVERY viewport is at or below 0.5% diff; fixes ONLY through the Python REST scripts, never by hand in the editor. (§1.12)
 - [ ] **Backups:** filesystem `before/` + `after/` snapshots AND draft backup `<Title> - Backup [Timestamp]` in `backups.json` before mutating. (§1 items 3, 6)
-- [ ] **Strictly unsupervised loop:** run completely without human supervision; NEVER pause to ask "Want me to start now or wait until you're back?", "Should I proceed?", or wait for loop approvals. The user sends the prompt and goes to sleep ("in the morning I should check all"); start comparing and fine-tuning immediately. (§1 item 1.3)
+- [ ] **Strictly unsupervised zero-pause loop:** run completely without human supervision; NEVER pause to ask "Want me to start now or wait until you're back?", "Should I proceed?", or wait for loop approvals. The user sends the prompt and goes to sleep ("in the morning I should check all"); immediately begin Step 1 and run the loop autonomously. (§1 item 1.3)
+- [ ] **Menu-first check:** first job is to check and fix the navigation menu (header, logo, links, mobile drawer, sticky offset) before touching page content; verify menu to 100% parity first. (§1.7)
+- [ ] **CSS source allocation & color grouping:** trace missing lines/borders/accents to Theme Builder templates vs section containers vs global kit; group rules by color tokens within that section or Theme Builder template. (§1.8)
+- [ ] **Single-page default & quick match:** fix ONE single page (homepage first) and report back unless developer specifies 'loop all'; if quick full match (>= 99.5%) detected, announce and advance to next page immediately. (§1.9)
+- [ ] **Zero !important & page-class targeting:** strictly avoid '!important' in CSS; elevate specificity using WordPress body classes: 'body.page-id-<ID> .selector' or 'body.home .selector'. (§1.10, §4.15)
 - [ ] **Periodic 5–10 min progress telemetry:** output concise 1–2 line status updates every 5 to 10 minutes so operator reviewing logs knows work is actively progressing. (§1 item 1.4)
 - [ ] **Discrepancy & plan MD log:** each time a page is visited/compared, write down all visual differences and the exact planned Python script/CSS/AST fixes into `checks/<slug>/discrepancies.md` (and `comparisons/<slug>/discrepancies.md`) before mutating, so fixes can be applied rapidly. (§1 item 1.5, §4.14)
 - [ ] **Elementor-modifiable invariant:** EVERY modified item must be modifiable using Elementor (Flexbox containers, native widgets, style controls, custom CSS); total ban on raw unmanageable HTML outside Elementor AST. (§1 item 1.6)
@@ -57,7 +61,7 @@ The AI MUST check off every box below before the first mutation of each page/pos
 - [ ] **Immediate login confirmation:** before ANY page discovery or mutation, AI authenticates via Python session, validates /wp-admin/, verifies administrator role, and emits immediate confirmation to the operator. (§1 item 1.1)
 - [ ] **Bot-challenge bypass:** requests.Session with browser User-Agent used; never raw curl; nonce extracted from /wp-admin/ for REST calls. (§1 item 1.2, §4.13)
 - [ ] **Sleepy autopilot & ambiguity:** if operator mentions sleepiness ("I'm a bit sleepy. Try to take the best decision possible"), proceed autonomously picking best sensible defaults and recording ambiguities to ambiguity folder. (§3)
-- [ ] **Credentials:** 2x Base64 in `data/config.db`, reused, never re-asked once stored. (§1 item 1)
+- [ ] **RSA SQLite credential vault:** passwords encrypted via RSA public key and saved to SQLite data/config.db; retrieved and decrypted on demand every time needed without re-asking. (§1 item 1, §4.2)
 - [ ] **Git hygiene:** screenshots + `data/` gitignored; previous iteration screenshots pruned; `checks/tracking.csv` + `checks/report.html` committed. (§1 item 7, §4.8)
 - [ ] **Memory:** struggle points + root causes logged in `.ai-memory/`; final commit + push. (§1 items 8, 9)
 
@@ -172,11 +176,10 @@ Once verified, the AI **MUST IMMEDIATELY CONFIRM** to the operator:
 
    - **Base Website (Read-Only):** The benchmark reference for visual truth and DOM asset extraction. Zero write/mutation operations permitted.
    - **Elementor Website (Target & Modify):** The target WordPress/Elementor site undergoing fine-tuning. Mandatory draft backup before mutations.
-   - **2-Times Base64 Encoded Credential Vault (`data/config.db`):**
-     - Passwords / App-passwords provided by the user **MUST BE SAVED** into a local SQLite database at `data/config.db` under the table `Credentials`.
-     - The password **MUST BE ENCODED 2 TIMES** using Base64 with strongly-typed `EncodingConstants`:
-       `encoded = base64.b64encode(base64.b64encode(raw_password.encode(EncodingConstants.UTF8))).decode(EncodingConstants.ASCII)`
-     - **Automatic Reuse Across Loops & Future Tasks:** Once the first connection or iteration is successful, credentials are persisted into `data/config.db`. On subsequent loops, rerun iterations, or future pages on the same sites, the AI loads credentials directly from `data/config.db` without repeatedly prompting the user.
+   - **RSA SQLite Credential Vault (`data/config.db`):**
+     - Passwords / App-passwords provided by the user **MUST BE ENCRYPTED USING RSA ALGORITHM** via standalone Python script `scripts/rsa_credential_vault.py`.
+     - The RSA public key encrypts the password into Base64 ciphertext, stored in local SQLite database `data/config.db` in PascalCase table `Credentials`.
+     - **Autonomous On-Demand Decryption & Retrieval Invariant:** On all future loops, iterations, and subsequent pages, the AI imports `RsaCredentialVault` or runs `python scripts/rsa_credential_vault.py get --role <role>` to decrypt the password using the RSA private key in memory. The user is NEVER prompted for credentials twice.
 
 
 ### 1.3 Strictly Unsupervised Autonomous Execution Gate (TOTAL BAN ON APPROVAL PAUSES)
@@ -210,6 +213,44 @@ Once verified, the AI **MUST IMMEDIATELY CONFIRM** to the operator:
   - Typography & Colors: Must map to Elementor widget style settings (`typography_typography`, `typography_font_size`, `title_color`, etc.).
   - Custom Styling: Must be injected via Elementor Custom CSS attached to the widget or container selector (`selector { ... }`).
 - This guarantees that after AI completion, human designers and site maintainers can visually inspect, adjust, and edit every element inside the standard Elementor editor UI.
+
+### 1.7 Menu-First Invariant & Navigation Header Priority (First Technical Job)
+- **First Job Invariant:** Before inspecting, diffing, or modifying ANY page body content, the AI MUST first check, compare, and fix the navigation menu and header region.
+- **Verification Scope Across All Screens:**
+  1. Desktop header: logo alignment and dimensions, top-level navigation links, hover indicator bars, search/action icons, and phone/CTA buttons.
+  2. Mobile navigation drawer: hamburger toggle trigger, slide-out animation drawer, vertical accordion submenus, close button tap targets, and z-index layering.
+  3. Header positioning & geometry: sticky header offset, scroll transform state, top margin compensation, and container height bounding boxes across all 6 viewports in `screens.json`.
+- **Source Trace Invariant:** Allocate whether the menu originates from:
+  - WordPress Core Menus (`wp_nav_menu`)
+  - Elementor Theme Builder Header template (`elementor_library` post type)
+  - Page-embedded Nav Menu widget (`wp-widget-nav_menu` or `nav-menu`)
+- **Progression Gate:** Only after the navigation menu achieves 100% parity (or diff <= 0.5%) across all viewports does the AI proceed to the page body (starting with the homepage).
+
+### 1.8 CSS Source Allocation & Theme Builder Color Grouping
+- **CSS Origin Allocation Protocol:** When visual lines, borders, divider SVGs, background tints, or box-shadow accents are missing or mismatching, the AI MUST first allocate where they originate:
+  1. **Theme Builder (`elementor_library`):** Global header, footer, single, or archive templates.
+  2. **Global Kit (`elementor_active_kit`):** Site-wide CSS custom properties (`--e-global-color-*`), typography tokens, and container base defaults.
+  3. **Section Containers:** Page-level Flexbox containers, nested columns, and individual widget wrappers.
+- **Color Grouping Invariant:** Group all related CSS rules and overrides by color tokens within that section or Theme Builder template (e.g. primary brand color group, border accent line group, background surface color group).
+- **Prohibition on Fragmented One-Offs:** The AI is strictly forbidden from injecting scattered, isolated one-off hex colors. All color rules for a section must be grouped together under that section's selector block using semantic CSS variables where available.
+
+### 1.9 Single-Page Default vs. "Loop All" Modes & Quick Match Fast-Forward
+- **Single-Page Default:** By default, the engine focuses on **ONE SINGLE PAGE** (homepage first if no slug is provided). It runs the iterations to reach 100% parity, generates the comparison report HTML, and reports back to the developer. It does NOT proceed to other pages without explicit instruction.
+- **Loop All Mode:** Only when the developer explicitly specifies `loop all` (or `--all`, or "yes please loop") does the engine autonomously cycle through all remaining pages in the site inventory.
+- **Quick Match Fast-Forward:** If the homepage (or current target page) already has a quick full match (visual similarity >= 99.5% across all viewports), the AI MUST NOT waste redundant iteration cycles. It MUST immediately announce:
+  ```text
+  ✅ Quick Full Match Confirmed on Homepage (99.8% visual similarity). Advancing autonomously to next page: 'services'.
+  ```
+  and advance directly to the next page in the inventory.
+
+### 1.10 Strict Ban on `!important` & Page-Class Specificity Targeting
+- **TOTAL BAN ON `!important`:** The AI MUST NEVER use `!important` in custom CSS overrides. Any generated rule containing `!important` is considered a quality defect that breaks CSS cascading and downstream child styling.
+- **Page-Class Specificity Targeting Rule:** To override stubborn Elementor core styles cleanly without `!important`, Python scripts MUST elevate selector specificity by prefixing rules with WordPress body classes:
+  - `body.page-id-<ID> .target-class` (Targets specific page by post ID, e.g. `body.page-id-42 .site-header`)
+  - `body.home .target-class` (Targets homepage specifically)
+  - `body.page-template-elementor_header_footer .target-class` (Targets Elementor canvas/full-width template)
+  - `body.page-<slug> .target-class` (Targets page by slug)
+- **Specificity Guarantee:** `body.page-id-<ID> .elementor-element .target-class` has a CSS specificity of `(0, 2, 1)`, which naturally overrides Elementor's default class selectors `(0, 1, 0)` without resorting to `!important`.
 
 2. **Local Filesystem CSS Persistence (`css/` directory):**
    - The AI **MUST PERSIST ALL CSS** directly to the local filesystem in the `css/` directory:
@@ -314,7 +355,7 @@ Before executing any network requests or modifying code, the AI must output the 
 | **Direct References** | Unwrapped Authoritative Gist URLs | Bare URLs confirmed without markdown wrapping |
 | **Original URL** | Reference Website Page URL (Read-Only) | Ingested from operator prompt / input; strictly GET only |
 | **Target URL** | Current Elementor Page URL / Slug | Ingested from operator prompt / input; target for mutations |
-| **Credential Vault** | 2x Base64 in `data/config.db` (SQLite) | Stored in `Credentials` table (PascalCase); reused across loops once 1st is successful |
+| **Credential Vault** | RSA SQLite in `data/config.db` | Stored in `Credentials` table (PascalCase); encrypted with RSA public key; decrypted on demand via private key; reused across loops once 1st is successful |
 | **Filesystem CSS** | Local `css/` Persistence | `base-site.css`, `target-current.css`, `target-modified.css` saved locally |
 | **FS Page Backups** | `backups/<site>/<page>/before/` & `after/` | Structured JSON, AST, HTML, CSS saved for instant rollback |
 | **Screen Dimensions** | `screens.json` Multi-Viewport Matrix | Desktop, Tablet (V/H), Mobile (Landing/Tab/Landscape) |
@@ -329,6 +370,10 @@ Before executing any network requests or modifying code, the AI must output the 
 | **CSV Tracking** | `checks/tracking.csv` (append-only) | One row per (page, viewport, iteration): slugs, URLs, diff %, status, backup ids, screenshot paths; committed |
 | **Checks Folder & Report** | `checks/<slug>/<viewport>/` + `checks/report.html` | Latest base / Elementor / diff triple per viewport; side-by-side report with issue selector + COPY button, regenerated every iteration |
 | **Homepage Default** | No slug → homepage first | Resolved via `page_on_front` / `home` / `/`; loop to 100% (all viewports ≤ 0.5%) via Python scripts only |
+| **Menu-First Invariant** | Navigation Header Priority | First job is to verify & fix menu to 100% parity across viewports before touching page body |
+| **CSS Source Allocation** | Origin Tracing & Color Grouping | Traced to Theme Builder vs Section vs Global Kit; grouped by color tokens |
+| **Single-Page Default** | 1 Page Default vs Loop All | Default to 1 page unless 'loop all'; fast-forward to next page on Quick Match (>= 99.5%) |
+| **Zero !important** | Page-Class Specificity Targeting | Total ban on !important; scoped with `body.page-id-<ID>` or `body.home` |
 
 ---
 
@@ -343,7 +388,7 @@ https://gist.githubusercontent.com/alimtvnetwork/11900295ef222d921bd646923fbcff3
 
 # Main Goal Try to understand list out the tasks please - Run Iterations and Compare Screens: high priority instruction, non-negotiable task
 
-You are going to run 100 to 300 iteration on each page and compare three to four screens, desktop, mobile tab, mobile landing view, landscape view, tablet, horizontal and vertical view. Desktop has many different screens, so find all the screens. First, find the screen sizes and put the screen sizes as JSON. So that should be your first starting point. Then you follow the Python script, Python prompts segment, how you wanted to do stuff step by step. Then what you should do is you compare the original website and what you change. So I will give you the, let's say, the page slug that you wanted to modify and the same slug you can find in the original website. After you change or fix it to the Elementor, you should check every bits and piece with these 300 iterations. Each iteration you compare in three, four, five, six screens, compare the screenshots, check where the issues are, find the root cause, explain it to yourself where the issue is, fix it, and then again, check the screenshot on all the screens and then again, compare with the original one. So original one will also have all the screenshots, and then your version will also have all the screenshots, and then you compare, contrast, and figure out where the gap is. By these type of iterations, you will fix one page 100% accurately. Once you feel that it is 100% accurate, you complete the task. So until you do, you loop through the process and write the Python script each time to modify the site and remember the history so that in the future when we do it for the next website, you can understand where the glitches were. And at the end, you are going to write where you struggle most, what was the root cause on fixing it, and how you have fixed it every step so that next AI when reads it, they would understand from the AI memory folder that this is how it needs to be done. So at the end, you are going to ask me the original website, let's say page, and the slug of the current website that you are going to modify. And before you start modifying, make sure you take a backup draft, backup of that page or post, and then start doing the step of migration and fixing each pixel perfect screen on every screen possible. Before you modify any page or post, clone it first as <slug>-old — that clone is the backup and you never touch it again; you modify the original in place, its slug never changes, and after every change you confirm the working page is public while the -old clone and the draft backup stay draft. Track every page, every screen and every iteration in checks/tracking.csv, keep the latest base, Elementor and diff screenshots side by side in checks/<slug>/<viewport>/, and rebuild checks/report.html after every iteration so I can open it locally, pick a page and a screen, and copy an issue report back to you. If I give you no slug, start with the homepage and keep looping until every screen is 100% accurate, fixing only through the Python scripts. The first thing you should do is confirm that you understand the task, you know the Python prompt, how to write the Python scripts to modify each one of the layers. You know how to take the backup before you modify the page. Remember that. And then you start doing it in each step in the Elementor using the Python script, and you give the history of it, what was the root cause of it, so that any time later on. And for each one of the change, you should create the folder, and in that folder, you write this script, you write this state, history, screenshots, before, after, original and the current website. You compare, and when you go to the next version, you always remove the previous screenshot so that we don't have too many of the screenshots. Remember that. The screenshots do not commit to the Git. It should be Git ignore. So you should have a folder structure like screenshots that would be ignored from the Git as well. Also, make sure you save the password as 2 times base64 encoding in a data\config.db sqlite db so that it can be used in the future and you can do the loop once the first one is successful without asking again. Also keep the CSS saved to our file system in the css/ folder as well, and create a backup of the post, single page, before and after in our file system where we start to modify as a folder structure (backups/<site_slug>/<page_slug>-<page_id>/before and after) so that it can be used to revert if required. So make sure you work on it. If you have any question, concern, let me know. So after this, you should always ask me for the original website page and the current website page and original and the current one what you are modifying. You ask me, I will provide you. And each time I do that, you repeat the process. And remember to write the root cause so that any AI who reads it understands it, where the problem is. They would fine-tune and fix it very quickly in the future. Do you understand? Every step, every change of the CSS, how you're doing it, every change of the HTML section or the component section that you are modifying, write it like this. If you're changing a padding using the Elementor component, write it like this. So you try to find each case, a problem, an issue, so that you can rely on it. After that, I assume that you have all the information. You also know the WordPress prompt, you know the Python prompt, which I have run. And then now you are going to ask me for the two URLs. You are going to work on it. And then finally, when you are done, you complete it. Until you're done, you continue the steps. And finally, when you're done, you make sure you commit every things to the Git, like every conversation, steps that you have done. And finally, what actually made you success, root cause analysis, script history, and everything, so that any AI who runs it, they would know how to fix things in the future. Is it clear?
+You are going to run 100 to 300 iteration on each page and compare three to four screens, desktop, mobile tab, mobile landing view, landscape view, tablet, horizontal and vertical view. Desktop has many different screens, so find all the screens. First, find the screen sizes and put the screen sizes as JSON. So that should be your first starting point. Then you follow the Python script, Python prompts segment, how you wanted to do stuff step by step. Then what you should do is you compare the original website and what you change. So I will give you the, let's say, the page slug that you wanted to modify and the same slug you can find in the original website. After you change or fix it to the Elementor, you should check every bits and piece with these 300 iterations. Each iteration you compare in three, four, five, six screens, compare the screenshots, check where the issues are, find the root cause, explain it to yourself where the issue is, fix it, and then again, check the screenshot on all the screens and then again, compare with the original one. So original one will also have all the screenshots, and then your version will also have all the screenshots, and then you compare, contrast, and figure out where the gap is. By these type of iterations, you will fix one page 100% accurately. Once you feel that it is 100% accurate, you complete the task. So until you do, you loop through the process and write the Python script each time to modify the site and remember the history so that in the future when we do it for the next website, you can understand where the glitches were. And at the end, you are going to write where you struggle most, what was the root cause on fixing it, and how you have fixed it every step so that next AI when reads it, they would understand from the AI memory folder that this is how it needs to be done. So at the end, you are going to ask me the original website, let's say page, and the slug of the current website that you are going to modify. And before you start modifying, make sure you take a backup draft, backup of that page or post, and then start doing the step of migration and fixing each pixel perfect screen on every screen possible. Before you modify any page or post, clone it first as <slug>-old — that clone is the backup and you never touch it again; you modify the original in place, its slug never changes, and after every change you confirm the working page is public while the -old clone and the draft backup stay draft. Track every page, every screen and every iteration in checks/tracking.csv, keep the latest base, Elementor and diff screenshots side by side in checks/<slug>/<viewport>/, and rebuild checks/report.html after every iteration so I can open it locally, pick a page and a screen, and copy an issue report back to you. If I give you no slug, start with the homepage and keep looping until every screen is 100% accurate, fixing only through the Python scripts. The first thing you should do is confirm that you understand the task, you know the Python prompt, how to write the Python scripts to modify each one of the layers. You know how to take the backup before you modify the page. Remember that. And then you start doing it in each step in the Elementor using the Python script, and you give the history of it, what was the root cause of it, so that any time later on. And for each one of the change, you should create the folder, and in that folder, you write this script, you write this state, history, screenshots, before, after, original and the current website. You compare, and when you go to the next version, you always remove the previous screenshot so that we don't have too many of the screenshots. Remember that. The screenshots do not commit to the Git. It should be Git ignore. So you should have a folder structure like screenshots that would be ignored from the Git as well. Also, make sure you save the password to a sqlitedb (data\config.db) with its own ssh-to-rsa algorithm using a python script (scripts/rsa_credential_vault.py) so that it is encrypted securely and can be retrieved and decrypted every time it is needed for future loops without asking again. Also keep the CSS saved to our file system in the css/ folder as well, and create a backup of the post, single page, before and after in our file system where we start to modify as a folder structure (backups/<site_slug>/<page_slug>-<page_id>/before and after) so that it can be used to revert if required. So make sure you work on it. If you have any question, concern, let me know. So after this, you should always ask me for the original website page and the current website page and original and the current one what you are modifying. You ask me, I will provide you. And each time I do that, you repeat the process. And remember to write the root cause so that any AI who reads it understands it, where the problem is. They would fine-tune and fix it very quickly in the future. Do you understand? Every step, every change of the CSS, how you're doing it, every change of the HTML section or the component section that you are modifying, write it like this. If you're changing a padding using the Elementor component, write it like this. So you try to find each case, a problem, an issue, so that you can rely on it. After that, I assume that you have all the information. You also know the WordPress prompt, you know the Python prompt, which I have run. And then now you are going to ask me for the two URLs. You are going to work on it. And then finally, when you are done, you complete it. Until you're done, you continue the steps. And finally, when you're done, you make sure you commit every things to the Git, like every conversation, steps that you have done. And finally, what actually made you success, root cause analysis, script history, and everything, so that any AI who runs it, they would know how to fix things in the future. Is it clear?
 
 ## task: Run Iterations and Compare Screens
 ## slug: run-iterations-and-compare-screens
@@ -354,7 +399,7 @@ You are going to run 100 to 300 iteration on each page and compare three to four
 2. Write spec under 02-spec/21-app/XX-run-iterations-and-compare-screens/ and enqueue plan in .ai-memory/plans/pending/XX-run-iterations-and-compare-screens.md first (NO-BUILD, NO-TEST during planning).
 3. Search codebase using structured project search tools.
 4. Strictly use relative Git paths (02-spec/..., .ai-memory/..., cmd/...); never add absolute paths.
-5. Save credentials as 2 times Base64 encoded in local `data/config.db` (SQLite DB with PascalCase table `Credentials`) to reuse across future loops once first connection succeeds.
+5. Save credentials encrypted with RSA public key in local `data/config.db` (SQLite DB with PascalCase table `Credentials`) to reuse and decrypt on demand across future loops once first connection succeeds.
 6. Save all captured, modified, and injected CSS directly to local filesystem in `css/` directory.
 7. Create local filesystem backups of posts/single pages in `backups/<site_slug>/<page_slug>-<page_id>/` with `before/` and `after/` folders for instant reversion.
 8. Run 100 to 300 iterations on each page and compare screens as specified.
@@ -534,32 +579,29 @@ You are going to run 100 to 300 iteration on each page and compare three to four
 }
 ```
 
-### 4.2 2-Stage Base64 SQLite Credential Vault (`scripts/credential_vault.py`)
+### 4.2 RSA SQLite Credential Vault Engine (`scripts/rsa_credential_vault.py`)
 
 ```python
 #!/usr/bin/env python3
 """
-credential_vault.py — 2-Stage Base64 SQLite Credential Vault.
-Persists WordPress/Elementor credentials into data/config.db (PascalCase table: Credentials)
-using 2-times Base64 encoding. Reuses stored credentials across future loop runs.
+rsa_credential_vault.py — Pure Python RSA SQLite Credential Vault.
+Encrypts WordPress/Elementor credentials with RSA public key, persists them to data/config.db
+(PascalCase table: Credentials), and autonomously decrypts them on demand across loop runs.
 """
 from __future__ import annotations
 
+import argparse
 import base64
+import json
 import os
-import re
+import secrets
 import sqlite3
+import sys
+import time
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import ClassVar, Final, Optional, Pattern, Tuple
-
-
-class EncodingConstants:
-    """Standard character encoding format constants."""
-    UTF8: Final[str] = "utf-8"
-    ASCII: Final[str] = "ascii"
-    UTF16: Final[str] = "utf-16"
+from typing import Final, NamedTuple, Optional, Tuple
 
 
 class TableType(str, Enum):
@@ -573,127 +615,238 @@ class TableType(str, Enum):
 class SiteRoleType(str, Enum):
     """Target site classification roles."""
     BASE = "base"
-    TARGET = "target"
+    ELEMENTOR = "elementor"
 
 
 class CredentialSqlType(str, Enum):
-    """Encapsulated SQL statements for credential vault."""
+    """Encapsulated SQL statements for RSA credential vault."""
     PRAGMA_BUSY_TIMEOUT = "PRAGMA busy_timeout = 5000"
+    PRAGMA_WAL = "PRAGMA journal_mode = WAL"
     CREATE_CREDENTIALS_TABLE = (
         "CREATE TABLE IF NOT EXISTS Credentials ("
         "Id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "SiteRole TEXT NOT NULL UNIQUE, "
         "SiteUrl TEXT NOT NULL, "
         "Username TEXT NOT NULL, "
-        "PasswordEnc TEXT NOT NULL, "
+        "EncryptedPassword TEXT NOT NULL, "
+        "Algorithm TEXT NOT NULL, "
+        "KeyFingerprint TEXT NOT NULL, "
         "CreatedAt TEXT NOT NULL, "
         "UpdatedAt TEXT NOT NULL"
         ")"
     )
     UPSERT_CREDENTIAL = (
-        "INSERT INTO Credentials (SiteRole, SiteUrl, Username, PasswordEnc, CreatedAt, UpdatedAt) "
-        "VALUES (?, ?, ?, ?, ?, ?) "
+        "INSERT INTO Credentials (SiteRole, SiteUrl, Username, EncryptedPassword, Algorithm, KeyFingerprint, CreatedAt, UpdatedAt) "
+        "VALUES (?, ?, ?, ?, 'RSA-1024-PKCS1', ?, ?, ?) "
         "ON CONFLICT(SiteRole) DO UPDATE SET "
         "SiteUrl=excluded.SiteUrl, "
         "Username=excluded.Username, "
-        "PasswordEnc=excluded.PasswordEnc, "
+        "EncryptedPassword=excluded.EncryptedPassword, "
+        "Algorithm=excluded.Algorithm, "
+        "KeyFingerprint=excluded.KeyFingerprint, "
         "UpdatedAt=excluded.UpdatedAt"
     )
     SELECT_BY_ROLE = (
-        "SELECT SiteUrl, Username, PasswordEnc FROM Credentials WHERE SiteRole = ? LIMIT 1"
+        "SELECT SiteUrl, Username, EncryptedPassword FROM Credentials WHERE SiteRole = ? LIMIT 1"
     )
 
 
-class ElementorConstants:
-    """Canonical file and directory constants."""
-    DIR_DATA: Final[str] = "data"
-    DB_CONFIG: Final[str] = "data/config.db"
-    DIR_CSS: Final[str] = "css"
-    DIR_BACKUPS: Final[str] = "backups"
-    DIR_SCREENSHOTS: Final[str] = "screenshots"
-    FILE_SCREENS_JSON: Final[str] = "screens.json"
+class RsaKeypair(NamedTuple):
+    """RSA Keypair parameters."""
+    n: int
+    e: int
+    d: int
+    key_size: int
 
 
-class LazyRegex:
-    """Thread-safe lazy regular expression compiler (cached on demand)."""
-    _cache: ClassVar[dict[str, Pattern[str]]] = {}
+def is_probable_prime(n: int, k: int = 25) -> bool:
+    """Miller-Rabin primality test."""
+    if n < 2 or n % 2 == 0:
+        return n == 2
+    s, d = 0, n - 1
+    while d % 2 == 0:
+        s += 1
+        d //= 2
+    for _ in range(k):
+        a = secrets.randbelow(n - 3) + 2
+        x = pow(a, d, n)
+        if x in (1, n - 1):
+            continue
+        has_composite = True
+        for _ in range(s - 1):
+            x = pow(x, 2, n)
+            if x == n - 1:
+                has_composite = False
+                break
+        if has_composite:
+            return False
+    return True
+
+
+def generate_prime(bits: int) -> int:
+    """Generate a probable prime of specified bit length."""
+    while True:
+        p = secrets.randbits(bits) | (1 << (bits - 1)) | 1
+        if is_probable_prime(p):
+            return p
+
+
+def egcd(a: int, b: int) -> tuple[int, int, int]:
+    """Extended Euclidean Algorithm."""
+    if a == 0:
+        return b, 0, 1
+    g, y, x = egcd(b % a, a)
+    return g, x - (b // a) * y, y
+
+
+def modinv(a: int, m: int) -> int:
+    """Modular multiplicative inverse."""
+    g, x, _ = egcd(a, m)
+    if g != 1:
+        raise ValueError("Modular inverse does not exist")
+    return x % m
+
+
+def generate_rsa_keypair(key_size: int = 1024) -> RsaKeypair:
+    """Generate RSA keypair using pure Python standard library."""
+    e = 65537
+    half_bits = key_size // 2
+    while True:
+        p = generate_prime(half_bits)
+        q = generate_prime(half_bits)
+        if p == q:
+            continue
+        n = p * q
+        phi = (p - 1) * (q - 1)
+        if phi % e != 0:
+            break
+    d = modinv(e, phi)
+    return RsaKeypair(n=n, e=e, d=d, key_size=key_size)
+
+
+def pkcs1_pad(message: bytes, key_bytes: int) -> bytes:
+    """PKCS#1 v1.5 encryption padding."""
+    max_msg_len = key_bytes - 11
+    if len(message) > max_msg_len:
+        raise ValueError(f"Message too long: {len(message)} > {max_msg_len}")
+    pad_len = key_bytes - len(message) - 3
+    pad = bytearray()
+    while len(pad) < pad_len:
+        b = secrets.token_bytes(1)[0]
+        if b != 0:
+            pad.append(b)
+    return b"\x00\x02" + bytes(pad) + b"\x00" + message
+
+
+def pkcs1_unpad(padded: bytes) -> bytes:
+    """PKCS#1 v1.5 unpadding."""
+    if len(padded) < 11 or padded[0:2] != b"\x00\x02":
+        raise ValueError("Invalid PKCS#1 padding header")
+    sep_idx = padded.find(b"\x00", 2)
+    if sep_idx < 10:
+        raise ValueError("Invalid PKCS#1 padding separator")
+    return padded[sep_idx + 1:]
+
+
+def rsa_encrypt(message: str, n: int, e: int, key_size: int) -> str:
+    """Encrypt a string message using RSA public key (returns Base64 ciphertext)."""
+    key_bytes = key_size // 8
+    msg_bytes = message.encode("utf-8")
+    padded = pkcs1_pad(msg_bytes, key_bytes)
+    m_int = int.from_bytes(padded, byteorder="big")
+    c_int = pow(m_int, e, n)
+    c_bytes = c_int.to_bytes(key_bytes, byteorder="big")
+    return base64.b64encode(c_bytes).decode("ascii")
+
+
+def rsa_decrypt(cipher_b64: str, n: int, d: int, key_size: int) -> str:
+    """Decrypt a Base64-encoded RSA ciphertext using private key."""
+    key_bytes = key_size // 8
+    c_bytes = base64.b64decode(cipher_b64.encode("ascii"))
+    c_int = int.from_bytes(c_bytes, byteorder="big")
+    m_int = pow(c_int, d, n)
+    padded = m_int.to_bytes(key_bytes, byteorder="big")
+    msg_bytes = pkcs1_unpad(padded)
+    return msg_bytes.decode("utf-8")
+
+
+class RsaCredentialVault:
+    """Coordinates RSA key management, SQLite storage, and credential encryption/decryption."""
+
+    DIR_DATA: Final[Path] = Path("data")
+    DB_CONFIG: Final[Path] = Path("data/config.db")
+    KEY_FILE: Final[Path] = Path("data/vault_rsa.key")
 
     @classmethod
-    def get(cls, pattern: str, flags: int = 0) -> Pattern[str]:
-        """Retrieve compiled pattern from cache or compile and store."""
-        key = f"{pattern}::{flags}"
-        if key not in cls._cache:
-            cls._cache[key] = re.compile(pattern, flags)
-        return cls._cache[key]
+    def load_or_create_keypair(cls) -> RsaKeypair:
+        """Load existing RSA keypair from data/vault_rsa.key or generate a fresh keypair."""
+        cls.DIR_DATA.mkdir(parents=True, exist_ok=True)
+        if cls.KEY_FILE.is_file():
+            data = json.loads(cls.KEY_FILE.read_text(encoding="utf-8"))
+            return RsaKeypair(n=data["n"], e=data["e"], d=data["d"], key_size=data["key_size"])
+        kp = generate_rsa_keypair(1024)
+        cls.KEY_FILE.write_text(json.dumps({"n": kp.n, "e": kp.e, "d": kp.d, "key_size": kp.key_size}), encoding="utf-8")
+        return kp
 
     @classmethod
-    def clear(cls) -> None:
-        """Clear cached patterns."""
-        cls._cache.clear()
+    def init_db(cls) -> None:
+        """Initialize SQLite database with WAL mode and PascalCase Credentials table."""
+        cls.DIR_DATA.mkdir(parents=True, exist_ok=True)
+        with sqlite3.connect(cls.DB_CONFIG) as conn:
+            conn.execute(CredentialSqlType.PRAGMA_BUSY_TIMEOUT.value)
+            conn.execute(CredentialSqlType.PRAGMA_WAL.value)
+            conn.execute(CredentialSqlType.CREATE_CREDENTIALS_TABLE.value)
+            conn.commit()
 
+    @classmethod
+    def save(cls, site_role: str, site_url: str, username: str, raw_password: str) -> None:
+        """Encrypt password using RSA public key and upsert record into SQLite."""
+        cls.init_db()
+        kp = cls.load_or_create_keypair()
+        enc_pw = rsa_encrypt(raw_password, kp.n, kp.e, kp.key_size)
+        fingerprint = str(kp.n)[:16]
+        now_iso = datetime.now().isoformat()
+        with sqlite3.connect(cls.DB_CONFIG) as conn:
+            conn.execute(
+                CredentialSqlType.UPSERT_CREDENTIAL.value,
+                (site_role, site_url, username, enc_pw, fingerprint, now_iso, now_iso),
+            )
+            conn.commit()
+        print(f"🔒 Credentials for [{site_role}] encrypted via RSA and stored in data/config.db.")
 
-def get_db_path() -> Path:
-    """Return Path to data/config.db ensuring directory exists."""
-    db_dir = Path(ElementorConstants.DIR_DATA)
-    db_dir.mkdir(parents=True, exist_ok=True)
-    return Path(ElementorConstants.DB_CONFIG)
+    @classmethod
+    def get(cls, site_role: str) -> Optional[Tuple[str, str, str]]:
+        """Retrieve record from SQLite, decrypt ciphertext using RSA private key, and return plaintext."""
+        cls.init_db()
+        kp = cls.load_or_create_keypair()
+        with sqlite3.connect(cls.DB_CONFIG) as conn:
+            cursor = conn.cursor()
+            cursor.execute(CredentialSqlType.SELECT_BY_ROLE.value, (site_role,))
+            row = cursor.fetchone()
+        if not row:
+            return None
+        site_url, username, enc_pw = row
+        raw_pw = rsa_decrypt(enc_pw, kp.n, kp.d, kp.key_size)
+        return site_url, username, raw_pw
 
-
-def init_credentials_db() -> None:
-    """Initialize SQLite Credentials table in data/config.db using CredentialSqlType."""
-    db_path = get_db_path()
-    with sqlite3.connect(db_path) as conn:
-        conn.execute(CredentialSqlType.PRAGMA_BUSY_TIMEOUT.value)
-        conn.execute(CredentialSqlType.CREATE_CREDENTIALS_TABLE.value)
-        conn.commit()
-
-
-def encode_password_2x(raw_password: str) -> str:
-    """Encode password twice using Base64 with strongly-typed EncodingConstants."""
-    pass_1 = base64.b64encode(raw_password.encode(EncodingConstants.UTF8)).decode(EncodingConstants.ASCII)
-    pass_2 = base64.b64encode(pass_1.encode(EncodingConstants.UTF8)).decode(EncodingConstants.ASCII)
-    return pass_2
-
-
-def decode_password_2x(encoded_password: str) -> str:
-    """Decode password twice using Base64 with strongly-typed EncodingConstants."""
-    pass_1 = base64.b64decode(encoded_password.encode(EncodingConstants.ASCII)).decode(EncodingConstants.UTF8)
-    raw_password = base64.b64decode(pass_1.encode(EncodingConstants.ASCII)).decode(EncodingConstants.UTF8)
-    return raw_password
+    @classmethod
+    def has(cls, site_role: str) -> bool:
+        """Check if valid credentials exist for the specified site role."""
+        cls.init_db()
+        with sqlite3.connect(cls.DB_CONFIG) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT 1 FROM Credentials WHERE SiteRole = ? LIMIT 1", (site_role,))
+            return cursor.fetchone() is not None
 
 
 def save_credentials(site_role: str, site_url: str, username: str, raw_password: str) -> None:
-    """Save or update credentials in data/config.db with 2x Base64 encoding via CredentialSqlType."""
-    init_credentials_db()
-    db_path = get_db_path()
-    enc_pw = encode_password_2x(raw_password)
-    now_iso = datetime.now().isoformat()
-
-    with sqlite3.connect(db_path) as conn:
-        conn.execute(
-            CredentialSqlType.UPSERT_CREDENTIAL.value,
-            (site_role, site_url, username, enc_pw, now_iso, now_iso),
-        )
-        conn.commit()
-    print(f"🔒 Credentials for [{site_role}] saved securely to data/config.db (2x Base64).")
+    """Convenience functional wrapper for saving credentials."""
+    RsaCredentialVault.save(site_role, site_url, username, raw_password)
 
 
 def load_credentials(site_role: str) -> Optional[Tuple[str, str, str]]:
-    """Load credentials from data/config.db via CredentialSqlType, decoding 2x Base64 password."""
-    init_credentials_db()
-    db_path = get_db_path()
-
-    with sqlite3.connect(db_path) as conn:
-        cursor = conn.cursor()
-        cursor.execute(CredentialSqlType.SELECT_BY_ROLE.value, (site_role,))
-        row = cursor.fetchone()
-
-    if not row:
-        return None
-
-    site_url, username, enc_pw = row
-    raw_pw = decode_password_2x(enc_pw)
-    return site_url, username, raw_pw
+    """Convenience functional wrapper for retrieving decrypted credentials."""
+    return RsaCredentialVault.get(site_role)
 ```
 
 ### 4.3 Filesystem Before & After Page Snapshot Engine (`scripts/fs_backup.py`)
@@ -912,7 +1065,7 @@ if __name__ == "__main__":
 #!/usr/bin/env python3
 """
 finetune_loop.py — Iterative Screen Comparison & Fine-Tuning Manager.
-Executes 100-300 fine-tune cycles, loads/saves 2x Base64 credentials from data/config.db,
+Executes 100-300 fine-tune cycles, loads/saves RSA-encrypted credentials from data/config.db,
 prunes old screenshots to avoid Git bloat, and logs root cause analyses for memory persistence.
 """
 from __future__ import annotations
@@ -922,7 +1075,7 @@ import json
 import os
 import shutil
 from pathlib import Path
-from credential_vault import load_credentials, save_credentials
+from rsa_credential_vault import load_credentials, save_credentials
 from fs_backup import create_page_snapshot, load_before_snapshot
 from css_saver import save_css_to_fs
 from visual_diff import compute_visual_diff
@@ -956,14 +1109,14 @@ def record_rca_log(iteration: int, viewport: str, issue: str, root_cause: str, f
 
 def run_loop(max_iterations: int = 300) -> None:
     """Run iterative comparison loop across all viewports."""
-    # 1. Check or load credentials from 2x Base64 SQLite vault
+    # 1. Check or load credentials from RSA SQLite vault
     base_creds = load_credentials("base")
     target_creds = load_credentials("elementor")
 
     if not base_creds or not target_creds:
         print("ℹ️ Credentials not found in data/config.db. Prompt operator once.")
     else:
-        print("✅ Loaded credentials from data/config.db vault. Reusing across loop.")
+        print("✅ Loaded and decrypted credentials from RSA data/config.db vault. Reusing across loop.")
 
     screens_path = Path("screens.json")
     if not screens_path.exists():
@@ -2365,13 +2518,84 @@ def log_discrepancy_plan(
 
 ---
 
+### 4.15 Page CSS Manager Engine (`scripts/page_css_manager.py`)
+
+Standalone Python utility to generate scoped, page-specific CSS rules without `!important`.
+
+```python
+"""Page CSS Manager — Page-class specificity targeting with zero !important."""
+from __future__ import annotations
+
+import re
+from typing import Mapping
+
+
+class PageCssManager:
+    """Constructs and validates scoped CSS rules targeting WordPress body classes."""
+
+    TOTAL_BAN_PATTERN = re.compile(r"!\s*important", re.IGNORECASE)
+
+    @classmethod
+    def assert_zero_important(cls, css_text: str) -> None:
+        """Assert that CSS text contains zero occurrences of !important."""
+        if cls.TOTAL_BAN_PATTERN.search(css_text):
+            raise ValueError("Strict CSS Rule Violation: '!important' is strictly forbidden.")
+
+    @classmethod
+    def build_page_selector(cls, page_id: int | str, selector: str, is_home: bool = False) -> str:
+        """Prefix selector with body page-class to elevate specificity naturally."""
+        prefix = "body.home" if is_home else f"body.page-id-{page_id}"
+        clean_selector = selector.strip()
+        if clean_selector.startswith("body"):
+            return clean_selector
+        return f"{prefix} {clean_selector}"
+
+    @classmethod
+    def generate_scoped_css(
+        cls,
+        page_id: int | str,
+        selector: str,
+        properties: Mapping[str, str],
+        is_home: bool = False,
+    ) -> str:
+        """Generate a scoped CSS declaration block with zero !important."""
+        scoped_selector = cls.build_page_selector(page_id, selector, is_home=is_home)
+        props_body = "\n".join(f"  {k}: {v};" for k, v in sorted(properties.items()))
+        block = f"{scoped_selector} {{\n{props_body}\n}}"
+        cls.assert_zero_important(block)
+        return block
+
+    @classmethod
+    def group_by_color_token(
+        cls,
+        page_id: int | str,
+        section_selector: str,
+        color_rules: Mapping[str, Mapping[str, str]],
+        is_home: bool = False,
+    ) -> str:
+        """Group section CSS rules by semantic color token."""
+        blocks: list[str] = []
+        for color_token, rules in color_rules.items():
+            comment = f"/* Color Token Group: {color_token} */"
+            scoped_block = cls.generate_scoped_css(
+                page_id=page_id,
+                selector=section_selector,
+                properties=rules,
+                is_home=is_home,
+            )
+            blocks.append(f"{comment}\n{scoped_block}")
+        return "\n\n".join(blocks)
+```
+
+---
+
 ## 🏆 5. 100/100 Evaluation Rubric
 
 | Criterion | Points | Verification Standard |
 | :--- | :---: | :--- |
 | **Prerequisites Gate** | 10 | Explicit confirmation of Python prompt and WP actions prompt learning (50 steps). |
 | **URL & Scope Ingestion** | 10 | Operator explicitly asked for and provided both original and target website URLs. |
-| **2x Base64 SQLite Credential Vault** | 10 | Credentials encoded 2x Base64 in `data/config.db`; automatically reused once 1st is successful. |
+| **RSA SQLite Credential Vault** | 10 | Credentials encrypted via RSA public key in `data/config.db`; automatically decrypted and reused on demand once 1st is successful. |
 | **Local Filesystem CSS & Backups** | 10 | CSS saved in `css/`; post/single page backups saved in `backups/<site>/<page>/before/` & `after/`. |
 | **Multi-Screen Matrix (`screens.json`)** | 10 | Complete JSON schema defining 6+ viewport sizes (Desktop, Tablet V/H, Mobile Landing/Tab/Landscape). |
 | **Iterative Comparison Loop (100–300)** | 10 | Active loop running up to 300 iterations, computing pixel-by-pixel visual diffs until 100% fidelity. |
@@ -2415,11 +2639,10 @@ Can you log into the admin panel? (yes/no):
    - **`user`**: WordPress username for the target site.
    - **`app-password`**: WordPress Application Password for the target site (provided on its own line).
    - **Invariant:** Target of modifications. The AI MUST create an isolated draft backup (`<Title> - Backup [Timestamp]`) recorded in `backups.json` AND a filesystem snapshot in `backups/<site_slug>/<page_slug>-<page_id>/before/` BEFORE modifying any post, page, or postmeta. After every mutation the AI asserts the working page is public (`status == "publish"` by fresh `GET`, fixing up with a `POST` if needed) — see directive 11. The `<slug>-old` clone and the draft backup stay `draft`.
-3. **2-Times Base64 Credential Storage & Reuse Flow:**
-   - On the first successful connection to the sites, the credentials are encoded 2-times using Base64 with strongly-typed `EncodingConstants`:
-     `encoded = base64.b64encode(base64.b64encode(raw_password.encode(EncodingConstants.UTF8))).decode(EncodingConstants.ASCII)`
-   - Saved into local SQLite database `data/config.db` in table `Credentials`.
-   - On all future loops, iterations, and subsequent pages, credentials are automatically loaded from `data/config.db` without repeatedly prompting the user.
+3. **RSA SQLite Credential Storage & Autonomous Retrieval Flow:**
+   - On the first successful connection to the sites, the credentials are encrypted using the RSA algorithm via `scripts/rsa_credential_vault.py`.
+   - The RSA public key encrypts the password into Base64 ciphertext and stores it in local SQLite database `data/config.db` in table `Credentials`.
+   - **Autonomous On-Demand Decryption & Retrieval Invariant:** On all future loops, iterations, and subsequent pages, the AI imports `RsaCredentialVault` or runs `python scripts/rsa_credential_vault.py get --role <role>` to decrypt the password using the RSA private key in memory. The user is NEVER prompted for credentials twice.
 
 ### Slug Default & Homepage Rule:
 - If the operator provides no page/post slug, the AI starts with the homepage first — resolved via the front-page setting (`page_on_front` / `show_on_front`), falling back to the page with slug `home`, then to the site root URL `/`. If resolution fails, the AI halts and asks the operator; it never guesses a slug.
