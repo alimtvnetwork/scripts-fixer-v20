@@ -14,7 +14,7 @@ Official Authoritative References & Technical Documentation:
 • Pillow (PIL Fork) Headless Image Verification: https://pillow.readthedocs.io/
 • Playwright Python Documentation: https://playwright.dev/python/docs/intro
 
-Prompt Version: 2.1.0 (Master Autonomous Standalone Edition — Verified Backend Login & Line-by-Line Credential Protocol) Target Audience: Autonomous AI Agents (Antigravity, Cursor, Claude, ChatGPT, Muse), Full-Stack WordPress Engineers, QA Automation Leads
+Prompt Version: 2.2.0 (Master Autonomous Standalone Edition — Unsupervised Loop, Progress Telemetry & Discrepancy Planning) Target Audience: Autonomous AI Agents (Antigravity, Cursor, Claude, ChatGPT, Muse), Full-Stack WordPress Engineers, QA Automation Leads
 Task Slug: run-iterations-and-compare-screens / universal-elementor-finetune-pixel-perfect-loop
 Portability Contract: Anyone can copy-paste this prompt in full into an isolated AI environment, remote IDE, GitHub Gist, or GitLab Snippet, and the agent will execute the 100–300 iteration pixel-perfect fine-tuning loop blindly and safely without requiring any prior codebase files.
 
@@ -49,6 +49,10 @@ The AI MUST check off every box below before the first mutation of each page/pos
 - [ ] **Homepage first:** no slug given → homepage first, then the next page. (§1.12)
 - [ ] **100%:** loop until EVERY viewport is at or below 0.5% diff; fixes ONLY through the Python REST scripts, never by hand in the editor. (§1.12)
 - [ ] **Backups:** filesystem `before/` + `after/` snapshots AND draft backup `<Title> - Backup [Timestamp]` in `backups.json` before mutating. (§1 items 3, 6)
+- [ ] **Strictly unsupervised loop:** run completely without human supervision; NEVER pause to ask "Want me to start now or wait until you're back?", "Should I proceed?", or wait for loop approvals. The user sends the prompt and goes to sleep ("in the morning I should check all"); start comparing and fine-tuning immediately. (§1 item 1.3)
+- [ ] **Periodic 5–10 min progress telemetry:** output concise 1–2 line status updates every 5 to 10 minutes so operator reviewing logs knows work is actively progressing. (§1 item 1.4)
+- [ ] **Discrepancy & plan MD log:** each time a page is visited/compared, write down all visual differences and the exact planned Python script/CSS/AST fixes into `checks/<slug>/discrepancies.md` (and `comparisons/<slug>/discrepancies.md`) before mutating, so fixes can be applied rapidly. (§1 item 1.5, §4.14)
+- [ ] **Elementor-modifiable invariant:** EVERY modified item must be modifiable using Elementor (Flexbox containers, native widgets, style controls, custom CSS); total ban on raw unmanageable HTML outside Elementor AST. (§1 item 1.6)
 - [ ] **Line-by-line credentials:** operator queried using copy-paste ready format with line-by-line username, password, URLs, and admin panel check. (§1 item 1, §6)
 - [ ] **Immediate login confirmation:** before ANY page discovery or mutation, AI authenticates via Python session, validates /wp-admin/, verifies administrator role, and emits immediate confirmation to the operator. (§1 item 1.1)
 - [ ] **Bot-challenge bypass:** requests.Session with browser User-Agent used; never raw curl; nonce extracted from /wp-admin/ for REST calls. (§1 item 1.2, §4.13)
@@ -173,6 +177,39 @@ Once verified, the AI **MUST IMMEDIATELY CONFIRM** to the operator:
      - The password **MUST BE ENCODED 2 TIMES** using Base64 with strongly-typed `EncodingConstants`:
        `encoded = base64.b64encode(base64.b64encode(raw_password.encode(EncodingConstants.UTF8))).decode(EncodingConstants.ASCII)`
      - **Automatic Reuse Across Loops & Future Tasks:** Once the first connection or iteration is successful, credentials are persisted into `data/config.db`. On subsequent loops, rerun iterations, or future pages on the same sites, the AI loads credentials directly from `data/config.db` without repeatedly prompting the user.
+
+
+### 1.3 Strictly Unsupervised Autonomous Execution Gate (TOTAL BAN ON APPROVAL PAUSES)
+- **The Problem It Solves:** Previously, AI agents frequently performed pre-flight checks and then stalled asking:
+  `"Nothing has been changed on either site yet — the next step is step 1 above. Want me to start it now, or wait until you're back?"`
+  This defeats the entire purpose of autonomous execution. The operator submits the prompt and goes to sleep expecting to wake up and review completed comparisons in the morning ("in the morning I should check all").
+- **Mandatory Unsupervised Contract:**
+  1. **TOTAL BAN ON ASKING TO START OR PROCEED:** The AI agent **MUST NEVER** halt to ask whether to start, whether to continue, or request approval to proceed with the loop.
+  2. **Instant Autonomous Transition:** Once credentials/URLs are received (or defaulted to homepage), the AI MUST immediately test login, clone the backup (`<slug>-old`), begin capturing screenshots, and run the 100–300 iteration comparison loop without pausing.
+  3. **No Redundant Approval Loops:** Never ask the user to type the same thing several times or approve steps repeatedly.
+
+### 1.4 Periodic 5–10 Minute Progress Telemetry Heartbeat
+- **Live Monitoring Invariant:** During long-running 100–300 iteration loops, the AI orchestrator **MUST EMIT** a concise 1-liner or 2-liner progress update every 5 to 10 minutes (or every 5–10 iterations) into the output log so the operator knows the engine is actively working:
+  ```text
+  [02:45:10] ⏳ Loop Progress: Page 'home' | Iteration 42/300 | 4/6 viewports passed | Best Match: 98.6% | Active: tuning hero container padding
+  ```
+- **Included Telemetry Metrics:** Timestamp, current target page slug, current iteration number vs max budget, viewports passing diff threshold, best visual similarity score, and current active tuning action.
+
+### 1.5 Per-Visit Markdown Discrepancy & Remediation Planning Log (`discrepancies.md`)
+- **Persistent Remediation Plan:** Each time the AI visits and compares a page across screens, it **MUST WRITE** all identified visual differences and the exact planned remediation strategy into:
+  `checks/<slug>/discrepancies.md` (and `comparisons/<slug>/discrepancies.md`)
+- **Required Markdown Document Structure:**
+  1. **Discrepancy Inventory per Viewport:** Specific pixel, font-size, line-height, padding, margin, container gap, and alignment gaps for Desktop, Laptop, Tablet, and Mobile.
+  2. **Remediation Action Plan:** Exact Python script adjustments, Elementor AST container property changes, and scoped CSS rules planned to resolve the gap.
+  3. **Rapid Fix Rationale:** Having the discrepancies and planned fixes documented in an MD file allows the AI on subsequent passes to apply surgical fixes immediately without re-analyzing from scratch.
+
+### 1.6 Elementor-Modifiable Invariant (Core Architectural Goal)
+- **"Every item should be able to modify using the elementor that is the main goal":**
+- **TOTAL BAN ON NON-ELEMENTOR RAW HTML OVERRIDES:** Every single visual or structural modification made to the page **MUST BE NATIVELY MODIFIABLE USING ELEMENTOR**:
+  - Layout & Alignment: Must map to Elementor Flexbox Container controls (`direction`, `justify-content`, `align-items`, `gap`, `padding`, `margin`).
+  - Typography & Colors: Must map to Elementor widget style settings (`typography_typography`, `typography_font_size`, `title_color`, etc.).
+  - Custom Styling: Must be injected via Elementor Custom CSS attached to the widget or container selector (`selector { ... }`).
+- This guarantees that after AI completion, human designers and site maintainers can visually inspect, adjust, and edit every element inside the standard Elementor editor UI.
 
 2. **Local Filesystem CSS Persistence (`css/` directory):**
    - The AI **MUST PERSIST ALL CSS** directly to the local filesystem in the `css/` directory:
@@ -2227,6 +2264,102 @@ if __name__ == "__main__":
         sys.exit(1)
     auth = authenticate_wordpress(sys.argv[1], sys.argv[2], sys.argv[3])
     print(f"Nonce: {auth.nonce}, Admin: {auth.is_admin}")
+```
+
+
+---
+
+### 4.14 Discrepancy Logger & Progress Telemetry Engine (`scripts/discrepancy_logger.py`)
+
+```python
+#!/usr/bin/env python3
+"""
+discrepancy_logger.py — Discrepancy Markdown Planner & Progress Telemetry Engine.
+Logs per-visit visual differences and planned Python AST/CSS remedies into
+checks/<slug>/discrepancies.md, and emits periodic 5-10 min progress telemetry.
+"""
+from __future__ import annotations
+
+import os
+from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List
+
+
+def emit_progress_telemetry(
+    page_slug: str,
+    iteration: int,
+    max_iterations: int,
+    passed_viewports: int,
+    total_viewports: int,
+    best_match_score: float,
+    active_action: str,
+) -> None:
+    """Emit concise 1-2 line status update for live monitoring."""
+    now_str = datetime.now().strftime("%H:%M:%S")
+    msg = (
+        f"[{now_str}] ⏳ Loop Progress: Page '{page_slug}' | "
+        f"Iteration {iteration}/{max_iterations} | "
+        f"{passed_viewports}/{total_viewports} viewports passed | "
+        f"Best Match: {best_match_score:.1f}% | "
+        f"Active: {active_action}"
+    )
+    print(msg, flush=True)
+
+
+def log_discrepancy_plan(
+    page_slug: str,
+    iteration: int,
+    discrepancies: List[Dict[str, Any]],
+    planned_fixes: List[Dict[str, Any]],
+) -> Path:
+    """Write per-visit visual gaps and planned Elementor AST/CSS fixes to discrepancies.md."""
+    target_dir = Path("checks") / page_slug
+    target_dir.mkdir(parents=True, exist_ok=True)
+    comp_dir = Path("comparisons") / page_slug
+    comp_dir.mkdir(parents=True, exist_ok=True)
+
+    lines = [
+        f"# Visual Discrepancy & Remediation Plan: `{page_slug}`",
+        "",
+        f"- **Page Slug:** `{page_slug}`",
+        f"- **Iteration:** `{iteration}`",
+        f"- **Generated At:** `{datetime.now().isoformat()}`",
+        "",
+        "## 1. Discrepancy Inventory per Viewport",
+    ]
+
+    for d in discrepancies:
+        lines.append(f"- **{d.get('viewport', 'Screen')}**: {d.get('description', 'Diff detected')} (Deviation: {d.get('diff_percent', 0.0):.2f}%)")
+
+    lines.extend([
+        "",
+        "## 2. Planned Remediation Actions (Python Script & CSS Changes)",
+    ])
+
+    for f in planned_fixes:
+        lines.append(f"- **Target Element:** `{f.get('element_id', 'container')}`")
+        lines.append(f"  - **Elementor AST Property:** `{f.get('property', 'setting')}` -> `{f.get('value', 'val')}`")
+        if f.get("css_rule"):
+            lines.append(f"  - **Scoped CSS Rule:** `{f.get('css_rule')}`")
+
+    lines.extend([
+        "",
+        "## 3. Elementor Modifiability Guarantee",
+        "- All planned modifications map directly to native Elementor Flexbox container controls, widget settings, or Elementor custom CSS.",
+        "- Zero raw HTML hacks outside of Elementor AST `_elementor_data`.",
+        "",
+    ])
+
+    content = "
+".join(lines)
+    for p in [target_dir / "discrepancies.md", comp_dir / "discrepancies.md"]:
+        with open(p, "w", encoding="utf-8", newline="
+") as fp:
+            fp.write(content)
+
+    print(f"📝 Discrepancy plan written to: {target_dir / 'discrepancies.md'}")
+    return target_dir / "discrepancies.md"
 ```
 
 
