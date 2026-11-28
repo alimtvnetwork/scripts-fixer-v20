@@ -1,0 +1,133 @@
+"""Core immutable constants for universal Python task automation."""
+
+from __future__ import annotations
+
+
+class AnsiColorConstants:
+    """ANSI terminal styling and color escape sequences."""
+
+    RESET = "\033[0m"
+    BOLD = "\033[1m"
+    RED = "\033[31m"
+    GREEN = "\033[32m"
+    YELLOW = "\033[33m"
+    BLUE = "\033[34m"
+    MAGENTA = "\033[35m"
+    CYAN = "\033[36m"
+    GRAY = "\033[90m"
+
+
+class LogBadgeConstants:
+    """Standardized ANSI badges for console telemetry."""
+
+    OK = "[  OK  ]"
+    FAIL = "[ FAIL ]"
+    WARN = "[ WARN ]"
+    INFO = "[ INFO ]"
+    SKIP = "[ SKIP ]"
+    AUDIT = "[ AUDT ]"
+
+
+class SoftwarePackageConstants:
+    """Software package identifiers and package manager commands."""
+
+    CHOCOLATEY = "choco"
+    WINGET = "winget"
+    VSCODE = "code"
+    CURSOR = "cursor"
+    GIT = "git"
+    PYTHON = "python"
+    VMWARE = "vmware"
+    WHATSAPP = "WhatsApp"
+    CLAUDE_DESKTOP = "Claude"
+
+
+class OsPathConstants:
+    """Standard operating system and directory cache paths."""
+
+    WINDOWS_TEMP = r"C:\Windows\Temp"
+    USER_TEMP_ENV = "TEMP"
+    PREFETCH = r"C:\Windows\Prefetch"
+    CRASH_DUMPS = r"C:\Windows\Minidump"
+    DEFAULT_LOGS_DIR = "logs"
+    DEFAULT_LOG_FILE = "logs/task.log"
+    DEFAULT_SUMMARY_FILE = "logs/task-summary.json"
+
+
+class ProtectedNameConstants:
+    """Files and patterns strictly protected from deletion or modification."""
+
+    GITKEEP = ".gitkeep"
+    CONFIG_JSON = "config.json"
+    SETTINGS_JSON = "settings.json"
+    ENV_FILE = ".env"
+    PROTECTED_EXTENSIONS = (".git", ".svn", ".hg")
+
+
+class StepTargetConstants:
+    """Canonical step target identifiers borrowed from OS optimization."""
+
+    DISM_CLEANUP = "DISM Component Store"
+    WINDOWS_UPDATES = "Windows Updates"
+    STALE_BUILD_TARGETS = "Stale Build Targets"
+    DEVTOOLS_CACHES = "Dev Tools Caches"
+    GITMAP_SCAN = "GitMap Work Scan"
+    ANTIGRAVITY_CLEANUP = "Antigravity Chats"
+    CURSOR_CHAT_SYNC = "Cursor Chat Sync"
+    WORKDIR_FLEET = "Work Directory Fleet"
+
+
+class ProjectNameConstants:
+    """Canonical repository and project identifiers across fleet."""
+
+    GITMAP = "gitmap"
+    ANTIGRAVITY_MANAGER = "Antigravity-Manager"
+    REPO_CACHE = "repo-cache"
+    CAT_MY = "cat-my"
+    LARA_PUBLISHING = "lara-publishing"
+    WP_EXAM = "wp-exam"
+
+
+class CursorSyncConstants:
+    """SQLite tables and keys used during Cursor chat state sync."""
+
+    TABLE_ITEM_TABLE = "ItemTable"
+    TABLE_CURSOR_DISK_KV = "cursorDiskKV"
+    TABLE_COMPOSER_HEADERS = "composerHeaders"
+    KEY_CURSOR_AUTH_PREFIX = "cursorAuth/"
+    KEY_COMPOSER_DATA_PREFIX = "composerData:"
+
+
+class WindowsServiceConstants:
+    """Canonical Windows service identifiers."""
+
+    AUDIO_SRV = "AudioSrv"
+    PRINT_SPOOLER = "Spooler"
+    WINDOWS_UPDATE = "wuauserv"
+    VMWARE_NAT = "VMnetDHCP"
+
+
+class OsCachePathConstants:
+    """Common OS-level cache directory relative and absolute patterns."""
+
+    SYSTEM_TEMP = r"C:\Windows\Temp"
+    USER_TEMP = "TEMP"
+    PIP_CACHE = r"pip\cache"
+    NPM_CACHE = r"npm-cache"
+    GRADLE_CACHE = r".gradle\caches"
+
+
+class TimeoutConstants:
+    """Execution timeout thresholds in seconds."""
+
+    DEFAULT_TIMEOUT_SEC = 15
+    LONG_TIMEOUT_SEC = 60
+
+
+class GitSyncConstants:
+    """Git repository synchronization defaults and SSH prefixes."""
+
+    DEFAULT_WORKERS = 4
+    SSH_PREFIX = "git@github.com:"
+    HTTPS_PREFIX = "https://github.com/"
+    CONFIG_FILENAME = "config.json"

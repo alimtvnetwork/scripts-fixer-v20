@@ -1,0 +1,57 @@
+"""Unit tests for dual-channel TaskLogger and JSON summary persistence."""
+
+from __future__ import annotations
+
+import json
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+scripts_path = Path(__file__).resolve().parent.parent / "scripts"
+if str(scripts_path) not in sys.path:
+    sys.path.insert(0, str(scripts_path))
+
+from task_logger import TaskLogger
+
+
+class TestTaskLogger(unittest.TestCase):
+    """Test suite for dual console/file TaskLogger."""
+
+    def setUp(self) -> None:
+        """Create isolated temporary log directory."""
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.log_file = Path(self.temp_dir.name) / "task.log"
+        self.logger = TaskLogger(log_path=self.log_file)
+
+    def tearDown(self) -> None:
+        """Clean up temporary log directory."""
+        self.temp_dir.cleanup()
+
+    def test_logger_methods(self) -> None:
+        """Verify logger methods write to log file and record events."""
+        self.logger.ok("Operation succeeded")
+        self.logger.info("Informational message")
+        self.logger.warn("Warning alert")
+        self.logger.skip("Item skipped")
+        self.logger.fail("Failure message")
+        self.logger.audit("TEST_ACTION", "OK", {"metric": 100})
+        self.assertTrue(self.log_file.exists())
+        content = self.log_file.read_text(encoding="utf-8")
+        self.assertIn("[  OK  ] Operation succeeded", content)
+        self.assertIn("JSON_AUDIT", content)
+
+    def test_save_summary_log(self) -> None:
+        """Verify save_summary_log generates valid JSON summary report."""
+        self.logger.ok("Step 1 done")
+        self.logger.fail("Step 2 failed")
+        summary_path = self.logger.save_summary_log(status="fail")
+        self.assertTrue(summary_path.exists())
+        data = json.loads(summary_path.read_text(encoding="utf-8"))
+        self.assertEqual(data["status"], "fail")
+        self.assertEqual(data["error_count"], 1)
+        self.assertGreaterEqual(data["event_count"], 2)
+
+
+if __name__ == "__main__":
+    unittest.main()

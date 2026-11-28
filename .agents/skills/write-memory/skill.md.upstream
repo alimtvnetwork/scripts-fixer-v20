@@ -1,0 +1,16 @@
+---
+name: write-memory
+description: Canonical write-memory skill for persisting session progress, architectural decisions, and updated task state into .ai-memory/.
+---
+
+# Write Memory Skill
+
+## Invocation
+`@[.agents/skills/write-memory]` or `@[01-prompts/03-read-write/04-write-memory.md]`
+
+## Core Mandates
+1. Persist session decisions, learned patterns, and task status into `.ai-memory/`.
+2. Update `.ai-memory/plans/readme.md` and `.ai-memory/what-to-read.md`.
+3. Never consolidate detailed specifications into vague summaries.
+4. Update `.ai-memory/strictly-avoid.md` with negative rules.
+5. Record real numbers for completed tasks.

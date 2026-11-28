@@ -1,0 +1,176 @@
+"""Core strongly-typed enums for universal Python task automation."""
+
+from __future__ import annotations
+
+from enum import Enum, IntEnum
+from typing import TypeVar
+
+from app_errors import AppError, Result
+
+E = TypeVar("E", bound="BaseParsableEnum")
+
+
+class BaseParsableEnum(str, Enum):
+    """Base parsable string enum with monadic parsing."""
+
+    @classmethod
+    def all_values(cls) -> list[str]:
+        """Return list of all registered enum string values."""
+        return [item.value for item in cls]
+
+    @classmethod
+    def is_valid(cls, raw_value: str) -> bool:
+        """Return True if string matches a registered enum value."""
+        return raw_value.strip().lower() in cls.all_values()
+
+    @classmethod
+    def parse(cls: type[E], raw_value: str) -> Result[E]:
+        """Monadically parse string into enum member."""
+        normalized = raw_value.strip().lower()
+        for item in cls:
+            if item.value == normalized:
+                return Result.ok(item)
+
+        err_msg = f"Invalid {cls.__name__}: '{raw_value}'. Allowed: {cls.all_values()}"
+        error = AppError("VALIDATION_ERROR", err_msg, "parse", {"raw": raw_value})
+        return Result.fail(error)
+
+
+class AppErrorCodeType(str, Enum):
+    """Domain-specific error code classifications."""
+
+    SYSTEM_ERROR = "SYSTEM_ERROR"
+    IO_ERROR = "IO_ERROR"
+    VALIDATION_ERROR = "VALIDATION_ERROR"
+    PERMISSION_ERROR = "PERMISSION_ERROR"
+    TIMEOUT_ERROR = "TIMEOUT_ERROR"
+    NOT_FOUND_ERROR = "NOT_FOUND_ERROR"
+    COMMAND_ERROR = "COMMAND_ERROR"
+    DATABASE_ERROR = "DATABASE_ERROR"
+    UNKNOWN_ERROR = "UNKNOWN_ERROR"
+
+
+class ActionType(BaseParsableEnum):
+    """Universal CLI execution actions."""
+
+    STATUS = "status"
+    SCAN = "scan"
+    PURGE = "purge"
+    RESTART = "restart"
+    REPORT = "report"
+    HISTORY = "history"
+    TEST = "test"
+    CLEAN_TEMP = "clean-temp"
+    RESET_NET = "reset-net"
+    GIT_SYNC = "git-sync"
+
+    def label(self) -> str:
+        """Human-readable display label."""
+        labels = {
+            ActionType.STATUS: "Check Status",
+            ActionType.SCAN: "Scan Targets",
+            ActionType.PURGE: "Purge Cleanable Files",
+            ActionType.RESTART: "Restart Service",
+            ActionType.REPORT: "Generate Report",
+            ActionType.HISTORY: "View Task History",
+            ActionType.TEST: "Run Test Suite",
+            ActionType.CLEAN_TEMP: "Clean Temp Caches",
+            ActionType.RESET_NET: "Reset Network Routing",
+            ActionType.GIT_SYNC: "Sync Git Repositories",
+        }
+        return labels.get(self, self.value)
+
+
+class TaskCategoryType(BaseParsableEnum):
+    """Task category classifications."""
+
+    OS_OPTIMIZATION = "os-optimization"
+    WINDOWS_TROUBLESHOOTING = "windows-troubleshooting"
+    VMWARE_MANAGEMENT = "vmware-management"
+    APP_CACHE = "app-cache"
+    SYSTEM_CLEANUP = "system-cleanup"
+    TEMP_FILES = "temp-files"
+
+    def label(self) -> str:
+        """Human-readable display label."""
+        labels = {
+            TaskCategoryType.OS_OPTIMIZATION: "OS Optimization",
+            TaskCategoryType.WINDOWS_TROUBLESHOOTING: "Windows Troubleshooting",
+            TaskCategoryType.VMWARE_MANAGEMENT: "VMware Management",
+            TaskCategoryType.APP_CACHE: "Application Cache",
+            TaskCategoryType.SYSTEM_CLEANUP: "System Cleanup",
+            TaskCategoryType.TEMP_FILES: "Temporary Files",
+        }
+        return labels.get(self, self.value)
+
+
+class ExitCodeType(IntEnum):
+    """Standardized POSIX and Windows CLI exit codes."""
+
+    SUCCESS = 0
+    GENERAL_ERROR = 1
+    USAGE_ERROR = 2
+    CONFIG_ERROR = 3
+    PERMISSION_ERROR = 4
+    RUNTIME_ERROR = 5
+    TIMEOUT_ERROR = 124
+
+
+class TargetStatusType(BaseParsableEnum):
+    """Target execution state outcomes."""
+
+    ACTIVE = "active"
+    HEALTHY = "healthy"
+    DEGRADED = "degraded"
+    STOPPED = "stopped"
+    CLEANED = "cleaned"
+    ALREADY_CLEAN = "already-clean"
+    UPDATED = "updated"
+    ALREADY_CURRENT = "already-current"
+    SKIPPED = "skipped"
+    SKIPPED_PROTECTED = "skipped-protected"
+    DRY_RUN = "dry-run"
+    FAILED = "failed"
+
+
+class CleanupRiskType(BaseParsableEnum):
+    """Safety and risk levels for cleanup actions."""
+
+    SAFE = "safe"
+    CAUTION = "caution"
+    DANGER = "danger"
+
+
+class LogLevelType(BaseParsableEnum):
+    """Logging severity levels."""
+
+    INFO = "info"
+    WARN = "warn"
+    ERROR = "error"
+    DEBUG = "debug"
+
+
+class OsCacheType(BaseParsableEnum):
+    """Operating system and application cache types."""
+
+    USER_TEMP = "user-temp"
+    SYSTEM_TEMP = "system-temp"
+    PIP = "pip"
+    NPM = "npm"
+    GRADLE = "gradle"
+
+
+class WindowsServiceType(BaseParsableEnum):
+    """Managed Windows services."""
+
+    AUDIO = "audio"
+    SPOOLER = "spooler"
+    WINDOWS_UPDATE = "windows-update"
+
+
+class GitSyncFormatType(BaseParsableEnum):
+    """Supported input file formats for repository synchronization."""
+
+    TEXT = "text"
+    JSON = "json"
+    MARKDOWN = "markdown"

@@ -1,0 +1,13 @@
+# Read Memory Latest — Canonical Read Prompt
+
+> **Prompt Version:** 2.2.0  
+> **Invocation:** `@[01-prompts/03-read-write/03-read-memory-latest.md]` or `@[.agents/skills/read-memory-latest/skill.md]`
+
+## Purpose
+Ingest project identity, architectural guidelines, recent git commit history, and active plans from `.ai-memory/` to initialize or restore session context.
+
+## Directives
+1. Inspect `.ai-memory/what-to-read.md` and root `readme.md`.
+2. Review recent commits via `gitmap log -n 10` or `git log -n 10 --oneline`.
+3. Load active plans from `.ai-memory/plans/pending/`.
+4. Enforce coding guidelines and error management invariants.

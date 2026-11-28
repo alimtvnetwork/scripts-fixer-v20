@@ -1,0 +1,238 @@
+# Universal Python Task Automation: Reference Architecture & Blueprint
+
+> **Reference Version:** 1.0.0
+> **Target Audience:** Autonomous AI Agents (Antigravity, Cursor, Muse), DevOps Engineers, Automation Bots
+> **Compliance:** 100% Repository Coding Guidelines, Monadic Error Handling, Zero Magic Strings, Universal LF
+
+---
+
+## 1. Architectural Overview & Mental Model
+
+This directory provides the canonical reference architecture for autonomous, cross-platform Python task automation. Whenever an AI or engineer is tasked with building an automated task—such as Windows audio troubleshooting, VMware network resets, application cache cleanup, OS disk space optimization, or account provisioning—this directory serves as the executable blueprint.
+
+### Core Architectural Pillars
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│                    Cross-Platform Launchers                 │
+│                 run.ps1 (Win)  │  run.sh (POSIX)            │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ Discovers Python & Forwards
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  scripts/cli_dispatcher.py                  │
+│       • Argparse CLI   • Interactive Suggestions Engine      │
+│       • Top-Level Error Unwrapping & ExitCodeType Exit       │
+└──────────────┬──────────────────────────────┬───────────────┘
+               │                              │
+               ▼                              ▼
+┌──────────────────────────────┐ ┌────────────────────────────┐
+│      scripts/task_runner.py  │ │   scripts/task_logger.py   │
+│ • Modular Handlers (<= 15 L) │ │ • Console ANSI Badges      │
+│ • Monadic Result[T] Returns  │ │ • Structured logs/task.log │
+│ • Leaf Error Sovereignty     │ │ • JSON Audit Telemetry     │
+└──────────────┬───────────────┘ └────────────────────────────┘
+               │
+               ▼
+┌─────────────────────────────────────────────────────────────┐
+│              scripts/core_enums.py & core_constants.py      │
+│     • Strongly-typed enums ending in Type with parse()      │
+│     • Immutable constants classes (Zero Magic Strings)      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+1. **Leaf Error Sovereignty:** Leaf functions in `scripts/task_runner.py` return `Result[T]`. They NEVER call `sys.exit()` or unhandled raises.
+2. **Outer Caller Exit:** Only `scripts/cli_dispatcher.py` unwraps `Result[T]` to terminate the process with strongly-typed `ExitCodeType`.
+3. **Zero Magic Strings:** All strings (actions, categories, exit codes, badges, paths, packages) derive from enums ending in `Type` or constant classes.
+4. **Strict Hygiene Invariants:** Every function $\le 15$ lines, every file $\le 200$ lines, positive booleans (`is_*`, `has_*`), zero nested `if` statements, 100% UNIX LF (`\n`, 0 CRLF).
+
+---
+
+## 2. Directory Topology
+
+```text
+code/
+├── conversation/
+│   └── 01-user-request.md          # Trace of the user request and task background
+├── logs/
+│   ├── .gitkeep                    # Retains logs directory in source control
+│   └── task.log                    # Dual-channel text and JSON audit events
+├── scripts/
+│   ├── __init__.py                 # Package marker
+│   ├── app_errors.py               # Monadic Result[T] and AppError dataclass
+│   ├── core_constants.py           # Immutable constant classes (zero magic strings)
+│   ├── core_enums.py               # Strongly-typed enums ending in Type
+│   ├── sql_types.py                # SQL statements encapsulated in enums (Zero SQL in logic)
+│   ├── task_repository.py          # SQL Repository Pattern (ITaskRepository & SqliteTaskRepository)
+│   ├── subprocess_guard.py         # Resilient subprocess execution with Unicode & timeout guard
+│   ├── terminal_ui.py              # Rich tree, left-hand padding (2 spaces), & box-drawing telemetry
+│   ├── git_sync_runner.py          # Multi-format Git parallel synchronizer (text, json, markdown)
+│   ├── task_logger.py              # Dual ANSI console + structured file logger
+│   ├── task_runner.py              # Modular task execution handlers (<= 15 lines)
+│   └── cli_dispatcher.py           # Argparse CLI with --dry-run, history & suggestions
+├── run.ps1                         # Windows PowerShell entrypoint (Strict Stop)
+├── run.sh                          # POSIX Bash entrypoint (set -euo pipefail)
+├── tests/                          # Automated unit test suite (100% pass, pure standard library)
+│   ├── __init__.py
+│   ├── test_app_errors.py          # Unit tests for AppError, Result[T], immutability
+│   ├── test_core_enums.py          # Unit tests for BaseParsableEnum, ActionType, ExitCodeType
+│   ├── test_git_sync_runner.py     # Unit tests for Git URL conversion and multi-format parsing
+│   ├── test_task_logger.py         # Unit tests for ANSI badges, dual logging, JSON summaries
+│   ├── test_task_repository.py     # Unit tests for SQL repository pattern & TaskSqlType
+│   ├── test_subprocess_guard.py    # Unit tests for resilient subprocess execution & timeouts
+│   └── test_task_runner.py         # Unit tests for protected paths, scan, dry-run purge, gauge
+├── what-to-read.md                 # Agent context ingestion documentation
+└── readme.md                       # This comprehensive architectural reference
+```
+
+---
+
+## 3. Step-by-Step Task Replication & Adaptation Guide
+
+When an AI model is instructed to create a new task (e.g. `466-whatsapp-cache-cleanup` or `467-sound-driver-repair`):
+
+1. **Create the Task Directory:**
+   - Create `XX-<slug>/` following the sequential slug convention.
+   - Replicate the topology: `conversation/`, `logs/`, `scripts/`, `run.ps1`, `run.sh`, `what-to-read.md`, `readme.md`.
+2. **Define Domain Enums & Constants:**
+   - In `scripts/core_enums.py`, extend or define new enums ending in `Type` inheriting from `BaseParsableEnum`.
+   - In `scripts/core_constants.py`, declare domain constants (registry keys, service names, file paths).
+3. **Implement Modular Handlers:**
+   - In `scripts/task_runner.py`, implement discrete steps $\le 15$ lines each.
+   - Wrap system calls in `try...except`, catching expected exceptions.
+   - Return `Result.ok(value)` on success or `Result.fail(AppError(...))` on failure.
+   - Support `is_dry_run` flag on all state-mutating operations.
+4. **Wire the CLI Dispatcher:**
+   - In `scripts/cli_dispatcher.py`, map the new actions and categories.
+   - Add interactive next-step suggestions in `print_suggestions()`.
+5. **Verify Locally:**
+   - Run `./run.ps1 status --category <category>` or `./run.sh status --category <category>`.
+   - Test `./run.ps1 purge --dry-run` to ensure simulation safety.
+   - Verify that `logs/task.log` records events and JSON audit lines.
+
+---
+
+## 4. Monadic Error Handling (`AppError` & `Result[T]`)
+
+Instead of raising exceptions that crash execution or returning raw tuples `(result, err)`, use the monadic `Result[T]` container:
+
+```python
+from app_errors import AppError, Result
+
+def scan_files(directory: Path) -> Result[list[Path]]:
+    if not directory.exists():
+        err = AppError(
+            code="NOT_FOUND_ERROR",
+            message=f"Directory not found: {directory}",
+            operation="scan_files",
+        )
+        return Result.fail(err)
+
+    files = [p for p in directory.iterdir() if p.is_file()]
+    return Result.ok(files)
+```
+
+Unwrapping in the top-level dispatcher:
+
+```python
+result = scan_files(target_path)
+if result.has_error:
+    logger.fail(f"Scan failed: {result.error}")
+    return ExitCodeType.RUNTIME_ERROR
+
+logger.ok(f"Found {len(result.value)} files")
+return ExitCodeType.SUCCESS
+```
+
+---
+
+## 4.1 SQL Repository Pattern & Database Isolation
+
+Adhering to `@sql-repository-pattern-and-enum-actions`, all database access is isolated behind repository interfaces with zero raw SQL in business logic:
+
+1. **SQL Statements in Enums (`scripts/sql_types.py`):**
+   Every SQL statement is declared as an enum member of `TaskSqlType`. No raw SQL strings or query concatenations exist in business logic.
+2. **Interface Protocol (`scripts/task_repository.py`):**
+   `ITaskRepository(Protocol)` defines intention-named methods: `record_task()`, `list_latest()`, `list_by_category()`.
+3. **Monadic Error Handling:**
+   All SQLite errors are caught inside `SqliteTaskRepository` and surfaced as `Result.fail(AppError(AppErrorCodeType.DATABASE_ERROR, ...))` without crashing the process.
+4. **Execution Audit Inspection:**
+   Run `./run.ps1 history` or `./run.sh history` to query the SQLite repository and display the latest 10 executed task audits.
+
+---
+
+## 4.2 Resilient Subprocess Guard (`scripts/subprocess_guard.py`)
+
+Borrowing patterns from `D:\work\repo-cache\01-os-optimization\python\subprocess-guard.py`, external system execution is protected against hangs and decoding errors:
+
+1. **Unicode Safety:** Executes with `errors="replace"` to prevent Windows `UnicodeDecodeError` on system outputs.
+2. **Timeout Enforcement:** Kills and captures timeout events gracefully, returning `SubprocessResult(is_timeout=True)`.
+3. **Monadic Envelope:** Returns `Result.ok(SubprocessResult)` or `Result.fail(AppError)` without unhandled OS raises.
+4. **Clean Parameter Validation:** Guards against empty command arguments before invoking subprocess pipelines.
+
+---
+
+## 5. Dual-Channel Logging Specification
+
+The `TaskLogger` simultaneously handles interactive developer ergonomics and machine-readable audit logs:
+
+| Channel | Format | Destination | Example |
+| :--- | :--- | :--- | :--- |
+| **Interactive Console** | Colored ANSI Badges | `stdout` | `\033[32m[  OK  ]\033[0m Target verified` |
+| **Log File Text** | Timestamped Text | `logs/task.log` | `[2026-11-17 12:00:00] [  OK  ] Target verified` |
+| **Structured Audit** | Machine JSON | `logs/task.log` | `JSON_AUDIT: {"operation":"purge","status":"SUCCESS"}` |
+
+Available badges: `LogBadgeConstants.OK`, `FAIL`, `WARN`, `INFO`, `SKIP`, `AUDIT`.
+
+---
+
+## 6. CLI Usage & Flag Reference
+
+```bash
+# Execute automated unit test suite (100% green pass)
+./run.ps1 test
+# or with POSIX Bash:
+./run.sh test
+
+# Check status / health of target category with visual ASCII disk gauge
+./run.ps1 status --category os-optimization
+
+# Scan purgeable files without modifying state
+./run.ps1 scan --category os-optimization --target ./temp
+
+# Safely simulate cleanup of OS temp caches with dry-run mode
+./run.ps1 clean-temp --dry-run
+
+# Safely simulate cleanup with dry-run mode
+./run.ps1 purge --category os-optimization --target ./temp --dry-run
+
+# Execute real cleanup with verbose debug logging
+./run.ps1 purge --category os-optimization --target ./temp --verbose
+
+# Troubleshoot Windows Audio service
+./run.ps1 restart --category windows-troubleshooting --dry-run
+
+# Troubleshoot VMware network adapter routing & DNS flush
+./run.ps1 reset-net --dry-run
+
+# Clean WhatsApp desktop application temporary cache
+./run.ps1 purge --category app-cache --dry-run
+
+# Synchronize Git repositories from manifest file (text, json, markdown)
+./run.ps1 git-sync --target ./repos.txt --dry-run
+```
+
+---
+
+## 7. Quality Gate Checklist
+
+When creating or modifying tasks derived from this architecture, verify:
+
+- [ ] Every function is strictly $\le 15$ lines.
+- [ ] Every file is strictly $\le 200$ lines.
+- [ ] Zero magic strings: all values derive from enums or constants.
+- [ ] All leaf functions return `Result[T]` with error sovereignty preserved.
+- [ ] Positive boolean naming strictly enforced (`is_*`, `has_*`).
+- [ ] Zero nested `if` statements (guard clauses only).
+- [ ] Launchers `run.ps1` and `run.sh` forward arguments cleanly.
+- [ ] 100% UNIX LF line endings across all files (0 CRLF).

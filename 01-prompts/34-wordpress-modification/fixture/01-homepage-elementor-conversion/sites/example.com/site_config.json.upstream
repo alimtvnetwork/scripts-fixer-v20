@@ -1,0 +1,10 @@
+{
+  "domain": "example.com",
+  "theme": "hello-elementor",
+  "elementor_version": "3.25.0",
+  "has_pro": true,
+  "breakpoints": {
+    "tablet": 1024,
+    "mobile": 768
+  }
+}

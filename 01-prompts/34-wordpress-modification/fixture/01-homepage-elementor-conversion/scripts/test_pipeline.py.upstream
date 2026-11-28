@@ -1,0 +1,116 @@
+"""Unit test suite for WordPress pipeline, caching, and CSS transformation engine."""
+from __future__ import annotations
+
+import json
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+# Ensure root directory is on sys.path
+_ROOT = Path(__file__).resolve().parent.parent
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
+
+from scripts.app_errors import Result
+from scripts.css_engine import ScopedCssBuilder
+from scripts.pipeline_engine import FileSystemCache, PipelineWrapper
+from scripts.transform_protocol import (
+    TransformContext,
+    TransformRegistry,
+)
+from scripts.transformations.hero_modernization import HeroModernizationTransform
+
+
+class TestFileSystemCache(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.cache = FileSystemCache()
+
+    def tearDown(self) -> None:
+        self.temp_dir.cleanup()
+
+    def test_cache_hit_and_invalidation(self) -> None:
+        file_path = Path(self.temp_dir.name) / "test.json"
+        file_path.write_text(json.dumps({"key": "val1"}), encoding="utf-8")
+
+        res1 = self.cache.get_json(file_path)
+        self.assertTrue(res1.is_success)
+        self.assertEqual(res1.value.get("key"), "val1")
+
+        import time
+        time.sleep(0.05)
+        file_path.write_text(json.dumps({"key": "val2"}), encoding="utf-8")
+        res2 = self.cache.get_json(file_path)
+        self.assertTrue(res2.is_success)
+        self.assertEqual(res2.value.get("key"), "val2")
+
+    def test_cache_explicit_invalidation(self) -> None:
+        file_path = Path(self.temp_dir.name) / "test2.json"
+        file_path.write_text(json.dumps({"state": "init"}), encoding="utf-8")
+        _ = self.cache.get_json(file_path)
+
+        file_path.write_text(json.dumps({"state": "updated"}), encoding="utf-8")
+        self.cache.invalidate(file_path)
+        res = self.cache.get_json(file_path)
+        self.assertTrue(res.is_success)
+        self.assertEqual(res.value.get("state"), "updated")
+
+        self.cache.clear()
+        res_after_clear = self.cache.get_json(file_path)
+        self.assertTrue(res_after_clear.is_success)
+        self.assertEqual(res_after_clear.value.get("state"), "updated")
+
+
+class TestScopedCssBuilder(unittest.TestCase):
+    def test_format_rule_block(self) -> None:
+        rules = {"background": "#0f172a", "color": "#ffffff"}
+        block = ScopedCssBuilder.format_rule_block("selector", rules)
+        self.assertIn("selector {", block)
+        self.assertIn("background: #0f172a;", block)
+
+    def test_append_scoped_rules(self) -> None:
+        existing = "selector { font-size: 16px; }"
+        rules = {"margin": "0 auto"}
+        result = ScopedCssBuilder.append_scoped_rules(existing, "selector .inner", rules)
+        self.assertIn("font-size: 16px;", result)
+        self.assertIn("selector .inner {", result)
+
+    def test_merge_design_tokens(self) -> None:
+        css = "selector { color: var(--primary); background: __TOKEN_SECONDARY__; }"
+        tokens = {"primary": "#38bdf8", "secondary": "#0f172a"}
+        result = ScopedCssBuilder.merge_design_tokens(css, tokens)
+        self.assertIn("#38bdf8", result)
+        self.assertIn("#0f172a", result)
+
+
+class TestTransformStepAndPipeline(unittest.TestCase):
+    def test_hero_modernization_transform(self) -> None:
+        transform = HeroModernizationTransform()
+        ctx = TransformContext(site_url="", page_id=42, cache=FileSystemCache(), params={"target_id": "hero-section"})
+
+        comp_res = transform.compile(ctx)
+        self.assertTrue(comp_res.is_success)
+
+        ast = {"elements": [{"id": "el1", "settings": {"_element_id": "hero-section"}}]}
+        ast_res = transform.modify_ast(ast, ctx)
+        self.assertTrue(ast_res.is_success)
+        self.assertEqual(ast_res.value["elements"][0]["settings"]["background_background"], "gradient")
+
+        css_res = transform.modify_css("", ctx)
+        self.assertTrue(css_res.is_success)
+        self.assertIn("backdrop-filter: blur(16px);", css_res.value)
+
+    def test_pipeline_execution(self) -> None:
+        pipeline = PipelineWrapper(name="test_pipeline")
+        pipeline.add_step(HeroModernizationTransform())
+        ctx = TransformContext(site_url="", page_id=42, cache=FileSystemCache(), params={"target_id": "hero-section"})
+        ast = {"elements": [{"id": "el1", "settings": {"_element_id": "hero-section"}}]}
+
+        res = pipeline.execute(ctx, ast, "")
+        self.assertTrue(res.is_success)
+        self.assertEqual(res.value["step_count"], 1)
+
+
+if __name__ == "__main__":
+    unittest.main()

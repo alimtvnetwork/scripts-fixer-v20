@@ -1,0 +1,41 @@
+# Universal Standalone Single-File Prompts (`35-universal-single-file-prompts`)
+
+> **Directory Version:** 1.0.0
+> **Target Audience:** Developers, DevOps Engineers, AI Prompters, Autonomous Agents
+> **Key Feature:** 100% Sovereign Single-File Prompts with Zero External Dependencies
+
+---
+
+## 📖 Overview & Purpose
+
+This directory hosts the **all-in-one, standalone single-file editions** of the universal automation prompts. While Categories `33-universal-python-task` and `34-wordpress-modification` provide modular, multi-file workspace layouts with separate `code/` trees and test fixtures, this directory is specifically tailored for **direct human and AI copy-paste portability**.
+
+Every file in this folder contains:
+1. **The Complete Prompt Directives:** Master budgets, multi-agent quotas, mission objectives, and task-scoped topology.
+2. **Full Embedded Production Code:** Verbatim source code for launchers (`run.ps1`, `run.sh`), Python error handlers (`app_errors.py` with `Result[T]` & `AppError`), strongly-typed enums (`core_enums.py`), constant classes (`core_constants.py`), dual-channel loggers (`task_logger.py`), modular handlers (`task_runner.py`), and CLI dispatchers (`cli_dispatcher.py`).
+3. **Turn 1 Understood Showcase Protocol:** Standardized verification acknowledgment table.
+4. **100/100 Evaluation Rubric:** Auditable quality gate and score matrix.
+
+Anyone can open any `.md` file in this directory, click **Copy**, and paste it into GitHub Gists, GitLab Snippets, Cursor, Antigravity, Claude, ChatGPT, or a fresh machine—and it works immediately without cloning submodules or resolving local repository paths.
+
+---
+
+## 📑 Single-File Prompt Index
+
+- [`01-universal-python-task-automation-prompt.md`](01-universal-python-task-automation-prompt.md) — Master Single-File Standalone Prompt for Python Task Automation. Covers Windows sound fixes, VMware network resets, WhatsApp/Electron cache cleaning, OS disk space optimization, package management, and background service automation. Contains complete embedded Python modules, monadic `Result[T]` error handling, SQL repository pattern (`ITaskRepository` & `SqliteTaskRepository`), and cross-platform launchers.
+- [`02-universal-wordpress-elementor-modification-prompt.md`](02-universal-wordpress-elementor-modification-prompt.md) — Master Single-File Standalone Prompt for WordPress & Elementor Modernization. Covers 3-stage base64 credential security, pre-flight draft backup snapshots in `backups.json`, Elementor Flexbox container synthesis, Pillow visual diffing (`visual_diff.py`), and self-healing REST API error management.
+- [`03-universal-binary-deployment-prompt.md`](03-universal-binary-deployment-prompt.md) — Master Single-File Standalone Prompt for Universal Binary Deployment & Public Distribution. Covers dynamic GitLab CLI identity discovery, parameterized variable repository naming (`<REPO_NAME>`), mandatory explicit public visibility (`--public`), unauthenticated raw `HTTP 200 OK` assertions, 10 GB repository rollover guard, multi-OS 7z LZMA2 chunking (`-v8m`/`-v5m`), and smart client installers (`install.ps1`, `install.sh`).
+- [`04-developer-daily-master-prompt.md`](04-developer-daily-master-prompt.md) — Master Single-File Standalone Prompt for Developer Daily Work & AI Operation. Enforces deep codebase comprehension first, zero guideline hallucination, explanation and safety gates (Zero Harm), total ban on reading `.env` and credential files, and multi-platform AI registration via `03-ai-scripts/71-register-developer-master-prompt-as-copilot-skill.py`.
+- [`06-workstation-and-chat-optimization-prompt.md`](06-workstation-and-chat-optimization-prompt.md) — Master Single-File Standalone Prompt for Workstation OS & Antigravity Chat Optimization. Covers **specific case**, **specific section**, and **all** optimization modes, clean JSON chat metadata inspection (`id`, `name`, `turns`, `file_size`), UI click-to-delete integration, and dry-run-first 7-layer delete-by-ID purging across `01-os-optimization` and `02-antigravity-chat-optimization`.
+
+---
+
+## 🏛️ Multi-File vs. Single-File Structure
+
+| Feature | Multi-File Editions (`33-` & `34-`) | Single-File Editions (`35-`) |
+| :--- | :--- | :--- |
+| **Primary Use Case** | Repository development, code modularity, shared testing | Direct copy-paste to external chat, gists, or remote IDEs |
+| **Code Placement** | Split into `code/scripts/*.py` & `fixture/` | Embedded directly inside the `.md` file |
+| **External Dependencies** | Depends on sibling files in workspace | **Zero** — 100% self-contained |
+| **Launchers** | Standalone files (`run.ps1`, `run.sh`) | Fully included in Markdown code fences |
+| **Scoring** | 100 / 100 | **100 / 100** |

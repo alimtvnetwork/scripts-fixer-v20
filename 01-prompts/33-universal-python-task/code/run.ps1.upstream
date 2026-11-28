@@ -1,0 +1,43 @@
+#!/usr/bin/env pwsh
+<#
+.SYNOPSIS
+    Windows PowerShell entrypoint for universal Python task automation.
+.DESCRIPTION
+    Discovers Python 3 runtime and forwards arguments to scripts/cli_dispatcher.py with strict error handling.
+#>
+[CmdletBinding()]
+param(
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]]$ScriptArgs
+)
+
+$ErrorActionPreference = "Stop"
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+Set-Location -LiteralPath $ScriptDir
+
+$PythonCmd = $null
+foreach ($Candidate in @("python", "py", "python3")) {
+    $Command = Get-Command $Candidate -ErrorAction SilentlyContinue
+    if ($null -ne $Command) {
+        $PythonCmd = $Candidate
+        break
+    }
+}
+
+if ($null -eq $PythonCmd) {
+    Write-Error "[ FAIL ] Python 3 runtime not found on PATH. Please install Python 3."
+    exit 1
+}
+
+if ($ScriptArgs.Count -gt 0 -and $ScriptArgs[0] -eq "test") {
+    $TestArgs = @()
+    if ($ScriptArgs.Count -gt 1) {
+        $TestArgs = $ScriptArgs[1..($ScriptArgs.Count - 1)]
+    }
+    & $PythonCmd -m unittest discover (Join-Path $ScriptDir "tests") -v @TestArgs
+    exit $LASTEXITCODE
+}
+
+$TargetScript = Join-Path $ScriptDir "scripts\cli_dispatcher.py"
+& $PythonCmd $TargetScript @ScriptArgs
+exit $LASTEXITCODE

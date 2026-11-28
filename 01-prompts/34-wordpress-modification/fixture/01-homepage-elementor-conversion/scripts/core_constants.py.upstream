@@ -1,0 +1,13 @@
+"""Centralized constants for WordPress REST API operations."""
+from __future__ import annotations
+
+WP_REST_NAMESPACE = "/wp-json/wp/v2"
+WP_ENDPOINT_USERS_ME = f"{WP_REST_NAMESPACE}/users/me"
+WP_ENDPOINT_PAGES = f"{WP_REST_NAMESPACE}/pages"
+WP_ENDPOINT_POSTS = f"{WP_REST_NAMESPACE}/posts"
+
+DEFAULT_REQUEST_TIMEOUT_SECONDS = 30
+DEFAULT_DIFF_TOLERANCE_PERCENT = 5.0
+DEFAULT_BACKUP_FILENAME = "backups.json"
+DEFAULT_CREDENTIALS_FILENAME = "wp-credentials.json"
+DEFAULT_PIPELINE_FILENAME = "pipeline.json"
